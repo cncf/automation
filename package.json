@@ -1,0 +1,22 @@
+{
+  "name": "cncf-community",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm:dev:apps:community\"",
+    "dev:community-portal": "npm rm dev -w @cncf-process/utils",
+    "dev:staff-portal": "npm rm dev -w @cncf-process/utils",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Robert Kielty",
+  "license": "MIT",
+  "workspaces": [
+      "apps/*",
+      "libs/*"
+    ],
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  }
+}
