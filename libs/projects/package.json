@@ -1,0 +1,33 @@
+{
+  "name": "@cncf-community/projects",
+  "version": "1.0.0",
+  "description": "Provides programatic access to data about CNCF projects gathered from multiple exiting data sources",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "dts": true,
+    "sourcemap": true,
+    "format": [
+      "esm",
+      "cjs"
+    ]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsup --watch",
+    "help": "tsup --help",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "Robert Kielty <robert.kielty@cncf.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^6.7.0"
+  },
+  "dependencies": {
+    "resolve-from": "^5.0.0"
+  }
+}

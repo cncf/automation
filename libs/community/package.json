@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@cncf/community",
+  "version": "1.0.0",
+  "description": "The CNCF Process Community Library allows you to access CNCF Project Maintainers and Collaborators",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "tsup": {
+    "entry":  ["src/index.ts"],
+    "dts": true,
+    "sourcemap": true,
+    "format": ["esm","cjs"]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "Robert Kielty",
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^6.7.0"
+  }
+}
