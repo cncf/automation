@@ -5,16 +5,34 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Onboarding",
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "env": {
-                "FOSSA_TOKEN":"ADD_YOUR_TOKEN_HERE"
-            },
+            "envFile": "${workspaceFolder}/apps/onboarding/.env",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/apps/onboarding/index.js"
+        },
+        {
+            "name": "FOSSA",
+            "type": "node",
+            "request": "launch",
+            "envFile": "${workspaceFolder}/.env",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/libs/fossa/index.js"
+        },
+        {
+            "name": "Projects",
+            "type": "node",
+            "request": "launch",
+            "envFile": "${workspaceFolder}/.env",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/libs/projects/index.js"
         }
     ]
 }

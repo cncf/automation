@@ -1,5 +1,5 @@
 {
-  "name": "cncf-community",
+  "name": "cncf",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,10 +13,11 @@
   "author": "Robert Kielty",
   "license": "MIT",
   "workspaces": [
-      "apps/*",
-      "libs/*"
-    ],
+    "apps/*",
+    "libs/*"
+  ],
   "devDependencies": {
-    "concurrently": "^8.0.1"
+    "concurrently": "^8.0.1",
+    "eslint": "^8.39.0"
   }
 }
