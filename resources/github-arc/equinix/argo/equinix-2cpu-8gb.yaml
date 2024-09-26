@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: equinix-2cpu-8gb
+  namespace: argocd
+spec:
+  project: default
+  sources:
+  - chart: gha-runner-scale-set
+    repoURL: ghcr.io/actions/actions-runner-controller-charts
+    targetRevision: 0.9.3
+    helm:
+      releaseName: equinix-2cpu-8gb
+      valueFiles:
+      - $values/resources/github-arc/equinix/values/equinix-2cpu-8gb.yaml
+  - repoURL: 'https://github.com/cncf/automation.git'
+    targetRevision: main
+    ref: values
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: equinix-2cpu-8gb
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
