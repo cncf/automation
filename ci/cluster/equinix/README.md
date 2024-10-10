@@ -44,6 +44,9 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/$A
 
 # ArgoCD go brrrrrrr
 kubectl apply -n argocd -f argo-automation.yaml
+
+# Watch it go brrrrrr
+argocd -n argocd admin dashboard
 ```
 
 To tear it all down:
