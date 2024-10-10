@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: github-arc
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   syncPolicy:
     automated:
@@ -22,6 +24,8 @@ kind: Application
 metadata:
   name: equinix-autoscaler
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   syncPolicy:
     automated:
@@ -41,6 +45,8 @@ kind: Application
 metadata:
   name: github-runners
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   syncPolicy:
     automated:
