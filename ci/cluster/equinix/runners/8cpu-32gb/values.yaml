@@ -24,11 +24,11 @@ controllerServiceAccount:
 #     - example.org
 
 ## maxRunners is the max number of runners the autoscaling runner set will scale up to.
-maxRunners: 1
+maxRunners: 20
 
 ## minRunners is the min number of idle runners. The target number of runners created will be
 ## calculated as a sum of minRunners and the number of jobs assigned to the scale set.
-minRunners: 0
+minRunners: 1
 
 # runnerGroup: "default"
 
@@ -80,11 +80,11 @@ containerMode:
 listenerTemplate:
   spec:
     tolerations:
-        - effect: NoSchedule
-          key: node-role.kubernetes.io/control-plane
-      # Node affinity is used to force cluster-autoscaler to stick
-      # to the master node. This allows the cluster to reliably downscale
-      # to zero worker nodes when needed.
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+    # Node affinity is used to force cluster-autoscaler to stick
+    # to the master node. This allows the cluster to reliably downscale
+    # to zero worker nodes when needed.
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -96,6 +96,7 @@ listenerTemplate:
       - name: listener
         securityContext:
           runAsUser: 1000
+#     containers:
 #     # Use this section to append additional configuration to the listener container.
 #     # If you change the name of the container, the configuration will not be applied to the listener,
 #     # and it will be treated as a side-car container.
@@ -198,11 +199,11 @@ template:
         command: ["/home/runner/run.sh"]
         resources:
           requests:
-            memory: 16Gi
-            cpu: 4
+            memory: 32Gi
+            cpu: 8
           limits:
-            memory: 24Gi
-            cpu: 6
+            memory: 36Gi
+            cpu: 10
       - name: dind
         image: docker:dind
         args:

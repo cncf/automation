@@ -1,3 +1,14 @@
+## githubConfigUrl is the GitHub url for where you want to configure runners
+## ex: https://github.com/myorg/myrepo or https://github.com/myorg
+githubConfigUrl: https://github.com/enterprises/cncf
+
+## githubConfigSecret is the k8s secrets to use when auth with GitHub API.
+## You can choose to use GitHub App or a PAT token
+githubConfigSecret: github-arc-secret
+
+controllerServiceAccount:
+  namespace: arc-systems
+  name: cncf-gha-controller-gha-rs-controller
 ## proxy can be used to define proxy settings that will be used by the
 ## controller, the listener and the runner of this scale set.
 #
@@ -81,6 +92,10 @@ listenerTemplate:
             - matchExpressions:
                 - key: node-role.kubernetes.io/control-plane
                   operator: Exists
+    containers:
+      - name: listener
+        securityContext:
+          runAsUser: 1000
 #     containers:
 #     # Use this section to append additional configuration to the listener container.
 #     # If you change the name of the container, the configuration will not be applied to the listener,
@@ -177,15 +192,6 @@ template:
   ##                 requests:
   ##                   storage: 1Gi
   spec:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node.kubernetes.io/instance-type
-              operator: In
-              values:
-              - c3.medium.x86
     containers:
       - name: runner
         image: ghcr.io/jeefy/gha-runner:main
