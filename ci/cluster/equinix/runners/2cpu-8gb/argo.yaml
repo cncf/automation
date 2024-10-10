@@ -12,7 +12,7 @@ spec:
     helm:
       releaseName: equinix-2cpu-8gb
       valueFiles:
-      - $values/resources/github-arc/equinix/values/equinix-2cpu-8gb.yaml
+      - $values/ci/cluster/equinix/runners/2cpu-8gb/values.yaml
   - repoURL: 'https://github.com/cncf/automation.git'
     targetRevision: main
     ref: values
