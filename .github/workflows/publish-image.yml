@@ -77,7 +77,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v3
         with:
-          context: ci/gha-runner-image/
+          context: ./ci/gha-runner-image/
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -91,24 +91,6 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
-      - name: Build and push OpenEuler Docker image
-        id: build-and-push-openeuler
-        uses: docker/build-push-action@v3
-        with:
-          context: ci/gha-runner-image/
-          platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ghcr.io/cncf/gha-runner:openeuler
-          labels: ${{ steps.meta.outputs.labels }}
-          file: Dockerfile.openeuler
-      - name: Sign the published OpenEuler Docker image
-        if: ${{ github.event_name != 'pull_request' }}
-        env:
-          COSIGN_EXPERIMENTAL: "true"
-        # This step uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance.
-        run: cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:openeuler
       - name: Output image
         id: image
         run: |
@@ -168,7 +150,7 @@ jobs:
         id: build-and-push-openeuler
         uses: docker/build-push-action@v3
         with:
-          context: ci/gha-runner-image/
+          context: ./ci/gha-runner-image/
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
