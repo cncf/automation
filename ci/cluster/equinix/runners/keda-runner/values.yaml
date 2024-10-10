@@ -6,6 +6,9 @@ githubConfigUrl: "http://github.com/enterprises/cncf"
 ## You can choose to use GitHub App or a PAT token
 githubConfigSecret: "github-arc-secret"
 
+controllerServiceAccount:
+  namespace: arc-system
+  name: cncf-gha-controller-gha-rs-controller
 ## proxy can be used to define proxy settings that will be used by the
 ## controller, the listener and the runner of this scale set.
 #
