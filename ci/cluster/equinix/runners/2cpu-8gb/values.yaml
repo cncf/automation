@@ -1,3 +1,11 @@
+## githubConfigUrl is the GitHub url for where you want to configure runners
+## ex: https://github.com/myorg/myrepo or https://github.com/myorg
+githubConfigUrl: "http://github.com/enterprises/cncf"
+
+## githubConfigSecret is the k8s secrets to use when auth with GitHub API.
+## You can choose to use GitHub App or a PAT token
+githubConfigSecret: "github-arc-secret"
+
 ## proxy can be used to define proxy settings that will be used by the
 ## controller, the listener and the runner of this scale set.
 #
