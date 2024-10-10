@@ -177,15 +177,6 @@ template:
   ##                 requests:
   ##                   storage: 1Gi
   spec:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node.kubernetes.io/instance-type
-              operator: In
-              values:
-              - c3.medium.x86
     containers:
       - name: runner
         image: ghcr.io/jeefy/gha-runner:main
