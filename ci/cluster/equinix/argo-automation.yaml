@@ -14,11 +14,43 @@ spec:
     namespace: default
   sources:
     - repoURL: https://github.com/cncf/automation.git
-      path: ci/cluster/equinix/autoscaler/
-      targetRevision: HEAD
-    - repoURL: https://github.com/cncf/automation.git
       path: ci/cluster/equinix/arc/
       targetRevision: HEAD
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: equinix-autoscaler
+  namespace: argocd
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/equinix/autoscaler/
+      targetRevision: HEAD
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: github-runners
+  namespace: argocd
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: github-arc
+  sources:
     - repoURL: https://github.com/cncf/automation.git
       path: ci/cluster/equinix/runners/
       targetRevision: HEAD
