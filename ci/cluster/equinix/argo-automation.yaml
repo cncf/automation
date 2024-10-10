@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ccm
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/equinix/cloud-provider-equinix-metal
+    path: deploy/chart/
+    targetRevision: v3.8.1
+    helm:
+      parameters:
+        - name: configSecret.create
+          value: 'false'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: github-arc
+  namespace: argocd
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/equinix/autoscaler/
+      targetRevision: HEAD
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/equinix/arc/
+      targetRevision: HEAD
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/equinix/runners/
+      targetRevision: HEAD
+      directory:
+        recurse: true
