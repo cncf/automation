@@ -12,7 +12,7 @@ spec:
     helm:
       releaseName: cncf-gha-controller
       valueFiles:
-      - $values/resources/github-arc/equinix/values/github-runner-controller.yaml
+      - $values/ci/cluster/equinix/arc/values.yaml
   - repoURL: 'https://github.com/cncf/automation.git'
     targetRevision: main
     ref: values
