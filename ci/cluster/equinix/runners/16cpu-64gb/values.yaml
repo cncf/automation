@@ -198,6 +198,33 @@ template:
           limits:
             memory: 60Gi
             cpu: 20
+      - name: dind
+        image: docker:dind
+        args:
+          - dockerd
+          - --host=unix:///run/docker/docker.sock
+          - --group=$(DOCKER_GROUP_GID)
+          - --mtu=1400
+          - --default-network-opt=bridge=com.docker.network.driver.mtu=1400
+        env:
+          - name: DOCKER_GROUP_GID
+            value: "123"
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: work
+            mountPath: /home/runner/_work
+          - name: dind-sock
+            mountPath: /run/docker
+          - name: dind-externals
+            mountPath: /home/runner/externals
+    volumes:
+      - name: work
+        emptyDir: {}
+      - name: dind-sock
+        emptyDir: {}
+      - name: dind-externals
+        emptyDir: {}
 
 ## Optional controller service account that needs to have required Role and RoleBinding
 ## to operate this gha-runner-scale-set installation.
