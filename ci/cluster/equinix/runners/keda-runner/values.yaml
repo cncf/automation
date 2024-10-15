@@ -226,10 +226,8 @@ template:
     volumes:
       - name: work
         emptyDir: {}
-      - name: dind-sock
-        emptyDir: {}
-      - name: dind-externals
-        emptyDir: {}
+    # We need to assume the DIND socket volumes are being provided
+    # This is because Helm + Argo is busted :) The previous values won't work properly
 
 ## Optional controller service account that needs to have required Role and RoleBinding
 ## to operate this gha-runner-scale-set installation.
