@@ -40,7 +40,7 @@ kubectl apply -f secrets/github-arc-secret.yaml
 
 # Install ArgoCD
 export ARGOCD_VERSION="v2.12.4"
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/$ARGOCD_VERSION/manifests/core-install.yaml
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/$ARGOCD_VERSION/manifests/install.yaml
 
 # ArgoCD go brrrrrrr
 kubectl apply -n argocd -f argo-automation.yaml
