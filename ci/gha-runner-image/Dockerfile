@@ -10,6 +10,7 @@ RUN apt-get update -y \
     curl \
     jq \
     unzip \
-    kmod
+    kmod \
+    zstd
 
 USER runner
