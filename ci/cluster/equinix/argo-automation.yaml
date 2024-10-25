@@ -59,3 +59,23 @@ spec:
       targetRevision: HEAD
       directory:
         recurse: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/equinix/kube-prometheus-stack
+      targetRevision: HEAD
