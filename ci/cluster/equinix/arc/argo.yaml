@@ -11,6 +11,8 @@ spec:
     targetRevision: 0.9.3
     helm:
       releaseName: cncf-gha-controller
+      valueFiles:
+        - values.yaml
   - repoURL: 'https://github.com/cncf/automation.git'
     targetRevision: main
     ref: values
