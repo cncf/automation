@@ -11,6 +11,9 @@ spec:
     targetRevision: 0.9.3
     helm:
       releaseName: cncf-gha-controller
+  - repoURL: 'https://github.com/cncf/automation.git'
+    targetRevision: main
+    ref: values
   destination:
     server: "https://kubernetes.default.svc"
     namespace: arc-systems
