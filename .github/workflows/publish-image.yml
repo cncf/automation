@@ -209,5 +209,5 @@ jobs:
           IMAGE_NAME: ${{ needs.build.outputs.image }}
           IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
         run: |
-          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --certificate-identity-regexp=".*" --certificate-oidc-issuer-regexp=".*" --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}"
+          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --certificate-identity-regexp=".*" --certificate-oidc-issuer-regexp=".*" --type slsaprovenance "${{ env.IMAGE_NAME }}@${{env.IMAGE_DIGEST}}"
       # TODO(github.com/slsa-framework/slsa-verifier/issues/92): Add step to verify using slsa-verifier
