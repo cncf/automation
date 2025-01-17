@@ -1,5 +1,5 @@
 # This exists till https://github.com/actions/runner/pull/3056 is merged
-FROM ghcr.io/actions/actions-runner:latest
+FROM ghcr.io/actions/actions-runner:2.321.0
 
 USER root
 RUN apt-get update -y \
