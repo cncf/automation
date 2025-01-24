@@ -19,7 +19,7 @@ email = args['email']
 
 load_dotenv()
 # Store credentials
-pwd = os.getenv('KUBESTRONAUTS_INFOS')
+KUBESTRONAUTS_INFOS = os.getenv('KUBESTRONAUTS_INFOS')
 
 # Let's open the GoogleSheet to write Kubestronaut info + coupons
 #authorization

@@ -12,9 +12,12 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from google.auth.transport.requests import Request
+from dotenv import load_dotenv
+
 
 # Constants
-GDRIVE_URL = "https://drive.google.com/drive/folders/XXXXXXXX"
+load_dotenv()
+GDRIVE_URL= os.getenv('GDRIVE_URL')
 PROJECT_LIST_PATH = 'CNCF-Project-list.txt'
 PEOPLE_JSON_PATH = '../../people/people.json'
 SUGGESTIONS_FILE = 'suggestions.json'
@@ -158,7 +161,7 @@ def download_file_from_drive(folder_url, filename, outputname):
                 print(f'Download complete for {filename}')
 
 class People:
-    def __init__(self, firstName, lastName, bio, company, pronouns, location, twitter, github, projects, image):
+    def __init__(self, firstName, lastName, bio, company, pronouns, location, twitter, github, projects, image, slack):
         self.name = f"{firstName} {lastName}"
         self.bio = f"<p>{bio.replace('   ', '<p/><p>')}</p>" if bio else ""
         self.company = company if company != "Individual - No Account" else ""
@@ -166,6 +169,7 @@ class People:
         self.location = location
         self.twitter = self.format_twitter(twitter)
         self.github = self.format_github(github)
+        self.slack_id = slack
         self.category = ["Ambassadors"]
         self.projects = self.parse_and_confirm_projects(projects)
         self.image = self.handle_image(image, firstName, lastName)
@@ -190,14 +194,14 @@ class People:
             download_file_from_drive(GDRIVE_URL, image, "imageTemp" + file_extension)
             return f"{firstName.lower().replace(' ', '-')}-{lastName.lower().replace(' ', '-')}{file_extension}"
         else:
-            shutil.copy("phippy.jpg", "imageTemp.jpg")
+            shutil.copy("../../people/images/phippy.jpg", "imageTemp.jpg")
             return "phippy.jpg"
 
     def parse_and_confirm_projects(self, raw_string):
         project_names = load_project_names(PROJECT_LIST_PATH)
         project_dict = {project.lower(): project for project in project_names}
         identified_projects = parse_projects(raw_string, project_names)
-        
+
         # Confirm and add any missing projects interactively
         remaining_words = raw_string.lower()
         for project in identified_projects:
@@ -235,7 +239,7 @@ class People:
                     else:
                         suggestions[word_sequence] = None
                         save_suggestions(suggestions)
-        
+
         remaining_words = [word for word in remaining_words if word]
 
         for word in remaining_words:
@@ -263,8 +267,10 @@ def process_entries(firstLine, lastLine):
         csv_reader = csv.reader(csv_file, delimiter='\t')
         for lineCount, row in enumerate(csv_reader, start=1):
             if firstLine <= lineCount <= lastLine:
-                newPerson = People(firstName=row[0], lastName=row[1], bio=row[7], company=row[3], pronouns=row[4],
-                                   location=row[2], twitter=row[6], github=row[5], projects=row[8], image=row[9])
+#                newPerson = People(firstName=row[0], lastName=row[1], bio=row[7], company=row[3], pronouns=row[4],
+#                                   location=row[2], twitter=row[6], github=row[5], projects=row[8], image=row[9])
+                newPerson = People(firstName=row[0], lastName=row[1], bio=row[9], company=row[3], pronouns=row[4],
+                                   location=row[2], twitter=row[7], github=row[5], projects=row[8], image=row[10], slack=row[6])
                 print(newPerson.toJSON())
 
                 # Load existing data
@@ -283,7 +289,7 @@ def process_entries(firstLine, lastLine):
                     else:
                         data.insert(indexPeople, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPerson.toJSON()))
                         split_tup = os.path.splitext(newPerson.image)
-                        os.rename("imageTemp" + split_tup[1], "people/images/" + newPerson.image)
+                        os.rename("imageTemp" + split_tup[1], "../../people/images/" + newPerson.image)
                         break
 
                 # Write updated data back to file

@@ -22,10 +22,10 @@ lastLineToBeInserted = int(args['lastLine'])
 
 load_dotenv()
 # Store credentials
-pwd = os.getenv('KUBESTRONAUT_RECEIVERS')
+KUBESTRONAUT_RECEIVERS = os.getenv('KUBESTRONAUT_RECEIVERS')
 
 # Initialize the access to the GSheet to ACK Kubestronauts
-pygsheets.authorize(service_file='kubestronauts-handling-service-file.json')
+gc = pygsheets.authorize(service_file='kubestronauts-handling-service-file.json')
 #open the google spreadsheet
 sh = gc.open_by_key(KUBESTRONAUT_RECEIVERS)
 # Select the first sheet
@@ -98,6 +98,25 @@ class People:
             default=lambda o: o.__dict__, 
             indent=4)
 
+def ack_kubestronaut(email):
+    list_kubestronauts_cells=wks.find(pattern=email, cols=(2,2), matchEntireCell=False)
+    number_matching_cells = len(list_kubestronauts_cells)
+
+    if (number_matching_cells==1):
+        email_cell = list_kubestronauts_cells[0]
+        wks.update_value("G"+str(email_cell.row),"")
+        cell=wks.cell("F"+str(email_cell.row))
+        cell.color = bg_color_f2
+        print("Kubestronaut with email "+email+" : ACKed")
+    elif (number_matching_cells==0):
+        print("Kubestronaut with email "+email+" not found !!")
+        NON_acked_Kubestronauts.append(email)
+    else:
+        print("Kubestronaut with email "+email+" found multiple times !!")
+        NON_acked_Kubestronauts.append(email)
+
+
+
 # Retrieve JSON data from the file
 with open('../../people/people.json', "r+") as jsonfile:
 #    print(jsonfile.read())
@@ -140,27 +159,9 @@ for lineToBeInserted in range(firstLineToBeInserted, lastLineToBeInserted+1, 1):
                 print(newPeople.name+' will go before '+people['name'])
                 data.insert(indexPeople, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
                 os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
-                ack_kubestronaut(email)
+                ack_kubestronaut(row[12])
                 break
 
-
-
-def ack_kubestronaut(email)
-    list_kubestronauts_cells=wks.find(pattern=email, cols=(2,2), matchEntireCell=False)
-    number_matching_cells = len(list_kubestronauts_cells)
-
-    if (number_matching_cells==1):
-        email_cell = list_kubestronauts_cells[0]
-        wks.update_value("G"+str(email_cell.row),"")
-        cell=wks.cell("F"+str(email_cell.row))
-        cell.color = bg_color_f2
-        print("Kubestronaut with email "+email+" : ACKed")
-    elif (number_matching_cells==0):
-        print("Kubestronaut with email "+email+" not found !!")
-        NON_acked_Kubestronauts.append(email)
-    else:
-        print("Kubestronaut with email "+email+" found multiple times !!")
-        NON_acked_Kubestronauts.append(email)
 
 
 with open('../../people/people.json', "r+", encoding='utf-8') as jsonfile:
