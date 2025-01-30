@@ -13,9 +13,9 @@ controllerServiceAccount:
 ## maxRunners is the max number of runners the autoscaling runner set will scale up to.
 maxRunners: 100
 
-## minRunners is the min number of idle runners. The target number of runners created will be
-## calculated as a sum of minRunners and the number of jobs assigned to the scale set.
-minRunners: 1 
+## minRunners min number of idle runners.
+## Target number of runners = minRunners + number of jobs assigned to scale set.
+minRunners: 1
 
 # runnerGroup: "default"
 
@@ -63,7 +63,7 @@ containerMode:
 #     annotations:
 
 ## template is the PodSpec for each listener Pod
-## For reference: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PodSpec
+## https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#PodSpec
 listenerTemplate:
   spec:
     tolerations:
@@ -186,10 +186,10 @@ template:
         command: ["/home/runner/run.sh"]
         resources:
           requests:
-            memory: 56Gi
+            memory: 64Gi
             cpu: 16
           limits:
-            memory: 60Gi
+            memory: 68Gi
             cpu: 20
       - name: dind
         image: docker:dind
@@ -214,15 +214,3 @@ template:
     volumes:
       - name: work
         emptyDir: {}
-    # We need to assume the DIND socket volumes are being provided
-    # This is because Helm + Argo is busted :) The previous values won't work properly
-
-## Optional controller service account that needs to have required Role and RoleBinding
-## to operate this gha-runner-scale-set installation.
-## The helm chart will try to find the controller deployment and its service account at installation time.
-## In case the helm chart can't find the right service account, you can explicitly pass in the following value
-## to help it finish RoleBinding with the right service account.
-## Note: if your controller is installed to only watch a single namespace, you have to pass these values explicitly.
-# controllerServiceAccount:
-#   namespace: arc-system
-#   name: test-arc-gha-runner-scale-set-controller

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: oci-16cpu-64gb
+  name: oracle-16cpu-64gb
   namespace: argocd
 spec:
   project: default
@@ -10,7 +10,7 @@ spec:
     repoURL: ghcr.io/actions/actions-runner-controller-charts
     targetRevision: 0.10.1
     helm:
-      releaseName: oci-16cpu-64gb
+      releaseName: oracle-16cpu-64gb
       valueFiles:
       - $values/ci/cluster/oci/runners/16cpu-64gb/values.yaml
   - repoURL: 'https://github.com/cncf/automation.git'
