@@ -1,4 +1,4 @@
-name: Test Oracle AARCH64 Runner
+name: Test Oracle Runner
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-runner:
-    runs-on: oracle-aarch64-4cpu-16gb
+    runs-on: oracle-16cpu-64gb
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,7 +18,7 @@ jobs:
 
       - name: Run a basic workload
         run: |
-          echo "Testing Oracle AARCH64 Runner"
+          echo "Testing Oracle Runner"
           echo "CPU Info:"
           lscpu
 
@@ -26,6 +26,6 @@ jobs:
         run: |
           docker run --rm alpine echo "Docker is working on the runner"
 
-      - name: Check local disk 
+      - name: Check local disk
         run: |
-         df -h / 
+         df -h /
