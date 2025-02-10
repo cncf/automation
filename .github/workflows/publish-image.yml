@@ -157,7 +157,7 @@ jobs:
           tags: |
             ghcr.io/cncf/gha-runner:openeuler
           labels: ${{ steps.meta.outputs.labels }}
-          file: Dockerfile.openeuler
+          file: ./ci/gha-runner-image/Dockerfile.openeuler
       - name: Sign the published OpenEuler Docker image
         if: ${{ github.event_name != 'pull_request' }}
         env:
