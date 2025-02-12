@@ -2,15 +2,9 @@
 FROM ghcr.io/actions/actions-runner:2.322.0
 
 USER root
-RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends \
-    build-essential \
-    npm \
-    git \
-    curl \
-    jq \
-    unzip \
-    kmod \
-    zstd
+RUN apt-get update -y
+RUN apt-get install -y --no-install-recommends build-essential
+RUN apt-get install -y --no-install-recommends kmod
+RUN apt-get install -y --no-install-recommends zstd
 
 USER runner
