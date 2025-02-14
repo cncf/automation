@@ -179,9 +179,9 @@ jobs:
   provenance:
     needs: [build]
     permissions:
-      id-token: write # For signing.
-      actions: read # For reading workflow info.
-      packages: write # For uploading attestations.
+      id-token: write  # For signing.
+      actions: read    # For reading workflow info.
+      packages: write  # For uploading attestations.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
       image: ${{ needs.build.outputs.image }}
@@ -190,7 +190,7 @@ jobs:
       compile-generator: true
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
-# Verify the created provenance attestation.
+  # Verify the created provenance attestation.
   verify:
     # NOTE: this name is used as the status check name and by protected
     # branches for required status checks. It should have a unique name among
@@ -198,7 +198,7 @@ jobs:
     name: verify container provenance
     needs: [build, provenance]
     permissions:
-      packages: read # For reading attestations.
+      packages: read  # For reading attestations.
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
