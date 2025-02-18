@@ -1,3 +1,4 @@
+---
 name: Docker
 
 # This workflow uses actions that are not certified by GitHub.
@@ -7,11 +8,11 @@ name: Docker
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: ['v*.*.*']
   pull_request:
-    branches: [ main ]
+    branches: [main]
   release:
     types: [published]
 
@@ -50,9 +51,9 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@main
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
@@ -89,9 +90,11 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         env:
           COSIGN_EXPERIMENTAL: "true"
-        # This step uses the identity token to provision an ephemeral certificate
+        # uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
-        run: cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
+        run: |
+          cosign sign --yes \
+          ${{env.REGISTRY}}/${{env.IMAGE_NAME}}@${{steps.build-and-push.outputs.digest}}
       - name: Output image
         id: image
         run: |
@@ -157,14 +160,14 @@ jobs:
           tags: |
             ghcr.io/cncf/gha-runner:openeuler
           labels: ${{ steps.meta.outputs.labels }}
-          file: Dockerfile.openeuler
+          file: ./ci/gha-runner-image/Dockerfile.openeuler
       - name: Sign the published OpenEuler Docker image
         if: ${{ github.event_name != 'pull_request' }}
         env:
           COSIGN_EXPERIMENTAL: "true"
-        # This step uses the identity token to provision an ephemeral certificate
+        # Uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
-        run: cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:openeuler
+        run: cosign sign -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:openeuler
       - name: Output image
         id: image
         run: |
@@ -179,9 +182,9 @@ jobs:
   provenance:
     needs: [build]
     permissions:
-      id-token: write # For signing.
-      actions: read # For reading workflow info.
-      packages: write # For uploading attestations.
+      id-token: write  # For signing.
+      actions: read    # For reading workflow info.
+      packages: write  # For uploading attestations.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
       image: ${{ needs.build.outputs.image }}
@@ -190,7 +193,7 @@ jobs:
       compile-generator: true
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
-# Verify the created provenance attestation.
+  # Verify the created provenance attestation.
   verify:
     # NOTE: this name is used as the status check name and by protected
     # branches for required status checks. It should have a unique name among
@@ -198,16 +201,23 @@ jobs:
     name: verify container provenance
     needs: [build, provenance]
     permissions:
-      packages: read # For reading attestations.
+      packages: read  # For reading attestations.
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
       - uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: 'v2.4.2'
       - env:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ needs.build.outputs.image }}
           IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
         run: |
-          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --certificate-identity-regexp=".*" --certificate-oidc-issuer-regexp=".*" --type slsaprovenance "${{ env.IMAGE_NAME }}@${{env.IMAGE_DIGEST}}"
-      # TODO(github.com/slsa-framework/slsa-verifier/issues/92): Add step to verify using slsa-verifier
+          cosign version \
+          COSIGN_EXPERIMENTAL=1 cosign verify-attestation \
+            --certificate-identity-regexp=".*" \
+            --certificate-oidc-issuer-regexp=".*" \
+            --type slsaprovenance "${{ env.IMAGE_NAME }}@${{env.IMAGE_DIGEST}}"
+      # TODO (github.com/slsa-framework/slsa-verifier/issues/92):
+      #       Add step to verify using slsa-verifier
