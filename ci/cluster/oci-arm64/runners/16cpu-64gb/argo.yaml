@@ -12,7 +12,7 @@ spec:
     helm:
       releaseName: oracle-16cpu-64gb
       valueFiles:
-      - $values/ci/cluster/oci/runners/16cpu-64gb/values.yaml
+      - $values/ci/cluster/oci-arm64/runners/16cpu-64gb/values.yaml
   - repoURL: 'https://github.com/cncf/automation.git'
     targetRevision: main
     ref: values

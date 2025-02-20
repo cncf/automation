@@ -22,7 +22,7 @@ spec:
     helm:
       releaseName: cncf-gha-controller
       valueFiles:
-        - $values/ci/cluster/oci/arc/values.yaml
+        - $values/ci/cluster/oci-arm64/arc/values.yaml
   - ref: values
     repoURL: https://github.com/cncf/automation.git
     targetRevision: main
