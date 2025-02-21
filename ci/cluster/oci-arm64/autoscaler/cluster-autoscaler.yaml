@@ -148,10 +148,10 @@ spec:
           name: cluster-autoscaler
           resources:
             limits:
-              cpu: 100m
+              cpu: 200m
               memory: 300Mi
             requests:
-              cpu: 100m
+              cpu: 600m
               memory: 300Mi
           command:
             - ./cluster-autoscaler
@@ -159,7 +159,7 @@ spec:
             - --stderrthreshold=info
             - --cloud-provider=oci
             - --max-node-provision-time=25m
-            - --nodes=1:10:ocid1.nodepool.oc1.us-sanjose-1.aaaaaaaaxjbwe3w6qswmyflqesvj76cy2fhzwvm6ztamsqptpngnhkzehmha
+            - --nodes=1:10:ocid1.nodepool.oc1.iad.aaaaaaaae3f6nlec4v4btdptd7qyhugxrpwaqcgnsuzhajpchnwoygfn6tra
             - --scale-down-delay-after-add=10m
             - --scale-down-unneeded-time=10m
             - --unremovable-node-recheck-timeout=5m
