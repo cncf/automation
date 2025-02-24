@@ -10,7 +10,7 @@ spec:
     repoURL: ghcr.io/actions/actions-runner-controller-charts
     targetRevision: 0.10.1
     helm:
-      releaseName: oracle-16cpu-64gb
+      releaseName: oracle-16cpu-64gb-arm64
       valueFiles:
       - $values/ci/cluster/oci-arm64/runners/16cpu-64gb/values.yaml
   - repoURL: 'https://github.com/cncf/automation.git'
