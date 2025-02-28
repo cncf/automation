@@ -1,4 +1,4 @@
-name: Test Oracle Runner
+name: Test oracle-16cpu-64gb-x86-64
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-runner:
-    runs-on: oracle-16cpu-64gb
+    runs-on: oracle-16cpu-64gb-x86-64
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
