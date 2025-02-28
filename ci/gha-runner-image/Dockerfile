@@ -5,5 +5,6 @@ USER root
 RUN apt-get update -y
 RUN apt-get install -y --no-install-recommends kmod
 RUN apt-get install -y --no-install-recommends zstd
+RUN apt-get install -y --no-install-recommends dirmngr
 
 USER runner
