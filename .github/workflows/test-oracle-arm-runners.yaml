@@ -16,8 +16,7 @@ jobs:
 
       - name: Run uname to verify architecture
         run: |
-          echo "Oracle Runner"
-          echo "uname -a:"
+          echo "On the 16 CPU 64 GB Oracle Arm Runner uname -a reports:"
           uname -a
 
       - name: Run a basic workload
@@ -32,3 +31,7 @@ jobs:
       - name: Check local disk
         run: |
          df -h /
+
+      - name: Check disk on docker
+        run: |
+          docker run --rm alpine df -h /
