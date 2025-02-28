@@ -1,4 +1,5 @@
-name: Test Oracle Runner
+---
+name: Test oracle-16cpu-64gb-arm64
 
 on:
   push:
@@ -11,11 +12,11 @@ jobs:
     runs-on: oracle-16cpu-64gb-arm64
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run uname to verify architecture
         run: |
-          echo "Testing Oracle Runner"
+          echo "Oracle Runner"
           echo "uname -a:"
           uname -a
 
