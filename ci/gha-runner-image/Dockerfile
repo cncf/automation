@@ -8,5 +8,5 @@ RUN apt-get install -y --no-install-recommends zstd
 RUN apt-get install -y --no-install-recommends dirmngr
 RUN apt-get install -y --no-install-recommends wget
 RUN apt-get install -y --no-install-recommends gnupg
-
+RUN apt-get install -y --no-install-recommends python3-pip
 USER runner
