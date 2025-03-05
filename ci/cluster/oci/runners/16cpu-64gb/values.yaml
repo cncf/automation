@@ -200,4 +200,11 @@ template:
             mountPath: /home/runner/externals
     volumes:
       - name: work
-        emptyDir: {}
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: oci-bv
+              resources:
+                requests:
+                  storage: 50Gi
