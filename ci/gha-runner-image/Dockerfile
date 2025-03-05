@@ -12,7 +12,11 @@ RUN apt-get install -y --no-install-recommends wget
 RUN apt-get install -y --no-install-recommends gnupg
 RUN apt-get install -y --no-install-recommends python3-pip
 RUN apt-get install -y --no-install-recommends locales && \
-    locale-gen en_US cs_CZ
+    locale-gen en_US.UTF-8
+
+ENV LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
 
 
 
