@@ -192,6 +192,10 @@ template:
         securityContext:
           privileged: true
         volumeMounts:
+          - name: cache
+            mountPath: /home/runner/.cache
+          - name: go
+            mountPath: /home/runner/go
           - name: work
             mountPath: /home/runner/_work
           - name: dind-sock
@@ -200,4 +204,29 @@ template:
             mountPath: /home/runner/externals
     volumes:
       - name: work
-        emptyDir: {}
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: oci-bv
+              resources:
+                requests:
+                  storage: 50Gi
+      - name: cache
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: oci-bv
+              resources:
+                requests:
+                  storage: 10Gi
+      - name: go
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: oci-bv
+              resources:
+                requests:
+                  storage: 10Gi
