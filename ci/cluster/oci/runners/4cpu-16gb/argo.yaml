@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: oracle-4cpu-16gb-x86-64
+  namespace: argocd
+spec:
+  project: default
+  sources:
+  - chart: gha-runner-scale-set
+    repoURL: ghcr.io/actions/actions-runner-controller-charts
+    targetRevision: 0.10.1
+    helm:
+      releaseName: oracle-4cpu-16gb-x86-64
+      valueFiles:
+      - $values/ci/cluster/oci/runners/4cpu-16gb/values.yaml
+  - repoURL: 'https://github.com/cncf/automation.git'
+    targetRevision: main
+    ref: values
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: arc-systems
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
