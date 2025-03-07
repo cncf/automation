@@ -204,6 +204,8 @@ template:
             mountPath: /run/docker
           - name: dind-externals
             mountPath: /home/runner/externals
+          - name: overlay
+            mountPath: /var/lib/docker/
     volumes:
       - name: work
         ephemeral:
@@ -224,6 +226,15 @@ template:
                 requests:
                   storage: 10Gi
       - name: go
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: oci-bv
+              resources:
+                requests:
+                  storage: 10Gi
+      - name: overlay
         ephemeral:
           volumeClaimTemplate:
             spec:
