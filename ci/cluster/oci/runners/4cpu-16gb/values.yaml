@@ -166,6 +166,8 @@ template:
   ##                 requests:
   ##                   storage: 1Gi
   spec:
+    securityContext:
+      fsGroup: 1001
     containers:
       - name: runner
         image: ghcr.io/cncf/external-gha-runner:main
