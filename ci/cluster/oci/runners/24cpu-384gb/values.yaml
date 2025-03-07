@@ -176,10 +176,10 @@ template:
         resources:
           requests:
             memory: 384Gi
-            cpu: 64
+            cpu: 24
           limits:
             memory: 392Gi
-            cpu: 68
+            cpu: 26
       - name: dind
         image: docker:dind
         args:
