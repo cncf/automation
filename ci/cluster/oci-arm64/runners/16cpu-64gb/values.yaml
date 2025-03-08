@@ -180,6 +180,19 @@ template:
           limits:
             memory: 68Gi
             cpu: 20
+        volumeMounts:
+          - name: work
+            mountPath: /home/runner/_work
+            subPath: _work
+          - name: work
+            mountPath: /home/runner/.cache
+            subPath: .cache
+          - name: work
+            mountPath: /home/runner/.gradle
+            subPath: .gradle
+          - name: work
+            mountPath: /home/runner/go
+            subPath: go
       - name: dind
         image: docker:dind
         args:
@@ -194,16 +207,15 @@ template:
         securityContext:
           privileged: true
         volumeMounts:
-          - name: cache
-            mountPath: /home/runner/.cache
-          - name: go
-            mountPath: /home/runner/go
           - name: work
             mountPath: /home/runner/_work
+            subPath: _work
           - name: dind-sock
             mountPath: /run/docker
           - name: dind-externals
             mountPath: /home/runner/externals
+          - name: overlay
+            mountPath: /var/lib/docker/
     volumes:
       - name: work
         ephemeral:
@@ -214,16 +226,7 @@ template:
               resources:
                 requests:
                   storage: 50Gi
-      - name: cache
-        ephemeral:
-          volumeClaimTemplate:
-            spec:
-              accessModes: [ "ReadWriteOnce" ]
-              storageClassName: oci-bv
-              resources:
-                requests:
-                  storage: 10Gi
-      - name: go
+      - name: overlay
         ephemeral:
           volumeClaimTemplate:
             spec:
