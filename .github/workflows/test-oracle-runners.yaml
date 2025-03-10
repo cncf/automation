@@ -34,3 +34,14 @@ jobs:
         run: |
          echo "df -h on ${{matrix.cncf_runner}}"
          df -h /
+
+      - name: Get versions of installed tools, list supported locales
+        run: |
+          kmod --version && \
+          zstd --version && \
+          dirmngr --version && \
+          wget --version && \
+          gpg --version && \
+          pip --version && \
+          locale -a && \
+          make --version
