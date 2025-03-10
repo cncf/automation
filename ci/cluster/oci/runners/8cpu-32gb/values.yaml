@@ -193,6 +193,9 @@ template:
           - name: work
             mountPath: /home/runner/go
             subPath: go
+          - name: work
+            mountPath: /home/runner/.m2
+            subPath: .m2
       - name: dind
         image: docker:dind
         args:
