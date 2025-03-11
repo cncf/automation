@@ -201,6 +201,7 @@ template:
         args:
           - dockerd
           - --host=unix:///run/docker/docker.sock
+          - --data-root=/docker
           - --group=$(DOCKER_GROUP_GID)
           - --mtu=1400
           - --default-network-opt=bridge=com.docker.network.driver.mtu=1400
@@ -218,7 +219,31 @@ template:
           - name: dind-externals
             mountPath: /home/runner/externals
           - name: overlay
-            mountPath: /var/lib/docker/
+            mountPath: /docker/
+          - name: work
+            mountPath: /home/runner/.cache
+            subPath: .cache
+          - name: work
+            mountPath: /home/runner/.gradle
+            subPath: .gradle
+          - name: work
+            mountPath: /home/runner/go
+            subPath: go
+          - name: work
+            mountPath: /home/runner/.m2
+            subPath: .m2
+          - name: work
+            mountPath: /home/runner/.cache
+            subPath: .cache
+          - name: work
+            mountPath: /home/runner/.gradle
+            subPath: .gradle
+          - name: work
+            mountPath: /home/runner/go
+            subPath: go
+          - name: work
+            mountPath: /home/runner/.m2
+            subPath: .m2
     volumes:
       - name: work
         ephemeral:
