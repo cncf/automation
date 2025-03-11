@@ -16,6 +16,8 @@ RUN apt-get install -y --no-install-recommends locales && \
 RUN apt-get install -y --no-install-recommends make
 RUN apt-get install -y --no-install-recommends eatmydata
 RUN apt-get install -y --no-install-recommends maven
+RUN apt-get install -y --no-install-recommends zip
+
 
 ENV LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8 \
