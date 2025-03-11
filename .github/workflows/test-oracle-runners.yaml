@@ -37,11 +37,38 @@ jobs:
 
       - name: Get versions of installed tools, list supported locales
         run: |
-          kmod --version && \
-          zstd --version && \
-          dirmngr --version && \
-          wget --version && \
-          gpg --version && \
-          pip --version && \
-          locale -a && \
+          echo "::group::kmod version"
+          kmod --version
+          echo "::endgroup::"
+
+          echo "::group::zstd version"
+          zstd --version
+          echo "::endgroup::"
+
+          echo "::group::dirmngr version"
+          dirmngr --version
+          echo "::endgroup::"
+
+          echo "::group::wget version"
+          wget --version
+          echo "::endgroup::"
+
+          echo "::group::gpg version"
+          gpg --version
+          echo "::endgroup::"
+
+          echo "::group::pip version"
+          pip --version
+          echo "::endgroup::"
+
+          echo "::group::locale list"
+          locale -a
+          echo "::endgroup::"
+
+          echo "::group::make version"
           make --version
+          echo "::endgroup::"
+
+          echo "::group::which eatmydata"
+          which eatmydata
+          echo "::endgroup::"
