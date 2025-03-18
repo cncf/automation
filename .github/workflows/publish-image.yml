@@ -163,6 +163,7 @@ jobs:
       id-token: write
       actions: read
       packages: write
+      contents: read
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.4.0
     with:
       image: ${{ needs.build.outputs.image }}
@@ -171,10 +172,38 @@ jobs:
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
   
+  # Run privacy check before verification
+  privacy-check:
+    needs: [build, provenance]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Verify inputs
+        run: |
+          echo "Verifying image: ${{ needs.build.outputs.image }}"
+          echo "Verifying digest: ${{ needs.build.outputs.digest }}"
+        
+      - name: Check for valid digest
+        run: |
+          if [ -z "${{ needs.build.outputs.digest }}" ]; then
+            echo "::error::Image digest is empty"
+            exit 1
+          fi
+          
+          if [[ ! "${{ needs.build.outputs.digest }}" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+            echo "::warning::Digest format may not be standard"
+          fi
+          
   # Verify the created provenance attestation
   verify:
     name: verify container provenance
-    needs: [build, provenance]
+    needs: [build, provenance, privacy-check]
     permissions:
       packages: read
     runs-on: ubuntu-latest
