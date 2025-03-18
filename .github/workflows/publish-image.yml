@@ -183,14 +183,30 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        
-      - name: Verify inputs
+        with:
+          # Ensure full repository content is available
+          fetch-depth: 0
+          
+      - name: Verify action exists
         run: |
-          echo "Verifying image: ${{ needs.build.outputs.image }}"
-          echo "Verifying digest: ${{ needs.build.outputs.digest }}"
-        
-      - name: Check for valid digest
+          if [ ! -f ".github/actions/privacy-check/action.yml" ]; then
+            echo "Error: Privacy check action file not found"
+            ls -la .github/actions/privacy-check/
+            exit 1
+          else
+            echo "Privacy check action file found"
+          fi
+      
+      - name: Run privacy check
+        uses: ./.github/actions/privacy-check
+        with:
+          image: ${{ needs.build.outputs.image }}
+          digest: ${{ needs.build.outputs.digest }}
+      
+      - name: Additional validation
         run: |
+          echo "Performing additional validations..."
+          
           if [ -z "${{ needs.build.outputs.digest }}" ]; then
             echo "::error::Image digest is empty"
             exit 1
