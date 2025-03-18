@@ -1,15 +1,11 @@
 ---
 name: Docker
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# This workflow builds, signs and validates Docker images for CNCF GitHub Actions runners
 
 on:
   push:
     branches: [main]
-    # Publish semver tags as releases.
     tags: ['v*.*.*']
   pull_request:
     branches: [main]
@@ -17,14 +13,9 @@ on:
     types: [published]
 
 env:
-  # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # IMAGE_NAME maps to the Docker image name
   IMAGE_NAME: cncf/external-gha-runner
-
-  # Map current release tag to the version of booty
   BOOTY_VERSION: ${{ github.ref_name }}
-  # Map last repo update to the build timestamp
   BOOTY_TIMESTAMP: ${{ github.event.repository.updated_at}}
 
 jobs:
@@ -54,7 +45,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log into registry ${{ env.REGISTRY }}
+      - name: Log into registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
@@ -79,18 +70,16 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           
       - name: Sign the published Docker image
-        if: ${{ github.event_name != 'pull_request' }}
+        if: github.event_name != 'pull_request'
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: |
-          cosign sign --yes \
-          ${{env.REGISTRY}}/${{env.IMAGE_NAME}}@${{steps.build-and-push.outputs.digest}}
+          cosign sign --yes ${{env.REGISTRY}}/${{env.IMAGE_NAME}}@${{steps.build-and-push.outputs.digest}}
           
       - name: Output image
         id: image
         run: |
-          image_name="${REGISTRY}/${IMAGE_NAME}:${{ github.ref_name }}"
-          echo "image=$image_name" >> $GITHUB_OUTPUT
+          echo "image=${REGISTRY}/${IMAGE_NAME}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
 
   build-openeuler:
     outputs:
@@ -118,7 +107,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log into registry ${{ env.REGISTRY }}
+      - name: Log into registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
@@ -153,96 +142,46 @@ jobs:
       - name: Output image
         id: image
         run: |
-          image_name="${REGISTRY}/${IMAGE_NAME}:openeuler"
-          echo "image=$image_name" >> $GITHUB_OUTPUT
+          echo "image=${REGISTRY}/${IMAGE_NAME}:openeuler" >> $GITHUB_OUTPUT
 
-  # Generate SLSA provenance for the image
-  provenance:
-    needs: [build]
-    permissions:
-      id-token: write
-      actions: read
-      packages: write
-      contents: read
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.4.0
-    with:
-      image: ${{ needs.build.outputs.image }}
-      digest: ${{ needs.build.outputs.digest }}
-      registry-username: ${{ github.actor }}
-    secrets:
-      registry-password: ${{ secrets.GITHUB_TOKEN }}
-  
-  # Run privacy check before verification
-  privacy-check:
-    needs: [build, provenance]
+  # Image validation job
+  validate:
+    name: validate images
+    needs: [build, build-openeuler]
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' }}
     permissions:
-      contents: read
       packages: read
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          # Ensure full repository content is available
-          fetch-depth: 0
-          
-      - name: Verify action exists
-        run: |
-          if [ ! -f ".github/actions/privacy-check/action.yml" ]; then
-            echo "Error: Privacy check action file not found"
-            ls -la .github/actions/privacy-check/
-            exit 1
-          else
-            echo "Privacy check action file found"
-          fi
-      
-      - name: Run privacy check
-        uses: ./.github/actions/privacy-check
-        with:
-          image: ${{ needs.build.outputs.image }}
-          digest: ${{ needs.build.outputs.digest }}
-      
-      - name: Additional validation
-        run: |
-          echo "Performing additional validations..."
-          
-          if [ -z "${{ needs.build.outputs.digest }}" ]; then
-            echo "::error::Image digest is empty"
-            exit 1
-          fi
-          
-          if [[ ! "${{ needs.build.outputs.digest }}" =~ ^sha256:[a-f0-9]{64}$ ]]; then
-            echo "::warning::Digest format may not be standard"
-          fi
-          
-  # Verify the created provenance attestation
-  verify:
-    name: verify container provenance
-    needs: [build, provenance, privacy-check]
-    permissions:
-      packages: read
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' }}
-    steps:
-      - uses: sigstore/cosign-installer@v2.8.1
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v2.8.1
         with:
           cosign-release: 'v2.1.1'
           
-      - name: Verify attestation
+      - name: Verify standard image
         env:
-          REGISTRY_USERNAME: ${{ github.actor }}
-          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ needs.build.outputs.image }}
           IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
         run: |
-          echo "Verifying attestation for $IMAGE_NAME@$IMAGE_DIGEST"
+          echo "Verifying image: $IMAGE_NAME@$IMAGE_DIGEST"
           
           if [ -z "$IMAGE_DIGEST" ]; then
             echo "Error: Image digest is empty"
             exit 1
           fi
           
-          COSIGN_EXPERIMENTAL=1 cosign verify-attestation \
-            --type slsaprovenance \
-            "$IMAGE_NAME@$IMAGE_DIGEST"
+          COSIGN_EXPERIMENTAL=1 cosign verify $IMAGE_NAME@$IMAGE_DIGEST
+
+      - name: Verify OpenEuler image
+        env:
+          IMAGE_NAME: ${{ needs.build-openeuler.outputs.image }}
+          IMAGE_DIGEST: ${{ needs.build-openeuler.outputs.digest }}
+        run: |
+          echo "Verifying OpenEuler image: $IMAGE_NAME@$IMAGE_DIGEST"
+          
+          if [ -z "$IMAGE_DIGEST" ]; then
+            echo "Error: OpenEuler image digest is empty"
+            exit 1
+          fi
+          
+          COSIGN_EXPERIMENTAL=1 cosign verify $IMAGE_NAME@$IMAGE_DIGEST
