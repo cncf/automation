@@ -1,6 +1,8 @@
-# Akamai Provider for CNCF Self-Hosted Runners
+# Akamai Provider for CNCF Self-Hosted Runners (PoC)
 
 This directory contains automation tools and configurations for deploying and managing CNCF GitHub self-hosted runners on Akamai infrastructure.
+
+> **Note:** This implementation is currently in Proof of Concept (PoC) stage.
 
 ## Overview
 
@@ -38,6 +40,10 @@ See the sample configuration file in `config-example.yaml` for detailed settings
 ## Usage
 
 Detailed usage instructions for provisioning and managing runners are coming soon.
+
+### Proof of Concept Deployment
+
+This PoC uses an intentionally cost-effective setup with spot instances to demonstrate the functionality at minimal expense. The configuration is not intended for production use without appropriate adjustments.
 
 ## Kubernetes Deployment
 
