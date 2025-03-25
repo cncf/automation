@@ -1,5 +1,5 @@
 # This exists till https://github.com/actions/runner/pull/3056 is merged
-FROM ghcr.io/actions/actions-runner:2.322.0
+FROM ghcr.io/actions/actions-runner:2.323.0
 
 ENV PATH="$PATH:/home/runner/.local/bin"
 
@@ -18,12 +18,10 @@ RUN apt-get install -y --no-install-recommends eatmydata
 RUN apt-get install -y --no-install-recommends maven
 RUN apt-get install -y --no-install-recommends zip
 
-
 ENV LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
 
 
-
-
 USER runner
+RUN git config --global --add safe.directory /home/runner/_work
