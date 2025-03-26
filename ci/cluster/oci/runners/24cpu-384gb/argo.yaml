@@ -8,7 +8,7 @@ spec:
   sources:
   - repoURL: 'https://github.com/cncf/automation.git'
     targetRevision: main
-    path: ci/cluster/oci/runners/4cpu-16gb/install.yaml
+    path: ci/cluster/oci/runners/24cpu-384gb/
   destination:
     server: "https://kubernetes.default.svc"
     namespace: arc-systems
