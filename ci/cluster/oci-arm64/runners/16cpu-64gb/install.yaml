@@ -431,7 +431,7 @@ spec:
         fsGroup: 1001
         supplementalGroups:
         - 999
-      serviceAccountName: oracle-16cpu-64gb-x86-64-gha-rs-no-permission
+      serviceAccountName: oracle-16cpu-64gb-arm64-gha-rs-no-permission
       volumes:
       - emptyDir: {}
         name: dind-sock
