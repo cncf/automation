@@ -327,11 +327,11 @@ spec:
         name: runner
         resources:
           limits:
-            cpu: 2
-            memory: 8Gi
-          requests:
             cpu: 4
             memory: 12Gi
+          requests:
+            cpu: 2
+            memory: 8Gi
         volumeMounts:
         - mountPath: /home/runner/_work
           name: work
