@@ -85,6 +85,7 @@ jobs:
           context: ./ci/gha-runner-image/
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
           tags: |
             ghcr.io/cncf/gha-runner:${{ matrix.dockerfile }}
           labels: ${{ steps.meta.outputs.labels }}
