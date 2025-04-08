@@ -116,8 +116,8 @@ jobs:
       packages: write  # For uploading attestations.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
-      image: ${{ needs.build.outputs.image }}
-      digest: ${{ needs.build.outputs.digest }}
+      image: ${{ needs.build-images.outputs.image }}
+      digest: ${{ needs.build-images.outputs.digest }}
       registry-username: ${{ github.actor }}
       compile-generator: true
     secrets:
@@ -140,8 +140,8 @@ jobs:
       - env:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          IMAGE_NAME: ${{ needs.build.outputs.image }}
-          IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
+          IMAGE_NAME: ${{ needs.build-images.outputs.image }}
+          IMAGE_DIGEST: ${{ needs.build-images.outputs.digest }}
         run: |
           cosign version \
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation \
