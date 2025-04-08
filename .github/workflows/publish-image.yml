@@ -8,7 +8,7 @@ name: Docker
 
 on:
   push:
-    branches: [main]
+    branches: [main, image-build-fix]
     # Publish semver tags as releases.
     tags: ['v*.*.*']
   pull_request:
