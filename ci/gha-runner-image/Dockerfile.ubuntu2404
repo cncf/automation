@@ -68,7 +68,8 @@ RUN apt update -y \
             make \
             eatmydata \
             maven \
-            zip
+            zip \
+            xz-utils
 RUN  apt-get clean \
      && rm -rf /var/lib/apt/lists/*
 
