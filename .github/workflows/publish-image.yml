@@ -86,9 +86,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/cncf/gha-runner:${{ matrix.dockerfile }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.dockerfile }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./ci/gha-runner-image/Dockerfile.${{ matrix.dockerfile }}
+
       - name: Sign the published ${{ matrix.dockerfile }} Docker image
         if: ${{ github.event_name != 'pull_request' }}
         env:
@@ -96,6 +97,7 @@ jobs:
         # Uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: cosign sign -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.dockerfile }}
+
       - name: Output image
         id: image
         run: |
@@ -109,6 +111,7 @@ jobs:
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io
   provenance:
+    if: ${{ github.event_name != 'pull_request' }}
     needs: [build-images]
     permissions:
       id-token: write  # For signing.
@@ -122,6 +125,7 @@ jobs:
       compile-generator: true
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
+
   # Verify the created provenance attestation.
   verify:
     # NOTE: this name is used as the status check name and by protected
@@ -132,7 +136,7 @@ jobs:
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ github.event_name != 'pull_request' }}
     steps:
       - uses: sigstore/cosign-installer@main
         with:
