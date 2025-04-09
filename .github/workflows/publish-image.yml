@@ -147,7 +147,7 @@ jobs:
           IMAGE_NAME: ${{ needs.build-images.outputs.image }}
           IMAGE_DIGEST: ${{ needs.build-images.outputs.digest }}
         run: |
-          cosign version \
+          cosign version
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation \
             --certificate-identity-regexp=".*" \
             --certificate-oidc-issuer-regexp=".*" \
