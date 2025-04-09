@@ -176,7 +176,7 @@ template:
         - -R
         - "1777"
         - /tmp
-        image: ghcr.io/cncf/external-gha-runner:main
+        image: ghcr.io/cncf/external-gha-runner:ubuntu2404
         name: chowner
         securityContext:
           capabilities:
@@ -198,7 +198,7 @@ template:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:main
+        image: ghcr.io/cncf/external-gha-runner:ubuntu2404
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
@@ -206,7 +206,7 @@ template:
           subPath: tmpDir
     containers:
       - name: runner
-        image: ghcr.io/cncf/external-gha-runner:main
+        image: ghcr.io/cncf/external-gha-runner:ubuntu2404
         imagePullPolicy: Always
         command: ["/home/runner/run.sh"]
         resources:
