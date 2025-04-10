@@ -112,7 +112,7 @@ jobs:
     needs: [build-images]
     strategy:
       matrix:
-        image: ${{ needs.build-images.outputs.images }}
+        image: ${{ fromJSON(needs.build-images.outputs.images) }}
     permissions:
       id-token: write  # For signing.
       actions: read    # For reading workflow info.
@@ -135,7 +135,7 @@ jobs:
     needs: [build-images, provenance]
     strategy:
       matrix:
-        image: ${{ needs.build-images.outputs.images }}
+        image: ${{ fromJSON(needs.build-images.outputs.images) }}
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
