@@ -9,12 +9,10 @@ name: Docker
 on:
   push:
     branches: [main]
-    # Publish semver tags as releases.
-    tags: ['v*.*.*']
+    paths: ['ci/gha-runner-image/Dockerfile.ubuntu*']
   pull_request:
     branches: [main]
-  release:
-    types: [published]
+    paths: ['ci/gha-runner-image/Dockerfile.ubuntu*']
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -34,7 +32,7 @@ jobs:
       matrix:
         dockerfile: [ubuntu2204, ubuntu2404]
     outputs:
-      image: ${{ steps.image.outputs.image }}
+      images: ${{ steps.image.outputs.images }}
       digest: ${{ steps.build-and-push.outputs.digest }}
     runs-on: ubuntu-latest
     permissions:
@@ -105,21 +103,23 @@ jobs:
           # that the image we attest has not been modified.
           # NOTE: The digest output from docker/build-push-action is of the
           # form "sha256:<digest>"
-          image_name="${REGISTRY}/${IMAGE_NAME}:${{ github.ref_name }}"
-          echo "::set-output name=image::$image_name"
+          echo "images=[\"${REGISTRY}/${IMAGE_NAME}:ubuntu2204\", \"${REGISTRY}/${IMAGE_NAME}:ubuntu2404\"]" >> "$GITHUB_OUTPUT"
   
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io
   provenance:
     if: ${{ github.event_name != 'pull_request' }}
     needs: [build-images]
+    strategy:
+      matrix:
+        image: ${{ needs.build-images.outputs.images }}
     permissions:
       id-token: write  # For signing.
       actions: read    # For reading workflow info.
       packages: write  # For uploading attestations.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
-      image: ${{ needs.build-images.outputs.image }}
+      image: ${{ matrix.image }}
       digest: ${{ needs.build-images.outputs.digest }}
       registry-username: ${{ github.actor }}
       compile-generator: true
@@ -133,6 +133,9 @@ jobs:
     # other pre-submits.
     name: verify container provenance
     needs: [build-images, provenance]
+    strategy:
+      matrix:
+        image: ${{ needs.build-images.outputs.images }}
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
@@ -144,7 +147,7 @@ jobs:
       - env:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          IMAGE_NAME: ${{ needs.build-images.outputs.image }}
+          IMAGE_NAME: ${{ matrix.image }}
           IMAGE_DIGEST: ${{ needs.build-images.outputs.digest }}
         run: |
           cosign version
