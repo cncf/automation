@@ -9,12 +9,10 @@ name: Docker
 on:
   push:
     branches: [main]
-    # Publish semver tags as releases.
-    tags: ['v*.*.*']
+    paths: ['ci/gha-runner-image/Dockerfile.ubuntu*']
   pull_request:
     branches: [main]
-  release:
-    types: [published]
+    paths: ['ci/gha-runner-image/Dockerfile.ubuntu*']
 
 env:
   # Use docker.io for Docker Hub if empty
