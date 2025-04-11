@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: github-arc
   namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.slack: argocd-notifications
+  labels:
+    cluster: oci-gha-amd64-runners
 spec:
   project: default
   destination:
