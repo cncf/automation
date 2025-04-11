@@ -22,7 +22,7 @@ spec:
     helm:
       releaseName: kube-prometheus-stack
       valueFiles:
-      - $values/ci/cluster/oci/monitoring/values.yaml
+      - $values/ci/cluster/oci-arm64/monitoring/values.yaml
   - repoURL: https://github.com/cncf/automation.git
     targetRevision: HEAD
     ref: values

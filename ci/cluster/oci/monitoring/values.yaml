@@ -27,7 +27,7 @@ defaultRules:
     kubernetesSystem: false
     kubeSchedulerAlerting: false
     kubeSchedulerRecording: false
-    kubeStateMetrics: false
+    kubeStateMetrics: true
     network: true
     node: true
     nodeExporterAlerting: true
@@ -43,22 +43,22 @@ kubeApiServer:
   enabled: true
 
 kubeControllerManager:
-  enabled: true
+  enabled: false
 
 kubeEtcd:
-  enabled: true
+  enabled: false
 
 kubeScheduler:
-  enabled: true
+  enabled: false
 
 kubeProxy:
   enabled: true
 
 coreDns:
-  enabled: false
+  enabled: true
 
 kubeDns:
-  enabled: true
+  enabled: false
 
 grafana:
   admin:
@@ -96,3 +96,4 @@ alertmanager:
         footer: ":kubernetes: *oci-gha-amd64-runners*"
     templates:
     - '/etc/alertmanager/config/*.tmpl'
+
