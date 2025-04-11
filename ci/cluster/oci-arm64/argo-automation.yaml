@@ -40,3 +40,23 @@ spec:
       directory:
         recurse: true
 ---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci-arm64/monitoring/
+      targetRevision: HEAD
+---
