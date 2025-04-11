@@ -6,6 +6,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
 spec:
   syncPolicy:
     automated:
@@ -26,6 +29,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "3"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
 spec:
   syncPolicy:
     automated: {}
@@ -47,6 +53,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "4"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
 spec:
   syncPolicy:
     automated:
