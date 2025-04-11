@@ -4,7 +4,7 @@ metadata:
   name: oracle-24cpu-384gb-x86-64
   namespace: argocd
   annotations:
-    notifications.argoproj.io/subscribe.slack: argocd-notifications
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
   labels:
     cluster: oci-gha-amd64-runners
 spec:
