@@ -1,0 +1,168 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+data:
+  context: |
+    argocdUrl: http://localhost:8080
+
+  service.slack: |
+    token: $slack-token
+
+  subscriptions: |
+    - recipients:
+      - slack:argocd-notifications
+      triggers:
+      - on-update-started
+      - on-update-succeeded
+      - on-update-failed
+      - on-out-of-sync
+
+  # Notification template when an application update starts
+  template.app-update-started: |
+    message: |
+      {{if eq .serviceType "slack"}}:rocket:{{end}} Application *{{.app.metadata.name}}* update has started at {{.app.status.operationState.startedAt}}.
+      Check the details at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#0DADEA",
+          "fields": [
+            {
+              "title": "Update Status",
+              "value": "In Progress",
+              "short": true
+            },
+            {
+              "title": "Cluster",
+              "value": "{{.app.metadata.labels.cluster}}",
+              "short": true
+            },
+            {
+              "title": "Started At",
+              "value": "{{.app.status.operationState.startedAt}}",
+              "short": true
+            }
+          ]
+        }]
+
+  # Notification template when an application update succeeds
+  template.app-update-succeeded: |
+    message: |
+      {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application *{{.app.metadata.name}}* has been successfully updated at {{.app.status.operationState.finishedAt}}.
+      Check the details at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#18be52",
+          "fields": [
+            {
+              "title": "Sync Status",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            },
+            {
+              "title": "Cluster",
+              "value": "{{.app.metadata.labels.cluster}}",
+              "short": true
+            },
+            {
+              "title": "Finished At",
+              "value": "{{.app.status.operationState.finishedAt}}",
+              "short": true
+            }
+          ]
+        }]
+
+  # Notification template when an application update fails
+  template.app-update-failed: |
+    message: |
+      {{if eq .serviceType "slack"}}:exclamation:{{end}} Application *{{.app.metadata.name}}* update has failed at {{.app.status.operationState.finishedAt}} with error: {{.app.status.operationState.message}}.
+      Check the details at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#E96D76",
+          "fields": [
+            {
+              "title": "Sync Status",
+              "value": "Failed",
+              "short": true
+            },
+            {
+              "title": "Cluster",
+              "value": "{{.app.metadata.labels.cluster}}",
+              "short": true
+            },
+            {
+              "title": "Finished At",
+              "value": "{{.app.status.operationState.finishedAt}}",
+              "short": true
+            },
+            {
+              "title": "Error",
+              "value": "{{.app.status.operationState.message}}",
+              "short": true
+            }
+          ]
+        }]
+
+  # Notification template when an application is out of sync
+  template.app-out-of-sync: |
+    message: |
+      {{if eq .serviceType "slack"}}:exclamation:{{end}} Application *{{.app.metadata.name}}* is out of sync.
+      Check the details at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#E96D76",
+          "fields": [
+            {
+              "title": "Sync Status",
+              "value": "OutOfSync",
+              "short": true
+            },
+            {
+              "title": "Cluster",
+              "value": "{{.app.metadata.labels.cluster}}",
+              "short": true
+            }
+          ]
+        }]
+
+  # Trigger when the application update starts
+  trigger.on-update-started: |
+    - description: Application update has started
+      send:
+        - app-update-started
+      when: app.status.operationState.phase in ['Running', 'InProgress']
+
+  # Trigger when the application update succeeds
+  trigger.on-update-succeeded: |
+    - description: Application update has succeeded
+      oncePer: app.status.operationState.syncResult.revision
+      send:
+        - app-update-succeeded
+      when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+
+  # Trigger when the application update fails
+  trigger.on-update-failed: |
+    - description: Application update has failed
+      send:
+        - app-update-failed
+      when: app.status.operationState.phase in ['Failed', 'Error', 'Unknown']
+
+  # Trigger when the application is OutOfSync
+  trigger.on-out-of-sync: |
+    - description: Application is out of sync
+      send:
+        - app-out-of-sync
+      when: app.status.sync.status == 'OutOfSync'
