@@ -69,3 +69,27 @@ spec:
       path: ci/cluster/oci/monitoring/
       targetRevision: HEAD
 ---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-secrets-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
+spec:
+  syncPolicy:
+    automated: {}
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci/external-secrets/
+      targetRevision: HEAD
+      directory:
+        recurse: true
+---
