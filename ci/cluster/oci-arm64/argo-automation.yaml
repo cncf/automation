@@ -6,6 +6,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-arm64-runners
 spec:
   syncPolicy:
     automated:
@@ -26,6 +29,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "3"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-arm64-runners
 spec:
   syncPolicy:
     automated: {}
@@ -47,6 +53,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "4"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-arm64-runners
 spec:
   syncPolicy:
     automated:
@@ -59,4 +68,28 @@ spec:
     - repoURL: https://github.com/cncf/automation.git
       path: ci/cluster/oci-arm64/monitoring/
       targetRevision: HEAD
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-secrets-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-arm64-runners
+spec:
+  syncPolicy:
+    automated: {}
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci-arm64/external-secrets/
+      targetRevision: HEAD
+      directory:
+        recurse: true
 ---
