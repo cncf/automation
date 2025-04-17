@@ -157,11 +157,6 @@ spec:
       - name: listener
         securityContext:
           runAsUser: 1000
-
-  template:
-    spec:
-  githubConfigSecret: github-arc-secret
-  githubConfigUrl: https://github.com/enterprises/cncf
   listenerMetrics:
     counters:
       gha_started_jobs_total:
@@ -304,14 +299,6 @@ spec:
             3000.0,
             3600.0,
           ]
-  listenerTemplate:
-    spec:
-      containers:
-      - name: listener
-        securityContext:
-          runAsUser: 1000
-  maxRunners: 100
-  minRunners: 1
   template:
     spec:
       containers:
