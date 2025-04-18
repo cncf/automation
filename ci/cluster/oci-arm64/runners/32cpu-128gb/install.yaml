@@ -14,7 +14,6 @@ metadata:
     app.kubernetes.io/part-of: gha-rs
     actions.github.com/scale-set-name: oracle-32cpu-128gb-arm64
     actions.github.com/scale-set-namespace: arc-systems
-  annotations:
   finalizers:
     - actions.github.com/cleanup-protection
 ---
@@ -34,7 +33,6 @@ metadata:
     actions.github.com/scale-set-name: oracle-32cpu-128gb-arm64
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role
-  annotations:
   finalizers:
     - actions.github.com/cleanup-protection
 rules:
@@ -111,7 +109,6 @@ metadata:
     actions.github.com/scale-set-name: oracle-32cpu-128gb-arm64
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role-binding
-  annotations:
   finalizers:
     - actions.github.com/cleanup-protection
 roleRef:
@@ -299,19 +296,6 @@ spec:
       - name: listener
         securityContext:
           runAsUser: 1000
-
-  template:
-    spec:
-  githubConfigSecret: github-arc-secret
-  githubConfigUrl: https://github.com/enterprises/cncf
-  listenerTemplate:
-    spec:
-      containers:
-      - name: listener
-        securityContext:
-          runAsUser: 1000
-  maxRunners: 100
-  minRunners: 0
   template:
     spec:
       containers:
@@ -322,7 +306,7 @@ spec:
           value: unix:///var/run/docker.sock
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:e23332cccd191bb488597641dcf3903da60805ab6e9c7b522e83b9c4d2dd83f1
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:12579199469c22f15c64fee26007c088f87df82ba6f269a4d693da27aff74948
         imagePullPolicy: Always
         name: runner
         resources:
@@ -399,7 +383,7 @@ spec:
         - -R
         - "1777"
         - /tmp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:e23332cccd191bb488597641dcf3903da60805ab6e9c7b522e83b9c4d2dd83f1
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:12579199469c22f15c64fee26007c088f87df82ba6f269a4d693da27aff74948
         name: chowner
         securityContext:
           capabilities:
@@ -421,7 +405,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:e23332cccd191bb488597641dcf3903da60805ab6e9c7b522e83b9c4d2dd83f1
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:12579199469c22f15c64fee26007c088f87df82ba6f269a4d693da27aff74948
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
