@@ -1,16 +1,16 @@
 TOPDIR=$(PWD)
 WHOAMI=$(shell whoami)
 
-images: image-24 image-22
+images: image-noble image-jammy
 
-image-24:
-	docker buildx build --platform=linux/amd64 -t ${WHOAMI}/gha-runner:24.04 -f Dockerfile.24.04 .
+image-noble:
+	docker buildx build --build-arg BASE_IMAGE=noble --platform=linux/amd64 -t ${WHOAMI}/gha-runner:noble -f Dockerfile .
 
-image-22:
-	docker buildx build --platform=linux/amd64 -t ${WHOAMI}/gha-runner:22.04 -f Dockerfile.22.04 .
+image-jammy:
+	docker buildx build --build-arg BASE_IMAGE=jammy --platform=linux/amd64 -t ${WHOAMI}/gha-runner:jammy -f Dockerfile .
 
 images-push: images
 	docker push ${WHOAMI}/gha-runner
 
 images-run: images
-	docker run -ti --rm ${WHOAMI}/gha-runner
+	docker run -ti --rm ${WHOAMI}/gha-runner:noble

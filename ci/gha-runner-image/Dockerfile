@@ -40,6 +40,9 @@ RUN export RUNNER_ARCH=${TARGETARCH} \
 
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-${BASE_IMAGE}
 
+ARG TARGETOS
+ARG TARGETARCH
+
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_MANUALLY_TRAP_SIG=1
 ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
@@ -70,6 +73,8 @@ RUN apt update -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+
+
 RUN locale-gen en_US.UTF-8 \
     && echo "LANG=en_US.UTF-8" >> /etc/default/locale \
     && echo "LC_ALL=en_US.UTF-8" >> /etc/default/locale \
@@ -96,4 +101,13 @@ COPY --from=build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib
 
 RUN install -o root -g root -m 755 docker/* /usr/bin/ && rm -rf docker
 
+RUN curl -LO https://go.dev/dl/go1.24.2.linux-${TARGETARCH}.tar.gz \
+    && tar -C /usr/local -xzf go1.24.2.linux-${TARGETARCH}.tar.gz \
+    && rm go1.24.2.linux-${TARGETARCH}.tar.gz \
+    && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin' >> /etc/profile \
+    && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin' >> /home/runner/.bashrc
+
 USER runner
+
+RUN export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin && \
+    go install sigs.k8s.io/kind@v0.27.0
