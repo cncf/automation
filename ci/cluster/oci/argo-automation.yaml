@@ -93,3 +93,27 @@ spec:
       directory:
         recurse: true
 ---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hacks
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
+spec:
+  syncPolicy:
+    automated: {}
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci/hacks/
+      targetRevision: HEAD
+      directory:
+        recurse: true
+---
