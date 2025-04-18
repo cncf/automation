@@ -14,7 +14,6 @@ metadata:
     app.kubernetes.io/part-of: gha-rs
     actions.github.com/scale-set-name: oracle-8cpu-32gb-x86-64
     actions.github.com/scale-set-namespace: arc-systems
-  annotations:
   finalizers:
     - actions.github.com/cleanup-protection
 ---
@@ -34,7 +33,6 @@ metadata:
     actions.github.com/scale-set-name: oracle-8cpu-32gb-x86-64
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role
-  annotations:
   finalizers:
     - actions.github.com/cleanup-protection
 rules:
@@ -111,7 +109,6 @@ metadata:
     actions.github.com/scale-set-name: oracle-8cpu-32gb-x86-64
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role-binding
-  annotations:
   finalizers:
     - actions.github.com/cleanup-protection
 roleRef:
@@ -310,7 +307,7 @@ spec:
           value: unix:///var/run/docker.sock
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:e9054657acf33563a9e47db1138da72782d8f19e26a9b964021867a55a8b7a3e
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:db8a32081d5210a98133f87015cc96962b94c52b56679f693ec0cc614bd444f0
         imagePullPolicy: Always
         name: runner
         resources:
@@ -392,7 +389,7 @@ spec:
         - -R
         - "1777"
         - /tmp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:e9054657acf33563a9e47db1138da72782d8f19e26a9b964021867a55a8b7a3e
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:db8a32081d5210a98133f87015cc96962b94c52b56679f693ec0cc614bd444f0
         name: chowner
         securityContext:
           capabilities:
@@ -414,7 +411,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:e9054657acf33563a9e47db1138da72782d8f19e26a9b964021867a55a8b7a3e
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:db8a32081d5210a98133f87015cc96962b94c52b56679f693ec0cc614bd444f0
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
