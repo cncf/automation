@@ -111,3 +111,15 @@ prometheus:
     selector:
       matchLabels:
         app.kubernetes.io/name: gha-rs-controller
+  - name: "gha-rs-listener"
+    podMetricsEndpoints:
+    - interval: 15s
+      path: /metrics
+      scheme: http
+      portNumber: 8080
+    namespaceSelector:
+      matchNames:
+      - arc-systems
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: runner-scale-set-listener
