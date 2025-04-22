@@ -68,6 +68,8 @@ spec:
     - repoURL: https://github.com/cncf/automation.git
       path: ci/cluster/oci/monitoring/
       targetRevision: HEAD
+      directory:
+        recurse: true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
