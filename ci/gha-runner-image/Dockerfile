@@ -70,6 +70,7 @@ RUN apt update -y \
             maven \
             zip \
             xz-utils \
+            file \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
