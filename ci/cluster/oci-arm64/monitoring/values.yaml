@@ -97,3 +97,17 @@ alertmanager:
     templates:
     - '/etc/alertmanager/config/*.tmpl'
 
+prometheus:
+  additionalPodMonitors:
+  - name: "gha-rs-controller"
+    endpoints:
+    - interval: 15s
+      path: /metrics
+      scheme: http
+      port: 8080
+    namespaceSelector:
+      matchNames:
+      - arc-systems
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: gha-rs-controller
