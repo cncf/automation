@@ -100,11 +100,11 @@ alertmanager:
 prometheus:
   additionalPodMonitors:
   - name: "gha-rs-controller"
-    endpoints:
+    podMetricsEndpoints:
     - interval: 15s
       path: /metrics
       scheme: http
-      port: 8080
+      portNumber: 8080
     namespaceSelector:
       matchNames:
       - arc-systems
