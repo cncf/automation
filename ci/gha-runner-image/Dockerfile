@@ -10,7 +10,6 @@ ARG TARGETOS
 ARG TARGETARCH
 
 RUN apt update -y \
-    && apt upgrade -y \
     && apt install curl unzip -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
