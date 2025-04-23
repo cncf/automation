@@ -11,8 +11,14 @@ Reminder needs to authorize in the sheet the Service Account email
 
 -----
 
-Usage: AddJacketsCouponsToMailingSpreadSheet.py
+For the United States
+export COUNTRY="United States"
 
-
-Remember to have run first 
 cat ../Kubestronaut.json | jq -r --arg COUNTRY "$COUNTRY" '.[] | select ((.Country==$COUNTRY) and (.JacketSent=="")) | .Name +" ; "+ .Size +" ; "+ .Email +" ; "+ .Address+" ; "+.JacketSent' > KubestronautToReceiveJackets.csv
+
+python AddJacketsCouponsToMailingSpreadSheet.py
+
+
+----- 
+
+

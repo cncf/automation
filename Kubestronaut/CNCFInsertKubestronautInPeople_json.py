@@ -36,8 +36,8 @@ cell_f2 = wks.cell('F2')
 bg_color_f2 = cell_f2.color
 
 class People:
-    def __init__(self, name, bio, company, pronouns, location, linkedin, twitter, github, wechat, website, youtube, slack_id, image):
-        self.name=name
+    def __init__(self, name, bio, company, pronouns, location, linkedin, twitter, github, wechat, website, youtube, certdirectory, slack_id, image):
+        self.name=name.strip().title()
         self.bio="<p>"+bio.replace("   ","<p/><p>")+"</p>"
         self.company=company
         self.pronouns=pronouns
@@ -46,39 +46,69 @@ class People:
         if linkedin.startswith(("https","http")):
             self.linkedin=linkedin
         elif linkedin:
-            self.linkedin="https://www.linkedin.com/in/"+linkedin
+            if linkedin.startswith(("www")):
+                self.linkedin="https://"+linkedin
+            else:
+                self.linkedin="https://www.linkedin.com/in/"+linkedin
         else:
             self.linkedin=""
 
         if twitter.startswith(("https","http")):
             self.twitter=twitter
         elif twitter :
-            self.twitter="https://twitter.com/"+twitter
+            if twitter.startswith(("www")):
+                self.twitter="https://"+twitter
+            else:
+                self.twitter="https://twitter.com/"+twitter
         else:
             self.twitter=""
 
         if github.startswith(("https","http")):
             self.github=github
         elif github:
-            self.github="https://github.com/"+github
+            if github.startswith(("www")):
+                self.github="https://"+github
+            else:
+                self.github="https://github.com/"+github
         else:
             self.github=""
 
         if wechat.startswith(("https","http")):
             self.wechat=wechat
         elif wechat:
-            self.wechat="https://web.wechat.com/"+wechat
+            if wechat.startswith(("www")):
+                self.wechat="https://"+wechat
+            else:
+                self.wechat="https://web.wechat.com/"+wechat
         else:
             self.wechat=""
 
-        self.website=website
+        if website.startswith(("https","http")):
+            self.website=website
+        elif website:
+            self.website="https://"+website
+        else:
+            self.website=""
 
         if youtube.startswith(("https","http")):
             self.youtube=youtube
         elif youtube:
-            self.youtube="https://www.youtube.com/c/"+youtube
+            if youtube.startswith(("www")):
+                self.youtube="https://"+youtube
+            else:
+                self.youtube="https://www.youtube.com/c/"+youtube
         else:
             self.youtube=""
+
+        if certdirectory.startswith(("https","http")):
+            self.certdirectory=certdirectory
+        elif certdirectory :
+            if certdirectory.startswith(("www")):
+                self.certdirectory="https://"+certdirectory
+            else:
+                self.certdirectory="https://certdirectory.io/profile/"+certdirectory
+        else:
+            self.certdirectory=""
 
         self.category=["Kubestronaut"]
         self.slack_id=slack_id
@@ -134,7 +164,7 @@ for lineToBeInserted in range(firstLineToBeInserted, lastLineToBeInserted+1, 1):
             if lineCount == lineToBeInserted:
                 if row[1]:
                     print(f'\t{row[1]}')
-                    newPeople = People(name=row[1], bio=row[2], company=row[3], pronouns=row[4], location=row[5], linkedin=row[6], twitter=row[7], github=row[8], wechat=row[9], website=row[10], youtube=row[11], slack_id=row[13], image=row[14])
+                    newPeople = People(name=row[1], bio=row[2], company=row[3], pronouns=row[4], location=row[5], linkedin=row[6], twitter=row[7], github=row[8], wechat=row[9], website=row[10], youtube=row[11], certdirectory=row[17], slack_id=row[13], image=row[14])
                     peopleFound=True
                 break
             else:
@@ -148,24 +178,20 @@ for lineToBeInserted in range(firstLineToBeInserted, lastLineToBeInserted+1, 1):
 
         indexPeople=0
         for people in data:
-            #print(people["name"])
-            if people["name"].lower() < newPeople.name.lower():
-                indexPeople += 1
-                continue
             if people["name"].lower() == newPeople.name.lower():
                 print("{newPeople.name} already in people.json, abort !")
                 exit(2)
             else:
-                print(newPeople.name+' will go before '+people['name'])
-                data.insert(indexPeople, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
+                print('Adding '+newPeople.name)
+                data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
                 os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
                 ack_kubestronaut(row[12])
                 break
 
+sorted_people = sorted(data, key=lambda x: x['name'])
 
-
-with open('../../people/people.json', "r+", encoding='utf-8') as jsonfile:
-    jsonfile.write(json.dumps(data, indent=3, ensure_ascii=False, sort_keys=False))
+with open('../../people/people.json', "w", encoding='utf-8') as jsonfile:
+    jsonfile.write(json.dumps(data, indent=4, ensure_ascii=False))
 
 if NON_acked_Kubestronauts:
     print("\n\nList of Kubestroauts that were NOT ACKED:")
