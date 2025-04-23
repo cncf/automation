@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: equinix-16cpu-64gb
+  namespace: argocd
+spec:
+  project: default
+  sources:
+  - chart: gha-runner-scale-set
+    repoURL: ghcr.io/actions/actions-runner-controller-charts
+    targetRevision: 0.10.1
+    helm:
+      releaseName: equinix-16cpu-64gb
+      valueFiles:
+      - $values/ci/cluster/equinix/runners/16cpu-64gb/values.yaml
+  - repoURL: 'https://github.com/cncf/automation.git'
+    targetRevision: main
+    ref: values
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: arc-systems
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true

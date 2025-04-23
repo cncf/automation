@@ -1,0 +1,37 @@
+---
+name: Test oracle-16cpu-64gb-arm64
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    runs-on: oracle-16cpu-64gb-arm64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run uname to verify architecture
+        run: |
+          echo "On the 16 CPU 64 GB Oracle Arm Runner uname -a reports:"
+          uname -a
+
+      - name: Run a basic workload
+        run: |
+          echo "CPU Info:"
+          lscpu
+
+      - name: Run a Docker container
+        run: |
+          docker run --rm alpine echo "Docker is working on the runner"
+
+      - name: Check local disk
+        run: |
+         df -h /
+
+      - name: Check disk on docker
+        run: |
+          docker run --rm alpine df -h /
