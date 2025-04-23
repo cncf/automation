@@ -63,7 +63,7 @@ with open('KubestronautToReceiveJackets.csv') as csv_file:
 
         if (number_matching_cells==1):
             email_cell = list_kubestronauts_cells[0]
-            wks_infos.update_value("R"+str(email_cell.row),annotation)
+            wks_infos.update_value("S"+str(email_cell.row),annotation)
             print(email+" : OK")
         elif (number_matching_cells==0):
             print("Kubestronaut with email "+row[2]+" not found !!")
@@ -73,5 +73,5 @@ with open('KubestronautToReceiveJackets.csv') as csv_file:
 coupons_data.to_csv("Jackets-Coupons.csv")
 
 
-print("\n\n\nThe URL of the mail merger is \"https://docs.google.com/spreadsheets/d/\""+KUBESTRONAUTS_MAILING_JACKET_COUPONS)
+print("\n\n\nThe URL of the mail merger is \"https://docs.google.com/spreadsheets/d/"+KUBESTRONAUTS_MAILING_JACKET_COUPONS+"\"")
 print("\n\n\nThe name of the email to use in the mail merger is \"Your Kubestronaut jacket !\"")

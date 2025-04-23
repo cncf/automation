@@ -11,7 +11,7 @@ jsonFile = 'Kubestronaut.json'
 
 def convertToJson(csvFile, jsonFile):
     lineNumber = 0
-    fields=("Timestamp", "Name", "Description", "Company", "Pronoun", "Location", "LinkedIn", "Twitter", "Github", "Wechat", "Website", "Youtube", "Email", "SlackID", "Image", "Size", "Address", "JacketSent", "Acked", "MailingList", "SlackOK", "InsertedPeople", "SentCoupons", "Country", "2024Events", "2025Events")
+    fields=("Timestamp", "Name", "Description", "Company", "Pronoun", "Location", "LinkedIn", "Twitter", "Github", "Wechat", "Website", "Youtube", "Email", "SlackID", "Image", "Size", "Address", "Certdirectory" ,"JacketSent", "Acked", "MailingList", "SlackOK", "InsertedPeople", "SentCoupons", "GK", "GKBeanie", "GKBackpack", "GKThrive", "GKPeople", "InitialCountry", "Country", "2024Events", "2025Events", "GK2025KCD", "GK2025KubeCon")
     # create a dictionary
     data = {}
     # Open a csv reader called DictReader
