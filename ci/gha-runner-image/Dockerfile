@@ -110,6 +110,8 @@ RUN curl -LO https://go.dev/dl/go1.24.2.linux-${TARGETARCH}.tar.gz \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.profile \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.bashrc
 
+ENV ENV=/etc/profile
+
 USER runner
 
 RUN pip3 install --user launchable~=1.0
