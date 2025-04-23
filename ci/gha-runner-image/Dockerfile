@@ -107,9 +107,12 @@ RUN curl -LO https://go.dev/dl/go1.24.2.linux-${TARGETARCH}.tar.gz \
     && tar -C /usr/local -xzf go1.24.2.linux-${TARGETARCH}.tar.gz \
     && rm go1.24.2.linux-${TARGETARCH}.tar.gz \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /etc/profile \
+    && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.profile \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.bashrc
 
 USER runner
+
+RUN pip3 install --user launchable~=1.0
 
 RUN export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin && \
     go install sigs.k8s.io/kind@v0.27.0
