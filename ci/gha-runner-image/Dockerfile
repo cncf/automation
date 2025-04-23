@@ -46,6 +46,7 @@ ARG TARGETARCH
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_MANUALLY_TRAP_SIG=1
 ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 # 'gpg-agent' and 'software-properties-common' are needed for the 'add-apt-repository' command that follows
 RUN apt update -y \
@@ -105,8 +106,8 @@ RUN install -o root -g root -m 755 docker/* /usr/bin/ && rm -rf docker
 RUN curl -LO https://go.dev/dl/go1.24.2.linux-${TARGETARCH}.tar.gz \
     && tar -C /usr/local -xzf go1.24.2.linux-${TARGETARCH}.tar.gz \
     && rm go1.24.2.linux-${TARGETARCH}.tar.gz \
-    && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin' >> /etc/profile \
-    && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin' >> /home/runner/.bashrc
+    && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /etc/profile \
+    && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.bashrc
 
 USER runner
 
