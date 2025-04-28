@@ -3,16 +3,16 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: oracle-32cpu-128gb-arm64-gha-rs-no-permission
+  name: oracle-8cpu-32gb-arm64-gha-rs-no-permission
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.11.0
-    app.kubernetes.io/name: oracle-32cpu-128gb-arm64
-    app.kubernetes.io/instance: oracle-32cpu-128gb-arm64
+    app.kubernetes.io/name: oracle-8cpu-32gb-arm64
+    app.kubernetes.io/instance: oracle-8cpu-32gb-arm64
     app.kubernetes.io/version: "0.11.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: oracle-32cpu-128gb-arm64
+    actions.github.com/scale-set-name: oracle-8cpu-32gb-arm64
     actions.github.com/scale-set-namespace: arc-systems
   finalizers:
     - actions.github.com/cleanup-protection
@@ -21,16 +21,16 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: oracle-32cpu-128gb-arm64-gha-rs-manager
+  name: oracle-8cpu-32gb-arm64-gha-rs-manager
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.11.0
-    app.kubernetes.io/name: oracle-32cpu-128gb-arm64
-    app.kubernetes.io/instance: oracle-32cpu-128gb-arm64
+    app.kubernetes.io/name: oracle-8cpu-32gb-arm64
+    app.kubernetes.io/instance: oracle-8cpu-32gb-arm64
     app.kubernetes.io/version: "0.11.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: oracle-32cpu-128gb-arm64
+    actions.github.com/scale-set-name: oracle-8cpu-32gb-arm64
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role
   finalizers:
@@ -97,16 +97,16 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: oracle-32cpu-128gb-arm64-gha-rs-manager
+  name: oracle-8cpu-32gb-arm64-gha-rs-manager
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.11.0
-    app.kubernetes.io/name: oracle-32cpu-128gb-arm64
-    app.kubernetes.io/instance: oracle-32cpu-128gb-arm64
+    app.kubernetes.io/name: oracle-8cpu-32gb-arm64
+    app.kubernetes.io/instance: oracle-8cpu-32gb-arm64
     app.kubernetes.io/version: "0.11.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: oracle-32cpu-128gb-arm64
+    actions.github.com/scale-set-name: oracle-8cpu-32gb-arm64
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role-binding
   finalizers:
@@ -114,7 +114,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: oracle-32cpu-128gb-arm64-gha-rs-manager
+  name: oracle-8cpu-32gb-arm64-gha-rs-manager
 subjects:
 - kind: ServiceAccount
   name: 
@@ -126,28 +126,28 @@ subjects:
 apiVersion: actions.github.com/v1alpha1
 kind: AutoscalingRunnerSet
 metadata:
-  name: oracle-32cpu-128gb-arm64
+  name: oracle-8cpu-32gb-arm64
   namespace: arc-systems
   labels:
     app.kubernetes.io/component: "autoscaling-runner-set"
     helm.sh/chart: gha-rs-0.11.0
-    app.kubernetes.io/name: oracle-32cpu-128gb-arm64
-    app.kubernetes.io/instance: oracle-32cpu-128gb-arm64
+    app.kubernetes.io/name: oracle-8cpu-32gb-arm64
+    app.kubernetes.io/instance: oracle-8cpu-32gb-arm64
     app.kubernetes.io/version: "0.11.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: oracle-32cpu-128gb-arm64
+    actions.github.com/scale-set-name: oracle-8cpu-32gb-arm64
     actions.github.com/scale-set-namespace: arc-systems
   annotations:
     actions.github.com/values-hash: 5a160ea308cd51d6f4c27515e5040d9dc34be0acda7289ea0d7ad9cffff39e1
-    actions.github.com/cleanup-manager-role-binding: oracle-32cpu-128gb-arm64-gha-rs-manager
-    actions.github.com/cleanup-manager-role-name: oracle-32cpu-128gb-arm64-gha-rs-manager
-    actions.github.com/cleanup-no-permission-service-account-name: oracle-32cpu-128gb-arm64-gha-rs-no-permission
+    actions.github.com/cleanup-manager-role-binding: oracle-8cpu-32gb-arm64-gha-rs-manager
+    actions.github.com/cleanup-manager-role-name: oracle-8cpu-32gb-arm64-gha-rs-manager
+    actions.github.com/cleanup-no-permission-service-account-name: oracle-8cpu-32gb-arm64-gha-rs-no-permission
 spec:
   githubConfigUrl: https://github.com/enterprises/cncf
   githubConfigSecret: github-arc-secret
   maxRunners: 100
-  minRunners: 0
+  minRunners: 1
   listenerMetrics:
     counters:
       gha_started_jobs_total:
@@ -290,6 +290,7 @@ spec:
             3000.0,
             3600.0,
           ]
+
   listenerTemplate:
     spec:
       containers:
@@ -311,11 +312,11 @@ spec:
         name: runner
         resources:
           limits:
-            cpu: 36
-            memory: 136Gi
+            cpu: 10
+            memory: 36Gi
           requests:
-            cpu: 32
-            memory: 128Gi
+            cpu: 8
+            memory: 32Gi
         volumeMounts:
         - mountPath: /home/runner/_work
           name: work
