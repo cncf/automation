@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: oracle-32cpu-128gb-arm64
+  name: oracle-24cpu-384gb-arm64
   namespace: argocd
   annotations:
     notifications.argoproj.io/subscribe.slack: internal-gha-argo
@@ -12,7 +12,7 @@ spec:
   sources:
   - repoURL: 'https://github.com/cncf/automation.git'
     targetRevision: main
-    path: ci/cluster/oci-arm64/runners/32cpu-128gb/
+    path: ci/cluster/oci-arm64/runners/24cpu-384gb/
   destination:
     server: "https://kubernetes.default.svc"
     namespace: arc-systems
