@@ -378,6 +378,11 @@ spec:
         - mountPath: /tmp
           name: work
           subPath: tmp
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
       initContainers:
       - command:
         - chmod
@@ -418,6 +423,14 @@ spec:
         - 999
       serviceAccountName: oracle-16cpu-64gb-arm64-gha-rs-no-permission
       volumes:
+      - name: modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+      - name: cgroup
+        hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
       - emptyDir: {}
         name: dind-sock
       - emptyDir: {}
