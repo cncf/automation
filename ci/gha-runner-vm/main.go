@@ -12,7 +12,9 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/go-github/v71/github"
 	"github.com/oracle/oci-go-sdk/v65/core"
@@ -52,7 +54,7 @@ func main() {
 func run(cmd *cobra.Command, argv []string) error {
 	filepath := "images/ubuntu/templates/"
 	sourceFile := fmt.Sprintf("%s%s-%s.pkr.hcl", filepath, args.os, args.osVersion)
-	imageFile := fmt.Sprintf("build/%s-%s/image.raw", args.os, args.osVersion)
+	imageFile := fmt.Sprintf("build/image.raw")
 	filename := ""
 	imageName := fmt.Sprintf("%s-%s-%s-gha-image", args.os, args.osVersion, args.arch)
 
@@ -123,7 +125,9 @@ func run(cmd *cobra.Command, argv []string) error {
 	}
 	log.Printf("Packer build completed successfully.\n")
 
-	command = exec.Command("oci", "os", "object", "put", "--parallel-upload-count", "100", "--bucket-name", args.bucketName, "--name", "ubuntu-gha-image", "--file", imageFile)
+	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+
+	command = exec.Command("oci", "os", "object", "put", "--parallel-upload-count", "100", "--bucket-name", args.bucketName, "--name", fmt.Sprintf("ubuntu-gha-image-%s", timestamp), "--file", imageFile)
 
 	command.Stdout = os.Stdout
 	if err := command.Run(); err != nil {
@@ -131,7 +135,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatal("could not run command: ", err)
 	}
 
-	command = exec.Command("oci", "compute", "image", "import", "from-object", "--bucket-name", args.bucketName, "--compartment-id", args.compartmentId, "--namespace", args.namespace, "--operating-system", imageName, "--display-name", imageName, "--name", imageName, "--operating-system-version", *selectedRelease.TagName)
+	command = exec.Command("oci", "compute", "image", "import", "from-object", "--bucket-name", args.bucketName, "--compartment-id", args.compartmentId, "--namespace", args.namespace, "--operating-system", imageName, "--display-name", imageName, "--name", fmt.Sprintf("ubuntu-gha-image-%s", timestamp), "--operating-system-version", *selectedRelease.TagName)
 	command.Stdout = os.Stdout
 	if err := command.Run(); err != nil {
 		log.Print(command.String())
@@ -346,7 +350,7 @@ source "qemu" "img" {
 	iso_url              = "%s"
 	iso_checksum         = "%s"
 	memory               = 12000
-	cpus                 = 3
+	cpus                 = 6
 	output_directory     = "build/"
 	accelerator          = "kvm"
 	disk_size            = "80G"
@@ -358,6 +362,7 @@ source "qemu" "img" {
 	ssh_username         = "ubuntu"
 	ssh_password         = "ubuntu"
 	ssh_timeout          = "60m"
+	headless             = true
 }`, args.isoURL, args.isoChecksum)
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]

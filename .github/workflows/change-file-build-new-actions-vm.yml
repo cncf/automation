@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build new Actions VM
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-8-cores
 
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +19,13 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.24.x'
+      - name: Set up QEMU
+        run : |
+          sudo apt install qemu-system-x86 xorriso
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          
       - name: Install dependencies
         run: cd ci/gha-runner-vm && go get .
       - name: Install Packer
@@ -54,4 +61,4 @@ jobs:
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
           OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
-        run: export PATH=$PATH:$HOME/bin && cd ci/gha-runner-vm && go run main.go
+        run: export PATH=$PATH:$HOME/bin && cd ci/gha-runner-vm && PACKER_LOG=1 go run main.go
