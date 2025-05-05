@@ -5,6 +5,8 @@ on:
       - "main"
     paths:
         - "ci/gha-runner-vm/**"
+        - ".github/workflows/change-file-build-new-actions-vm.yml"
+        - ".github/workflows/periodic-build-new-actions-vm.yml"
 
 jobs:
   build:
