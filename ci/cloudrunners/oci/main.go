@@ -28,6 +28,7 @@ var args struct {
 	compartmentId      string
 	subnetId           string
 	availabilityDomain string
+	shape              string
 }
 
 func main() {
@@ -56,8 +57,8 @@ func run(cmd *cobra.Command, argv []string) error {
 	// List Images and retrieve the latest ID by type and arch
 
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
-		CompartmentId:   common.String("ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a"),
-		OperatingSystem: common.String("ubuntu-24.04-x86-gha-image"),
+		CompartmentId:   common.String(args.compartmentId),
+		OperatingSystem: common.String(fmt.Sprintf("ubuntu-24.04-%s-gha-image", args.arch)),
 		SortBy:          core.ListImagesSortByTimecreated,
 		SortOrder:       core.ListImagesSortOrderDesc,
 		Limit:           common.Int(1),
@@ -76,19 +77,19 @@ func run(cmd *cobra.Command, argv []string) error {
 		return fmt.Errorf("creating ssh key pair: %w", err)
 	}
 
-	sshKeys := "gha:" + sshKeyPair.PublicKey
-
 	// Create a new ephemeral machine
 	machine, err := oci.NewEphemeralMachine(ctx, computeClient, networkClient, core.LaunchInstanceDetails{
 		AvailabilityDomain: common.String(args.availabilityDomain),
 		CompartmentId:      common.String(args.compartmentId),
 		ImageId:            common.String(*latestImage.Id),
+		Shape:              common.String(args.shape),
+		DisplayName:        common.String(fmt.Sprintf("gha-runner-%s-%s", args.arch, time.Now().Format("20060102-150405"))),
 		CreateVnicDetails: &core.CreateVnicDetails{
 			SubnetId:       common.String(args.subnetId),
 			AssignPublicIp: common.Bool(true),
 		},
 		Metadata: map[string]string{
-			"ssh_authorized_keys": sshKeys,
+			"ssh_authorized_keys": sshKeyPair.PublicKey,
 		},
 	})
 	if err != nil {
@@ -115,7 +116,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	}
 
 	sshConfig := &ssh.ClientConfig{
-		User: "gha",
+		User: "ubuntu",
 		Auth: []ssh.AuthMethod{
 			sshKeyPair.SSHAuth,
 		},
@@ -168,7 +169,7 @@ func init() {
 	flags.StringVar(
 		&args.availabilityDomain,
 		"availability-domain",
-		"SJC-AD-1",
+		"bzBe:US-SANJOSE-1-AD-1",
 		"Availability Domain",
 	)
 	flags.StringVar(
@@ -178,10 +179,16 @@ func init() {
 		"Compartment ID",
 	)
 	flags.StringVar(
-		&args.compartmentId,
+		&args.subnetId,
 		"subnet-id",
 		"ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq",
 		"Subnet ID",
+	)
+	flags.StringVar(
+		&args.shape,
+		"shape",
+		"VM.Standard.E2.2",
+		"VM Shape",
 	)
 
 }
