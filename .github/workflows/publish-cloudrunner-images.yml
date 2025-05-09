@@ -1,0 +1,157 @@
+---
+name: Docker
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+on:
+  push:
+    branches: [main]
+    paths: ['ci/cloudrunners/Dockerfile*']
+  pull_request:
+    branches: [main]
+    paths: ['ci/cloudrunners/Dockerfile*']
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # IMAGE_NAME maps to the Docker image name
+  IMAGE_NAME: cncf/gha-cloudrunner
+
+  # Map current release tag to the version of booty
+  BOOTY_VERSION: $GITHUB_REF_NAME
+  # Map last repo update to the build timestamp
+  BOOTY_TIMESTAMP: ${{ github.event.repository.updated_at}}
+
+
+jobs:
+  build-cloudrunner-images:
+    outputs:
+      images: ${{ steps.image.outputs.images }}
+      digest: ${{ steps.build-and-push.outputs.digest }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Install the cosign tool except on PR
+      # https://github.com/sigstore/cosign-installer
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@main
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      # Build and push Docker image with Buildx (don't push on PR)
+      # https://github.com/docker/build-push-action
+      - name: Build and push Cloudrunner Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ci/cloudrunners/
+          platforms: |
+            linux/amd64
+            linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          labels: ${{ steps.meta.outputs.labels }}
+          file: ./ci/cloudrunners/Dockerfile
+
+      - name: Sign the published Cloudrunner Docker image
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        # Uses the identity token to provision an ephemeral certificate
+        # against the sigstore community Fulcio instance.
+        run: cosign sign -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
+
+      - name: Output image
+        id: image
+        run: |
+          # NOTE: We need to use the image and digest in order to make sure
+          # that the image we attest has not been modified.
+          # NOTE: The digest output from docker/build-push-action is of the
+          # form "sha256:<digest>"
+          image_name="${REGISTRY}/${IMAGE_NAME}:${{ github.ref_name }}"
+          echo "::set-output name=image::$image_name"
+  
+  # Generate SLSA provenance for the image
+  # Upload the provenance to ghcr.io
+  provenance:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: [build-cloudrunner-images]
+    strategy:
+      matrix:
+        image: ${{ fromJSON(needs.build-cloudrunner-images.outputs.images) }}
+    permissions:
+      id-token: write  # For signing.
+      actions: read    # For reading workflow info.
+      packages: write  # For uploading attestations.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
+    with:
+      image: ${{ matrix.image }}
+      digest: ${{ needs.build-cloudrunner-images.outputs.digest }}
+      registry-username: ${{ github.actor }}
+      compile-generator: true
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
+
+  # Verify the created provenance attestation.
+  verify:
+    # NOTE: this name is used as the status check name and by protected
+    # branches for required status checks. It should have a unique name among
+    # other pre-submits.
+    name: verify container provenance
+    needs: [build-cloudrunner-images, provenance]
+    strategy:
+      matrix:
+        image: ${{ fromJSON(needs.build-cloudrunner-images.outputs.images) }}
+    permissions:
+      packages: read  # For reading attestations.
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: 'v2.4.2'
+      - env:
+          REGISTRY_USERNAME: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_NAME: ${{ matrix.image }}
+          IMAGE_DIGEST: ${{ needs.build-cloudrunner-images.outputs.digest }}
+        run: |
+          cosign version
+          COSIGN_EXPERIMENTAL=1 cosign verify-attestation \
+            --certificate-identity-regexp=".*" \
+            --certificate-oidc-issuer-regexp=".*" \
+            --type slsaprovenance "${{ env.IMAGE_NAME }}@${{env.IMAGE_DIGEST}}"
+      # TODO (github.com/slsa-framework/slsa-verifier/issues/92):
+      #       Add step to verify using slsa-verifier
