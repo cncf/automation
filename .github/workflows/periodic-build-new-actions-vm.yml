@@ -17,7 +17,7 @@ jobs:
       - name: Change Ubuntu Mirrors
         uses: vegardit/fast-apt-mirror.sh@v1
         with:
-          exclude_current: true
+          exclude-current: true
       - name: Set up QEMU
         run : |
           sudo apt install qemu-system-x86 xorriso
