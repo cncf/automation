@@ -3,6 +3,7 @@ name: Periodic Build New Actions VM
 on:
   schedule:
     - cron: "0 0 * * *"
+  workflow_dispatch:  
 
 jobs:
   build:
@@ -14,6 +15,10 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.24.x'
+      - name: Change Ubuntu mirrors
+        uses: vegardit/fast-apt-mirror.sh@v1
+        with:
+          exclude_current: true
       - name: Set up QEMU
         run : |
           sudo apt install qemu-system-x86 xorriso
