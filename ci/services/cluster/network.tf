@@ -1,134 +1,338 @@
 resource "oci_core_vcn" "service" {
   cidr_block     = "10.0.0.0/16"
-  compartment_id = var.oci_compartment_ocid
-  display_name   = "Service Network"
+  compartment_id = var.compartment_ocid
+  display_name   = "${var.cluster_name}-vcn"
 }
 
 resource "oci_core_internet_gateway" "service" {
-  compartment_id = var.oci_compartment_ocid
-  display_name   = "Service Internet Gateway"
+  compartment_id = var.compartment_ocid
+  display_name   = "${var.cluster_name}-igw"
   vcn_id         = oci_core_vcn.service.id
 }
 
-resource "oci_core_route_table" "service_worker" {
-  compartment_id = var.oci_compartment_ocid
+# Get all network services:
+# oci network service list
+data "oci_core_services" "services" {}
+
+resource "oci_core_service_gateway" "service" {
+  compartment_id = var.compartment_ocid
+  display_name   = "${var.cluster_name}-sgw"
   vcn_id         = oci_core_vcn.service.id
-  display_name   = "Service Worker Route Table"
+  services {
+    service_id = data.oci_core_services.services.services[0].id
+  }
+}
+
+resource "oci_core_nat_gateway" "service" {
+  compartment_id = var.compartment_ocid
+  display_name   = "${var.cluster_name}-ngw"
+  vcn_id         = oci_core_vcn.service.id
+}
+
+resource "oci_core_route_table" "public" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.service.id
+  display_name   = "${var.cluster_name}-public-routes"
 
   route_rules {
+    description       = "traffic to/from internet"
     destination       = "0.0.0.0/0"
     destination_type  = "CIDR_BLOCK"
     network_entity_id = oci_core_internet_gateway.service.id
   }
 }
 
-# Rules based on https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfig.htm#securitylistconfig.
-
-resource "oci_core_security_list" "node_network" {
-  compartment_id = var.oci_compartment_ocid
+resource "oci_core_route_table" "private" {
+  compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.service.id
-  display_name   = "Service Worker Cross-Node Access"
+  display_name   = "${var.cluster_name}-private-routes"
 
-  # Allow access from node/pod CIDR to all TCP ports.
-  ingress_security_rules {
-    protocol = "6" # TCP
-
-    source      = "10.0.64.0/18"
-    source_type = "CIDR_BLOCK"
+  route_rules {
+    description       = "traffic to OCI services"
+    destination       = "all-sjc-services-in-oracle-services-network"
+    destination_type  = "SERVICE_CIDR_BLOCK"
+    network_entity_id = oci_core_service_gateway.service.id
   }
 
-  # Allow access from node/pod CIDR to all UDP ports.
-  ingress_security_rules {
-    protocol = "17" # UDP
-
-    source      = "10.0.64.0/18"
-    source_type = "CIDR_BLOCK"
+  route_rules {
+    description       = "traffic to the internet"
+    destination       = "0.0.0.0/0"
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = oci_core_nat_gateway.service.id
   }
 }
 
-resource "oci_core_security_list" "kubernetes_api" {
-  compartment_id = var.oci_compartment_ocid
+resource "oci_core_security_list" "k8s_api_endpoint" {
+  compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.service.id
-  display_name   = "Kubernetes API Security List"
+  display_name   = "${var.cluster_name}-k8s-api-endpoint-seclist"
 
-  # Allow access from anywhere to Kubernetes API port.
+  egress_security_rules {
+    description      = "All traffic to worker nodes"
+    destination      = "10.0.10.0/23"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+  }
+
+  egress_security_rules {
+    description      = "Allow Kubernetes Control Plane to communicate with OKE"
+    destination      = "all-sjc-services-in-oracle-services-network"
+    destination_type = "SERVICE_CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+
+    tcp_options {
+      max = 443
+      min = 443
+    }
+  }
+
+  egress_security_rules {
+    description      = "Path discovery"
+    destination      = "10.0.10.0/23"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "1"
+    stateless        = false
+
+    icmp_options {
+      code = 4
+      type = 3
+    }
+  }
+
   ingress_security_rules {
-    protocol  = "6" # TCP
-    stateless = false
-
+    description = "External access to Kubernetes API endpoint"
+    protocol    = "6"
     source      = "0.0.0.0/0"
     source_type = "CIDR_BLOCK"
+    stateless   = false
 
     tcp_options {
-      min = 6443
       max = 6443
+      min = 6443
+    }
+  }
+  ingress_security_rules {
+    description = "Kubernetes worker to Kubernetes API endpoint communication"
+    protocol    = "6"
+    source      = "10.0.10.0/23"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 6443
+      min = 6443
     }
   }
 
-  # Allow node pool CIDR to access port for proxymux.
   ingress_security_rules {
-    protocol  = "6" # TCP
-    stateless = false
-
-    source      = "10.0.64.0/18"
+    description = "Kubernetes worker to control plane communication"
+    protocol    = "6"
+    source      = "10.0.10.0/23"
     source_type = "CIDR_BLOCK"
+    stateless   = false
 
     tcp_options {
-      min = 12250
       max = 12250
+      min = 12250
     }
   }
 
-  # Path Discovery.
   ingress_security_rules {
-    protocol  = "1"
-    stateless = false
-
-    source      = "10.0.64.0/18"
+    description = "Path discovery"
+    protocol    = "1"
+    source      = "10.0.10.0/23"
     source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    icmp_options {
+      code = 4
+      type = 3
+    }
   }
 }
 
-
-resource "oci_core_security_list" "control_plane_node_access" {
-  compartment_id = var.oci_compartment_ocid
+resource "oci_core_security_list" "svc_lb" {
+  compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.service.id
-  display_name   = "Control Plane Worker Access"
+  display_name   = "${var.cluster_name}-svclb-seclist"
+}
 
-  # Allow VPC CIDR to access kubelet API.
-  ingress_security_rules {
-    protocol = "6" # TCP
+resource "oci_core_security_list" "node" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.service.id
+  display_name   = "${var.cluster_name}-node-seclist"
 
-    source      = "10.0.0.0/16"
-    source_type = "CIDR_BLOCK"
+  egress_security_rules {
+    description      = "Access to Kubernetes API Endpoint"
+    destination      = "10.0.0.0/28"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
 
     tcp_options {
-      min = 10250
-      max = 10250
+      max = 6443
+      min = 6443
     }
+  }
+
+  egress_security_rules {
+    description      = "Allow nodes to communicate with OKE to ensure correct start-up and continued functioning"
+    destination      = "all-sjc-services-in-oracle-services-network"
+    destination_type = "SERVICE_CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+
+    tcp_options {
+      max = 443
+      min = 443
+    }
+  }
+
+  egress_security_rules {
+    description      = "Allow pods on one worker node to communicate with pods on other worker nodes"
+    destination      = "10.0.10.0/23"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "all"
+    stateless        = false
+  }
+
+  egress_security_rules {
+    description      = "Allow pods on one worker node to communicate with pods on other worker nodes"
+    destination      = "10.0.11.0/24"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "all"
+    stateless        = false
+  }
+
+  egress_security_rules {
+    description      = "ICMP Access from Kubernetes Control Plane"
+    destination      = "0.0.0.0/0"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "1"
+    stateless        = false
+
+    icmp_options {
+      code = 4
+      type = 3
+    }
+  }
+
+  egress_security_rules {
+    description      = "Kubernetes worker to control plane communication"
+    destination      = "10.0.0.0/28"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+
+    tcp_options {
+      max = 12250
+      min = 12250
+    }
+  }
+
+  egress_security_rules {
+    description      = "Path discovery"
+    destination      = "10.0.0.0/28"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "1"
+    stateless        = false
+
+    icmp_options {
+      code = 4
+      type = 3
+    }
+  }
+
+  egress_security_rules {
+    description      = "Worker Nodes access to Internet"
+    destination      = "0.0.0.0/0"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "all"
+    stateless        = false
+  }
+
+  ingress_security_rules {
+    description = "Allow pods on one worker node to communicate with pods on other worker nodes"
+    protocol    = "all"
+    source      = "10.0.10.0/23"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+  }
+
+  ingress_security_rules {
+    description = "Inbound SSH traffic to worker nodes"
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 22
+      min = 22
+    }
+  }
+
+  ingress_security_rules {
+    description = "Path discovery"
+    protocol    = "1"
+    source      = "10.0.0.0/28"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    icmp_options {
+      code = 4
+      type = 3
+    }
+  }
+
+  ingress_security_rules {
+    description = "TCP access from Kubernetes Control Plane"
+    protocol    = "6"
+    source      = "10.0.0.0/28"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
   }
 }
 
-
-resource "oci_core_subnet" "service_worker_nodes" {
+resource "oci_core_subnet" "k8s_api_endpoint" {
   availability_domain = null
-  cidr_block          = "10.0.64.0/18"
-  compartment_id      = var.oci_compartment_ocid
+  cidr_block          = "10.0.0.0/28"
+  compartment_id      = var.compartment_ocid
   vcn_id              = oci_core_vcn.service.id
 
-  security_list_ids = [oci_core_vcn.service.default_security_list_id, oci_core_security_list.control_plane_node_access.id, oci_core_security_list.node_network.id]
-  route_table_id    = "ocid1.routetable.oc1.us-sanjose-1.aaaaaaaaguv25vmwy4j5k2hunwcmjx6tpbbfnmuhzmxowstl76mj4ui7zpxq"
-  display_name      = "Service Nodes/Pods Subnet"
+  security_list_ids = [oci_core_security_list.k8s_api_endpoint.id]
+  route_table_id    = oci_core_route_table.public.id
+  display_name      = "${var.cluster_name}-k8sApiEndpoint-subnet"
 }
 
-resource "oci_core_subnet" "service_worker_cluster" {
+resource "oci_core_subnet" "svc_lb" {
   availability_domain = null
-  cidr_block          = "10.0.10.0/24"
-  compartment_id      = var.oci_compartment_ocid
+  cidr_block          = "10.0.20.0/24"
+  compartment_id      = var.compartment_ocid
   vcn_id              = oci_core_vcn.service.id
 
-  security_list_ids = [oci_core_vcn.service.default_security_list_id, oci_core_security_list.kubernetes_api.id]
-  route_table_id    = oci_core_route_table.service_worker.id
-  dhcp_options_id   = oci_core_vcn.service.default_dhcp_options_id
-  display_name      = "Service Cluster Subnet"
+  security_list_ids = [oci_core_security_list.svc_lb.id]
+  route_table_id    = oci_core_route_table.public.id
+  display_name      = "${var.cluster_name}-svclb-subnet"
+}
+
+resource "oci_core_subnet" "node" {
+  availability_domain = null
+  cidr_block          = "10.0.10.0/23"
+  compartment_id      = var.compartment_ocid
+  vcn_id              = oci_core_vcn.service.id
+
+  prohibit_public_ip_on_vnic = true
+
+  security_list_ids = [oci_core_security_list.node.id]
+  route_table_id    = oci_core_route_table.private.id
+  display_name      = "${var.cluster_name}-node-subnet"
+}
+
+resource "oci_core_public_ip" "ingress_ip" {
+  compartment_id = var.compartment_ocid
+  lifetime       = "RESERVED"
+  display_name   = "${var.cluster_name}-ingress-ip"
 }

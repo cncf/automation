@@ -1,5 +1,11 @@
+locals {
+  # it can be aquired from:
+  # oci ce node-pool-options get --node-pool-option-id all | jq '.data.sources.[] | select(."source-name" | match("Oracle-Linux-8.10-2025.*OKE-1.32.*"))'
+  oci_image_id = "ocid1.image.oc1.us-sanjose-1.aaaaaaaakex5p5yb4hudzzvmcoacq2lmjur3rwqmxdsqd4bol4npx2j6x7iq"
+}
+
 resource "oci_containerengine_cluster" "service" {
-  name               = "oci-service-worker"
+  name               = var.cluster_name
   kubernetes_version = var.kubernetes_version
 
   cluster_pod_network_options {
@@ -8,15 +14,17 @@ resource "oci_containerengine_cluster" "service" {
 
   endpoint_config {
     is_public_ip_enabled = true
-    subnet_id            = oci_core_subnet.service_worker_cluster.id
+    subnet_id            = oci_core_subnet.k8s_api_endpoint.id
   }
 
   options {
-    service_lb_subnet_ids = [oci_core_subnet.service_worker_cluster.id]
+    service_lb_subnet_ids = [oci_core_subnet.svc_lb.id]
   }
 
-  compartment_id = var.oci_compartment_ocid
+  compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.service.id
+  # it has to be enhanced cluster for addons
+  type = "ENHANCED_CLUSTER"
 }
 
 data "oci_containerengine_cluster_kube_config" "service" {
@@ -25,25 +33,20 @@ data "oci_containerengine_cluster_kube_config" "service" {
 
 resource "oci_containerengine_node_pool" "service_worker" {
   cluster_id     = oci_containerengine_cluster.service.id
-  compartment_id = var.oci_compartment_ocid
+  compartment_id = var.compartment_ocid
 
   kubernetes_version = var.kubernetes_version
-  name               = "service-worker"
-  ssh_public_key     = var.node_pool_ssh_public_key
+  name               = "${var.cluster_name}-pool1"
 
   # this matches t3.2xlarge sizings.
-  node_shape = "VM.Standard.A1.Flex"
+  node_shape = var.oke_node_shape
   node_shape_config {
-    memory_in_gbs = 32
-    ocpus         = 8
+    memory_in_gbs = var.oke_node_memory
+    ocpus         = var.oke_node_cpu
   }
 
-
-  # Using image Oracle-Linux-8.x-<date>
-  # Find image OCID for your region from https://docs.oracle.com/iaas/images/
-  # For now aarch64 latest k/k 1.31 image is used.
   node_source_details {
-    image_id    = "ocid1.image.oc1.us-sanjose-1.aaaaaaaadsern2rllfhao7uyg3t5gafy7xh63apdywrcs3hpryrgnpbgh7sa"
+    image_id    = local.oci_image_id
     source_type = "image"
   }
 
@@ -56,14 +59,14 @@ resource "oci_containerengine_node_pool" "service_worker" {
       for_each = data.oci_identity_availability_domains.availability_domains.availability_domains
       content {
         availability_domain = placement_configs.value.name
-        subnet_id           = oci_core_subnet.service_worker_nodes.id
+        subnet_id           = oci_core_subnet.node.id
       }
     }
 
     node_pool_pod_network_option_details {
       cni_type       = "OCI_VCN_IP_NATIVE"
       pod_nsg_ids    = []
-      pod_subnet_ids = [oci_core_subnet.service_worker_nodes.id]
+      pod_subnet_ids = [oci_core_subnet.node.id]
     }
   }
 }
