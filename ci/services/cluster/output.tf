@@ -4,3 +4,8 @@ output "cluster" {
   }
   sensitive = true
 }
+
+output "ingress_ip" {
+  value       = oci_core_public_ip.ingress_ip.ip_address
+  description = "Static IP address of the Ingress"
+}
