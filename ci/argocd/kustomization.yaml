@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
 - namespace.yaml
-- github.com/argoproj/argo-cd//manifests/ha/cluster-install?ref=v2.14.9
+- github.com/argoproj/argo-cd//manifests/ha/cluster-install?ref=v3.0.1
 
 patches:
 - path: argocd-notification-cm.yaml
