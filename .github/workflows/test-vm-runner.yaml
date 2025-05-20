@@ -1,0 +1,29 @@
+name: Test VM Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    runs-on: oracle-vm-runner-x86-64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run uname to verify architecture
+        run: uname -a
+
+      - name: Run a basic workload
+        run: |
+          echo "Testing Equinix Runner"
+          echo "CPU Info:"
+          lscpu
+
+      - name: Run a Docker container
+        run: |
+          docker run --rm alpine echo "Docker is working on the runner"
+
+      - name: Check local disk 
+        run: |
+         df -h /
+
