@@ -131,7 +131,8 @@ func run(cmd *cobra.Command, argv []string) error {
 	defer sshClient.Close()
 
 	commands := []string{
-		"/home/runner/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
+		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
+		"bash -x /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
 	}
 
 	for _, cmd := range commands {
