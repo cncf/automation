@@ -20,12 +20,6 @@ env:
   # IMAGE_NAME maps to the Docker image name
   IMAGE_NAME: cncf/gha-cloudrunner
 
-  # Map current release tag to the version of booty
-  BOOTY_VERSION: $GITHUB_REF_NAME
-  # Map last repo update to the build timestamp
-  BOOTY_TIMESTAMP: ${{ github.event.repository.updated_at}}
-
-
 jobs:
   build-cloudrunner-images:
     outputs:
@@ -84,6 +78,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./ci/cloudrunners/Dockerfile
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Sign the published Cloudrunner Docker image
         if: ${{ github.event_name != 'pull_request' }}
