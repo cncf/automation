@@ -27,7 +27,7 @@ env:
 
 
 jobs:
-  build-images:
+  build-runner-images:
     strategy:
       matrix:
         base-image: [jammy, noble]
@@ -113,10 +113,10 @@ jobs:
   # Upload the provenance to ghcr.io
   provenance:
     if: ${{ github.event_name != 'pull_request' }}
-    needs: [build-images]
+    needs: [build-runner-images]
     strategy:
       matrix:
-        image: ${{ fromJSON(needs.build-images.outputs.images) }}
+        image: ${{ fromJSON(needs.build-runner-images.outputs.images) }}
     permissions:
       id-token: write  # For signing.
       actions: read    # For reading workflow info.
@@ -124,7 +124,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
       image: ${{ matrix.image }}
-      digest: ${{ needs.build-images.outputs.digest }}
+      digest: ${{ needs.build-runner-images.outputs.digest }}
       registry-username: ${{ github.actor }}
       compile-generator: true
     secrets:
@@ -136,10 +136,10 @@ jobs:
     # branches for required status checks. It should have a unique name among
     # other pre-submits.
     name: verify container provenance
-    needs: [build-images, provenance]
+    needs: [build-runner-images, provenance]
     strategy:
       matrix:
-        image: ${{ fromJSON(needs.build-images.outputs.images) }}
+        image: ${{ fromJSON(needs.build-runner-images.outputs.images) }}
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
@@ -152,7 +152,7 @@ jobs:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ matrix.image }}
-          IMAGE_DIGEST: ${{ needs.build-images.outputs.digest }}
+          IMAGE_DIGEST: ${{ needs.build-runner-images.outputs.digest }}
         run: |
           cosign version
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation \
