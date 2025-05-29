@@ -9,10 +9,15 @@ name: Docker
 on:
   push:
     branches: [main]
-    paths: ['ci/cloudrunners/Dockerfile*']
+    paths:
+      - 'ci/cloudrunners/Dockerfile*'
+      - 'ci/cloudrunners/oci/**'
   pull_request:
     branches: [main]
-    paths: ['ci/cloudrunners/Dockerfile*']
+    paths:
+      - 'ci/cloudrunners/Dockerfile*'
+      - 'ci/cloudrunners/oci/**'
+  workflow_dispatch:
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -79,7 +84,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           file: ./ci/cloudrunners/Dockerfile
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_id }}
 
       - name: Sign the published Cloudrunner Docker image
         if: ${{ github.event_name != 'pull_request' }}

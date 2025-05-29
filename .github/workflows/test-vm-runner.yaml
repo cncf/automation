@@ -19,11 +19,6 @@ jobs:
           echo "CPU Info:"
           lscpu
 
-      - name: Run a Docker container
-        run: |
-          docker run --rm alpine echo "Docker is working on the runner"
-
       - name: Check local disk 
         run: |
          df -h /
-
