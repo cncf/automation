@@ -119,3 +119,27 @@ spec:
       directory:
         recurse: true
 ---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: github-vm-runners
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
+spec:
+  syncPolicy:
+    automated: {}
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: arc-systems
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci/vm-runners/
+      targetRevision: HEAD
+      directory:
+        recurse: true
+---
