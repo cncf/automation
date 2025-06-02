@@ -113,6 +113,7 @@ resource "oci_core_security_list" "k8s_api_endpoint" {
       min = 6443
     }
   }
+
   ingress_security_rules {
     description = "Kubernetes worker to Kubernetes API endpoint communication"
     protocol    = "6"
@@ -157,6 +158,89 @@ resource "oci_core_security_list" "svc_lb" {
   compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.service.id
   display_name   = "${var.cluster_name}-svclb-seclist"
+
+  egress_security_rules {
+    destination      = "10.0.10.0/23"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+
+    tcp_options {
+      max = 10256
+      min = 10256
+    }
+  }
+
+  egress_security_rules {
+    destination      = "10.0.10.0/23"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+
+    tcp_options {
+      max = 30330
+      min = 30330
+    }
+  }
+
+  egress_security_rules {
+    destination      = "10.0.10.0/23"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+
+    tcp_options {
+      max = 32170
+      min = 32170
+    }
+  }
+
+  egress_security_rules {
+    destination      = "10.0.10.0/23"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+
+    tcp_options {
+      max = 32709
+      min = 32709
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 443
+      min = 443
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 80
+      min = 80
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 8443
+      min = 8443
+    }
+  }
 }
 
 resource "oci_core_security_list" "node" {
@@ -294,6 +378,54 @@ resource "oci_core_security_list" "node" {
     source_type = "CIDR_BLOCK"
     stateless   = false
   }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "10.0.20.0/24"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 10256
+      min = 10256
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "10.0.20.0/24"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 30330
+      min = 30330
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "10.0.20.0/24"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 32170
+      min = 32170
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "10.0.20.0/24"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 32709
+      min = 32709
+    }
+  }
 }
 
 resource "oci_core_subnet" "k8s_api_endpoint" {
@@ -335,4 +467,10 @@ resource "oci_core_public_ip" "ingress_ip" {
   compartment_id = var.compartment_ocid
   lifetime       = "RESERVED"
   display_name   = "${var.cluster_name}-ingress-ip"
+}
+
+resource "oci_core_public_ip" "kcp_lb_ip" {
+  compartment_id = var.compartment_ocid
+  lifetime       = "RESERVED"
+  display_name   = "${var.cluster_name}-kcp-lp-ip"
 }
