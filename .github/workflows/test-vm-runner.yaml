@@ -5,17 +5,22 @@ on:
 
 jobs:
   test-runner:
-    runs-on: oracle-vm-runner-x86-64
+    strategy:
+      matrix:
+        shape: [2cpu-8gb, 4cpu-16gb, 8cpu-32gb, 16cpu-64gb, 24cpu-384gb]
+    runs-on: oracle-vm-${{ matrix.shape }}-x86-64
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Run uname to verify architecture
-        run: uname -a
+        run: |
+          uname -a
+          lsb_release -a
 
       - name: Run a basic workload
         run: |
-          echo "Testing Equinix Runner"
+          echo "Testing Runner"
           echo "CPU Info:"
           lscpu
 
