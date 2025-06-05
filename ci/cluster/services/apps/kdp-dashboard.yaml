@@ -20,6 +20,8 @@ spec:
         dashboard:
           configSecretName: kdp-dashboard-configuration
           imagePullSecret: ""
+          image:
+            tag: "v0.8.0"
           ingress:
             create: true
             host: services.cncf.io

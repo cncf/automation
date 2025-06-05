@@ -17,11 +17,8 @@ spec:
     helm:
       releaseName: kdp
       values: |
-        global:
-          imageRegistry: "quay.io"
         kdp:
           image:
-            repository: "kubermatic/developer-platform"
             tag: "v0.8.0"
           frontProxy:
             publicDomain: public.api.services.cncf.io
