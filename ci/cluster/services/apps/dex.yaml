@@ -58,7 +58,7 @@ spec:
           staticClients:
             - id: kdp-kubelogin
               name: kdp-kubelogin
-              secret: $OIDC_CLIENT_SECRET
+              secretEnv: OIDC_CLIENT_SECRET
               RedirectURIs:
               - http://localhost:8000
               - http://localhost:18000
