@@ -18,6 +18,10 @@ spec:
       releaseName: kdp
       values: |
         kdp:
+          image:
+            registry: "quay.io"
+            repository: "kubermatic/developer-platform"
+            tag: "v0.8.0"
           frontProxy:
             publicDomain: public.api.services.cncf.io
             internalDomain: api.services.cncf.io
