@@ -17,9 +17,10 @@ spec:
     helm:
       releaseName: kdp
       values: |
+        global:
+          imageRegistry: "quay.io"
         kdp:
           image:
-            registry: "quay.io"
             repository: "kubermatic/developer-platform"
             tag: "v0.8.0"
           frontProxy:
