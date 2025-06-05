@@ -27,6 +27,7 @@ spec:
           extraFlags:
             - '--enable-leader-election'
         kcpFrontProxy:
+          tag: v0.26.3
           replicas: 2
           certificate:
             issuer: kcp-server-issuer
