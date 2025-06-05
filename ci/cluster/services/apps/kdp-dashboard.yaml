@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kdp-dashboard
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "05"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oke-cncf-automation
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubermatic/developer-platform-dashboard
+    path: deploy/chart
+    targetRevision: HEAD
+    helm:
+      releaseName: kdp-dashboard
+      values: |
+        dashboard:
+          configSecretName: kdp-dashboard-configuration
+          ingress:
+            create: true
+            host: services.cncf.io
+            certIssuer:
+              kind: ClusterIssuer
+              name: letsencrypt-prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kdp
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
