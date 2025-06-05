@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kdp
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "05"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oke-cncf-automation
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubermatic/developer-platform
+    path: deploy/charts/platform
+    targetRevision: 0.8.0
+    helm:
+      releaseName: kdp
+      values: |
+        kdp:
+          frontProxy:
+            publicDomain: public.api.services.cncf.io
+            internalDomain: api.services.cncf.io
+            url: https://api.services.cncf.io:8443
+          virtualWorkspaces:
+            shardExternalURL: https://api.services.cncf.io:8443
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kdp
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

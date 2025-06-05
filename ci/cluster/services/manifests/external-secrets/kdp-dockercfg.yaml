@@ -1,0 +1,21 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kdp-dockercfg
+  namespace: kdp
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: oci-secret-store
+  target:
+    name: kdp-dockercfg
+    creationPolicy: Owner
+    template:
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: "{{ .config | toString }}"
+  data:
+  - secretKey: config
+    remoteRef:
+      key: kdp-regcred
