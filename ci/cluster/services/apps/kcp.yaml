@@ -48,6 +48,15 @@ spec:
           extraFlags:
             - '--cors-allowed-origins=localhost,services.cncf.io$'
             - '--authentication-drop-groups=system:kcp:logical-cluster-admin'
+          # OIDC-specific configuration which is applied to both kcp and kcp-front-proxy
+          oidc:
+            enabled: true
+            issuerUrl: https://auth.services.cncf.io/dex
+            clientId: kdp-kubelogin
+            groupClaim: groups
+            usernameClaim: email
+            usernamePrefix: 'oidc:'
+            groupsPrefix: 'oidc:
   destination:
     server: https://kubernetes.default.svc
     namespace: kdp
