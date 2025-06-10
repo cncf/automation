@@ -83,7 +83,6 @@ func run(cmd *cobra.Command, argv []string) error {
 	machine, err := oci.NewEphemeralMachine(ctx, computeClient, networkClient, core.LaunchInstanceDetails{
 		AvailabilityDomain: common.String(args.availabilityDomain),
 		CompartmentId:      common.String(args.compartmentId),
-		ImageId:            common.String(*latestImage.Id),
 		Shape:              common.String(args.shape),
 		DisplayName:        common.String(fmt.Sprintf("gha-runner-%s-%s", args.arch, time.Now().Format("20060102-150405"))),
 		CreateVnicDetails: &core.CreateVnicDetails{
@@ -96,6 +95,10 @@ func run(cmd *cobra.Command, argv []string) error {
 		},
 		Metadata: map[string]string{
 			"ssh_authorized_keys": sshKeyPair.PublicKey,
+		},
+		SourceDetails: &core.InstanceSourceViaImageDetails{
+			ImageId:             common.String(*latestImage.Id),
+			BootVolumeSizeInGBs: common.Int64(600),
 		},
 	})
 	if err != nil {

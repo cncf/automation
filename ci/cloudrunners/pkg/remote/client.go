@@ -20,7 +20,7 @@ func DialWithRetry(ctx context.Context, network, addr string, sshConfig *ssh.Cli
 
 	// The VM is just booting, so give it some time to start responding to SSH
 	attempt := 0
-	maxAttempts := 60
+	maxAttempts := 80
 	for {
 		attempt++
 
