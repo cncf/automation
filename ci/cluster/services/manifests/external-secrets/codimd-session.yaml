@@ -1,0 +1,16 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: codimd-session
+  namespace: codimd
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: oci-secret-store
+  target:
+    name: codimd-session
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: codimd-session

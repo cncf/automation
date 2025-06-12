@@ -1,0 +1,473 @@
+---
+# Source: codimd/charts/postgresql/templates/backup/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: codimd-postgresql-pgdumpall
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+    app.kubernetes.io/component: pg_dumpall
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: codimd
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: pg_dumpall
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - port: 5432
+          protocol: TCP
+        - port: 53
+          protocol: TCP
+        - port: 53
+          protocol: UDP
+---
+# Source: codimd/charts/postgresql/templates/primary/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: codimd-postgresql
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+    app.kubernetes.io/component: primary
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: codimd
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 5432
+---
+# Source: codimd/charts/postgresql/templates/primary/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: codimd-postgresql
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+    app.kubernetes.io/component: primary
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: codimd
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+---
+# Source: codimd/charts/postgresql/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: codimd-postgresql
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+automountServiceAccountToken: false
+---
+# Source: codimd/charts/postgresql/templates/backup/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: codimd-postgresql-pgdumpall
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+    app.kubernetes.io/component: pg_dumpall
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "8Gi"
+---
+# Source: codimd/charts/postgresql/templates/primary/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: codimd-postgresql-hl
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+    app.kubernetes.io/component: primary
+spec:
+  type: ClusterIP
+  clusterIP: None
+  # We want all pods in the StatefulSet to have their addresses published for
+  # the sake of the other Postgresql pods even before they're ready, since they
+  # have to be able to talk to each other in order to become ready.
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: primary
+---
+# Source: codimd/charts/postgresql/templates/primary/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: codimd-postgresql
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+    app.kubernetes.io/component: primary
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: primary
+---
+# Source: codimd/charts/postgresql/templates/primary/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: codimd-postgresql
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+    app.kubernetes.io/component: primary
+spec:
+  replicas: 1
+  serviceName: codimd-postgresql-hl
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: codimd
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+  template:
+    metadata:
+      name: codimd-postgresql
+      labels:
+        app.kubernetes.io/instance: codimd
+        app.kubernetes.io/name: postgresql
+        app.kubernetes.io/version: 17.5.0
+        helm.sh/chart: postgresql-16.7.10
+        app.kubernetes.io/component: primary
+    spec:
+      serviceAccountName: codimd-postgresql
+      automountServiceAccountToken: false
+      affinity:
+        podAffinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: codimd
+                    app.kubernetes.io/name: postgresql
+                    app.kubernetes.io/component: primary
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      hostNetwork: false
+      hostIPC: false
+      initContainers:
+        - name: init-chmod-data
+          image: docker.io/bitnami/os-shell:12-debian-12-r46
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 2Gi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              chown 1001:1001 /bitnami/postgresql
+              mkdir -p /bitnami/postgresql/data
+              chmod 700 /bitnami/postgresql/data
+              find /bitnami/postgresql -mindepth 1 -maxdepth 1 -not -name "conf" -not -name ".snapshot" -not -name "lost+found" | \
+                xargs -r chown -R 1001:1001
+              chmod -R 777 /dev/shm
+          securityContext:
+            runAsGroup: 0
+            runAsNonRoot: false
+            runAsUser: 0
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: data
+              mountPath: /bitnami/postgresql
+            - name: dshm
+              mountPath: /dev/shm
+      containers:
+        - name: postgresql
+          image: docker.io/bitnami/postgresql:17.5.0-debian-12-r10
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: PGDATA
+              value: "/bitnami/postgresql/data"
+            # Authentication
+            - name: POSTGRES_PASSWORD_FILE
+              value: /opt/bitnami/postgresql/secrets/postgres-password
+            - name: POSTGRES_DATABASE
+              value: "codimd"
+            # LDAP
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            # TLS
+            - name: POSTGRESQL_ENABLE_TLS
+              value: "no"
+            # Audit
+            - name: POSTGRESQL_LOG_HOSTNAME
+              value: "false"
+            - name: POSTGRESQL_LOG_CONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_LOG_DISCONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+              value: "off"
+            # Others
+            - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+              value: "error"
+            - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+              value: "pgaudit"
+          ports:
+            - name: tcp-postgresql
+              containerPort: 5432
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "postgres" -d "dbname=codimd" -h 127.0.0.1 -p 5432
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                - |
+                  exec pg_isready -U "postgres" -d "dbname=codimd" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 2Gi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/conf
+              subPath: app-conf-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/tmp
+              subPath: app-tmp-dir
+            - name: postgresql-password
+              mountPath: /opt/bitnami/postgresql/secrets/
+            - name: dshm
+              mountPath: /dev/shm
+            - name: data
+              mountPath: /bitnami/postgresql
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: postgresql-password
+          secret:
+            secretName: codimd-db-secret
+        - name: dshm
+          emptyDir:
+            medium: Memory
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "100Gi"
+        storageClassName: oci-bv
+---
+# Source: codimd/charts/postgresql/templates/backup/cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: codimd-postgresql-pgdumpall
+  namespace: "codimd"
+  labels:
+    app.kubernetes.io/instance: codimd
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.10
+    app.kubernetes.io/component: pg_dumpall
+  annotations: {}
+spec:
+  schedule: "@daily"
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: codimd
+            app.kubernetes.io/name: postgresql
+            app.kubernetes.io/version: 17.5.0
+            helm.sh/chart: postgresql-16.7.10
+            app.kubernetes.io/component: pg_dumpall
+          annotations: {}
+        spec:
+          containers:
+            - name: codimd-postgresql-pgdumpall
+              image: docker.io/bitnami/postgresql:17.5.0-debian-12-r10
+              imagePullPolicy: "IfNotPresent"
+              env:
+                - name: PGUSER
+                  value: postgres
+                - name: PGPASSWORD_FILE
+                  value: /opt/bitnami/postgresql/secrets/postgres-password
+                - name: PGHOST
+                  value: codimd-postgresql
+                - name: PGPORT
+                  value: "5432"
+                - name: PGDUMP_DIR
+                  value: /backup/pgdump
+              command:
+                - /bin/bash
+                - -c
+                - PGPASSWORD="${PGPASSWORD:-$(< "$PGPASSWORD_FILE")}" pg_dumpall --clean --if-exists --load-via-partition-root --quote-all-identifiers --no-password --file="${PGDUMP_DIR}/pg_dumpall-$(date '+%Y-%m-%d-%H-%M').pgdump"
+              volumeMounts:
+                - name: datadir
+                  mountPath: /backup/pgdump
+                  subPath:
+                - name: empty-dir
+                  mountPath: /tmp
+                  subPath: tmp-dir
+                - name: postgresql-password
+                  mountPath: /opt/bitnami/postgresql/secrets/
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                privileged: false
+                readOnlyRootFilesystem: true
+                runAsGroup: 1001
+                runAsNonRoot: true
+                runAsUser: 1001
+                seLinuxOptions: {}
+                seccompProfile:
+                  type: RuntimeDefault
+              resources:
+                limits:
+                  cpu: 150m
+                  ephemeral-storage: 2Gi
+                  memory: 192Mi
+                requests:
+                  cpu: 100m
+                  ephemeral-storage: 50Mi
+                  memory: 128Mi
+          restartPolicy: OnFailure
+          securityContext:
+            fsGroup: 1001
+          volumes:
+            - name: datadir
+              persistentVolumeClaim:
+                claimName: codimd-postgresql-pgdumpall
+            - name: empty-dir
+              emptyDir: {}
+            - name: postgresql-password
+              secret:
+                secretName: codimd-db-secret

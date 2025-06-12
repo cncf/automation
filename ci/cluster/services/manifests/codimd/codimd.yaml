@@ -1,0 +1,183 @@
+---
+# Source: codimd/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: codimd
+  namespace: codimd
+  labels:
+    app.kubernetes.io/component: pvc
+    app.kubernetes.io/name: codimd
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: "10Gi"
+  storageClassName: oci-bv
+---
+# Source: codimd/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: codimd
+  namespace: codimd
+  labels:
+    app.kubernetes.io/component: Service
+    app.kubernetes.io/name: codimd
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: codimd
+  ports:
+    - port: 80
+      targetPort: 3000
+---
+# Source: codimd/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codimd
+  namespace: codimd
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: codimd
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/name: codimd
+  template:
+    metadata:
+      name: codimd
+      labels:
+        app.kubernetes.io/component: server
+        app.kubernetes.io/name: codimd
+    spec:
+      securityContext:
+        fsGroup: 1500
+        runAsGroup: 1500
+        runAsNonRoot: true
+        runAsUser: 1500
+      containers:
+        - name: codimd
+          image: nabo.codimd.dev/hackmdio/hackmd:2.5.1
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: CMD_DOMAIN
+              value: "notes.cncf.io"
+            - name: CMD_URL_ADDPORT
+              value: "false"
+            - name: CMD_PROTOCOL_USESSL
+              value: "true"
+            - name: CMD_USECDN
+              value: "false"
+            - name: CMD_DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: codimd-db-secret
+                  key: connection
+            - name: CMD_SESSION_LIFE
+              value: "1209600000"
+            - name: CMD_HSTS_ENABLE
+              value: "true"
+            - name: CMD_HSTS_MAX_AGE
+              value: "31536000"
+            - name: CMD_HSTS_INCLUDE_SUBDOMAINS
+              value: "false"
+            - name: CMD_HSTS_PRELOAD
+              value: "true"
+            - name: CMD_CSP_ENABLE
+              value: "true"
+            - name: CMD_ALLOW_GRAVATAR
+              value: "true"
+            - name: CMD_RESPONSE_MAX_LAG
+              value: "70"
+            - name: CMD_IMAGE_UPLOAD_TYPE
+              value: "imgur"
+            - name: CMD_ALLOW_FREEURL
+              value: "false"
+            - name: CMD_FORBIDDEN_NOTE_IDS
+              value: "robots.txt,favicon.ico,api"
+            - name: CMD_DEFAULT_PERMISSION
+              value: "editable"
+            - name: CMD_ALLOW_ANONYMOUS_EDITS
+              value: "true"
+            - name: CMD_ALLOW_ANONYMOUS_VIEWS
+              value: "true"
+            - name: CMD_ALLOW_PDF_EXPORT
+              value: "false"
+            - name: CMD_DEFAULT_USE_HARD_BREAK
+              value: "true"
+            - name: CMD_LINKIFY_HEADER_STYLE
+              value: "keep-case"
+            - name: CMD_AUTO_VERSION_CHECK
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: codimd-auth-env
+            - secretRef:
+                name: codimd-session
+          ports:
+            - name: http
+              containerPort: 3000
+          volumeMounts:
+            - mountPath: /home/hackmd/app/public/uploads
+              name: image-store
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /status
+            initialDelaySeconds: 3
+            failureThreshold: 2
+            successThreshold: 3
+            timeoutSeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /status
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 2
+      restartPolicy: Always
+      volumes:
+        - name: image-store
+          persistentVolumeClaim:
+            claimName: codimd
+---
+# Source: codimd/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: codimd
+  namespace: codimd
+  labels:
+    app.kubernetes.io/name: codimd
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: notes.cncf.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: codimd
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+  - hosts:
+    - notes.cncf.io
+    secretName: codimd-tls
