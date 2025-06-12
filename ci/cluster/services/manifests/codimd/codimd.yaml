@@ -66,7 +66,7 @@ spec:
         runAsUser: 1500
       containers:
         - name: codimd
-          image: nabo.codimd.dev/hackmdio/hackmd:2.5.1
+          image: hackmdio/hackmd:2.6.0
           imagePullPolicy: "IfNotPresent"
           env:
             - name: CMD_DOMAIN
