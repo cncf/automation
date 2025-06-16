@@ -334,13 +334,13 @@ spec:
                   [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
           resources:
             limits:
-              cpu: 150m
+              cpu: 2000m
               ephemeral-storage: 2Gi
-              memory: 192Mi
+              memory: 2Gi
             requests:
-              cpu: 100m
+              cpu: 1000m
               ephemeral-storage: 50Mi
-              memory: 128Mi
+              memory: 1Gi
           volumeMounts:
             - name: empty-dir
               mountPath: /tmp
