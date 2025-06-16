@@ -9,7 +9,8 @@ jobs:
       matrix:
         #shape: [2cpu-8gb, 4cpu-16gb, 8cpu-32gb, 16cpu-64gb, 24cpu-384gb]
         shape: [2cpu-8gb]
-    runs-on: oracle-vm-${{ matrix.shape }}-x86-64
+        arch: ["x86-64", "arm64"]
+    runs-on: oracle-vm-${{ matrix.shape }}-${{ matrix.arch }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
