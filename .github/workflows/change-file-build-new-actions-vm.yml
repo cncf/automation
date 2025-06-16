@@ -68,4 +68,9 @@ jobs:
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
           OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
-        run: export PATH=$PATH:$HOME/bin && cd ci/gha-runner-vm && PACKER_LOG=1 go run main.go --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-${{ matrix.arch }}.img
+        run: |
+          export PATH=$PATH:$HOME/bin && \
+          cd ci/gha-runner-vm && \
+          PACKER_LOG=1 go run main.go \
+            --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-${{ matrix.arch }}.img \
+            --arch ${{ matrix.arch }}
