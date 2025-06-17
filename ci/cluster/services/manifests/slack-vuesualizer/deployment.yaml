@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: slack-vuesualizer
+  name: slack-vuesualizer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slack-vuesualizer
+  template:
+    metadata:
+      labels:
+        app: slack-vuesualizer
+    spec:
+      containers:
+        - name: slack-vuesualizer
+          image: chris5896/slack-vuesualizer:1.1.3
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: mongodb-credentials
+          env:
+          - name: NUXT_CANONICAL_HOST
+            value: https://slack-archive.cncf.io
