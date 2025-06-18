@@ -38,6 +38,7 @@ var args struct {
 	namespace     string
 	isoURL        string
 	isoChecksum   string
+	accelerator   string
 }
 
 func main() {
@@ -321,6 +322,13 @@ func init() {
 		"ISO Checksum for Packer to use",
 	)
 
+	flags.StringVar(
+		&args.accelerator,
+		"accelerator",
+		"kvm",
+		"Accelerator for Packer to use (amd64: kvm | arm64: tcg)",
+	)
+
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		log.Fatal(err)
 	}
@@ -356,7 +364,7 @@ source "qemu" "img" {
 	memory               = 12000
 	cpus                 = 6
 	output_directory     = "build/"
-	accelerator          = "kvm"
+	accelerator          = "%s"
 	disk_size            = "80G"
 	disk_interface       = "virtio"
 	format               = "raw"
@@ -367,7 +375,7 @@ source "qemu" "img" {
 	ssh_password         = "ubuntu"
 	ssh_timeout          = "60m"
 	headless             = true
-}`, args.isoURL, args.isoChecksum)
+}`, args.isoURL, args.isoChecksum, args.accelerator)
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
 	provisioner "shell" {
