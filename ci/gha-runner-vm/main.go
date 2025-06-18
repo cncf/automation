@@ -117,7 +117,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatalf("Failed to remove tarball: %s\n", err)
 	}
 
-	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, "-var", "--only", "qemu.img", newFile)
+	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, "--only", "qemu.img", newFile)
 
 	command.Stdout = os.Stdout
 	if err := command.Run(); err != nil {
