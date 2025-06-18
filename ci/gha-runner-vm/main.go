@@ -321,6 +321,10 @@ func init() {
 		"ISO Checksum for Packer to use",
 	)
 
+	if err := flags.Parse(os.Args[1:]); err != nil {
+		log.Fatal(err)
+	}
+
 	Cmd.RegisterFlagCompletionFunc("output-format", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"json", "prom"}, cobra.ShellCompDirectiveDefault
 	})
