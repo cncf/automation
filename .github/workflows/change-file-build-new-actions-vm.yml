@@ -15,6 +15,11 @@ jobs:
     strategy:
       matrix:
         arch: ["amd64", "arm64"]
+        include:
+          - arch: amd64
+            acc: kvm
+          - arch: arm64
+            acc: tcg
 
     steps:
       - uses: actions/checkout@v4
@@ -74,3 +79,4 @@ jobs:
           PACKER_LOG=1 go run main.go \
             --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-${{ matrix.arch }}.img \
             --arch ${{ matrix.arch }}
+            --accelerator ${{ matrix.acc }}
