@@ -117,7 +117,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatalf("Failed to remove tarball: %s\n", err)
 	}
 
-	command := exec.Command("packer", "build", "--only", "qemu.img", newFile)
+	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, "-var", "--only", "qemu.img", newFile)
 
 	command.Stdout = os.Stdout
 	if err := command.Run(); err != nil {
@@ -353,7 +353,14 @@ func init() {
   }
 }
 
+variable architecture {
+	type        = string
+	default     = "amd64"
+	description = "Target architecture (amd64 or arm64)"
+}
+
 source "qemu" "img" {
+	qemu_binary          = var.architecture == "amd64" ? "/usr/bin/qemu-system-x86_64" : "/usr/bin/qemu-system-aarch64"
 	vm_name              = "image.raw"
 	cd_files             = ["./cloud-init/*"]
 	cd_label             = "cidata"
