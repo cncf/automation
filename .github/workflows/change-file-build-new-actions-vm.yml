@@ -15,11 +15,6 @@ jobs:
     strategy:
       matrix:
         arch: ["amd64", "arm64"]
-        include:
-          - arch: amd64
-            acc: kvm
-          - arch: arm64
-            acc: tcg
 
     steps:
       - uses: actions/checkout@v4
@@ -78,5 +73,4 @@ jobs:
           cd ci/gha-runner-vm && \
           PACKER_LOG=1 go run main.go \
             --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-${{ matrix.arch }}.img \
-            --arch ${{ matrix.arch }} \
-            --accelerator ${{ matrix.acc }}
+            --arch ${{ matrix.arch }}
