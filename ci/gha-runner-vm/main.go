@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -38,7 +39,6 @@ var args struct {
 	namespace     string
 	isoURL        string
 	isoChecksum   string
-	accelerator   string
 }
 
 func main() {
@@ -117,6 +117,22 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatalf("Failed to remove tarball: %s\n", err)
 	}
 
+	if args.arch == "arm64" {
+		baseDir := strings.Split(filename, "/")[0]
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-azcopy.sh", "https://aka.ms/downloadazcopy-v10-linux", "https://github.com/Azure/azure-storage-azcopy/releases/download/v10.29.1/azcopy_linux_arm64_10.29.1.tar.gz")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64" )
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "awscli-exe-linux-x86_64", "awscli-exe-linux-aarch64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "aws-sam-cli-linux-x86_64", "aws-sam-cli-linux-arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "ubuntu_64bit", "ubuntu_arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-cmake.sh", "x86_64", "aarch64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-pulumi.sh", "linux-x64", "linux-arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-dotnetcore-sdk.sh", "linux-x64", "linux-arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-firefox.sh", "linux64.tar.gz", "linux-aarch64.tar.gz")
+	}
+
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, "--only", "qemu.img", newFile)
 
 	command.Stdout = os.Stdout
@@ -163,6 +179,19 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func replaceArmPackageLinks(baseDir string, filename string, searchString string, replaceString string) (string, error) {
+	scriptName := baseDir + filename
+	err:= replaceInFileRegex(scriptName, map[*regexp.Regexp]string{
+			regexp.MustCompile(searchString):
+				replaceString,
+		})
+	if err != nil {
+		log.Fatalf("Failed to patch %s: %v", filename, err)
+		return "", err
+	}
+	return "", nil
 }
 
 func extractPackerFileFromURL(url string, path string) (string, error) {
@@ -257,6 +286,19 @@ func extractPackerFileFromTarball(tarballPath string, path string) (string, erro
 	return "", fmt.Errorf("%s not found in tarball", path)
 }
 
+func replaceInFileRegex(path string, patterns map[*regexp.Regexp]string) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	content := string(data)
+	for re, replacement := range patterns {
+		content = re.ReplaceAllString(content, replacement)
+	}
+	return os.WriteFile(path, []byte(content), 0755)
+}
+
+
 func init() {
 	flags := Cmd.Flags()
 
@@ -322,13 +364,6 @@ func init() {
 		"ISO Checksum for Packer to use",
 	)
 
-	flags.StringVar(
-		&args.accelerator,
-		"accelerator",
-		"kvm",
-		"Accelerator for Packer to use (amd64: kvm | arm64: tcg)",
-	)
-
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		log.Fatal(err)
 	}
@@ -361,11 +396,7 @@ variable architecture {
 
 source "qemu" "img" {
 	qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
-	qemuargs             = var.architecture == "arm64" ? [
-								["-machine", "virt"],
-								["-cpu", "cortex-a57"],
-								["-bios", "/usr/share/qemu-efi-aarch64/QEMU_EFI.fd"]
-							] : []
+	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "cortex-a57"], ["-bios", "/usr/share/qemu-efi-aarch64/QEMU_EFI.fd"]] : []
 	vm_name              = "image.raw"
 	cd_files             = ["./cloud-init/*"]
 	cd_label             = "cidata"
@@ -376,7 +407,7 @@ source "qemu" "img" {
 	memory               = 12000
 	cpus                 = 6
 	output_directory     = "build/"
-	accelerator          = "%s"
+	accelerator          = var.architecture == "arm64" ? "tcg" : "kvm"
 	disk_size            = "80G"
 	disk_interface       = "virtio"
 	format               = "raw"
@@ -387,7 +418,25 @@ source "qemu" "img" {
 	ssh_password         = "ubuntu"
 	ssh_timeout          = "60m"
 	headless             = true
-}`, args.isoURL, args.isoChecksum, args.accelerator)
+}`, args.isoURL, args.isoChecksum)
+
+	if args.arch == "arm64" {
+		replacements[`provisioner "shell" {
+    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    scripts          = ["${path.root}/../scripts/build/install-powershell.sh"]
+  }`] = `  provisioner "shell" {
+    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline           = [
+			"curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.5.1/powershell-7.5.1-linux-arm64.tar.gz",
+			"mkdir -p /opt/microsoft/powershell/7",
+			"tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7",
+			"chmod +x /opt/microsoft/powershell/7/pwsh",
+			"ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
+		]
+  }`
+  }
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
 	provisioner "shell" {
