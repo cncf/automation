@@ -131,6 +131,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-pulumi.sh", "linux-x64", "linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-dotnetcore-sdk.sh", "linux-x64", "linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-firefox.sh", "linux64.tar.gz", "linux-aarch64.tar.gz")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-swift.sh", "\\$\\(lsb_release -rs\\)", "24.04-aarch64")
 	}
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, "--only", "qemu.img", newFile)
