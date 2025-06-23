@@ -451,6 +451,8 @@ source "qemu" "img" {
 			"ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
 		]
   }`
+		// Remove edge installation, there is no arm build from Microsoft
+		replacements[`"${path.root}/../scripts/build/install-microsoft-edge.sh",`] = ``
   }
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
