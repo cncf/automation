@@ -453,6 +453,8 @@ source "qemu" "img" {
   }`
 		// Remove edge installation, there is no arm build from Microsoft
 		replacements[`"${path.root}/../scripts/build/install-microsoft-edge.sh",`] = ``
+		// Remove chrome installation, there is no arm build from Google
+		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
   }
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
