@@ -422,7 +422,7 @@ source "qemu" "img" {
 	memory               = 12000
 	cpus                 = 6
 	output_directory     = "build/"
-	accelerator          = "kvm"
+	accelerator          = var.architecture == "arm64" ? "tcg" : "kvm"
 	disk_size            = "80G"
 	disk_interface       = "virtio"
 	format               = "raw"
