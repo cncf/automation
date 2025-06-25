@@ -411,7 +411,7 @@ variable architecture {
 
 source "qemu" "img" {
 	qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
-	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "cortex-a57"], ["-bios", "/usr/share/qemu-efi-aarch64/QEMU_EFI.fd"]] : []
+	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "cortex-a57"], ["-bios", "/usr/share/qemu-efi-aarch64/QEMU_EFI.fd"], ["-accel", "tcg,thread=multi"]] : []
 	vm_name              = "image.raw"
 	cd_files             = ["./cloud-init/*"]
 	cd_label             = "cidata"
@@ -422,7 +422,7 @@ source "qemu" "img" {
 	memory               = 12000
 	cpus                 = 6
 	output_directory     = "build/"
-	accelerator          = var.architecture == "arm64" ? "tcg" : "kvm"
+	accelerator          = "kvm"
 	disk_size            = "80G"
 	disk_interface       = "virtio"
 	format               = "raw"
