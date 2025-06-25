@@ -411,8 +411,8 @@ variable architecture {
 
 source "qemu" "img" {
 	qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
-	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"]] : []
-	vm_name              = "image.raw"
+	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-accel", "tcg,thread=multi"]] : []
+ vm_name              = "image.raw"
 	cd_files             = ["./cloud-init/*"]
 	cd_label             = "cidata"
 	disk_compression     = true
