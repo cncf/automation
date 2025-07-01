@@ -143,9 +143,24 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-terraform.sh", "amd64", "arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-aliyun-cli.sh", "amd64", "arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-github-cli.sh", "amd64", "arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-java-tools.sh", "amd64", "arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "x64", "aarch64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-codeql-bundle.sh", "x64", "arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-ninja.sh", "ninja-linux.zip", "ninja-linux-aarch64.zip")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "wget .*", "wget http://launchpadlibrarian.net/723810004/libicu74_74.2-1ubuntu3_arm64.deb")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "libicu70_70.1-2_amd64.deb", "libicu74_74.2-1ubuntu3_arm64.deb")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "EXPECTED_LIBICU_SHA512=.*", "EXPECTED_LIBICU_SHA512=f5bc20c081d5dc6642a066052e69982702cf4b8638f77719567f7f30f622aae59ec1c23cb17842532c141768460369c176ad079e4ed22d6f4436f4ad86f30f79")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/SoftwareReport.CachedTools.psm1", "x64", "aarch64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/SoftwareReport.Tools.psm1", "x64", "arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "Import-Module \\(Join-Path \\$PSScriptRoot \"SoftwareReport.Browsers.psm1\"\\) -DisableNameChecking", "")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Browsers and Drivers\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*", "")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Environment variables\n.*", "")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/tests/Browsers.Tests.ps1", "Describe \"Chrome\"(.|\n)*", "")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-amd64", "linux-arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-x86_64", "linux-aarch64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "x64", "arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"PyPy\",\n            \"arch\": \"arm64\"", "\"PyPy\",\n            \"arch\": \"aarch64\"")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"Ruby\",\n            \"platform_version\": \"24.04\"", "\"Ruby\",\n            \"platform_version\": \"24.04-arm64\"")
 	}
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, "--only", "qemu.img", newFile)
@@ -411,8 +426,11 @@ variable architecture {
 
 source "qemu" "img" {
 	qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
-	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-accel", "tcg,thread=multi"]] : []
- vm_name              = "image.raw"
+	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]] : []
+	efi_boot             = var.architecture == "arm64" ? true : false
+	efi_firmware_code    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_CODE.fd" : ""
+	efi_firmware_vars    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_VARS.fd" : ""
+	vm_name              = "image.raw"
 	cd_files             = ["./cloud-init/*"]
 	cd_label             = "cidata"
 	disk_compression     = true
@@ -422,7 +440,7 @@ source "qemu" "img" {
 	memory               = 12000
 	cpus                 = 6
 	output_directory     = "build/"
-	accelerator          = var.architecture == "arm64" ? "tcg" : "kvm"
+	accelerator          = "kvm"
 	disk_size            = "80G"
 	disk_interface       = "virtio"
 	format               = "raw"
@@ -451,8 +469,14 @@ source "qemu" "img" {
 			"ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
 		]
   }`
+
+		replacements[`provisioner "shell" {
+    environment_vars = ["IMAGE_VERSION=${var.image_version}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]`] = `  provisioner "shell" {
+    environment_vars = ["IMAGE_VERSION=${var.image_version}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "CODEQL_JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-arm64"]`
+
 		// Remove edge installation, there is no arm build from Microsoft
 		replacements[`"${path.root}/../scripts/build/install-microsoft-edge.sh",`] = ``
+
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
   }
