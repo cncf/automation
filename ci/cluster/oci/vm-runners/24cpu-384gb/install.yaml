@@ -298,7 +298,7 @@ spec:
       - name: runner
         image: ghcr.io/cncf/gha-cloudrunner:15556159767
         args:
-        - --arch=x86
+        - --arch=amd64
         - --shape=VM.Standard.E4.Flex
         - --shape-ocpus=24.0
         - --shape-memory-in-gbs=384.0
