@@ -10,12 +10,13 @@ jobs:
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        arch: ["amd64", "arm64"]
+        # arch: ["amd64", "arm64"]
+        arch: ["amd64"]
         include:
           - arch: amd64
             runner: ubuntu-latest-8-cores
-          - arch: arm64
-            runner: oracle-bm-8cpu-32gb-arm64
+          # - arch: arm64
+          #   runner: oracle-bm-8cpu-32gb-arm64
 
     steps:
       - uses: actions/checkout@v4
