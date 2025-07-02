@@ -197,15 +197,27 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 	command := exec.Command("oci", "compute", "image", "list", "--compartment-id", args.compartmentId, "--operating-system", imageName, "--operating-system-version", imageVersion)
 	output, err := command.Output()
 
-	image := &core.Image{}
 	if err != nil {
 		log.Print(command.String())
 		log.Fatal("could not run command: ", err)
 		return false, err
 	}
-	err = json.Unmarshal(output, image)
-	if err != nil || image.OperatingSystem != &imageName || image.OperatingSystemVersion != &imageVersion {
-		return false, err
+
+	var response struct {
+		Data []core.Image `json:"data"`
+	}
+
+	if err := json.Unmarshal(output, &response); err != nil {
+		log.Printf("Error unmarshalling OCI response: %v. Response was: %s", err, string(output))
+		return false, fmt.Errorf("could not unmarshal OCI response: %w", err)
+	}
+
+	// The OCI query is specific, but we can iterate and double-check the results.
+	for _, image := range response.Data {
+		if image.OperatingSystem != nil && *image.OperatingSystem == imageName && image.OperatingSystemVersion != nil && *image.OperatingSystemVersion == imageVersion {
+			log.Printf("Found image: %s", *image.OperatingSystemVersion)
+			return true, nil
+		}
 	}
 
 	return true, nil
