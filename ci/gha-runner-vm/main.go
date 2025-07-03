@@ -145,7 +145,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-github-cli.sh", "amd64", "arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-java-tools.sh", "amd64", "arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "x64", "aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-codeql-bundle.sh", "x64", "arm64")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-codeql-bundle.sh", "/x64", "/arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-ninja.sh", "ninja-linux.zip", "ninja-linux-aarch64.zip")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "wget .*", "wget http://launchpadlibrarian.net/723810004/libicu74_74.2-1ubuntu3_arm64.deb")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "libicu70_70.1-2_amd64.deb", "libicu74_74.2-1ubuntu3_arm64.deb")
@@ -183,14 +183,122 @@ func run(cmd *cobra.Command, argv []string) error {
 	}
 
 	command = exec.Command("oci", "compute", "image", "import", "from-object", "--bucket-name", args.bucketName, "--compartment-id", args.compartmentId, "--namespace", args.namespace, "--operating-system", imageName, "--display-name", imageName, "--name", fmt.Sprintf("ubuntu-gha-image-%s", timestamp), "--operating-system-version", *selectedRelease.TagName, "--launch-mode", "PARAVIRTUALIZED")
-	command.Stdout = os.Stdout
-	if err := command.Run(); err != nil {
-		log.Print(command.String())
-		log.Fatal("could not run command: ", err)
+	output, err := command.Output()
+	if err != nil {
+		log.Fatal("failed to run OCI command: ", err)
+	}
+
+	// Need to update arm64 image capabilities
+	if args.arch == "arm64" {
+		var result struct {
+			Data struct {
+				ID string `json:"id"`
+			} `json:"data"`
+		}
+
+		if err := json.Unmarshal(output, &result); err != nil {
+			log.Fatal("failed to parse JSON: ", err)
+		}
+		imageID := result.Data.ID
+
+		for {
+			state, err := getImageState(imageID)
+			if err != nil {
+				log.Println("Error checking image state:", err)
+			} else {
+				log.Println("Current lifecycle-state:", state)
+				if state == "AVAILABLE" {
+					log.Println("Image is AVAILABLE!")
+					break
+				}
+			}
+			log.Println("Waiting for 30 seconds before retrying...")
+			time.Sleep(30 * time.Second)
+		}
+
+		// Update image capabilities
+		replaceArmPackageLinks(".", "/capability-update.json", "REPLACE_IMAGE_ID", imageID)
+		replaceArmPackageLinks(".", "/capability-update.json", "REPLACE_COMPARTMENT_ID", args.compartmentId)
+		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file://capability-update.json")
+		if err := command.Run(); err != nil {
+			log.Print(command.String())
+			log.Fatal("could not run command: ", err)
+		}
+
+		// Add VM.Standard.A1.Flex compatibility
+		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\"" + imageID + "\",\"shape\":\"VM.Standard.A1.Flex\"}")
+		if err := command.Run(); err != nil {
+			log.Print(command.String())
+			log.Fatal("could not run command: ", err)
+		}
+
+		// Add BM.Standard.A1.160 compatibility
+		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/BM.Standard.A1.160", "--request-body", "{\"imageId\":\"" + imageID + "\",\"shape\":\"BM.Standard.A1.160\"}")
+		if err := command.Run(); err != nil {
+			log.Print(command.String())
+			log.Fatal("could not run command: ", err)
+		}
+
+		// Remove other amd64/x86 compatibility
+		removeList := []string{
+			"BM.Standard2.52",
+			"BM.DenseIO.E4.128",
+			"BM.Standard.E4.128",
+			"BM.Standard.E3.128",
+			"BM.Standard.E2.64",
+			"BM.DenseIO2.52",
+			"VM.Standard.E5.Flex",
+			"VM.Standard.E4.Flex",
+			"VM.Standard.E3.Flex",
+			"VM.Standard2.1",
+			"VM.Standard2.2",
+			"VM.Standard2.4",
+			"VM.Standard2.8",
+			"VM.Standard2.16",
+			"VM.Standard2.24",
+			"VM.Standard.E2.1",
+			"VM.Standard.E2.2",
+			"VM.Standard.E2.4",
+			"VM.Standard.E2.8",
+			"VM.Standard.E2.1.Micro",
+			"VM.Standard3.Flex",
+			"VM.DenseIO2.8",
+			"VM.DenseIO2.16",
+			"VM.DenseIO2.24",
+		}
+
+		for _, machine := range removeList {
+			command = exec.Command("oci", "raw-request", "--http-method", "DELETE", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/" + machine, "--request-body", "{\"imageId\":\"" + imageID + "\"}")
+			if err := command.Run(); err != nil {
+				log.Print(command.String())
+				log.Fatal("could not run command: ", err)
+			}
+		}
 	}
 
 	log.Println("New Ubuntu 24.04 image created successfully.")
 	return nil
+}
+
+func getImageState(imageID string) (string, error) {
+	command := exec.Command("oci", "compute", "image", "get","--image-id", imageID)
+
+	output, err := command.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to run OCI command: %w", err)
+	}
+
+	var result struct {
+		Data struct {
+			LifecycleState string `json:"lifecycle-state"`
+		} `json:"data"`
+	}
+
+	if err := json.Unmarshal(output, &result); err != nil {
+		return "", fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	return result.Data.LifecycleState, nil
 }
 
 func imageExists(imageName, imageVersion string) (bool, error) {
@@ -212,7 +320,6 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 		return false, fmt.Errorf("could not unmarshal OCI response: %w", err)
 	}
 
-	// The OCI query is specific, but we can iterate and double-check the results.
 	for _, image := range response.Data {
 		if image.OperatingSystem != nil && *image.OperatingSystem == imageName && image.OperatingSystemVersion != nil && *image.OperatingSystemVersion == imageVersion {
 			log.Printf("Found image: %s", *image.OperatingSystemVersion)
