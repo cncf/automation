@@ -25,7 +25,9 @@ INSTANCE_OCID=$(/home/runner/bin/oci compute instance launch \
   --display-name "$INSTANCE_NAME" \
   --ssh-authorized-keys-file "$SSH_PUBLIC_KEY_PATH" \
   --wait-for-state "RUNNING" \
+  --boot-volume-size-in-gbs 200 \
   --query "data.id" --raw-output)
+
 echo "INSTANCE_OCID=$INSTANCE_OCID" >> .env
 
 echo "Fetching public IP..."

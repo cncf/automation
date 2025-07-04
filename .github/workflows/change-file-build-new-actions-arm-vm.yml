@@ -7,6 +7,8 @@ on:
         - "ci/gha-runner-vm/**"
         - ".github/workflows/change-file-build-new-actions-arm-vm.yml"
         - ".github/workflows/periodic-build-new-actions-arm-vm.yml"
+        - ".github/scripts/create_bare_metal.sh"
+        - ".github/scripts/build_arm_image.sh"
   workflow_dispatch:
 
 jobs:
