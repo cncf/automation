@@ -36,7 +36,9 @@ jobs:
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
           OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
-        run: ${{ github.workspace }}/.github/scripts/create_bare_metal.sh
+        run: |
+          ${{ github.workspace }}/.github/scripts/create_bare_metal.sh
+          cat ${{ github.workspace }}/.env >> $GITHUB_ENV
         shell: bash
 
       - name: Terminate Arm64 BareMetal Instance

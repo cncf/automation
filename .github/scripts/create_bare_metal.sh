@@ -28,10 +28,15 @@ INSTANCE_OCID=$(/home/runner/bin/oci compute instance launch \
   --query "data.id" --raw-output)
 
 echo "Instance OCID: $INSTANCE_OCID"
-echo "export INSTANCE_OCID=$INSTANCE_OCID" >> $GITHUB_ENV
+echo "export INSTANCE_OCID=$INSTANCE_OCID" >> .env
 
 echo "Waiting for instance to become RUNNING..."
-/home/runner/bin/oci compute instance wait-for-state "$INSTANCE_OCID" --state RUNNING
+INSTANCE_STATE="Unknown"
+while [ $INSTANCE_STATE != "RUNNING" ]; do
+  INSTANCE_STATE=$(/home/runner/bin/oci compute instance get --instance-id "$INSTANCE_OCID" \
+    --query "data.\"lifecycle-state\"" --raw-output)
+  sleep 5
+done
 
 echo "Fetching public IP..."
 PUBLIC_IP=""
@@ -41,7 +46,7 @@ while [ -z "$PUBLIC_IP" ]; do
   [ -z "$PUBLIC_IP" ] && echo "Waiting for public IP..." && sleep 10
 done
 echo "Instance Public IP: $PUBLIC_IP"
-echo "export PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
+echo "export PUBLIC_IP=$PUBLIC_IP" >> .env
 
 echo "Waiting for SSH to become available..."
 until ssh -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY_PATH" ubuntu@"$PUBLIC_IP" "echo SSH is ready"; do
