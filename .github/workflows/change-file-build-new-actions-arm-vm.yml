@@ -35,7 +35,6 @@ jobs:
           OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-          OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
         run: |
           ${{ github.workspace }}/.github/scripts/create_bare_metal.sh
           cat ${{ github.workspace }}/.env >> $GITHUB_ENV
@@ -48,10 +47,9 @@ jobs:
           OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-          OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
         run: |
           scp -i ${{ github.workspace }}/id_rsa ${{ github.workspace }}/.github/scripts/build_arm_image.sh ubuntu@$PUBLIC_IP:.
-          ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh ${{ env.OCI_CLI_USER }} ${{ env.OCI_CLI_TENANCY }} ${{ env.OCI_CLI_FINGERPRINT}} ${{ env.OCI_CLI_KEY_CONTENT }} ${{ env.OCI_CLI_REGION }} ${{ env.OCI_INSTANCE_ID }}
+          ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh ${{ env.OCI_CLI_USER }} ${{ env.OCI_CLI_TENANCY }} ${{ env.OCI_CLI_FINGERPRINT}} $(echo ${{ env.OCI_CLI_KEY_CONTENT }} | base64 -w0) ${{ env.OCI_CLI_REGION }}
         shell: bash
 
       - name: Terminate Arm64 BareMetal Instance
@@ -62,6 +60,5 @@ jobs:
           OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-          OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
         run: /home/runner/bin/oci compute instance terminate --instance-id "$INSTANCE_OCID" --force
         shell: bash

@@ -1,14 +1,13 @@
 #!/bin/bash
 
-export OCI_CLI_USER=$1
-export OCI_CLI_TENANCY=$2
-export OCI_CLI_FINGERPRINT=$3
-export OCI_CLI_KEY_CONTENT=$4
-export OCI_CLI_REGION=$5
-export OCI_INSTANCE_ID=$6
+export OCI_CLI_USER="$1"
+export OCI_CLI_TENANCY="$2"
+export OCI_CLI_FINGERPRINT="$3"
+export OCI_CLI_KEY_CONTENT="$(echo $4 | base64 -d)"
+export OCI_CLI_REGION="$5"
 
 sudo apt update
-sudo apt install -y qemu-system-x86 xorriso qemu-system-arm qemu-efi-aarch64 git golang zip
+sudo apt install -y xorriso qemu-system-arm qemu-efi-aarch64 git golang zip
 
 echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
 sudo udevadm control --reload-rules
