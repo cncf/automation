@@ -16,7 +16,6 @@ INSTANCE_NAME="gha-arm-image-builder-$(date +%s)"
 ssh-keygen -t rsa -f id_rsa -q -N ""
 
 echo "Creating Bare Metal instance: $INSTANCE_NAME"
-
 INSTANCE_OCID=$(/home/runner/bin/oci compute instance launch \
   --compartment-id "$COMPARTMENT_OCID" \
   --availability-domain "$AVAILABILITY_DOMAIN" \
@@ -25,18 +24,9 @@ INSTANCE_OCID=$(/home/runner/bin/oci compute instance launch \
   --image-id "$IMAGE_OCID" \
   --display-name "$INSTANCE_NAME" \
   --ssh-authorized-keys-file "$SSH_PUBLIC_KEY_PATH" \
+  --wait-for-state "RUNNING" \
   --query "data.id" --raw-output)
-
-echo "Instance OCID: $INSTANCE_OCID"
 echo "INSTANCE_OCID=$INSTANCE_OCID" >> .env
-
-echo "Waiting for instance to become RUNNING..."
-INSTANCE_STATE="Unknown"
-while [ $INSTANCE_STATE != "RUNNING" ]; do
-  INSTANCE_STATE=$(/home/runner/bin/oci compute instance get --instance-id "$INSTANCE_OCID" \
-    --query "data.\"lifecycle-state\"" --raw-output)
-  sleep 5
-done
 
 echo "Fetching public IP..."
 PUBLIC_IP=""
@@ -50,6 +40,7 @@ echo "PUBLIC_IP=$PUBLIC_IP" >> .env
 
 echo "Waiting for SSH to become available..."
 until ssh -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY_PATH" ubuntu@"$PUBLIC_IP" "echo SSH is ready"; do
+  echo "Waiting for SSH to become available..."
   sleep 5
 done
 
