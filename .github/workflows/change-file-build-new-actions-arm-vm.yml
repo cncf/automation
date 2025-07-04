@@ -1,0 +1,53 @@
+name: Change File Build New Actions ARM VM
+on:
+#  push:
+#    branches:
+#      - "main"
+#    paths:
+#        - "ci/gha-runner-vm/**"
+#        - ".github/workflows/change-file-build-new-actions-arm-vm.yml"
+#        - ".github/workflows/periodic-build-new-actions-arm-vm.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build new Actions VM
+    runs-on: oracle-2cpu-8gb-x86-64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Change Ubuntu mirrors
+        uses: vegardit/fast-apt-mirror.sh@v1
+        with:
+          exclude-current: true
+
+      - name: Install OCI CLI
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo 'export PATH=$PATH:$HOME/bin' >> $GITHUB_ENV 
+
+      - name: Create Arm64 BareMetal Instance
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+          OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
+        run: ${{ github.workspace }}/.github/scripts/create_bare_metal.sh
+        shell: bash
+
+      - name: Terminate Arm64 BareMetal Instance
+        if: always()
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+          OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
+        run: oci compute instance action --instance-id "$INSTANCE_OCID" --action STOP
+        shell: bash
