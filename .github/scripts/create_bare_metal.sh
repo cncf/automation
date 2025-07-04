@@ -13,7 +13,7 @@ SSH_PRIVATE_KEY_PATH="./id_rsa"
 INSTANCE_NAME="gha-arm-image-builder-$(date +%s)"
 # --------------------------
 
-ssh-keygen -t rsa -f id.rsa -q -N ""
+ssh-keygen -t rsa -f id_rsa -q -N ""
 
 echo "Creating Bare Metal instance: $INSTANCE_NAME"
 
