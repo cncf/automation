@@ -1,12 +1,12 @@
 name: Change File Build New Actions ARM VM
 on:
-#  push:
-#    branches:
-#      - "main"
-#    paths:
-#        - "ci/gha-runner-vm/**"
-#        - ".github/workflows/change-file-build-new-actions-arm-vm.yml"
-#        - ".github/workflows/periodic-build-new-actions-arm-vm.yml"
+  push:
+    branches:
+      - "main"
+    paths:
+        - "ci/gha-runner-vm/**"
+        - ".github/workflows/change-file-build-new-actions-arm-vm.yml"
+        - ".github/workflows/periodic-build-new-actions-arm-vm.yml"
   workflow_dispatch:
 
 jobs:
@@ -40,7 +40,7 @@ jobs:
           cat ${{ github.workspace }}/.env >> $GITHUB_ENV
         shell: bash
 
-      - name: Create Arm64 BareMetal Instance
+      - name: Build VM Image
         env:
           OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
           OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
@@ -49,7 +49,7 @@ jobs:
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
         run: |
           scp -i ${{ github.workspace }}/id_rsa ${{ github.workspace }}/.github/scripts/build_arm_image.sh ubuntu@$PUBLIC_IP:.
-          ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh ${{ env.OCI_CLI_USER }} ${{ env.OCI_CLI_TENANCY }} ${{ env.OCI_CLI_FINGERPRINT}} $(echo ${{ env.OCI_CLI_KEY_CONTENT }} | base64 -w0) ${{ env.OCI_CLI_REGION }}
+          ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh ${{ env.OCI_CLI_USER }} ${{ env.OCI_CLI_TENANCY }} ${{ env.OCI_CLI_FINGERPRINT}} $(echo "${{ env.OCI_CLI_KEY_CONTENT }}" | base64 -w0) ${{ env.OCI_CLI_REGION }}
         shell: bash
 
       - name: Terminate Arm64 BareMetal Instance
