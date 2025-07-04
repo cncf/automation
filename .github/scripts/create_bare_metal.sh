@@ -17,7 +17,7 @@ ssh-keygen -t rsa -f id.rsa -q -N ""
 
 echo "Creating Bare Metal instance: $INSTANCE_NAME"
 
-INSTANCE_OCID=$(oci compute instance launch \
+INSTANCE_OCID=$(/home/runner/bin/oci compute instance launch \
   --compartment-id "$COMPARTMENT_OCID" \
   --availability-domain "$AVAILABILITY_DOMAIN" \
   --shape "$SHAPE" \
@@ -31,12 +31,12 @@ echo "Instance OCID: $INSTANCE_OCID"
 echo "export INSTANCE_OCID=$INSTANCE_OCID" >> $GITHUB_ENV
 
 echo "Waiting for instance to become RUNNING..."
-oci compute instance wait-for-state "$INSTANCE_OCID" --state RUNNING
+/home/runner/bin/oci compute instance wait-for-state "$INSTANCE_OCID" --state RUNNING
 
 echo "Fetching public IP..."
 PUBLIC_IP=""
 while [ -z "$PUBLIC_IP" ]; do
-  PUBLIC_IP=$(oci compute instance list-vnics --instance-id "$INSTANCE_OCID" \
+  PUBLIC_IP=$(/home/runner/bin/oci compute instance list-vnics --instance-id "$INSTANCE_OCID" \
     --query "data[0].\"public-ip\"" --raw-output)
   [ -z "$PUBLIC_IP" ] && echo "Waiting for public IP..." && sleep 10
 done
