@@ -11,16 +11,7 @@ on:
 jobs:
   build:
     name: Build new Actions VM
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      matrix:
-        # arch: ["amd64", "arm64"]
-        arch: ["amd64"]
-        include:
-          - arch: amd64
-            runner: ubuntu-latest-8-cores
-          # - arch: arm64
-          #  runner: oracle-bm-8cpu-32gb-arm64
+    runs-on: ubuntu-latest-8-cores
 
     steps:
       - uses: actions/checkout@v4
@@ -43,10 +34,10 @@ jobs:
         run: cd ci/gha-runner-vm && go get .
       - name: Install Packer
         run: |
-          curl -LO https://releases.hashicorp.com/packer/1.12.0/packer_1.12.0_linux_${{ matrix.arch }}.zip
-          unzip packer_1.12.0_linux_${{ matrix.arch }}.zip
+          curl -LO https://releases.hashicorp.com/packer/1.12.0/packer_1.12.0_linux_amd64.zip
+          unzip packer_1.12.0_linux_amd64.zip
           sudo mv packer /usr/local/bin/
-          rm packer_1.12.0_linux_${{ matrix.arch }}.zip
+          rm packer_1.12.0_linux_amd64.zip
           packer plugin install github.com/hashicorp/oracle
           packer plugins install github.com/hashicorp/qemu
           packer plugins install github.com/hashicorp/azure
@@ -58,7 +49,6 @@ jobs:
           OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-          OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
         run: |
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
@@ -74,10 +64,9 @@ jobs:
           OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-          OCI_INSTANCE_ID: ${{ secrets.OCI_INSTANCE_ID }}
         run: |
           export PATH=$PATH:$HOME/bin && \
           cd ci/gha-runner-vm && \
           PACKER_LOG=1 go run main.go \
-            --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-${{ matrix.arch }}.img \
-            --arch ${{ matrix.arch }}
+            --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
+            --arch amd64
