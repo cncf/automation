@@ -22,7 +22,7 @@ region=${OCI_CLI_REGION}
 key_file=${OCI_KEY_FILE}
 EOF
 
-echo ${OCI_CLI_KEY_CONTENT} > ${OCI_KEY_FILE}
+echo "${OCI_CLI_KEY_CONTENT}" > ${OCI_KEY_FILE}
 chmod 600 ${OCI_CONFIG_FILE}
 chmod 600 ${OCI_KEY_FILE}
 
