@@ -291,7 +291,7 @@ func run(cmd *cobra.Command, argv []string) error {
 func getImageState(imageID string) (string, error) {
 	command := exec.Command("oci", "compute", "image", "get","--image-id", imageID)
 
-	output, err := command.Output()
+	output, err := command.CombinedOutput()
 	if err != nil {
 		log.Printf("OCI command failed. Output:\n%s", string(output))
 		return "", fmt.Errorf("failed to run OCI command: %w", err)
@@ -312,7 +312,7 @@ func getImageState(imageID string) (string, error) {
 
 func imageExists(imageName, imageVersion string) (bool, error) {
 	command := exec.Command("oci", "compute", "image", "list", "--compartment-id", args.compartmentId, "--operating-system", imageName, "--operating-system-version", imageVersion)
-	output, err := command.Output()
+	output, err := command.CombinedOutput()
 
 	if err != nil {
 		log.Print(command.String())
