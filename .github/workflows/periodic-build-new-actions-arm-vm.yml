@@ -1,0 +1,60 @@
+name: Periodic Build New Actions ARM VM
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+
+jobs:
+  build:
+    name: Build new Actions ARM VM
+    runs-on: oracle-2cpu-8gb-x86-64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Change Ubuntu mirrors
+        uses: vegardit/fast-apt-mirror.sh@v1
+        with:
+          exclude-current: true
+
+      - name: Install OCI CLI
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+
+      - name: Create Arm64 BareMetal Instance
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: |
+          ${{ github.workspace }}/.github/scripts/create_bare_metal.sh
+          cat ${{ github.workspace }}/.env >> $GITHUB_ENV
+        shell: bash
+
+      - name: Build VM Image
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: |
+          scp -i ${{ github.workspace }}/id_rsa ${{ github.workspace }}/.github/scripts/build_arm_image.sh ubuntu@$PUBLIC_IP:.
+          ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh ${{ env.OCI_CLI_USER }} ${{ env.OCI_CLI_TENANCY }} ${{ env.OCI_CLI_FINGERPRINT}} $(echo "${{ env.OCI_CLI_KEY_CONTENT }}" | base64 -w0) ${{ env.OCI_CLI_REGION }}
+        shell: bash
+
+      - name: Terminate Arm64 BareMetal Instance
+        if: always()
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: /home/runner/bin/oci compute instance terminate --instance-id "$INSTANCE_OCID" --force
+        shell: bash

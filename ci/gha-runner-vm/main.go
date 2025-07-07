@@ -316,6 +316,7 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 
 	if err != nil {
 		log.Print(command.String())
+		log.Printf("OCI command failed. Output:\n%s", string(output))
 		log.Fatal("could not run command: ", err)
 		return false, err
 	}
