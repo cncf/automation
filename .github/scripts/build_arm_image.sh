@@ -3,8 +3,29 @@
 export OCI_CLI_USER="$1"
 export OCI_CLI_TENANCY="$2"
 export OCI_CLI_FINGERPRINT="$3"
-export OCI_CLI_KEY_CONTENT="$(echo $4 | base64 -d)"
+export OCI_CLI_KEY_CONTENT="$4"
 export OCI_CLI_REGION="$5"
+
+OCI_CONFIG_FILE="~/.oci/config"
+OCI_KEY_FILE="~/.oci/oci_api_key.pem"
+OCI_CLI_REGION="us-sanjose-1"
+
+# oci raw-request command requires key_file to be set
+# so, manually creating the OCI config files
+mkdir ~/.oci
+
+cat >> ${OCI_CONFIG_FILE} << EOF
+[DEFAULT]
+user=${OCI_CLI_USER}
+fingerprint=${OCI_CLI_FINGERPRINT}
+tenancy=${OCI_CLI_TENANCY}
+region=${OCI_CLI_REGION}
+key_file=${OCI_KEY_FILE}
+EOF
+
+echo ${OCI_CLI_KEY_CONTENT} | base64 -d > ${OCI_KEY_FILE}
+chmod 600 ${OCI_CONFIG_FILE}
+chmod 600 ${OCI_KEY_FILE}
 
 sudo apt update
 sudo apt install -y xorriso qemu-system-arm qemu-efi-aarch64 git golang zip
