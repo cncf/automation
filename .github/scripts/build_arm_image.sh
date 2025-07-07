@@ -8,7 +8,6 @@ export OCI_CLI_REGION="$5"
 
 OCI_CONFIG_FILE="/home/ubuntu/.oci/config"
 OCI_KEY_FILE="/home/ubuntu/.oci/oci_api_key.pem"
-OCI_CLI_REGION="us-sanjose-1"
 
 # oci raw-request command requires key_file to be set
 # so, manually creating the OCI config files

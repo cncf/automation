@@ -293,6 +293,7 @@ func getImageState(imageID string) (string, error) {
 
 	output, err := command.Output()
 	if err != nil {
+		log.Printf("OCI command failed. Output:\n%s", string(output))
 		return "", fmt.Errorf("failed to run OCI command: %w", err)
 	}
 
