@@ -220,22 +220,28 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(".", "/capability-update.json", "REPLACE_IMAGE_ID", imageID)
 		replaceArmPackageLinks(".", "/capability-update.json", "REPLACE_COMPARTMENT_ID", args.compartmentId)
 		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file://capability-update.json")
-		if err := command.Run(); err != nil {
+		output, err = command.CombinedOutput()
+		if err != nil {
 			log.Print(command.String())
+			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
 		}
 
 		// Add VM.Standard.A1.Flex compatibility
 		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\"" + imageID + "\",\"shape\":\"VM.Standard.A1.Flex\"}")
-		if err := command.Run(); err != nil {
+		output, err = command.CombinedOutput()
+		if err != nil {
 			log.Print(command.String())
+			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
 		}
 
 		// Add BM.Standard.A1.160 compatibility
 		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/BM.Standard.A1.160", "--request-body", "{\"imageId\":\"" + imageID + "\",\"shape\":\"BM.Standard.A1.160\"}")
-		if err := command.Run(); err != nil {
+		output, err = command.CombinedOutput()
+		if err != nil {
 			log.Print(command.String())
+			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
 		}
 
@@ -269,8 +275,10 @@ func run(cmd *cobra.Command, argv []string) error {
 
 		for _, machine := range removeList {
 			command = exec.Command("oci", "raw-request", "--http-method", "DELETE", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/" + machine, "--request-body", "{\"imageId\":\"" + imageID + "\"}")
-			if err := command.Run(); err != nil {
+			output, err := command.CombinedOutput()
+			if err != nil {
 				log.Print(command.String())
+				log.Printf("OCI command failed. Output:\n%s", string(output))
 				log.Fatal("could not run command: ", err)
 			}
 		}
