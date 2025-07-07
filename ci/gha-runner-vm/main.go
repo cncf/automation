@@ -219,7 +219,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		// Update image capabilities
 		replaceArmPackageLinks(".", "/capability-update.json", "REPLACE_IMAGE_ID", imageID)
 		replaceArmPackageLinks(".", "/capability-update.json", "REPLACE_COMPARTMENT_ID", args.compartmentId)
-		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file://capability-update.json")
+		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file://capability-update.json", "--config-file", "/home/ubuntu/.oci/config")
 		output, err = command.CombinedOutput()
 		if err != nil {
 			log.Print(command.String())
@@ -228,7 +228,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		}
 
 		// Add VM.Standard.A1.Flex compatibility
-		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\"" + imageID + "\",\"shape\":\"VM.Standard.A1.Flex\"}")
+		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\"" + imageID + "\",\"shape\":\"VM.Standard.A1.Flex\"}", "--config-file", "/home/ubuntu/.oci/config")
 		output, err = command.CombinedOutput()
 		if err != nil {
 			log.Print(command.String())
@@ -237,7 +237,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		}
 
 		// Add BM.Standard.A1.160 compatibility
-		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/BM.Standard.A1.160", "--request-body", "{\"imageId\":\"" + imageID + "\",\"shape\":\"BM.Standard.A1.160\"}")
+		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/BM.Standard.A1.160", "--request-body", "{\"imageId\":\"" + imageID + "\",\"shape\":\"BM.Standard.A1.160\"}", "--config-file", "/home/ubuntu/.oci/config")
 		output, err = command.CombinedOutput()
 		if err != nil {
 			log.Print(command.String())
@@ -274,7 +274,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		}
 
 		for _, machine := range removeList {
-			command = exec.Command("oci", "raw-request", "--http-method", "DELETE", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/" + machine, "--request-body", "{\"imageId\":\"" + imageID + "\"}")
+			command = exec.Command("oci", "raw-request", "--http-method", "DELETE", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/" + machine, "--request-body", "{\"imageId\":\"" + imageID + "\"}", "--config-file", "/home/ubuntu/.oci/config")
 			output, err := command.CombinedOutput()
 			if err != nil {
 				log.Print(command.String())
