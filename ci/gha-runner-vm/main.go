@@ -55,7 +55,7 @@ func main() {
 func run(cmd *cobra.Command, argv []string) error {
 	filepath := "images/ubuntu/templates/"
 	sourceFile := fmt.Sprintf("%s%s-%s.pkr.hcl", filepath, args.os, args.osVersion)
-	imageFile := fmt.Sprintf("build/image.raw")
+	imageFile := "build/image.raw"
 	filename := ""
 	imageName := fmt.Sprintf("%s-%s-%s-gha-image", args.os, args.osVersion, args.arch)
 
@@ -217,8 +217,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		}
 
 		// Update image capabilities
-		replaceArmPackageLinks(".", "/capability-update.json", "REPLACE_IMAGE_ID", imageID)
-		replaceArmPackageLinks(".", "/capability-update.json", "REPLACE_COMPARTMENT_ID", args.compartmentId)
+		replaceArmPackageLinks("/home/ubuntu/automation/ci/gha-runner-vm", "/capability-update.json", "REPLACE_IMAGE_ID", imageID)
 		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file:///home/ubuntu/automation/ci/gha-runner-vm/capability-update.json")
 		output, err = command.CombinedOutput()
 		if err != nil {
