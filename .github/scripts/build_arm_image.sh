@@ -26,12 +26,6 @@ echo "${OCI_CLI_KEY_CONTENT}" > ${OCI_KEY_FILE}
 chmod 600 ${OCI_CONFIG_FILE}
 chmod 600 ${OCI_KEY_FILE}
 
-
-ls -l /home/ubuntu/.oci
-cat ${OCI_CONFIG_FILE}
-grep key_file ${OCI_CONFIG_FILE}
-exit 0
-
 sudo apt update
 sudo apt install -y xorriso qemu-system-arm qemu-efi-aarch64 git golang zip
 
