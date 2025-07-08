@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 export OCI_CLI_USER="$1"
 export OCI_CLI_TENANCY="$2"
