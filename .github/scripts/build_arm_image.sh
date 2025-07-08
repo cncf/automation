@@ -1,10 +1,10 @@
 #!/bin/bash -x
 
-#export OCI_CLI_USER="$1"
-#export OCI_CLI_TENANCY="$2"
-#export OCI_CLI_FINGERPRINT="$3"
-#export OCI_CLI_KEY_CONTENT="$(echo $4 | base64 -d)"
-#export OCI_CLI_REGION="$5"
+export OCI_CLI_USER="$1"
+export OCI_CLI_TENANCY="$2"
+export OCI_CLI_FINGERPRINT="$3"
+export OCI_CLI_KEY_CONTENT="$(echo $4 | base64 -d)"
+export OCI_CLI_REGION="$5"
 
 OCI_CONFIG_FILE="/home/ubuntu/.oci/config"
 OCI_KEY_FILE="/home/ubuntu/.oci/oci_api_key.pem"
