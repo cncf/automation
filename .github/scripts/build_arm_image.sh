@@ -28,8 +28,8 @@ chmod 600 ${OCI_KEY_FILE}
 
 
 ls -l /home/ubuntu/.oci
-cat ${OCI_KEY_FILE}
-grep key_file ${OCI_KEY_FILE}
+cat ${OCI_CONFIG_FILE}
+grep key_file ${OCI_CONFIG_FILE}
 exit 0
 
 sudo apt update
