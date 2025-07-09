@@ -141,9 +141,8 @@ func run(cmd *cobra.Command, argv []string) error {
 
 	commands := []string{
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
-		"mkdir /home/ubuntu/.nvm",
 		`sudo usermod -aG docker ubuntu && newgrp docker <<EOF
-export PATH=$PATH:/home/ubuntu/.local/bin && bash -x /home/ubuntu/run.sh --jitconfig "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
+export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && bash -x /home/ubuntu/run.sh --jitconfig "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
 EOF`,
 	}
 
