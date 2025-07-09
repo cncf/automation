@@ -225,6 +225,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
 		}
+		log.Printf("Image capabilities updated:\n%s",string(output))
 
 		// Add VM.Standard.A1.Flex compatibility
 		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\"" + imageID + "\",\"shape\":\"VM.Standard.A1.Flex\"}")
@@ -234,15 +235,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
 		}
-
-		// Add BM.Standard.A1.160 compatibility
-		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/BM.Standard.A1.160", "--request-body", "{\"imageId\":\"" + imageID + "\",\"shape\":\"BM.Standard.A1.160\"}")
-		output, err = command.CombinedOutput()
-		if err != nil {
-			log.Print(command.String())
-			log.Printf("OCI command failed. Output:\n%s", string(output))
-			log.Fatal("could not run command: ", err)
-		}
+		log.Printf("VM.Standard.A1.Flex compatibility added:\n%s",string(output))
 
 		// Remove other amd64/x86 compatibility
 		removeList := []string{
@@ -280,6 +273,7 @@ func run(cmd *cobra.Command, argv []string) error {
 				log.Printf("OCI command failed. Output:\n%s", string(output))
 				log.Fatal("could not run command: ", err)
 			}
+			log.Printf("%s compatibility removed:\n%s", machine, string(output))
 		}
 	}
 
