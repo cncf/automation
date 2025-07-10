@@ -226,8 +226,9 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
 		}
+		log.Printf("Capability update json:\n%s",string(output))
 
-		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file:///home/ubuntu/automation/ci/gha-runner-vm/capability-update.json", "--config-file", "/home/ubuntu/.oci/config")
+		command = exec.Command("oci", "--debug", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file:///home/ubuntu/automation/ci/gha-runner-vm/capability-update.json", "--config-file", "/home/ubuntu/.oci/config")
 		output, err = command.CombinedOutput()
 		if err != nil {
 			log.Print(command.String())
