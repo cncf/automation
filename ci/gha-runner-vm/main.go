@@ -208,7 +208,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			} else {
 				log.Println("Current lifecycle-state:", state)
 				if state == "AVAILABLE" {
-					log.Println("Image is AVAILABLE!")
+					log.Printf("Image %s is AVAILABLE!", imageID)
 					break
 				}
 			}
@@ -218,6 +218,15 @@ func run(cmd *cobra.Command, argv []string) error {
 
 		// Update image capabilities
 		replaceArmPackageLinks("/home/ubuntu/automation/ci/gha-runner-vm", "/capability-update.json", "REPLACE_IMAGE_ID", imageID)
+
+		command = exec.Command("cat", "/home/ubuntu/automation/ci/gha-runner-vm/capability-update.json")
+		output, err = command.CombinedOutput()
+		if err != nil {
+			log.Print(command.String())
+			log.Printf("OCI command failed. Output:\n%s", string(output))
+			log.Fatal("could not run command: ", err)
+		}
+
 		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file:///home/ubuntu/automation/ci/gha-runner-vm/capability-update.json", "--config-file", "/home/ubuntu/.oci/config")
 		output, err = command.CombinedOutput()
 		if err != nil {
