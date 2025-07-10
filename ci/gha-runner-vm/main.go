@@ -216,27 +216,6 @@ func run(cmd *cobra.Command, argv []string) error {
 			time.Sleep(30 * time.Second)
 		}
 
-		// Update image capabilities
-		replaceArmPackageLinks("/home/ubuntu/automation/ci/gha-runner-vm", "/capability-update.json", "REPLACE_IMAGE_ID", imageID)
-
-		command = exec.Command("cat", "/home/ubuntu/automation/ci/gha-runner-vm/capability-update.json")
-		output, err = command.CombinedOutput()
-		if err != nil {
-			log.Print(command.String())
-			log.Printf("OCI command failed. Output:\n%s", string(output))
-			log.Fatal("could not run command: ", err)
-		}
-		log.Printf("Capability update json:\n%s",string(output))
-
-		command = exec.Command("oci", "--debug", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file:///home/ubuntu/automation/ci/gha-runner-vm/capability-update.json", "--config-file", "/home/ubuntu/.oci/config")
-		output, err = command.CombinedOutput()
-		if err != nil {
-			log.Print(command.String())
-			log.Printf("OCI command failed. Output:\n%s", string(output))
-			log.Fatal("could not run command: ", err)
-		}
-		log.Printf("Image capabilities updated:\n%s",string(output))
-
 		// Add VM.Standard.A1.Flex compatibility
 		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\"" + imageID + "\",\"shape\":\"VM.Standard.A1.Flex\"}")
 		output, err = command.CombinedOutput()
@@ -245,7 +224,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
 		}
-		log.Printf("VM.Standard.A1.Flex compatibility added:\n%s",string(output))
+		log.Println("VM.Standard.A1.Flex compatibility added")
 
 		// Remove other amd64/x86 compatibility
 		removeList := []string{
@@ -283,8 +262,22 @@ func run(cmd *cobra.Command, argv []string) error {
 				log.Printf("OCI command failed. Output:\n%s", string(output))
 				log.Fatal("could not run command: ", err)
 			}
-			log.Printf("%s compatibility removed:\n%s", machine, string(output))
+			log.Printf("%s compatibility removed", machine)
+			time.Sleep(time.Second)
 		}
+
+		// Update image capabilities
+		time.Sleep(30 * time.Second)
+		
+		replaceArmPackageLinks("/home/ubuntu/automation/ci/gha-runner-vm", "/capability-update.json", "REPLACE_IMAGE_ID", imageID)
+		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "file:///home/ubuntu/automation/ci/gha-runner-vm/capability-update.json", "--config-file", "/home/ubuntu/.oci/config")
+		output, err = command.CombinedOutput()
+		if err != nil {
+			log.Print(command.String())
+			log.Printf("OCI command failed. Output:\n%s", string(output))
+			log.Fatal("could not run command: ", err)
+		}
+		log.Printf("Image capabilities updated:\n%s",string(output))
 	}
 
 	log.Println("New Ubuntu 24.04 image created successfully.")
