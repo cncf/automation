@@ -142,7 +142,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	commands := []string{
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
 		"rm -rf \\$HOME",
-		"mkdir -p ~/.nvm",
+		"rm -rf ~/.nvm",
 		"wget -O nvm-install.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh",
 		"bash nvm-install.sh",
 		`sudo usermod -aG docker ubuntu && newgrp docker <<EOF
@@ -158,7 +158,7 @@ EOF`,
 
 		output, err := sshClient.RunCommand(ctx, expanded)
 		if err != nil {
-			log.Println(err, "running ssh command", "command", cmd, "output", output)
+			log.Println(err, "running ssh command", "command", cmd, "output", string(output[:]))
 			return fmt.Errorf("running command %q: %w", cmd, err)
 		}
 		log.Println("command succeeded", "command", cmd, "output", string(output))
