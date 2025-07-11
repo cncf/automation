@@ -73,8 +73,10 @@ func run(cmd *cobra.Command, argv []string) error {
 			downloadURL := release.GetTarballURL()
 
 			if exists, _ := imageExists(imageName, release.GetTagName()); exists {
-				log.Println("Image already exists.")
-				return nil
+				if os.Getenv("GITHUB_PERIODIC") == "true" {
+					log.Println("Image already exists.")
+					return nil
+				}
 			}
 
 			log.Printf("Download URL: %s\n", downloadURL)
@@ -120,7 +122,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	if args.arch == "arm64" {
 		baseDir := strings.Split(filename, "/")[0]
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-azcopy.sh", "https://aka.ms/downloadazcopy-v10-linux", "https://github.com/Azure/azure-storage-azcopy/releases/download/v10.29.1/azcopy_linux_arm64_10.29.1.tar.gz")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64" )
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
@@ -134,7 +136,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-swift.sh", "\\$\\(lsb_release -rs\\)", "24.04-aarch64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-microsoft-edge.sh", "arch=amd64", "arch=arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-kubernetes-tools.sh", "linux-amd64", "linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh","http://archive.ubuntu.com/.*", "https://launchpadlibrarian.net/683466454/containernetworking-plugins_1.1.1+ds1-3build1_arm64.deb")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "http://archive.ubuntu.com/.*", "https://launchpadlibrarian.net/683466454/containernetworking-plugins_1.1.1+ds1-3build1_arm64.deb")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "amd64.deb", "arm64.db")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-oras-cli.sh", "linux_amd64", "linux_arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-yq.sh", "linux_amd64", "linux_arm64")
@@ -217,7 +219,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		}
 
 		// Add VM.Standard.A1.Flex compatibility
-		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\"" + imageID + "\",\"shape\":\"VM.Standard.A1.Flex\"}")
+		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\""+imageID+"\",\"shape\":\"VM.Standard.A1.Flex\"}")
 		output, err = command.CombinedOutput()
 		if err != nil {
 			log.Print(command.String())
@@ -255,7 +257,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		}
 
 		for _, machine := range removeList {
-			command = exec.Command("oci", "raw-request", "--http-method", "DELETE", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/" + imageID + "/shapes/" + machine, "--request-body", "{\"imageId\":\"" + imageID + "\"}")
+			command = exec.Command("oci", "raw-request", "--http-method", "DELETE", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/"+machine, "--request-body", "{\"imageId\":\""+imageID+"\"}")
 			output, err := command.CombinedOutput()
 			if err != nil {
 				log.Print(command.String())
@@ -269,14 +271,14 @@ func run(cmd *cobra.Command, argv []string) error {
 		// Update image capabilities
 		// I'm so sorry, the capability-update.json is embedded to the command here, I tried all sort of things before this. To make a change, you can run:
 		// cat capability-update.json | jq -c | jq -R '@json' | sed 's|\\\\\\|\\|g'
-		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "{\"schemaData\":{\"Compute.Firmware\":{\"values\":[\"BIOS\",\"UEFI_64\"],\"defaultValue\":\"UEFI_64\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Compute.LaunchMode\":{\"values\":[\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Compute.AMD_SecureEncryptedVirtualization\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Compute.SecureBoot\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Network.AttachmentType\":{\"values\":[\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Network.IPv6Only\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.BootVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.LocalDataVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.RemoteDataVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.ConsistentVolumeNaming\":{\"defaultValue\":\"true\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.Iscsi.MultipathDeviceSupported\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.ParaVirtualization.EncryptionInTransit\":{\"defaultValue\":\"true\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.ParaVirtualization.AttachmentVersion\":{\"values\":[\"1\",\"2\"],\"defaultValue\":\"2\",\"source\":\"IMAGE\",\"descriptorType\":\"enuminteger\"}},\"imageId\":\"" + imageID + "\",\"compartmentId\":\"" + args.compartmentId + "\",\"computeGlobalImageCapabilitySchemaVersionName\":\"a3c588d1-282b-4937-9928-2570b5133968\"}", "--config-file", "/home/ubuntu/.oci/config")
+		command = exec.Command("oci", "raw-request", "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "{\"schemaData\":{\"Compute.Firmware\":{\"values\":[\"BIOS\",\"UEFI_64\"],\"defaultValue\":\"UEFI_64\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Compute.LaunchMode\":{\"values\":[\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Compute.AMD_SecureEncryptedVirtualization\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Compute.SecureBoot\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Network.AttachmentType\":{\"values\":[\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Network.IPv6Only\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.BootVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.LocalDataVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.RemoteDataVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.ConsistentVolumeNaming\":{\"defaultValue\":\"true\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.Iscsi.MultipathDeviceSupported\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.ParaVirtualization.EncryptionInTransit\":{\"defaultValue\":\"true\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.ParaVirtualization.AttachmentVersion\":{\"values\":[\"1\",\"2\"],\"defaultValue\":\"2\",\"source\":\"IMAGE\",\"descriptorType\":\"enuminteger\"}},\"imageId\":\""+imageID+"\",\"compartmentId\":\""+args.compartmentId+"\",\"computeGlobalImageCapabilitySchemaVersionName\":\"a3c588d1-282b-4937-9928-2570b5133968\"}", "--config-file", "/home/ubuntu/.oci/config")
 		output, err = command.CombinedOutput()
 		if err != nil {
 			log.Print(command.String())
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
 		}
-		log.Printf("Image capabilities updated:\n%s",string(output))
+		log.Printf("Image capabilities updated:\n%s", string(output))
 	}
 
 	log.Println("New Ubuntu 24.04 image created successfully.")
@@ -284,7 +286,7 @@ func run(cmd *cobra.Command, argv []string) error {
 }
 
 func getImageState(imageID string) (string, error) {
-	command := exec.Command("oci", "compute", "image", "get","--image-id", imageID)
+	command := exec.Command("oci", "compute", "image", "get", "--image-id", imageID)
 
 	output, err := command.CombinedOutput()
 	if err != nil {
@@ -337,10 +339,9 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 
 func replaceArmPackageLinks(baseDir string, filename string, searchString string, replaceString string) (string, error) {
 	scriptName := baseDir + filename
-	err:= replaceInFileRegex(scriptName, map[*regexp.Regexp]string{
-			regexp.MustCompile(searchString):
-				replaceString,
-		})
+	err := replaceInFileRegex(scriptName, map[*regexp.Regexp]string{
+		regexp.MustCompile(searchString): replaceString,
+	})
 	if err != nil {
 		log.Fatalf("Failed to patch %s: %v", filename, err)
 		return "", err
@@ -451,7 +452,6 @@ func replaceInFileRegex(path string, patterns map[*regexp.Regexp]string) error {
 	}
 	return os.WriteFile(path, []byte(content), 0755)
 }
-
 
 func init() {
 	flags := Cmd.Flags()
@@ -603,7 +603,7 @@ source "qemu" "img" {
 
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
-  }
+	}
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
 	provisioner "shell" {

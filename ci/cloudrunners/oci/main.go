@@ -90,8 +90,8 @@ func run(cmd *cobra.Command, argv []string) error {
 			AssignPublicIp: common.Bool(true),
 		},
 		ShapeConfig: &core.LaunchInstanceShapeConfigDetails{
-				MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
-				Ocpus:       common.Float32(args.shapeOcpus),
+			MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
+			Ocpus:       common.Float32(args.shapeOcpus),
 		},
 		Metadata: map[string]string{
 			"ssh_authorized_keys": sshKeyPair.PublicKey,
@@ -141,8 +141,15 @@ func run(cmd *cobra.Command, argv []string) error {
 
 	commands := []string{
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
+		"rm -rf \\$HOME",
+		"sudo chown -R 1000:1000 /etc/skel/",
+		"mv /etc/skel/.cargo /home/ubuntu/",
+		"mv /etc/skel/.nvm /home/ubuntu/",
+		"mv /etc/skel/.rustup /home/ubuntu/",
+		"mv /etc/skel/.dotnet /home/ubuntu/",
+		"mv /etc/skel/.composer /home/ubuntu/",
 		`sudo usermod -aG docker ubuntu && newgrp docker <<EOF
-export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && bash -x /home/ubuntu/run.sh --jitconfig "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
+export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash -x /home/ubuntu/run.sh --jitconfig "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
 EOF`,
 	}
 
@@ -154,7 +161,7 @@ EOF`,
 
 		output, err := sshClient.RunCommand(ctx, expanded)
 		if err != nil {
-			log.Println(err, "running ssh command", "command", cmd, "output", output)
+			log.Println(err, "running ssh command", "command", cmd, "output", string(output[:]))
 			return fmt.Errorf("running command %q: %w", cmd, err)
 		}
 		log.Println("command succeeded", "command", cmd, "output", string(output))
