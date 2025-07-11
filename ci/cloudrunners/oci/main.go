@@ -90,8 +90,8 @@ func run(cmd *cobra.Command, argv []string) error {
 			AssignPublicIp: common.Bool(true),
 		},
 		ShapeConfig: &core.LaunchInstanceShapeConfigDetails{
-				MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
-				Ocpus:       common.Float32(args.shapeOcpus),
+			MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
+			Ocpus:       common.Float32(args.shapeOcpus),
 		},
 		Metadata: map[string]string{
 			"ssh_authorized_keys": sshKeyPair.PublicKey,
@@ -141,6 +141,9 @@ func run(cmd *cobra.Command, argv []string) error {
 
 	commands := []string{
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
+		"rm -rf \\$HOME",
+		"mkdir -p ~/.nvm",
+		"curl -sL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash",
 		`sudo usermod -aG docker ubuntu && newgrp docker <<EOF
 export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && bash -x /home/ubuntu/run.sh --jitconfig "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
 EOF`,

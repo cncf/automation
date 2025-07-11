@@ -49,6 +49,6 @@ oci compute image list \
 git clone https://github.com/cncf/automation
 cd automation/ci/gha-runner-vm
 
-PACKER_LOG=1 go run main.go \
+PACKER_LOG=1 GITHUB_PERIODIC=true go run main.go \
   --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-arm64.img \
   --arch arm64
