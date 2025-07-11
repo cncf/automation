@@ -143,6 +143,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
 		"rm -rf \\$HOME",
 		"rm -rf ~/.nvm",
+		"unset NVM_DIR",
 		"wget -O nvm-install.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh",
 		"bash nvm-install.sh",
 		`sudo usermod -aG docker ubuntu && newgrp docker <<EOF
