@@ -141,11 +141,8 @@ func run(cmd *cobra.Command, argv []string) error {
 
 	commands := []string{
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
-		"mkdir -p $HOME/.nvm",
-		"mkdir -p \\$HOME/.nvm",
-		"wget -O nvm-install.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh",
-		"bash nvm-install.sh",
-		"export NVM_DIR=/home/ubuntu/\\$HOME/.nvm",
+		"sudo chown 1000:1000 -R /etc/skel/*",
+		"mv /etc/skel/* /home/ubuntu/",
 		`sudo usermod -aG docker ubuntu && newgrp docker <<EOF
 export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && bash -x /home/ubuntu/run.sh --jitconfig "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
 EOF`,
