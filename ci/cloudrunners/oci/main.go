@@ -141,8 +141,13 @@ func run(cmd *cobra.Command, argv []string) error {
 
 	commands := []string{
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
-		"sudo chown 1000:1000 -R /etc/skel/*",
-		"mv /etc/skel/* /home/ubuntu/",
+		"rm -rf \\$HOME",
+		"sudo chown -R 1000:1000 /etc/skel/",
+		"mv /etc/skel/.cargo /home/ubuntu/",
+		"mv /etc/skel/.nvm /home/ubuntu/",
+		"mv /etc/skel/.rustup /home/ubuntu/",
+		"mv /etc/skel/.dotnet /home/ubuntu/",
+		"mv /etc/skel/.composer /home/ubuntu/",
 		`sudo usermod -aG docker ubuntu && newgrp docker <<EOF
 export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && bash -x /home/ubuntu/run.sh --jitconfig "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
 EOF`,
