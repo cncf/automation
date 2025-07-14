@@ -1,0 +1,47 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-vms
+  namespace: arc-systems
+spec:
+  schedule: "10 00 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cleanup
+            image: ghcr.io/oracle/oci-cli:20250709
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - mountPath: /etc/oci
+              name: oci-config
+              readOnly: true
+            - mountPath: /oci
+              name: oci-api-key
+              readOnly: true
+            env:
+            - name: OCI_CONFIG_FILE
+              value: /etc/oci/config
+            - name: COMPARTMENT_ID
+              value: ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
+            - name: OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING
+              value: "True"
+            command:
+            - /bin/bash
+            args:
+            - -c
+            - for i in $(oci compute instance list --compartment-id ${COMPARTMENT_ID} --lifecycle-state RUNNING | jq -r '.data[] | select(."display-name" | startswith("gha-runner-")) | select((now - 86400 * 2) > (."time-created"[:19] | strptime("%Y-%m-%dT%H:%M:%S") | mktime)) | .id'); do oci compute instance terminate --instance-id ${i} --force && echo "Deleted instance ${i}"; done
+            resources:
+              limits:
+                cpu: 100m
+                memory: 200Mi
+          restartPolicy: Never
+          volumes:
+          - name: oci-config
+            secret:
+              secretName: oci-config
+          - name: oci-api-key
+            secret:
+              secretName: oci-api-key
