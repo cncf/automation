@@ -53,10 +53,13 @@ func main() {
 }
 
 func run(cmd *cobra.Command, argv []string) error {
+	// 20250714: They changed it to images/ubuntu/templates/build.ubuntu-24_04.pkr.hcl
 	filepath := "images/ubuntu/templates/"
-	sourceFile := fmt.Sprintf("%s%s-%s.pkr.hcl", filepath, args.os, args.osVersion)
+	sourceFile := fmt.Sprintf("%sbuild.%s-%s.pkr.hcl", filepath, args.os, strings.ReplaceAll(args.osVersion, ".", "_"))
+	varsFile := "variable.ubuntu.pkr.hcl"
 	imageFile := "build/image.raw"
 	filename := ""
+	varsFilename := ""
 	imageName := fmt.Sprintf("%s-%s-%s-gha-image", args.os, args.osVersion, args.arch)
 
 	githubClient := github.NewClient(nil)
@@ -85,20 +88,33 @@ func run(cmd *cobra.Command, argv []string) error {
 			if err != nil {
 				log.Fatalf("Failed to extract packer file: %s\n", err)
 			}
+			varsFilename, err = extractPackerFileFromURL(downloadURL, varsFile)
+			if err != nil {
+				log.Fatalf("Failed to extract packer file: %s\n", err)
+			}
 			selectedRelease = release
 			break
 		}
 	}
 
-	file, err := os.ReadFile(filename)
+	pkrContent, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatalf("Failed to open file: %s\n", err)
 	}
 
+	// Read vars file
+	varsContent, err := os.ReadFile(varsFilename)
+	if err != nil {
+		log.Fatalf("Failed to open vars file: %s\n", err)
+	}
+
 	for key, value := range replacements {
 		log.Printf("Replacing %s with %s\n", key, value)
-		file = bytes.ReplaceAll(file, []byte(key), []byte(value))
+		pkrContent = bytes.ReplaceAll(pkrContent, []byte(key), []byte(value))
 	}
+
+	mergedContent := append(varsContent, []byte("\n")...)
+	mergedContent = append(mergedContent, pkrContent...)
 
 	newFile := fmt.Sprintf("%s-replaced.pkr.hcl", filename)
 
@@ -107,7 +123,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatalf("Failed to create file: %s\n", err)
 	}
 	defer out.Close()
-	_, err = out.Write(file)
+	_, err = out.Write(mergedContent)
 	if err != nil {
 		log.Fatalf("Failed to write file: %s\n", err)
 	}
@@ -165,7 +181,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"Ruby\",\n            \"platform_version\": \"24.04\"", "\"Ruby\",\n            \"platform_version\": \"24.04-arm64\"")
 	}
 
-	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, "--only", "qemu.img", newFile)
+	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
 	command.Stdout = os.Stdout
 	if err := command.Run(); err != nil {
@@ -526,26 +542,11 @@ func init() {
 		return []string{"json", "prom"}, cobra.ShellCompDirectiveDefault
 	})
 
-	replacements[`dynamic "azure_tag" {
-    for_each = var.azure_tags
-    content {
-      name = azure_tag.key
-      value = azure_tag.value
-    }
-  }
-}`] = fmt.Sprintf(`dynamic "azure_tag" {
-    for_each = var.azure_tags
-    content {
-      name = azure_tag.key
-      value = azure_tag.value
-    }
-  }
-}
-
-variable architecture {
-	type        = string
-	default     = "amd64"
-	description = "Target architecture (amd64 or arm64)"
+	replacements[`build {
+  sources = ["source.azure-arm.image"]`] = fmt.Sprintf(`variable architecture {
+  type        = string
+  default     = "amd64"
+  description = "Target architecture (amd64 or arm64)"
 }
 
 source "qemu" "img" {
@@ -575,7 +576,15 @@ source "qemu" "img" {
 	ssh_password         = "ubuntu"
 	ssh_timeout          = "60m"
 	headless             = true
-}`, args.isoURL, args.isoChecksum)
+}
+
+build {
+  sources = ["source.qemu.img"]
+
+  provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline = ["touch /etc/waagent.conf"]
+  }`, args.isoURL, args.isoChecksum)
 
 	if args.arch == "arm64" {
 		replacements[`provisioner "shell" {
