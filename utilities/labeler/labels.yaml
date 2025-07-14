@@ -1,0 +1,94 @@
+# Define labels, description, color
+# Support ‘previous’ for label changes over time / changes in ownership
+# Apply/remove label based on condition and/or slash command
+# Apply labels based on file path
+# Treat labels as namespaced based on “path” (slash separated) 
+
+
+labels:
+- name: foo
+  color: 00ff00
+  description: foo stuff
+  previously:
+  - name: bar
+- name: baz
+  color: 0000ff
+  description: baz stuff
+
+
+# each rule should be evaluated to determine what the labels should look like
+# and ONLY apply them if there is a difference. This will prevent removal of 
+# labels in between steps (e.g. ensure there is only one namespaced one present)
+ruleset:
+- name: apply-tag
+  kind: match
+  spec:
+    command: "/tag"
+    rules:
+    - matchList: # allow any items from this list, not unique
+      values:
+      - tag/developer-experience
+      - tag/infrastructure
+      - tag/operational-resilience
+      - tag/security-compliance
+      - tag/workloads-foundation
+  actions:
+  - kind: remove-label # removes label if present
+    spec:
+      match: needs-group
+  - kind: apply-label
+    label: "tag/{{ argv.0 }}" # to match input from string
+
+# Applies needs-triage label if no triage related label is present
+# this will account for conditions where  a triage label is removed, the
+# needs-triage label will be reapplied
+- name: needs-triage
+  kind: label
+  spec:
+    match: "triage/*"
+    matchCondition: NOT
+  actions:
+  - kind: apply-label
+    label: "needs-triage"
+
+
+  # Remove needs-triage label when a triage label is applied and ONLY allow
+  # a single triage label
+- name: triage
+  kind: match # matches string response in issue/pr
+  spec:
+    command: "/triage"
+    rules:
+    - unique:  # could also be a generic list with additional commands of in / not in or a regex match
+      ruleCondition: or # this applies to the whole rule, so it could match multiple rules as and/or
+      values:
+      - needs-triage
+      - triage/valid
+      - triage/needs-information
+      - triage/duplicate
+      - triage/not-planned
+  actions: # only executed if passed the rules
+  - kind: remove-label # removes label if present
+    spec:
+      match: needs-triage
+  - kind: remove-label # ensures there is only a single triage label applied
+    spec:
+      match: "triage/*"
+  - kind: apply-label
+    label: "triage/{{ argv.0 }}" # to match input from string
+
+- name: charter
+  kind: filePath
+  spec:
+    matchPath: "tags/*/charter.md"
+  actions:
+  - kind: apply-label
+    label: toc
+
+- name: tag-foo
+  kind: filePath
+  spec:
+    matchPath: tags/tag-foo/*
+  actions:
+  - kind: apply-label
+    label: tag-foo
