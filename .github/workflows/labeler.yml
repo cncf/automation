@@ -23,7 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          labels: https://raw.githubusercontent.com/cncf/automation/main/utilities/labeler/labels.yaml
+          labels: https://raw.githubusercontent.com/mrbobbytables/cncf-automation/refs/heads/label-config/utilities/labeler/labels.yaml
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.issue.number }}
