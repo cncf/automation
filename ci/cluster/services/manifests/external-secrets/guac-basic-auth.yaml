@@ -1,0 +1,16 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: basic-auth
+  namespace: guac
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: oci-secret-store
+  target:
+    name: basic-auth
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: guac-basic-auth

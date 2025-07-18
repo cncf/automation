@@ -1,0 +1,1830 @@
+---
+# Source: guac/charts/nats/templates/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: guac-nats
+  namespace: argocd
+  labels:
+    helm.sh/chart: nats-0.19.17
+    app.kubernetes.io/name: nats
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/version: "2.9.20"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nats
+      app.kubernetes.io/instance: guac
+---
+# Source: guac/charts/minio/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "minio-sa"
+---
+# Source: guac/charts/nats/templates/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: guac-nats
+  namespace: argocd
+  labels:
+    helm.sh/chart: nats-0.19.17
+    app.kubernetes.io/name: nats
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/version: "2.9.20"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: guac/templates/cd-certifier-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cd-certifier
+  annotations:
+    {}
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cd-certifier
+    app.kubernetes.io/component: cd-certifier
+---
+# Source: guac/templates/collectsub-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: collectsub
+  annotations:
+    {}
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: collectsub
+    app.kubernetes.io/component: collectsub
+---
+# Source: guac/templates/depsdev-collector-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: depsdev-collector
+  annotations:
+    {}
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: depsdev-collector
+    app.kubernetes.io/component: depsdev-collector
+---
+# Source: guac/templates/graphql-server-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: graphql-server
+  annotations:
+    {}
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: graphql-server
+    app.kubernetes.io/component: graphql-server
+---
+# Source: guac/templates/guacrest-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rest-api
+  annotations:
+    {}
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rest-api
+    app.kubernetes.io/component: rest-api
+---
+# Source: guac/templates/ingestor-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ingestor
+  annotations:
+    {}
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: ingestor
+    app.kubernetes.io/component: ingestor
+---
+# Source: guac/templates/oci-collector-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: oci-collector
+  annotations:
+    {}
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: oci-collector
+    app.kubernetes.io/component: oci-collector
+---
+# Source: guac/templates/osv-certifier-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: osv-certifier
+  annotations:
+    {}
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: osv-certifier
+    app.kubernetes.io/component: osv-certifier
+---
+# Source: guac/charts/minio/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: guac-minio
+  labels:
+    app: minio
+    chart: minio-5.0.15
+    release: guac
+    heritage: Helm
+type: Opaque
+data:
+  rootUser: "cm9vdFVzZXI="
+  rootPassword: "cm9vdFBhc3N3b3Jk"
+---
+# Source: guac/charts/minio/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guac-minio
+  labels:
+    app: minio
+    chart: minio-5.0.15
+    release: guac
+    heritage: Helm
+data:
+  initialize: |-
+    #!/bin/sh
+    set -e # Have script exit in the event of a failed command.
+    MC_CONFIG_DIR="/etc/minio/mc/"
+    MC="/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}"
+    
+    # connectToMinio
+    # Use a check-sleep-check loop to wait for MinIO service to be available
+    connectToMinio() {
+        SCHEME=$1
+        ATTEMPTS=0
+        LIMIT=29 # Allow 30 attempts
+        set -e   # fail if we can't read the keys.
+        ACCESS=$(cat /config/rootUser)
+        SECRET=$(cat /config/rootPassword)
+        set +e # The connections to minio are allowed to fail.
+        echo "Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT"
+        MC_COMMAND="${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET"
+        $MC_COMMAND
+        STATUS=$?
+        until [ $STATUS = 0 ]; do
+                ATTEMPTS=$(expr $ATTEMPTS + 1)
+                echo \"Failed attempts: $ATTEMPTS\"
+                if [ $ATTEMPTS -gt $LIMIT ]; then
+                        exit 1
+                fi
+                sleep 2 # 1 second intervals between attempts
+                $MC_COMMAND
+                STATUS=$?
+        done
+        set -e # reset `e` as active
+        return 0
+    }
+    
+    # checkBucketExists ($bucket)
+    # Check if the bucket exists, by using the exit code of `mc ls`
+    checkBucketExists() {
+        BUCKET=$1
+        CMD=$(${MC} stat myminio/$BUCKET >/dev/null 2>&1)
+        return $?
+    }
+    
+    # createBucket ($bucket, $policy, $purge)
+    # Ensure bucket exists, purging if asked to
+    createBucket() {
+        BUCKET=$1
+        POLICY=$2
+        PURGE=$3
+        VERSIONING=$4
+        OBJECTLOCKING=$5
+    
+        # Purge the bucket, if set & exists
+        # Since PURGE is user input, check explicitly for `true`
+        if [ $PURGE = true ]; then
+                if checkBucketExists $BUCKET; then
+                        echo "Purging bucket '$BUCKET'."
+                        set +e # don't exit if this fails
+                        ${MC} rm -r --force myminio/$BUCKET
+                        set -e # reset `e` as active
+                else
+                        echo "Bucket '$BUCKET' does not exist, skipping purge."
+                fi
+        fi
+    
+        # Create the bucket if it does not exist and set objectlocking if enabled (NOTE: versioning will be not changed if OBJECTLOCKING is set because it enables versioning to the Buckets created)
+        if ! checkBucketExists $BUCKET; then
+                if [ ! -z $OBJECTLOCKING ]; then
+                        if [ $OBJECTLOCKING = true ]; then
+                                echo "Creating bucket with OBJECTLOCKING '$BUCKET'"
+                                ${MC} mb --with-lock myminio/$BUCKET
+                        elif [ $OBJECTLOCKING = false ]; then
+                                echo "Creating bucket '$BUCKET'"
+                                ${MC} mb myminio/$BUCKET
+                        fi
+                elif [ -z $OBJECTLOCKING ]; then
+                        echo "Creating bucket '$BUCKET'"
+                        ${MC} mb myminio/$BUCKET
+                else
+                        echo "Bucket '$BUCKET' already exists."
+                fi
+        fi
+    
+        # set versioning for bucket if objectlocking is disabled or not set
+        if [ $OBJECTLOCKING = false ]; then
+                if [ ! -z $VERSIONING ]; then
+                        if [ $VERSIONING = true ]; then
+                                echo "Enabling versioning for '$BUCKET'"
+                                ${MC} version enable myminio/$BUCKET
+                        elif [ $VERSIONING = false ]; then
+                                echo "Suspending versioning for '$BUCKET'"
+                                ${MC} version suspend myminio/$BUCKET
+                        fi
+                fi
+        else
+                echo "Bucket '$BUCKET' versioning unchanged."
+        fi
+    
+        # At this point, the bucket should exist, skip checking for existence
+        # Set policy on the bucket
+        echo "Setting policy of bucket '$BUCKET' to '$POLICY'."
+        ${MC} anonymous set $POLICY myminio/$BUCKET
+    }
+    
+    # Try connecting to MinIO instance
+    scheme=http
+    connectToMinio $scheme
+    
+    
+    
+    # Create the buckets
+    createBucket bucketname "none" false false false
+    
+  add-user: |-
+    #!/bin/sh
+    set -e ; # Have script exit in the event of a failed command.
+    MC_CONFIG_DIR="/etc/minio/mc/"
+    MC="/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}"
+    
+    # AccessKey and secretkey credentials file are added to prevent shell execution errors caused by special characters.
+    # Special characters for example : ',",<,>,{,}
+    MINIO_ACCESSKEY_SECRETKEY_TMP="/tmp/accessKey_and_secretKey_tmp"
+    
+    # connectToMinio
+    # Use a check-sleep-check loop to wait for MinIO service to be available
+    connectToMinio() {
+      SCHEME=$1
+      ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts
+      set -e ; # fail if we can't read the keys.
+      ACCESS=$(cat /config/rootUser) ; SECRET=$(cat /config/rootPassword) ;
+      set +e ; # The connections to minio are allowed to fail.
+      echo "Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT" ;
+      MC_COMMAND="${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET" ;
+      $MC_COMMAND ;
+      STATUS=$? ;
+      until [ $STATUS = 0 ]
+      do
+        ATTEMPTS=`expr $ATTEMPTS + 1` ;
+        echo \"Failed attempts: $ATTEMPTS\" ;
+        if [ $ATTEMPTS -gt $LIMIT ]; then
+          exit 1 ;
+        fi ;
+        sleep 2 ; # 1 second intervals between attempts
+        $MC_COMMAND ;
+        STATUS=$? ;
+      done ;
+      set -e ; # reset `e` as active
+      return 0
+    }
+    
+    # checkUserExists ()
+    # Check if the user exists, by using the exit code of `mc admin user info`
+    checkUserExists() {
+      CMD=$(${MC} admin user info myminio $(head -1 $MINIO_ACCESSKEY_SECRETKEY_TMP) > /dev/null 2>&1)
+      return $?
+    }
+    
+    # createUser ($policy)
+    createUser() {
+      POLICY=$1
+      #check accessKey_and_secretKey_tmp file
+      if [[ ! -f $MINIO_ACCESSKEY_SECRETKEY_TMP ]];then
+        echo "credentials file does not exist"
+        return 1
+      fi
+      if [[ $(cat $MINIO_ACCESSKEY_SECRETKEY_TMP|wc -l) -ne 2 ]];then
+        echo "credentials file is invalid"
+        rm -f $MINIO_ACCESSKEY_SECRETKEY_TMP
+        return 1
+      fi
+      USER=$(head -1 $MINIO_ACCESSKEY_SECRETKEY_TMP)
+      # Create the user if it does not exist
+      if ! checkUserExists ; then
+        echo "Creating user '$USER'"
+        cat $MINIO_ACCESSKEY_SECRETKEY_TMP | ${MC} admin user add myminio
+      else
+        echo "User '$USER' already exists."
+      fi
+      #clean up credentials files.
+      rm -f $MINIO_ACCESSKEY_SECRETKEY_TMP
+    
+      # set policy for user
+      if [ ! -z $POLICY -a $POLICY != " " ] ; then
+          echo "Adding policy '$POLICY' for '$USER'"
+          set +e ; # policy already attach errors out, allow it.
+          ${MC} admin policy attach myminio $POLICY --user=$USER
+          set -e
+      else
+          echo "User '$USER' has no policy attached."
+      fi
+    }
+    
+    # Try connecting to MinIO instance
+    scheme=http
+    connectToMinio $scheme
+    
+    
+    
+    # Create the users
+    echo accessKey > $MINIO_ACCESSKEY_SECRETKEY_TMP
+    echo secretKey >> $MINIO_ACCESSKEY_SECRETKEY_TMP
+    createUser readwrite
+    
+  add-policy: |-
+    #!/bin/sh
+    set -e ; # Have script exit in the event of a failed command.
+    MC_CONFIG_DIR="/etc/minio/mc/"
+    MC="/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}"
+    
+    # connectToMinio
+    # Use a check-sleep-check loop to wait for MinIO service to be available
+    connectToMinio() {
+      SCHEME=$1
+      ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts
+      set -e ; # fail if we can't read the keys.
+      ACCESS=$(cat /config/rootUser) ; SECRET=$(cat /config/rootPassword) ;
+      set +e ; # The connections to minio are allowed to fail.
+      echo "Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT" ;
+      MC_COMMAND="${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET" ;
+      $MC_COMMAND ;
+      STATUS=$? ;
+      until [ $STATUS = 0 ]
+      do
+        ATTEMPTS=`expr $ATTEMPTS + 1` ;
+        echo \"Failed attempts: $ATTEMPTS\" ;
+        if [ $ATTEMPTS -gt $LIMIT ]; then
+          exit 1 ;
+        fi ;
+        sleep 2 ; # 1 second intervals between attempts
+        $MC_COMMAND ;
+        STATUS=$? ;
+      done ;
+      set -e ; # reset `e` as active
+      return 0
+    }
+    
+    # checkPolicyExists ($policy)
+    # Check if the policy exists, by using the exit code of `mc admin policy info`
+    checkPolicyExists() {
+      POLICY=$1
+      CMD=$(${MC} admin policy info myminio $POLICY > /dev/null 2>&1)
+      return $?
+    }
+    
+    # createPolicy($name, $filename)
+    createPolicy () {
+      NAME=$1
+      FILENAME=$2
+    
+      # Create the name if it does not exist
+      echo "Checking policy: $NAME (in /config/$FILENAME.json)"
+      if ! checkPolicyExists $NAME ; then
+        echo "Creating policy '$NAME'"
+      else
+        echo "Policy '$NAME' already exists."
+      fi
+      ${MC} admin policy create myminio $NAME /config/$FILENAME.json
+    
+    }
+    
+    # Try connecting to MinIO instance
+    scheme=http
+    connectToMinio $scheme
+    
+    
+    
+  add-svcacct: |-
+    #!/bin/sh
+    set -e ; # Have script exit in the event of a failed command.
+    MC_CONFIG_DIR="/etc/minio/mc/"
+    MC="/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}"
+    
+    # AccessKey and secretkey credentials file are added to prevent shell execution errors caused by special characters.
+    # Special characters for example : ',",<,>,{,}
+    MINIO_ACCESSKEY_SECRETKEY_TMP="/tmp/accessKey_and_secretKey_svcacct_tmp"
+    
+    # connectToMinio
+    # Use a check-sleep-check loop to wait for MinIO service to be available
+    connectToMinio() {
+      SCHEME=$1
+      ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts
+      set -e ; # fail if we can't read the keys.
+      ACCESS=$(cat /config/rootUser) ; SECRET=$(cat /config/rootPassword) ;
+      set +e ; # The connections to minio are allowed to fail.
+      echo "Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT" ;
+      MC_COMMAND="${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET" ;
+      $MC_COMMAND ;
+      STATUS=$? ;
+      until [ $STATUS = 0 ]
+      do
+        ATTEMPTS=`expr $ATTEMPTS + 1` ;
+        echo \"Failed attempts: $ATTEMPTS\" ;
+        if [ $ATTEMPTS -gt $LIMIT ]; then
+          exit 1 ;
+        fi ;
+        sleep 2 ; # 2 second intervals between attempts
+        $MC_COMMAND ;
+        STATUS=$? ;
+      done ;
+      set -e ; # reset `e` as active
+      return 0
+    }
+    
+    # checkSvcacctExists ()
+    # Check if the svcacct exists, by using the exit code of `mc admin user svcacct info`
+    checkSvcacctExists() {
+      CMD=$(${MC} admin user svcacct info myminio $(head -1 $MINIO_ACCESSKEY_SECRETKEY_TMP) > /dev/null 2>&1)
+      return $?
+    }
+    
+    # createSvcacct ($user)
+    createSvcacct () {
+      USER=$1
+      FILENAME=$2
+      #check accessKey_and_secretKey_tmp file
+      if [[ ! -f $MINIO_ACCESSKEY_SECRETKEY_TMP ]];then
+        echo "credentials file does not exist"
+        return 1
+      fi
+      if [[ $(cat $MINIO_ACCESSKEY_SECRETKEY_TMP|wc -l) -ne 2 ]];then
+        echo "credentials file is invalid"
+        rm -f $MINIO_ACCESSKEY_SECRETKEY_TMP
+        return 1
+      fi
+      SVCACCT=$(head -1 $MINIO_ACCESSKEY_SECRETKEY_TMP)
+      # Create the svcacct if it does not exist
+      if ! checkSvcacctExists ; then
+        echo "Creating svcacct '$SVCACCT'"
+        # Check if policy file is define
+        if [ -z $FILENAME ]; then
+          ${MC} admin user svcacct add --access-key $(head -1 $MINIO_ACCESSKEY_SECRETKEY_TMP) --secret-key $(tail -n1 $MINIO_ACCESSKEY_SECRETKEY_TMP) myminio $USER
+        else
+          ${MC} admin user svcacct add --access-key $(head -1 $MINIO_ACCESSKEY_SECRETKEY_TMP) --secret-key $(tail -n1 $MINIO_ACCESSKEY_SECRETKEY_TMP) --policy /config/$FILENAME.json myminio $USER
+        fi
+      else
+        echo "Svcacct '$SVCACCT' already exists."
+      fi
+      #clean up credentials files.
+      rm -f $MINIO_ACCESSKEY_SECRETKEY_TMP
+    }
+    
+    # Try connecting to MinIO instance
+    scheme=http
+    connectToMinio $scheme
+    
+    
+    
+  custom-command: |-
+    #!/bin/sh
+    set -e ; # Have script exit in the event of a failed command.
+    MC_CONFIG_DIR="/etc/minio/mc/"
+    MC="/usr/bin/mc --insecure --config-dir ${MC_CONFIG_DIR}"
+    
+    # connectToMinio
+    # Use a check-sleep-check loop to wait for MinIO service to be available
+    connectToMinio() {
+      SCHEME=$1
+      ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts
+      set -e ; # fail if we can't read the keys.
+      ACCESS=$(cat /config/rootUser) ; SECRET=$(cat /config/rootPassword) ;
+      set +e ; # The connections to minio are allowed to fail.
+      echo "Connecting to MinIO server: $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT" ;
+      MC_COMMAND="${MC} alias set myminio $SCHEME://$MINIO_ENDPOINT:$MINIO_PORT $ACCESS $SECRET" ;
+      $MC_COMMAND ;
+      STATUS=$? ;
+      until [ $STATUS = 0 ]
+      do
+        ATTEMPTS=`expr $ATTEMPTS + 1` ;
+        echo \"Failed attempts: $ATTEMPTS\" ;
+        if [ $ATTEMPTS -gt $LIMIT ]; then
+          exit 1 ;
+        fi ;
+        sleep 2 ; # 1 second intervals between attempts
+        $MC_COMMAND ;
+        STATUS=$? ;
+      done ;
+      set -e ; # reset `e` as active
+      return 0
+    }
+    
+    # runCommand ($@)
+    # Run custom mc command
+    runCommand() {
+      ${MC} "$@"
+      return $?
+    }
+    
+    # Try connecting to MinIO instance
+    scheme=http
+    connectToMinio $scheme
+---
+# Source: guac/charts/nats/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guac-nats-config
+  namespace: argocd
+  labels:
+    helm.sh/chart: nats-0.19.17
+    app.kubernetes.io/name: nats
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/version: "2.9.20"
+    app.kubernetes.io/managed-by: Helm
+data:
+  nats.conf: |
+    # NATS Clients Port
+    port: 4222
+
+    # PID file shared with configuration reloader.
+    pid_file: "/var/run/nats/nats.pid"
+
+    ###############
+    #             #
+    # Monitoring  #
+    #             #
+    ###############
+    http: 8222
+    server_name: $POD_NAME
+    ###################################
+    #                                 #
+    # NATS JetStream                  #
+    #                                 #
+    ###################################
+    jetstream {
+      max_mem: 1Gi
+      store_dir: /data
+
+      max_file:10Gi
+    }
+    max_payload: 64MB
+    lame_duck_grace_period: 10s
+    lame_duck_duration: 30s
+---
+# Source: guac/templates/guac-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guac-cm
+data:
+  guac.yaml: |
+    pubsub-addr: nats://guac-nats.argocd.svc.cluster.local:4222
+
+    publish-to-queue: true
+    blob-addr: s3://bucketname?endpoint=http://argocd-minio.argocd.svc.cluster.local:9000&region=us-east-1&disable_https=true&use_path_style=true
+    
+
+    # CSub setup
+    csub-addr: collectsub.argocd.svc.cluster.local:2782
+    csub-listen-port: 2782
+
+    # GQL setup
+    gql-backend: keyvalue
+    gql-listen-port: 8080
+    gql-debug: true
+    gql-test-data: false
+    gql-addr: http://graphql-server.argocd.svc.cluster.local:8080/query
+    
+    # Collector behavior
+    service-poll: true
+    use-csub: true
+
+    # Certifier behavior - i.e. OSV and CD
+    last-scan: 0
+    certifier-batch-size: 60000
+
+    poll: true
+    interval: 5m     # how often to poll graphql-server to discover new packages
+---
+# Source: guac/templates/visualizer-proxy-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: visualizer-proxy-cm
+data:
+  default.conf: |
+    server {
+        listen       8080;
+        listen  [::]:8080;
+        server_name  localhost;
+
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+
+        location /query {
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-NginX-Proxy true;
+            proxy_ssl_session_reuse off;
+            proxy_pass http://graphql-server.argocd.svc.cluster.local:8080/query;
+            proxy_set_header Host $http_host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_redirect off;
+        }
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
+---
+# Source: guac/charts/minio/templates/console-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: guac-minio-console
+  labels:
+    app: minio
+    chart: minio-5.0.15
+    release: guac
+    heritage: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9001
+      protocol: TCP
+      targetPort: 9001
+  selector:
+    app: minio
+    release: guac
+---
+# Source: guac/charts/minio/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: guac-minio
+  labels:
+    app: minio
+    chart: minio-5.0.15
+    release: guac
+    heritage: Helm
+    monitoring: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+  selector:
+    app: minio
+    release: guac
+---
+# Source: guac/charts/nats/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: guac-nats
+  namespace: argocd
+  labels:
+    helm.sh/chart: nats-0.19.17
+    app.kubernetes.io/name: nats
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/version: "2.9.20"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    app.kubernetes.io/name: nats
+    app.kubernetes.io/instance: guac
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+  - name: client
+    port: 4222
+    appProtocol: tcp
+  - name: cluster
+    port: 6222
+    appProtocol: tcp
+  - name: monitor
+    port: 8222
+    appProtocol: http
+  - name: metrics
+    port: 7777
+    appProtocol: http
+  - name: leafnodes
+    port: 7422
+    appProtocol: tcp
+  - name: gateways
+    port: 7522
+    appProtocol: tcp
+---
+# Source: guac/templates/collectsub-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: collectsub
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: collectsub
+    app.kubernetes.io/component: collectsub
+spec:
+  selector:
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/name: collectsub
+    app.kubernetes.io/component: collectsub
+  ports:
+    - port: 2782
+      protocol: TCP
+      targetPort: 2782
+---
+# Source: guac/templates/graphql-server-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphql-server
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: graphql-server
+    app.kubernetes.io/component: graphql-server
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/name: graphql-server
+    app.kubernetes.io/component: graphql-server
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+---
+# Source: guac/templates/guacrest-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-api
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rest-api
+    app.kubernetes.io/component: rest-api
+spec:
+  selector:
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/name: rest-api
+    app.kubernetes.io/component: rest-api
+  ports:
+    - port: 8081
+      protocol: TCP
+      targetPort: 8081
+---
+# Source: guac/templates/visualizer-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: visualizer
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: visualizer
+    app.kubernetes.io/component: visualizer
+spec:
+  selector:
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/name: visualizer
+    app.kubernetes.io/component: visualizer
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+---
+# Source: guac/charts/minio/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guac-minio
+  labels:
+    app: minio
+    chart: minio-5.0.15
+    release: guac
+    heritage: Helm
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+      release: guac
+  template:
+    metadata:
+      name: guac-minio
+      labels:
+        app: minio
+        release: guac
+      annotations:
+        checksum/secrets: 93d75429d52d12b2bff37bfa93641308c3ed7f86b6d5102d28cf711f2f2125c1
+        checksum/config: 63300fc789cdbbf80b072c62b03999b90654429d51899fc6e300af27713180d7
+    spec:
+      
+      serviceAccountName: minio-sa
+      containers:
+        - name: minio
+          image: "quay.io/minio/minio:RELEASE.2024-01-11T07-46-16Z"
+          imagePullPolicy: IfNotPresent
+          command:
+            - "/bin/sh"
+            - "-ce"
+            - "/usr/bin/docker-entrypoint.sh minio server /export -S /etc/minio/certs/ --address :9000 --console-address :9001"
+          volumeMounts:
+            - name: minio-user
+              mountPath: "/tmp/credentials"
+              readOnly: true
+            - name: export
+              mountPath: /export            
+          ports:
+            - name: http
+              containerPort: 9000
+            - name: http-console
+              containerPort: 9001
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: guac-minio
+                  key: rootUser
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: guac-minio
+                  key: rootPassword
+            - name: MINIO_PROMETHEUS_AUTH_TYPE
+              value: "public"
+          resources:
+            requests:
+              memory: 300Mi      
+      volumes:
+        - name: export
+          emptyDir: {}
+        - name: minio-user
+          secret:
+            secretName: guac-minio
+---
+# Source: guac/templates/cd-certifier-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cd-certifier
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cd-certifier
+    app.kubernetes.io/component: cd-certifier
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: cd-certifier
+      app.kubernetes.io/component: cd-certifier
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: cd-certifier
+        app.kubernetes.io/component: cd-certifier
+    spec:
+      serviceAccountName: cd-certifier
+      containers:
+      - name: cd-certifier
+        image: "ghcr.io/guacsec/guac:v1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+          - sh
+          - -c
+          - /opt/guac/guaccollect cd
+        workingDir: /guac
+        volumeMounts:
+          - name: guac-config
+            mountPath: /guac
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+---
+# Source: guac/templates/collectsub-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collectsub
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: collectsub
+    app.kubernetes.io/component: collectsub
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: collectsub
+      app.kubernetes.io/component: collectsub
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: collectsub
+        app.kubernetes.io/component: collectsub
+    spec:
+      serviceAccountName: collectsub
+      containers:
+      - name: collectsub
+        image: "ghcr.io/guacsec/guac:v1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+          - sh
+          - -c
+          - /opt/guac/guaccsub
+        workingDir: /guac
+        volumeMounts:
+          - name: guac-config
+            mountPath: /guac
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+---
+# Source: guac/templates/depsdev-collector-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: depsdev-collector
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: depsdev-collector
+    app.kubernetes.io/component: depsdev-collector
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: depsdev-collector
+      app.kubernetes.io/component: depsdev-collector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: depsdev-collector
+        app.kubernetes.io/component: depsdev-collector
+    spec:
+      serviceAccountName: depsdev-collector
+      containers:
+      - name: depsdev-collector
+        image: "ghcr.io/guacsec/guac:v1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+          - sh
+          - -c
+          - /opt/guac/guaccollect deps_dev
+        workingDir: /guac
+
+        volumeMounts:
+          - name: guac-config
+            mountPath: /guac
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+---
+# Source: guac/templates/graphql-server-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphql-server
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: graphql-server
+    app.kubernetes.io/component: graphql-server
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: graphql-server
+      app.kubernetes.io/component: graphql-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: graphql-server
+        app.kubernetes.io/component: graphql-server
+    spec:
+      serviceAccountName: graphql-server
+      containers:
+      - name: graphql-server
+        image: "ghcr.io/guacsec/guac:v1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+          - sh
+          - -c
+          - /opt/guac/guacgql
+        workingDir: /guac
+        volumeMounts:
+          - name: guac-config
+            mountPath: /guac
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+---
+# Source: guac/templates/guacrest-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-api
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rest-api
+    app.kubernetes.io/component: rest-api
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: rest-api
+      app.kubernetes.io/component: rest-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: rest-api
+        app.kubernetes.io/component: rest-api
+    spec:
+      containers:
+      - name: rest-api
+        image: "ghcr.io/guacsec/guac:v1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+          - sh
+          - -c
+          - /opt/guac/guacrest
+        workingDir: /guac
+        volumeMounts:
+          - name: guac-config
+            mountPath: /guac
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+---
+# Source: guac/templates/ingestor-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingestor
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: ingestor
+    app.kubernetes.io/component: ingestor
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: ingestor
+      app.kubernetes.io/component: ingestor
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: ingestor
+        app.kubernetes.io/component: ingestor
+    spec:
+      serviceAccountName: ingestor
+      containers:
+      - name: ingestor
+        image: "ghcr.io/guacsec/guac:v1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+          - sh
+          - -c
+          - /opt/guac/guacingest
+        workingDir: /guac
+        volumeMounts:
+          - name: guac-config
+            mountPath: /guac
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+---
+# Source: guac/templates/oci-collector-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oci-collector
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: oci-collector
+    app.kubernetes.io/component: oci-collector
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: oci-collector
+      app.kubernetes.io/component: oci-collector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: oci-collector
+        app.kubernetes.io/component: oci-collector
+    spec:
+      serviceAccountName: oci-collector
+      containers:
+      - name: oci-collector
+        image: "ghcr.io/guacsec/guac:v1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+          - sh
+          - -c
+          - /opt/guac/guaccollect image
+        workingDir: /guac
+        volumeMounts:
+          - name: guac-config
+            mountPath: /guac
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+---
+# Source: guac/templates/osv-certifier-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osv-certifier
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: osv-certifier
+    app.kubernetes.io/component: osv-certifier
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: osv-certifier
+      app.kubernetes.io/component: osv-certifier
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: osv-certifier
+        app.kubernetes.io/component: osv-certifier
+    spec:
+      serviceAccountName: osv-certifier
+      containers:
+      - name: osv-certifier
+        image: "ghcr.io/guacsec/guac:v1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+          - sh
+          - -c
+          - /opt/guac/guaccollect osv
+        workingDir: /guac
+        volumeMounts:
+          - name: guac-config
+            mountPath: /guac
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+---
+# Source: guac/templates/visualizer-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: visualizer
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: visualizer
+    app.kubernetes.io/component: visualizer
+spec:
+  replicas:  1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: guac
+      app.kubernetes.io/part-of: "guac"
+      app.kubernetes.io/name: visualizer
+      app.kubernetes.io/component: visualizer
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: guac
+        app.kubernetes.io/part-of: "guac"
+        app.kubernetes.io/name: visualizer
+        app.kubernetes.io/component: visualizer
+    spec:
+      containers:
+      # workaround the problem that next.config.js can't set gql-addr dynamically
+      - name: nginx
+        image: nginx:1.25.1
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+          - name: visualizer-proxy-config
+            mountPath: /etc/nginx/conf.d/default.conf
+            subPath: default.conf
+            readOnly: true
+      - name: visualizer
+        image: "ghcr.io/guacsec/guac-visualizer:v0.4.10"
+        imagePullPolicy: "IfNotPresent"
+        ports:
+          - containerPort: 3000
+        volumeMounts:
+          - name: guac-config
+            mountPath: /workspace/guac/guac.yaml
+            subPath: guac.yaml
+            readOnly: true
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: accessKey
+          - name: AWS_SECRET_ACCESS_KEY
+            value: secretKey
+      imagePullSecrets:
+        - name: imagepullsecret
+      volumes:
+        - name: guac-config
+          configMap:
+            name: guac-cm
+        - name: visualizer-proxy-config
+          configMap:
+            name: visualizer-proxy-cm
+---
+# Source: guac/charts/nats/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: guac-nats
+  namespace: argocd
+  labels:
+    helm.sh/chart: nats-0.19.17
+    app.kubernetes.io/name: nats
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/version: "2.9.20"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nats
+      app.kubernetes.io/instance: guac
+  replicas: 1
+  serviceName: guac-nats
+
+  podManagementPolicy: Parallel
+
+  template:
+    metadata:
+      annotations:
+        checksum/config: 5ad82f1f278ce840d80ba5cd357e3d662fe3aef0740cc7db1960b84e5fcc4797
+      labels:
+        app.kubernetes.io/name: nats
+        app.kubernetes.io/instance: guac
+    spec:
+      dnsPolicy: ClusterFirst
+      # Common volumes for the containers.
+      volumes:
+      - name: config-volume
+        configMap:
+          name: guac-nats-config
+
+      # Local volume shared with the reloader.
+      - name: pid
+        emptyDir: {}
+
+      #################
+      #               #
+      #  TLS Volumes  #
+      #               #
+      #################
+
+      serviceAccountName: guac-nats
+
+      # Required to be able to HUP signal and apply config
+      # reload to the server without restarting the pod.
+      shareProcessNamespace: true
+
+      #################
+      #               #
+      #  NATS Server  #
+      #               #
+      #################
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: nats
+        image: nats:2.9.20-alpine
+        imagePullPolicy: IfNotPresent
+        resources:
+          {}
+        ports:
+        - containerPort: 4222
+          name: client
+        - containerPort: 6222
+          name: cluster
+        - containerPort: 8222
+          name: monitor
+
+        command:
+        - "nats-server"
+        - "--config"
+        - "/etc/nats-config/nats.conf"
+
+        # Required to be able to define an environment variable
+        # that refers to other environment variables.  This env var
+        # is later used as part of the configuration file.
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SERVER_NAME
+          value: $(POD_NAME)
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: CLUSTER_ADVERTISE
+          value: $(POD_NAME).guac-nats.$(POD_NAMESPACE).svc.cluster.local
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/nats-config
+        - name: pid
+          mountPath: /var/run/nats
+        - name: guac-nats-js-pvc
+          mountPath: /data
+        
+
+        #######################
+        #                     #
+        # Healthcheck Probes  #
+        #                     #
+        #######################
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8222
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8222
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        startupProbe:
+          # for NATS server versions >=2.7.1, /healthz will be enabled
+          # startup probe checks that the JS server is enabled, is current with the meta leader,
+          # and that all streams and consumers assigned to this JS server are current
+          failureThreshold: 90
+          httpGet:
+            path: /healthz
+            port: 8222
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+
+        # Gracefully stop NATS Server on pod deletion or image upgrade.
+        #
+        lifecycle:
+          preStop:
+            exec:
+              # send the lame duck shutdown signal to trigger a graceful shutdown
+              # nats-server will ignore the TERM signal it receives after this
+              #
+              command:
+              - "nats-server"
+              - "-sl=ldm=/var/run/nats/nats.pid"
+
+      #################################
+      #                               #
+      #  NATS Configuration Reloader  #
+      #                               #
+      #################################
+      - name: reloader
+        image: natsio/nats-server-config-reloader:0.11.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          {}
+        command:
+        - "nats-server-config-reloader"
+        - "-pid"
+        - "/var/run/nats/nats.pid"
+        - "-config"
+        - "/etc/nats-config/nats.conf"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/nats-config
+        - name: pid
+          mountPath: /var/run/nats
+        
+
+      ##############################
+      #                            #
+      #  NATS Prometheus Exporter  #
+      #                            #
+      ##############################
+
+  volumeClaimTemplates:
+  #####################################
+  #                                   #
+  #  Jetstream New Persistent Volume  #
+  #                                   #
+  #####################################
+    - metadata:
+        name: guac-nats-js-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+---
+# Source: guac/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd
+  namespace: argocd
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # type of authentication
+    nginx.ingress.kubernetes.io/auth-type: basic
+    # name of the secret that contains the user/password definitions
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    # message to display with an appropriate context why the authentication is required
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required'
+  labels:
+    helm.sh/chart: guac-0.6.2
+    app.kubernetes.io/instance: guac
+    app.kubernetes.io/part-of: "guac"
+    app.kubernetes.io/version: "v0.14.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: guac.k8c.io
+      http: &http
+        paths:
+          - path: /playground
+            pathType: Prefix
+            backend:
+              service:
+                name: graphql-server
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: visualizer
+                port:
+                  number: 3000
+    - host: api.guac.k8c.io
+      http:
+        paths:
+    
+          - path: /query
+            pathType: Prefix
+            backend:
+              service:
+                name: graphql-server
+                port:
+                  number: 8080
+  tls:
+  - hosts:
+    - guac.k8c.io
+    - api.guac.k8c.io
+    secretName: guac-tls
+---
+# Source: guac/charts/nats/templates/tests/test-request-reply.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "guac-nats-test-request-reply"
+  labels:
+    chart: nats-0.19.17
+    app: guac-nats-test-request-reply
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+  - name: nats-box
+    image: natsio/nats-box:0.13.8
+    env:
+    - name: NATS_HOST
+      value: guac-nats
+    command:
+    - /bin/sh
+    - -ec
+    - |
+      nats reply -s nats://$NATS_HOST:4222 'name.>' --command "echo 1" &
+    - |
+      "&&"
+    - |
+      name=$(nats request -s nats://$NATS_HOST:4222 name.test '' 2>/dev/null)
+    - |
+      "&&"
+    - |
+      [ $name = test ]
+
+  restartPolicy: Never
+---
+# Source: guac/charts/minio/templates/post-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: guac-minio-post-job
+  labels:
+    app: minio-post-job
+    chart: minio-5.0.15
+    release: guac
+    heritage: Helm
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        app: minio-job
+        release: guac
+    spec:
+      restartPolicy: OnFailure      
+      volumes:
+        - name: etc-path
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: minio-configuration
+          projected:
+            sources:
+              - configMap:
+                  name: guac-minio
+              - secret:
+                  name: guac-minio
+      serviceAccountName: minio-sa
+      containers:
+        - name: minio-make-bucket
+          image: "quay.io/minio/mc:RELEASE.2024-01-11T05-49-32Z"
+          imagePullPolicy: IfNotPresent
+          command: [ "/bin/sh", "/config/initialize" ]
+          env:
+            - name: MINIO_ENDPOINT
+              value: guac-minio
+            - name: MINIO_PORT
+              value: "9000"
+          volumeMounts:
+            - name: etc-path
+              mountPath: /etc/minio/mc
+            - name: tmp
+              mountPath: /tmp
+            - name: minio-configuration
+              mountPath: /config
+          resources:
+            requests:
+              memory: 128Mi
+        - name: minio-make-user
+          image: "quay.io/minio/mc:RELEASE.2024-01-11T05-49-32Z"
+          imagePullPolicy: IfNotPresent
+          command: [ "/bin/sh", "/config/add-user" ]
+          env:
+            - name: MINIO_ENDPOINT
+              value: guac-minio
+            - name: MINIO_PORT
+              value: "9000"
+          volumeMounts:
+            - name: etc-path
+              mountPath: /etc/minio/mc
+            - name: tmp
+              mountPath: /tmp
+            - name: minio-configuration
+              mountPath: /config
+          resources:
+            requests:
+              memory: 128Mi
