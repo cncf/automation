@@ -1,0 +1,29 @@
+# Example configuration for CNCF Runners on Linode Kubernetes Engine
+# Copy this file to config.yaml and fill in your values
+
+# Linode Configuration
+linode:
+  api_token: "your-linode-api-token"
+  region: "us-east"
+
+# Kubernetes Configuration
+kubernetes:
+  version: "1.32" # Updated to the most recent version
+  cluster_name: "cncf-poc-runners"
+  node_count: 1
+  node_type: "g6-standard-1"
+
+# GitHub Configuration
+github:
+  token: "your-github-pat"
+  organization: "cncf"
+  repositories:
+    - "repo1"
+    - "repo2"
+
+# Actions Runner Controller Configuration
+arc:
+  namespace: "arc-system"
+  runner_scale_set_name: "cncf-runners"
+  min_runners: 1
+  max_runners: 3
