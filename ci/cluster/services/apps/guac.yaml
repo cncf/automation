@@ -22,10 +22,10 @@ spec:
         guac:
           guacImage:
             tag: v1.0.0
-            ingress:
-              enabled: true
-              ingressClassName: nginx
-              webuiHostname: guac.k8c.io
-              apiHostname: api.guac.k8c.io
-              annotations:
-                cert-manager.io/cluster-issuer: letsencrypt-prod
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            webuiHostname: guac.k8c.io
+            apiHostname: api.guac.k8c.io
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
