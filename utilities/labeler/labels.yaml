@@ -200,6 +200,34 @@ labels:
 # and ONLY apply them if there is a difference. This will prevent removal of 
 # labels in between steps (e.g. ensure there is only one namespaced one present)
 ruleset:
+- name: remove-tag
+  kind: match
+  spec:
+    command: "/remove-tag"
+  actions:
+  - kind: remove-label
+    spec: 
+      match: tag/{{ argv.0 }}
+
+- name: remove-toc
+  kind: match
+  spec:
+    command: "/remove-toc"
+  actions:
+  - kind: remove-label
+    spec: 
+      match: toc
+
+- name: needs-triage
+  kind: label
+  spec:
+    match: "triage/*"
+    matchCondition: NOT
+  actions:
+  - kind: apply-label
+    label: "needs-triage"
+
+
 - name: apply-tag
   kind: match
   spec:
@@ -219,6 +247,7 @@ ruleset:
   - kind: apply-label
     label: "tag/{{ argv.0 }}" # to match input from string
 
+
 - name: apply-toc
   kind: match
   spec:
@@ -226,23 +255,16 @@ ruleset:
     rules:
     - match: ""
   actions:
-  - kind: remove-label # removes label if present
+  - kind: remove-label
     spec:
       match: needs-group
   - kind: apply-label
     label: "toc"
 
-# Applies needs-triage label if no triage related label is present
-# this will account for conditions where  a triage label is removed, the
-# needs-triage label will be reapplied
-- name: needs-triage
-  kind: label
+- name: apply-kind
+  kind: match
   spec:
-    match: "triage/*"
-    matchCondition: NOT
-  actions:
-  - kind: apply-label
-    label: "needs-triage"
+    command: "/kind"
 
 
   # Remove needs-triage label when a triage label is applied and ONLY allow
@@ -270,6 +292,7 @@ ruleset:
   - kind: apply-label
     label: "triage/{{ argv.0 }}" # to match input from string
 
+
 - name: charter
   kind: filePath
   spec:
@@ -277,11 +300,59 @@ ruleset:
   actions:
   - kind: apply-label
     label: toc
-
-- name: tag-foo
+- name: tag-developer-experience-dir
   kind: filePath
   spec:
-    matchPath: tags/tag-foo/*
+    matchPath: "tags/tag-developer-experience/*"
   actions:
   - kind: apply-label
-    label: tag-foo
+    label: tag/developer-experience
+- name: tag-infrastructure-dir
+  kind: filePath
+  spec:
+    matchPath: "tags/tag-infrastructure/*"
+  actions:
+  - kind: apply-label
+    label: tag/infrastructure
+- name: tag-operational-resilience-dir
+  kind: filePath
+  spec:
+    matchPath: "tags/tag-operational-resilience/*"
+  actions:
+  - kind: apply-label
+    label: tag/operational-resilience
+- name: tag-security-and-compliance-dir
+  kind: filePath
+  spec:
+    matchPath: "tags/tag-security-and-compliance/*"
+  actions:
+  - kind: apply-label
+    label: tag/security-and-compliance
+- name: tag-workloads-foundation-dir
+  kind: filePath
+  spec:
+    matchPath: "tags/tag-workloads-foundation/*"
+  actions:
+  - kind: apply-label
+    label: tag/workloads-foundation
+- name: sub-contrib-strat-dir
+  kind: filePath
+  spec:
+    matchPath: "toc_subprojects/contributor-strategy-and-advocacy/*"
+  actions:
+  - kind: apply-label
+    label: sub/contributor-strategy-and-advocacy
+- name: sub-mentoring-dir
+  kind: filePath
+  spec:
+    matchPath: "toc_subprojects/mentoring/*"
+  actions:
+  - kind: apply-label
+    label: sub/mentoring
+- name: sub-project-reviews-dir
+  kind: filePath
+  spec:
+    matchPath: "toc_subprojects/project-reviews/*"
+  actions:
+  - kind: apply-label
+    label: sub/project-reviews
