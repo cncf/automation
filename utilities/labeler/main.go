@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/google/go-github/v55/github"
@@ -27,10 +28,14 @@ type Label struct {
 	} `yaml:"previously"`
 }
 
+type ActionSpec struct {
+	Match string `yaml:"match,omitempty"`
+}
+
 type Action struct {
-	Kind  string                 `yaml:"kind"`
-	Label string                 `yaml:"label,omitempty"`
-	Spec  map[string]interface{} `yaml:"spec,omitempty"`
+	Kind  string     `yaml:"kind"`
+	Label string     `yaml:"label,omitempty"`
+	Spec  ActionSpec `yaml:"spec,omitempty"`
 }
 
 type RuleSpec struct {
@@ -39,6 +44,7 @@ type RuleSpec struct {
 	Match          string        `yaml:"match,omitempty"`
 	MatchCondition string        `yaml:"matchCondition,omitempty"`
 	MatchPath      string        `yaml:"matchPath,omitempty"`
+	MatchList      []string      `yaml:"matchList,omitempty"`
 }
 
 type Rule struct {
@@ -49,11 +55,12 @@ type Rule struct {
 }
 
 type LabelsYAML struct {
-	Labels          []Label `yaml:"labels"`
-	Ruleset         []Rule  `yaml:"ruleset"`
-	AutoCreate      bool    `yaml:"autoCreateLabels"`
-	AutoDelete      bool    `yaml:"autoDeleteLabels"`
-	DefinedRequired bool    `yaml:"definedRequired"`
+	Labels             []Label `yaml:"labels"`
+	Ruleset            []Rule  `yaml:"ruleset"`
+	AutoCreate         bool    `yaml:"autoCreateLabels"`
+	AutoDelete         bool    `yaml:"autoDeleteLabels"`
+	DefinitionRequired bool    `yaml:"definitionRequired"`
+	Debug              bool    `yaml:"debug"`
 }
 
 func loadConfigFromURL(url string) (*LabelsYAML, error) {
@@ -136,61 +143,137 @@ func main() {
 		files = strings.Split(*changedFiles, ",")
 	}
 
-	// Process filePath rules
-	if len(files) > 0 {
-		for _, rule := range cfg.Ruleset {
-			if rule.Kind == "filePath" {
-				for _, file := range files {
-					matched, err := filepath.Match(rule.Spec.MatchPath, file)
-					if err != nil {
-						log.Printf("error matching file path: %v", err)
-						continue
-					}
-					if matched {
-						for _, action := range rule.Actions {
-							switch action.Kind {
-							case "apply-label":
-								label := renderLabel(action.Label, nil)
-								applyLabel(ctx, client, owner, repo, toInt(issueNum), label, cfg)
-							case "remove-label":
-								match, _ := action.Spec["match"].(string)
-								if match != "" {
-									removeLabel(ctx, client, owner, repo, toInt(issueNum), match)
-								}
+	issue, _, err := client.Issues.Get(ctx, owner, repo, toInt(issueNum))
+	if err != nil {
+		log.Fatalf("failed to fetch issue: %v", err)
+	}
+	fmt.Printf("Issue #%d: %s\n", *issue.Number, *issue.Title)
+	lines := strings.Split(commentBody, "\n")
+
+	for _, rule := range cfg.Ruleset {
+		if rule.Kind == "filePath" {
+			if len(files) == 0 {
+				if cfg.Debug {
+					log.Printf("No changed files to process for rule %s", rule.Name)
+				}
+				continue
+			}
+			for _, file := range files {
+				matched, err := filepath.Match(rule.Spec.MatchPath, file)
+				if err != nil {
+					log.Printf("error matching file path: %v", err)
+					continue
+				}
+				if matched {
+					for _, action := range rule.Actions {
+						label := renderLabel(action.Label, nil)
+						switch action.Kind {
+						case "apply-label":
+							applyLabel(ctx, client, owner, repo, toInt(issueNum), label, cfg)
+						case "remove-label":
+							if label != "" {
+								removeLabel(ctx, client, owner, repo, toInt(issueNum), label)
 							}
 						}
 					}
 				}
 			}
 		}
-	}
 
-	issue, _, err := client.Issues.Get(ctx, owner, repo, toInt(issueNum))
-	if err != nil {
-		log.Fatalf("failed to fetch issue: %v", err)
-	}
-	fmt.Printf("Issue #%d: %s\n", *issue.Number, *issue.Title)
-
-	lines := strings.Split(commentBody, "\n")
-	for _, rule := range cfg.Ruleset {
 		if rule.Spec.Command != "" {
+			if !strings.HasPrefix(rule.Spec.Command, "/") {
+				log.Printf("Command `%s` does not start with a forward slash, skipping", rule.Spec.Command)
+				continue
+			}
 			for _, line := range lines {
 				line = strings.TrimSpace(line)
 				if strings.HasPrefix(line, rule.Spec.Command) {
 					parts := strings.Fields(line)
+					log.Printf("%v", parts)
 					argv := []string{}
 					if len(parts) > 1 {
 						argv = parts[1:]
 					}
+					/*
+						for key, arg := range argv {
+							// Handle namespace prefix
+							slashIndex := strings.Index(arg, "/")
+							if slashIndex == -1 {
+								log.Printf("Argument `%s` does not contain a namespace, skipping", arg)
+								continue
+							}
+							namespace := arg[:slashIndex]
+							fullArg := fmt.Sprintf("%s/%s", namespace, arg[slashIndex+1:])
+							log.Printf("Checking full argument `%s` against command %s", fullArg, rule.Spec.Command)
+
+							argv[key] = fullArg // Replace argv[0] with full argument
+						}
+					*/
+					if len(rule.Spec.MatchList) > 0 {
+						// Validate argv.0 against matchList
+						valid := slices.Contains(rule.Spec.MatchList, argv[0])
+						if !valid {
+							log.Printf("Invalid argument `%s` for command %s", argv[0], rule.Spec.Command)
+							continue
+						}
+					}
+
 					for _, action := range rule.Actions {
+						label := ""
+						if action.Label != "" {
+							label = renderLabel(action.Label, argv)
+						}
+						if action.Spec.Match != "" {
+							// Handle match condition for action
+							if cfg.Debug {
+								log.Printf("Checking action label `%s` against Spec.Match `%s` and Argv `%v`", action.Label, action.Spec.Match, argv)
+							}
+							label = renderLabel(action.Spec.Match, argv)
+							if !cfg.isValidLabel(label) && !strings.Contains(label, "/*") {
+								log.Printf("Label `%s` is not defined in labels.yaml", label)
+								continue
+							}
+						}
+
 						switch action.Kind {
 						case "apply-label":
-							label := renderLabel(action.Label, argv)
 							applyLabel(ctx, client, owner, repo, toInt(issueNum), label, cfg)
 						case "remove-label":
-							match, _ := action.Spec["match"].(string)
-							if match != "" {
-								removeLabel(ctx, client, owner, repo, toInt(issueNum), match)
+							if label != "" {
+								removeLabel(ctx, client, owner, repo, toInt(issueNum), label)
+							}
+						}
+					}
+				}
+			}
+		} else if rule.Kind == "label" {
+			// Handle default namespaced label logic dynamically
+			if rule.Spec.MatchCondition == "NOT" {
+				namespacePattern := rule.Spec.Match
+				existingLabels, _, err := client.Issues.ListLabelsByIssue(ctx, owner, repo, toInt(issueNum), nil)
+				if err != nil {
+					log.Printf("failed to fetch labels for issue: %v", err)
+					continue
+				}
+
+				foundNamespace := false
+				for _, lbl := range existingLabels {
+					matched, _ := filepath.Match(namespacePattern, lbl.GetName())
+					if matched {
+						foundNamespace = true
+						break
+					}
+				}
+
+				if !foundNamespace {
+					for _, action := range rule.Actions {
+						label := renderLabel(action.Label, nil)
+						switch action.Kind {
+						case "apply-label":
+							applyLabel(ctx, client, owner, repo, toInt(issueNum), label, cfg)
+						case "remove-label":
+							if label != "" {
+								removeLabel(ctx, client, owner, repo, toInt(issueNum), label)
 							}
 						}
 					}
@@ -240,40 +323,43 @@ func ensureLabelExists(ctx context.Context, client *github.Client, owner, repo, 
 		return fmt.Errorf("label %s does not exist and auto-create-labels is disabled", labelName)
 	}
 
-	// Fetch existing labels
-	existingLabels, _, err := client.Issues.ListLabels(ctx, owner, repo, nil)
+	lbl, _, err := client.Issues.GetLabel(ctx, owner, repo, labelName)
 	if err != nil {
-		return fmt.Errorf("failed to fetch labels: %v", err)
-	}
-
-	// Check if the label already exists
-	for _, lbl := range existingLabels {
-		if lbl.GetName() == labelName {
-			// Update label if color or description differs
-			if lbl.GetColor() != color || lbl.GetDescription() != description {
-				_, _, err := client.Issues.EditLabel(ctx, owner, repo, labelName, &github.Label{
-					Name:        &labelName,
-					Color:       &color,
-					Description: &description,
-				})
-				if err != nil {
-					return fmt.Errorf("failed to update label %s: %v", labelName, err)
-				}
-			}
-			return nil
+		// Create the label if it doesn't exist
+		lbl, _, err = client.Issues.CreateLabel(ctx, owner, repo, &github.Label{
+			Name:        &labelName,
+			Color:       &color,
+			Description: &description,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create label %s: %v", labelName, err)
 		}
 	}
 
-	// Create the label if it doesn't exist
-	_, _, err = client.Issues.CreateLabel(ctx, owner, repo, &github.Label{
-		Name:        &labelName,
-		Color:       &color,
-		Description: &description,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create label %s: %v", labelName, err)
+	// Update label if color or description differs
+	if lbl.GetColor() != color || lbl.GetDescription() != description {
+		_, _, err := client.Issues.EditLabel(ctx, owner, repo, labelName, &github.Label{
+			Name:        &labelName,
+			Color:       &color,
+			Description: &description,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to update label %s: %v", labelName, err)
+		}
+	}
+	if cfg.Debug {
+		log.Printf("label %s exists", labelName)
 	}
 	return nil
+}
+
+func (cfg *LabelsYAML) isValidLabel(label string) bool {
+	for _, lbl := range cfg.Labels {
+		if lbl.Name == label {
+			return true
+		}
+	}
+	return false
 }
 
 func getLabelDefinition(cfg *LabelsYAML, labelName string) (string, string, string) {
@@ -287,15 +373,30 @@ func getLabelDefinition(cfg *LabelsYAML, labelName string) (string, string, stri
 			}
 		}
 	}
-	if cfg.DefinedRequired {
-		log.Printf("label %s not defined in labels.yaml", labelName)
-		return "", "", "" // Return empty if label is required but not defined
+	if cfg.DefinitionRequired {
+		log.Printf("label %s is not defined in labels.yaml, but auto-create is disabled", labelName)
+		return "", "", "" // Return empty if not required
 	}
 	return "000000", "Automatically applied label", labelName // Default values
 }
 
 func applyLabel(ctx context.Context, client *github.Client, owner, repo string, issueNum int, label string, cfg *LabelsYAML) {
 	fmt.Printf("Applying label: %s\n", label)
+
+	// Get current labels for the issue
+	existingLabels, _, err := client.Issues.ListLabelsByIssue(ctx, owner, repo, issueNum, nil)
+	if err != nil {
+		log.Printf("failed to fetch labels for issue: %v", err)
+		return
+	}
+
+	// Check if the label is already applied
+	for _, lbl := range existingLabels {
+		if lbl.GetName() == label {
+			log.Printf("label %s is already applied, skipping", label)
+			return
+		}
+	}
 
 	// Get label definition from config
 	color, description, resolvedLabel := getLabelDefinition(cfg, label)
@@ -312,7 +413,7 @@ func applyLabel(ctx context.Context, client *github.Client, owner, repo string, 
 		return
 	}
 
-	_, _, err := client.Issues.AddLabelsToIssue(ctx, owner, repo, issueNum, []string{resolvedLabel})
+	_, _, err = client.Issues.AddLabelsToIssue(ctx, owner, repo, issueNum, []string{resolvedLabel})
 	if err != nil {
 		log.Printf("failed to apply label %s: %v", resolvedLabel, err)
 	}
@@ -320,7 +421,35 @@ func applyLabel(ctx context.Context, client *github.Client, owner, repo string, 
 
 func removeLabel(ctx context.Context, client *github.Client, owner, repo string, issueNum int, label string) {
 	fmt.Printf("Removing label: %s\n", label)
-	_, err := client.Issues.RemoveLabelForIssue(ctx, owner, repo, issueNum, label)
+
+	// Get current labels for the issue
+	existingLabels, _, err := client.Issues.ListLabelsByIssue(ctx, owner, repo, issueNum, nil)
+	if err != nil {
+		log.Printf("failed to fetch labels for issue: %v", err)
+		return
+	}
+
+	// Check if the label is not applied
+	labelFound := false
+	for _, lbl := range existingLabels {
+		if strings.Contains(label, "/*") {
+			// Handle wildcard removal
+			if strings.HasPrefix(lbl.GetName(), strings.TrimSuffix(label, "*")) {
+				removeLabel(ctx, client, owner, repo, issueNum, lbl.GetName())
+			}
+		}
+		if lbl.GetName() == label {
+			labelFound = true
+			break
+		}
+	}
+
+	if !labelFound {
+		log.Printf("label %s is not applied, skipping removal", label)
+		return
+	}
+
+	_, err = client.Issues.RemoveLabelForIssue(ctx, owner, repo, issueNum, label)
 	if err != nil {
 		log.Printf("failed to remove label %s: %v", label, err)
 	}
