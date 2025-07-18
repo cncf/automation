@@ -49,10 +49,11 @@ type Rule struct {
 }
 
 type LabelsYAML struct {
-	Labels     []Label `yaml:"labels"`
-	Ruleset    []Rule  `yaml:"ruleset"`
-	AutoCreate bool    `yaml:"autoCreateLabels"`
-	AutoDelete bool    `yaml:"autoDeleteLabels"`
+	Labels          []Label `yaml:"labels"`
+	Ruleset         []Rule  `yaml:"ruleset"`
+	AutoCreate      bool    `yaml:"autoCreateLabels"`
+	AutoDelete      bool    `yaml:"autoDeleteLabels"`
+	DefinedRequired bool    `yaml:"definedRequired"`
 }
 
 func loadConfigFromURL(url string) (*LabelsYAML, error) {
@@ -117,6 +118,16 @@ func main() {
 
 	if cfg.AutoDelete {
 		deleteUndefinedLabels(ctx, client, owner, repo, cfg)
+	}
+
+	if cfg.AutoCreate {
+		for _, label := range cfg.Labels {
+			color, description, labelName := getLabelDefinition(cfg, label.Name)
+			if err := ensureLabelExists(ctx, client, owner, repo, labelName, color, description, cfg); err != nil {
+				log.Printf("skipping label %s due to error: %v", labelName, err)
+				continue
+			}
+		}
 	}
 
 	// Parse changed files if provided
@@ -276,6 +287,10 @@ func getLabelDefinition(cfg *LabelsYAML, labelName string) (string, string, stri
 			}
 		}
 	}
+	if cfg.DefinedRequired {
+		log.Printf("label %s not defined in labels.yaml", labelName)
+		return "", "", "" // Return empty if label is required but not defined
+	}
 	return "000000", "Automatically applied label", labelName // Default values
 }
 
@@ -284,6 +299,12 @@ func applyLabel(ctx context.Context, client *github.Client, owner, repo string, 
 
 	// Get label definition from config
 	color, description, resolvedLabel := getLabelDefinition(cfg, label)
+
+	if resolvedLabel == "" {
+		log.Printf("label %s is not defined in labels.yaml and auto-create is disabled",
+			label)
+		return
+	}
 
 	// Ensure the label exists with the defined color and description
 	if err := ensureLabelExists(ctx, client, owner, repo, resolvedLabel, color, description, cfg); err != nil {
