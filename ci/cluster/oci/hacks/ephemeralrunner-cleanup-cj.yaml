@@ -49,7 +49,19 @@ spec:
             - /bin/bash
             args:
             - -c
-            - for i in $(kubectl -n arc-systems get ephemeralrunners -o jsonpath="{range .items[?(@.status.phase=='Failed')]}{.metadata.name}{'\n'}{end}"); do kubectl -n arc-systems delete ephemeralrunner ${i}; done
+            - |
+              echo "Deleting EphemeralRunners in Failed State..." && \
+              for i in $(kubectl -n arc-systems get ephemeralrunners -o jsonpath="{range .items[?(@.status.phase=='Failed')]}{.metadata.name}{'\n'}{end}"); \
+              do \
+                kubectl -n arc-systems delete ephemeralrunner ${i}; \
+              done && \
+              echo "Done..." && \
+              echo "Deleting EphemeralRunners with Failures in Status" && \
+              for j in $(kubectl get ephemeralrunners -n arc-systems -o json | jq -r '.items[] | select(.status.failures != null) | .metadata.name'); \
+              do \
+                kubectl -n arc-systems delete ephemeralrunner ${j}; \
+              done && \
+              echo "Done..."
             resources:
               limits:
                 cpu: 100m
