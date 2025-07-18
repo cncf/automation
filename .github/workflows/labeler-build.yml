@@ -11,12 +11,12 @@ on:
     branches: [main]
     paths:
       - 'utilities/labeler/Dockerfile*'
-      - 'utilities/labeler/oci/**'
+      - 'utilities/labeler/**'
   pull_request:
     branches: [main]
     paths:
       - 'utilities/labeler/Dockerfile*'
-      - 'utilities/labeler/oci/**'
+      - 'utilities/labeler/**'
   workflow_dispatch:
 
 env:
