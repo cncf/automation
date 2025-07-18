@@ -234,7 +234,6 @@ ruleset:
     command: "/tag"
     rules:
     - matchList: # allow any items from this list, not unique
-      values:
       - tag/developer-experience
       - tag/infrastructure
       - tag/operational-resilience
@@ -274,9 +273,7 @@ ruleset:
   spec:
     command: "/triage"
     rules:
-    - unique:  # could also be a generic list with additional commands of in / not in or a regex match
-      ruleCondition: or # this applies to the whole rule, so it could match multiple rules as and/or
-      values:
+    - matchList:
       - needs-triage
       - triage/valid
       - triage/needs-information
