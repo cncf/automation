@@ -1669,8 +1669,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: argocd
-  namespace: argocd
+  name: guac
+  namespace: guac
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     # type of authentication
