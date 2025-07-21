@@ -193,6 +193,15 @@ labels:
 - name: tag/workloads-foundation
   description: TAG Workloads Foundation
   color: 6AE2DC
+- name: needs-triage
+  description: Indicates an issue or PR that has not been triaged yet (has a 'triage/foo' label applied)
+  color: ededed
+- name: needs-group
+  description: Indicates an issue or PR that has not been assigned a group (toc or tag/foo label applied)
+  color: ededed
+- name: needs-kind
+  description: Indicates an issue or PR that is missing an issue type or kind (a kind/foo label)
+  color: ededed
 
 
 
