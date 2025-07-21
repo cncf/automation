@@ -205,10 +205,62 @@ labels:
 
 
 
-# each rule should be evaluated to determine what the labels should look like
-# and ONLY apply them if there is a difference. This will prevent removal of 
-# labels in between steps (e.g. ensure there is only one namespaced one present)
+# Because the rules are executed in order, any removals need to be executed first
 ruleset:
+- name: remove-dd
+  kind: match
+  spec:
+    command: "/remove-dd"
+  actions:
+  - kind: remove-label
+    spec: 
+      match: dd/{{ argv.0 }}
+
+- name: remove-init
+  kind: match
+  spec:
+    command: "/remove-init"
+  actions:
+  - kind: remove-label
+    spec: 
+      match: init/{{ argv.0 }} 
+
+- name: remove-kind
+  kind: match
+  spec:
+    command: "/remove-kind"
+  actions:
+  - kind: remove-label
+    spec: 
+      match: kind/{{ argv.0 }}
+
+- name: remove-level
+  kind: match
+  spec:
+    command: "/remove-level"
+  actions:
+  - kind: remove-label
+    spec: 
+      match: level/{{ argv.0 }}
+
+- name: remove-review
+  kind: match
+  spec:
+    command: "/remove-review"
+  actions:
+  - kind: remove-label
+    spec: 
+      match: review/{{ argv.0 }}
+
+- name: remove-sub
+  kind: match
+  spec:
+    command: "/remove-sub"
+  actions:
+  - kind: remove-label
+    spec:
+      match: sub/{{ argv.0 }}
+
 - name: remove-tag
   kind: match
   spec:
@@ -226,6 +278,19 @@ ruleset:
   - kind: remove-label
     spec: 
       match: toc
+  - kind: remove-label
+    spec:
+      match: toc/{{ argv.0 }}
+
+- name: remove-triage
+  kind: match
+  spec:
+   command: "/remove-triage"
+  actions:
+  - kind: remove-label
+    spec:
+      match: triage/{{ argv.0 }}
+
 
 - name: needs-triage
   kind: label
@@ -235,6 +300,27 @@ ruleset:
   actions:
   - kind: apply-label
     label: "needs-triage"
+
+- name: needs-kind
+  kind: label
+  spec:
+    match: "kind/*"
+    matchCondition: NOT
+  actions:
+  - kind: apply-label
+    label: "needs-kind"
+
+- name: needs-group
+  kind: label
+  spec:
+    match: "/[ts][aou][bg]/*"
+    matchCondition: NOT
+  actions:
+    - kind: apply-label
+      label: "needs-group"
+
+
+
 
 
 - name: apply-tag
@@ -249,9 +335,9 @@ ruleset:
       - tag/security-compliance
       - tag/workloads-foundation
   actions:
-  - kind: remove-label # removes label if present
-    spec:
-      match: needs-group
+  #- kind: remove-label # removes label if present
+  #  spec:
+  #    match: needs-group
   - kind: apply-label
     label: "tag/{{ argv.0 }}" # to match input from string
 
