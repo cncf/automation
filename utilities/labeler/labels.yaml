@@ -335,9 +335,9 @@ ruleset:
       - tag/security-compliance
       - tag/workloads-foundation
   actions:
-  #- kind: remove-label # removes label if present
-  #  spec:
-  #    match: needs-group
+  - kind: remove-label # removes label if present
+    spec:
+      match: needs-group
   - kind: apply-label
     label: "tag/{{ argv.0 }}" # to match input from string
 
