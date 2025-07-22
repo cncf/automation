@@ -30,12 +30,12 @@ type Label struct {
 
 type ActionSpec struct {
 	Match string `yaml:"match,omitempty"`
+	Label string `yaml:"label,omitempty"`
 }
 
 type Action struct {
-	Kind  string     `yaml:"kind"`
-	Label string     `yaml:"label,omitempty"`
-	Spec  ActionSpec `yaml:"spec,omitempty"`
+	Kind string     `yaml:"kind"`
+	Spec ActionSpec `yaml:"spec,omitempty"`
 }
 
 type RuleSpec struct {
@@ -166,7 +166,7 @@ func main() {
 				}
 				if matched {
 					for _, action := range rule.Actions {
-						label := renderLabel(action.Label, nil)
+						label := renderLabel(action.Spec.Label, nil)
 						switch action.Kind {
 						case "apply-label":
 							applyLabel(ctx, client, owner, repo, toInt(issueNum), label, cfg)
@@ -220,13 +220,13 @@ func main() {
 
 					for _, action := range rule.Actions {
 						label := ""
-						if action.Label != "" {
-							label = renderLabel(action.Label, argv)
+						if action.Spec.Label != "" {
+							label = renderLabel(action.Spec.Label, argv)
 						}
 						if action.Spec.Match != "" {
 							// Handle match condition for action
 							if cfg.Debug {
-								log.Printf("Checking action label `%s` against Spec.Match `%s` and Argv `%v`", action.Label, action.Spec.Match, argv)
+								log.Printf("Checking action label `%s` against Spec.Match `%s` and Argv `%v`", action.Spec.Label, action.Spec.Match, argv)
 							}
 							label = renderLabel(action.Spec.Match, argv)
 							if !cfg.isValidLabel(label) && !strings.Contains(label, "/*") {
@@ -267,7 +267,7 @@ func main() {
 
 				if !foundNamespace {
 					for _, action := range rule.Actions {
-						label := renderLabel(action.Label, nil)
+						label := renderLabel(action.Spec.Label, nil)
 						switch action.Kind {
 						case "apply-label":
 							applyLabel(ctx, client, owner, repo, toInt(issueNum), label, cfg)

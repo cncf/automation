@@ -217,7 +217,8 @@ ruleset:
     spec:
       match: needs-group
   - kind: apply-label
-    label: "tag/{{ argv.0 }}" # to match input from string
+    spec:
+      label: "tag/{{ argv.0 }}" # to match input from string
 
 - name: apply-toc
   kind: match
@@ -230,7 +231,8 @@ ruleset:
     spec:
       match: needs-group
   - kind: apply-label
-    label: "toc"
+    spec:
+      label: "toc"
 
 # Applies needs-triage label if no triage related label is present
 # this will account for conditions where  a triage label is removed, the
@@ -242,7 +244,8 @@ ruleset:
     matchCondition: NOT
   actions:
   - kind: apply-label
-    label: "needs-triage"
+    spec:
+      label: "needs-triage"
 
 
   # Remove needs-triage label when a triage label is applied and ONLY allow
@@ -268,7 +271,8 @@ ruleset:
     spec:
       match: "triage/*"
   - kind: apply-label
-    label: "triage/{{ argv.0 }}" # to match input from string
+    spec:
+      label: "triage/{{ argv.0 }}" # to match input from string
 
 - name: charter
   kind: filePath
@@ -276,7 +280,8 @@ ruleset:
     matchPath: "tags/*/charter.md"
   actions:
   - kind: apply-label
-    label: toc
+    spec:
+      label: toc
 
 - name: tag-foo
   kind: filePath
@@ -284,4 +289,5 @@ ruleset:
     matchPath: tags/tag-foo/*
   actions:
   - kind: apply-label
-    label: tag-foo
+    spec:
+      label: tag-foo
