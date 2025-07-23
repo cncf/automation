@@ -695,6 +695,15 @@ ruleset:
 # filepath rules
 ##############################################################################
 
+- name: test
+  kind: filePath
+  spec:
+    matchPath: "utilities/labeler"
+  actions:
+  - kind: apply-label
+    spec:
+      label: toc
+
 - name: charter
   kind: filePath
   spec:
