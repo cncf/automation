@@ -286,15 +286,7 @@ ruleset:
     spec: 
       match: tag/{{ argv.0 }}
 
-- name: remove-toc
-  kind: match
-  spec:
-    command: /remove-toc
-  actions:
-  - kind: remove-label
-    spec: 
-      match: toc
-
+# has to come before /toc otherwise it will try and match as "toc/{{argv.0}}"
 - name: remove-toc-init
   kind: match
   spec:
@@ -303,6 +295,15 @@ ruleset:
   - kind: remove-label
     spec:
       match: toc/initiative/{{ argv.0 }}
+
+- name: remove-toc
+  kind: match
+  spec:
+    command: /remove-toc
+  actions:
+  - kind: remove-label
+    spec: 
+      match: toc
 
 - name: remove-triage
   kind: match
