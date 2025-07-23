@@ -294,9 +294,15 @@ ruleset:
   - kind: remove-label
     spec: 
       match: toc
+
+- name: remove-toc-init
+  kind: match
+  spec:
+    command: /remove-toc/initiative
+  actions:
   - kind: remove-label
     spec:
-      match: toc/{{ argv.0 }}
+      match: toc/initiative/{{ argv.0 }}
 
 - name: remove-triage
   kind: match
