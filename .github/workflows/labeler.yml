@@ -33,7 +33,9 @@ jobs:
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.issue.number }}
           comment_body: ${{ github.event.comment.body }}
-          changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Display PR number
+        run: echo "This pull request is #${{ github.event.pull_request.number }}"
 
       - name: Run labeler action for PR
         if: ${{ github.event.issue.pull_request }}
