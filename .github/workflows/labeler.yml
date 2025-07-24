@@ -22,7 +22,7 @@ jobs:
         with:
           separator: ","
           
-      - name: Run labeler action for PR
+      - name: Run labeler action for Issue
         if: ${{ !github.event.issue.pull_request }}
         uses: ./.github/actions/labeler-action
         env:
