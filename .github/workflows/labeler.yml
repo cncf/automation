@@ -17,12 +17,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Display PR number
-        if: ${{ github.event.issue.pull_request }}
-        run: echo "This pull request is ${{ github.event.pull_request.number }}"
+        if: ${{ github.event.pull_request }}
+        run: echo "This pull request is ${{ github.event.pull_request.id }} | ${{ github.event.comment.body}}"
 
       - name: Display Issue number
-        if: ${{ !github.event.issue.pull_request }}
-        run: echo "This issue is ${{ github.event.issue.number }}"
+        if: ${{ github.event.issue }}
+        run: echo "This issue is ${{ github.event.issue.id }} | ${{ github.event.comment.body}}"
 
       - name: Get changed files
         id: changed-files
