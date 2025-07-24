@@ -35,7 +35,8 @@ jobs:
           comment_body: ${{ github.event.comment.body }}
 
       - name: Display PR number
-        run: echo "This pull request is #${{ github.event.pull_request.number }}"
+        if: ${{ github.event.issue.pull_request }}
+        run: echo "This pull request is ${{ github.event.pull_request.number }}"
 
       - name: Run labeler action for PR
         if: ${{ github.event.issue.pull_request }}
