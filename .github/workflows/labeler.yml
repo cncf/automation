@@ -30,7 +30,8 @@ jobs:
         with:
           separator: ","
           
-      - name: Run labeler action for Issue
+      - name: Run labeler action for PR
+        if: ${{ github.event.pull_request }}
         uses: ./.github/actions/labeler-action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,3 +42,15 @@ jobs:
           issue_number: ${{ github.event.issue.number }}
           comment_body: ${{ github.event.comment.body }}
           changed_files: ${{ steps.changed-files.outputs.files }}
+          
+      - name: Run labeler action for Issue
+        if: ${{ !github.event.pull_request }}
+        uses: ./.github/actions/labeler-action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          labels: https://raw.githubusercontent.com/mrbobbytables/cncf-automation/refs/heads/label-config/utilities/labeler/labels.yaml
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
+          issue_number: ${{ github.event.issue.number }}
+          comment_body: ${{ github.event.comment.body }}
