@@ -2,6 +2,9 @@ name: "Labeler Action"
 description: "A reusable action to label issues and PRs using a Docker container."
 
 inputs:
+  labels:
+    description: "label config"
+  required: true
   owner:
     description: "The repository owner."
     required: true
@@ -14,6 +17,9 @@ inputs:
   comment_body:
     description: "The body of the comment triggering the action."
     required: true
+  changed_files:
+    description: "comma separated list of files"
+    required: false
 
 runs:
   using: "docker"
@@ -24,3 +30,4 @@ runs:
     - "${{ inputs.repo }}"
     - "${{ inputs.issue_number }}"
     - "${{ inputs.comment_body }}"
+    - "${{ inputs.changed_files }}"
