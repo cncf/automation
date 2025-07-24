@@ -18,11 +18,14 @@ jobs:
 
       - name: Display PR number
         if: ${{ github.event.pull_request }}
-        run: echo "This pull request is ${{ github.event.pull_request.id }} | ${{ github.event.comment.body}}"
+        run: echo "This pull request is ${{ github.event.pull_request.number }} | ${{ github.event.pull_request.body}}"
 
       - name: Display Issue number
         if: ${{ github.event.issue }}
-        run: echo "This issue is ${{ github.event.issue.id }} | ${{ github.event.comment.body}}"
+        run: echo "This issue is ${{ github.event.issue.number }} | ${{ github.event.issue.body}}"
+
+      - name: Display Comment info
+        run: echo "This comment is on issue #${{ github.event.issue.number }} | ${{ github.event.comment.body }}"
 
       - name: Get changed files
         id: changed-files
@@ -40,3 +43,4 @@ jobs:
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.issue.number }}
           comment_body: ${{ github.event.comment.body }}
+          changed_files: ${{ steps.changed-files.outputs.files }}
