@@ -18,7 +18,7 @@ jobs:
 
       - name: Display PR number
         if: ${{ github.event.pull_request }}
-        run: echo "This pull request is ${{ github.event.pull_request.number }} | ${{ github.event.pull_request.body}}"
+        run: echo "This pull request is ${{ github.event.pull_request.number }} | ${{ github.event.pull_request.body }}"
 
       - name: Display Issue number
         if: ${{ !github.event.pull_request }}
@@ -39,8 +39,8 @@ jobs:
           labels: https://raw.githubusercontent.com/mrbobbytables/cncf-automation/refs/heads/label-config/utilities/labeler/labels.yaml
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
-          issue_number: ${{ github.event.issue.number }}
-          comment_body: ${{ github.event.comment.body }}
+          issue_number: ${{ github.event.pull_request.number }}
+          comment_body: ${{ github.event.pull_request.body }}
           changed_files: ${{ steps.changed-files.outputs.files }}
           
       - name: Run labeler action for Issue
