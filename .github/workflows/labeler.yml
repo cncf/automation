@@ -21,16 +21,9 @@ jobs:
         uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c
         with:
           separator: ","
-
-      - name: List all changed files
-        env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
-        run: |
-          for file in ${ALL_CHANGED_FILES}; do
-            echo "$file was changed"
-          done
-
-      - name: Run labeler action
+          
+      - name: Run labeler action for PR
+        if: ${{ !github.event.issue.pull_request }}
         uses: ./.github/actions/labeler-action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,5 +32,18 @@ jobs:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.issue.number }}
+          comment_body: ${{ github.event.comment.body }}
+          changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Run labeler action for PR
+        if: ${{ github.event.issue.pull_request }}
+        uses: ./.github/actions/labeler-action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          labels: https://raw.githubusercontent.com/mrbobbytables/cncf-automation/refs/heads/label-config/utilities/labeler/labels.yaml
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
+          issue_number: ${{ github.event.pull_request.number }}
           comment_body: ${{ github.event.comment.body }}
           changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
