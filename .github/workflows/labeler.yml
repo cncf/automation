@@ -41,7 +41,7 @@ jobs:
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.pull_request.number }}
           comment_body: ${{ github.event.pull_request.body }}
-          changed_files: ${{ steps.changed-files.outputs.files }}
+          changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
           
       - name: Run labeler action for Issue
         if: ${{ !github.event.pull_request }}
