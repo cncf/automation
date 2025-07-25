@@ -30,6 +30,10 @@ jobs:
         with:
           separator: ","
           
+      - name: Display files
+        if: ${{ github.event.pull_request }}
+        run: echo "Changed files ${{ steps.changed-files.outputs.all_changed_files }}"
+          
       - name: Run labeler action for PR
         if: ${{ github.event.pull_request }}
         uses: ./.github/actions/labeler-action
