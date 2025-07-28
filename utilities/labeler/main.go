@@ -138,10 +138,12 @@ func main() {
 	}
 
 	// Parse changed files if provided
+	log.Printf("Changed files: %s", *changedFiles)
 	var files []string
 	if *changedFiles != "" {
 		files = strings.Split(*changedFiles, ",")
 	}
+	log.Printf("Parsed changed files: %v", files)
 
 	issue, _, err := client.Issues.Get(ctx, owner, repo, toInt(issueNum))
 	if err != nil {
