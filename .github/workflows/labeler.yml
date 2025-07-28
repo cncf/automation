@@ -5,6 +5,8 @@ on:
     types: [created, edited]
   pull_request_target:
     types: [opened, edited, reopened]
+  issues:
+    types: [opened, edited, reopened]
 
 jobs:
   label:
