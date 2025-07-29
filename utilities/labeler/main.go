@@ -163,7 +163,7 @@ func main() {
 					log.Printf("error matching file path: %v", err)
 					continue
 				}
-				if matched {
+				if matched || (rule.Spec.MatchCondition == "NOT" && !matched) {
 					for _, action := range rule.Actions {
 						label := renderLabel(action.Spec.Label, nil)
 						switch action.Kind {
@@ -247,33 +247,31 @@ func main() {
 			}
 		} else if rule.Kind == "label" {
 			// Handle default namespaced label logic dynamically
-			if rule.Spec.MatchCondition == "NOT" {
-				namespacePattern := rule.Spec.Match
-				existingLabels, _, err := client.Issues.ListLabelsByIssue(ctx, owner, repo, toInt(issueNum), nil)
-				if err != nil {
-					log.Printf("failed to fetch labels for issue: %v", err)
-					continue
-				}
+			namespacePattern := rule.Spec.Match
+			existingLabels, _, err := client.Issues.ListLabelsByIssue(ctx, owner, repo, toInt(issueNum), nil)
+			if err != nil {
+				log.Printf("failed to fetch labels for issue: %v", err)
+				continue
+			}
 
-				foundNamespace := false
-				for _, lbl := range existingLabels {
-					matched, _ := filepath.Match(namespacePattern, lbl.GetName())
-					if matched {
-						foundNamespace = true
-						break
-					}
+			foundNamespace := false
+			for _, lbl := range existingLabels {
+				matched, _ := filepath.Match(namespacePattern, lbl.GetName())
+				if matched {
+					foundNamespace = true
+					break
 				}
+			}
 
-				if !foundNamespace {
-					for _, action := range rule.Actions {
-						label := renderLabel(action.Spec.Label, nil)
-						switch action.Kind {
-						case "apply-label":
-							applyLabel(ctx, client, owner, repo, toInt(issueNum), label, cfg)
-						case "remove-label":
-							if label != "" {
-								removeLabel(ctx, client, owner, repo, toInt(issueNum), label)
-							}
+			if !foundNamespace || rule.Spec.MatchCondition == "NOT" {
+				for _, action := range rule.Actions {
+					label := renderLabel(action.Spec.Label, nil)
+					switch action.Kind {
+					case "apply-label":
+						applyLabel(ctx, client, owner, repo, toInt(issueNum), label, cfg)
+					case "remove-label":
+						if label != "" {
+							removeLabel(ctx, client, owner, repo, toInt(issueNum), label)
 						}
 					}
 				}
