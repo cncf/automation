@@ -1,0 +1,122 @@
+name: Project Validator
+
+on:
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: '0 9 * * *'
+  push:
+    paths:
+      - 'utilities/projects/**'
+      - 'projectlist.yaml'
+  pull_request:
+    paths:
+      - 'utilities/projects/**'
+      - 'projectlist.yaml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Cache validation results
+      uses: actions/cache@v4
+      with:
+        path: utilities/projects/.cache
+        key: ${{ runner.os }}-validator-cache-${{ github.run_id }}
+        restore-keys: |
+          ${{ runner.os }}-validator-cache-
+
+    - name: Download dependencies
+      working-directory: utilities/projects
+      run: go mod download
+
+    - name: Run tests
+      working-directory: utilities/projects
+      run: go test -v
+
+    - name: Build validator
+      working-directory: utilities/projects
+      run: go build ./cmd/validator
+
+    - name: Run validation
+      working-directory: utilities/projects
+      run: |
+        # Run validation and capture output
+        echo "## Project Validation Results" > validation-report.md
+        echo "" >> validation-report.md
+        
+        if ./validator --config projectlist.yaml --format text > validation-output.txt 2>&1; then
+          echo "✅ All projects passed validation" >> validation-report.md
+        else
+          echo "❌ Some projects failed validation" >> validation-report.md
+          echo "" >> validation-report.md
+          echo "### Detailed Report" >> validation-report.md
+          echo "" >> validation-report.md
+          echo '```' >> validation-report.md
+          cat validation-output.txt >> validation-report.md
+          echo '```' >> validation-report.md
+        fi
+        
+        # Always show the results
+        cat validation-report.md
+        cat validation-output.txt
+
+    - name: Generate JSON report
+      working-directory: utilities/projects
+      run: |
+        ./validator --config projectlist.yaml --format json > validation-results.json
+        echo "JSON report generated:"
+        cat validation-results.json
+
+    - name: Upload validation results
+      uses: actions/upload-artifact@v4
+      with:
+        name: validation-results
+        path: |
+          utilities/projects/validation-report.md
+          utilities/projects/validation-results.json
+          utilities/projects/validation-output.txt
+
+    - name: Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = './utilities/projects/validation-report.md';
+          
+          if (fs.existsSync(path)) {
+            const report = fs.readFileSync(path, 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+          }
+
+    - name: Fail on validation errors
+      working-directory: utilities/projects
+      run: |
+        # Re-run validator to get exit code
+        ./validator --config projectlist.yaml --format text
