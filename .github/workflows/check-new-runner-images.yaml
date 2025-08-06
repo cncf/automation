@@ -1,5 +1,5 @@
 ---
-name: Check New CloudRunner Version
+name: Check New Runner Version
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -23,7 +23,7 @@ jobs:
 
       - name: Check latest and update
         run: |
-          LATEST=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r '.tag_name')
+          LATEST=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r '.tag_name' | sed 's/^v//')
           sed -i "s/ARG RUNNER_VERSION=.*/ARG RUNNER_VERSION=${LATEST}/" ci/gha-runner-image/Dockerfile
           if [ $(git status | grep -c "nothing to commit") == 0 ]; then
             git config user.name cncf-automation
