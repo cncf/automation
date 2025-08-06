@@ -1,0 +1,39 @@
+---
+name: Check New CloudRunner Version
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-to-latest-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check latest and update
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r '.tag_name')
+          sed -i "s/ARG RUNNER_VERSION=.*/ARG RUNNER_VERSION=${LATEST}/" ci/gha-runner-image/Dockerfile
+          if [ $(git status | grep -c "nothing to commit") == 0 ]; then
+            git config user.name cncf-automation
+            git config user.email cncf-automation@cncf.io
+            git diff
+            git status
+            git add ci/gha-runner-image/Dockerfile
+            git commit -am "Updating runner version to ${LATEST}"
+            git push
+          else
+              echo "No changes, skipping..."
+          fi
+
