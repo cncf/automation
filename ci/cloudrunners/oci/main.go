@@ -148,9 +148,8 @@ func run(cmd *cobra.Command, argv []string) error {
 		"mv /etc/skel/.rustup /home/ubuntu/",
 		"mv /etc/skel/.dotnet /home/ubuntu/",
 		"mv /etc/skel/.composer /home/ubuntu/",
-		`sudo usermod -aG docker ubuntu && newgrp docker <<EOF
-export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash -x /home/ubuntu/run.sh --jitconfig "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
-EOF`,
+		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
+		"export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash -x /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
 	}
 
 	for _, cmd := range commands {
