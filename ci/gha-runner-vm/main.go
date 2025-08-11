@@ -620,7 +620,7 @@ build {
       inline = ["touch /etc/waagent.conf"]
 	}`
 
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `["sleep 30", "export HISTSIZE=0 && sync"]`
+	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `["sleep 30", "export HISTSIZE=0 && sync", "usermod -aG docker ubuntu"]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
 	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
