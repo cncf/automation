@@ -74,8 +74,6 @@ RUN apt update -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-
-
 RUN locale-gen en_US.UTF-8 \
     && echo "LANG=en_US.UTF-8" >> /etc/default/locale \
     && echo "LC_ALL=en_US.UTF-8" >> /etc/default/locale \
