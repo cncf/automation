@@ -4,7 +4,6 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: guac-nats
-  namespace: argocd
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -29,7 +28,6 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: guac-nats
-  namespace: argocd
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -586,7 +584,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: guac-nats-config
-  namespace: argocd
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -630,14 +627,14 @@ metadata:
   name: guac-cm
 data:
   guac.yaml: |
-    pubsub-addr: nats://guac-nats.argocd.svc.cluster.local:4222
+    pubsub-addr: nats://guac-nats.guac.svc.cluster.local:4222
 
     publish-to-queue: true
-    blob-addr: s3://bucketname?endpoint=http://argocd-minio.argocd.svc.cluster.local:9000&region=us-east-1&disable_https=true&use_path_style=true
+    blob-addr: s3://bucketname?endpoint=http://guac-minio.guac.svc.cluster.local:9000&region=us-east-1&disable_https=true&use_path_style=true
     
 
     # CSub setup
-    csub-addr: collectsub.argocd.svc.cluster.local:2782
+    csub-addr: collectsub.guac.svc.cluster.local:2782
     csub-listen-port: 2782
 
     # GQL setup
@@ -645,7 +642,7 @@ data:
     gql-listen-port: 8080
     gql-debug: true
     gql-test-data: false
-    gql-addr: http://graphql-server.argocd.svc.cluster.local:8080/query
+    gql-addr: http://graphql-server.guac.svc.cluster.local:8080/query
     
     # Collector behavior
     service-poll: true
@@ -680,7 +677,7 @@ data:
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-NginX-Proxy true;
             proxy_ssl_session_reuse off;
-            proxy_pass http://graphql-server.argocd.svc.cluster.local:8080/query;
+            proxy_pass http://graphql-server.guac.svc.cluster.local:8080/query;
             proxy_set_header Host $http_host;
             proxy_cache_bypass $http_upgrade;
             proxy_redirect off;
@@ -742,7 +739,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: guac-nats
-  namespace: argocd
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -1475,7 +1471,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: guac-nats
-  namespace: argocd
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
