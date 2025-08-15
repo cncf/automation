@@ -142,7 +142,7 @@ metadata:
 spec:
   githubConfigUrl: https://github.com/enterprises/cncf
   githubConfigSecret: github-arc-secret
-  maxRunners: 500
+  maxRunners: 100
   minRunners: 0
   listenerMetrics:
     counters:
@@ -296,7 +296,7 @@ spec:
     spec:
       containers:
       - name: runner
-        image: ghcr.io/cncf/gha-cloudrunner:16803608824
+        image: ghcr.io/cncf/gha-cloudrunner:16989390023
         args:
         - --arch=arm64
         - --shape=VM.Standard.A1.Flex
