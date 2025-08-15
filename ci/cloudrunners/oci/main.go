@@ -112,6 +112,9 @@ func run(cmd *cobra.Command, argv []string) error {
 		}
 	}()
 
+	// Sleep before checking if the instance is ready
+	time.Sleep(30 * time.Second)
+
 	// Wait for the machine to be ready
 	err = machine.WaitForInstanceReady(ctx)
 	if err != nil {
