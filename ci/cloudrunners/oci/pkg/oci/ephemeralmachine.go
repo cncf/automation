@@ -65,7 +65,7 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 			m.instance = &getInstanceResponse.Instance
 			break
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 
 	// List VNIC attachments for the instance
@@ -116,11 +116,6 @@ func (m *EphemeralMachine) Delete(ctx context.Context) error {
 		}
 		getInstanceResponse, err := m.computeClient.GetInstance(ctx, getInstanceRequest)
 		if err != nil {
-			// if serviceError, ok := common.IsServiceError(err); ok {
-			// 	if serviceError.GetHTTPStatusCode() == 404 {
-			// 		break
-			// 	}
-			// }
 			return fmt.Errorf("waiting for instance deletion: %w", err)
 		}
 		log.Info("waiting for instance to be terminated", "instanceID", m.instanceID, "instance.lifecycleState", getInstanceResponse.Instance.LifecycleState)
