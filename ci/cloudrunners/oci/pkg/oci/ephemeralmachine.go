@@ -65,7 +65,7 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 			m.instance = &getInstanceResponse.Instance
 			break
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(15 * time.Second)
 	}
 
 	// List VNIC attachments for the instance
