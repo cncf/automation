@@ -130,19 +130,37 @@ additionalPrometheusRulesMap:
       - name: gha.rules
         rules:
           - alert: GHA Listener at High Capacity
-            expr: sum(gha_desired_runners) by (pod) / sum(gha_max_runners) by (pod) * 100 > 80
-            for: 1m
+            expr: sum(label_replace(gha_desired_runners, "runner", "$1", "pod", "(oracle-.+)-([a-z0-9]+)-listener$")) by (runner) / sum(label_replace(gha_max_runners, "runner", "$1", "pod", "(oracle-.+)-([a-z0-9]+)-listener$")) by (runner) * 100 >= 80
+            for: 5m
             labels:
               severity: warning
             annotations:
               summary: GHA Listener is at high capacity
-              description: "{{ $labels.pod }}) is at {{ $value }}% capacity"
+              description: "{{ $labels.runner }}) is at {{ $value }}% capacity"
 
           - alert: GHA Listener at Max Capacity
-            expr: sum(gha_desired_runners) by (pod) / sum(gha_max_runners) by (pod) * 100 >= 99
+            expr: sum(label_replace(gha_desired_runners, "runner", "$1", "pod", "(oracle-.+)-([a-z0-9]+)-listener$")) by (runner) / sum(label_replace(gha_max_runners, "runner", "$1", "pod", "(oracle-.+)-([a-z0-9]+)-listener$")) by (runner) * 100 >= 99
             for: 1m
             labels:
               severity: major
             annotations:
               summary: GHA Listener is at max capacity
-              description: "{{ $labels.pod }}) is at {{ $value }}% capacity"
+              description: "{{ $labels.runner }}) is at {{ $value }}% capacity"
+
+          - alert: GHA Pending EphemeralRunners
+            expr: sum(gha_controller_pending_ephemeral_runners) by (name) > 10
+            for: 1m
+            labels:
+              severity: warning
+            annotations:
+              summary: GHA Pending EphemeralRunners
+              description: "There are {{ $value }} pending EphemeralRunners for {{ $labels.name }}"
+
+          - alert: GHA Failed EphemeralRunners
+            expr: sum(gha_controller_failed_ephemeral_runners) by (name) > 5
+            for: 1m
+            labels:
+              severity: warning
+            annotations:
+              summary: GHA Failed EphemeralRunners
+              description: "There are {{ $value }} failed EphemeralRunners for {{ $labels.name }}"
