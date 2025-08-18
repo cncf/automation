@@ -123,3 +123,26 @@ prometheus:
     selector:
       matchLabels:
         app.kubernetes.io/component: runner-scale-set-listener
+
+additionalPrometheusRulesMap:
+  rule-name:
+    groups:
+      - name: gha.rules
+        rules:
+          - alert: GHA Listener at High Capacity
+            expr: sum(gha_desired_runners) by (pod) / sum(gha_max_runners) by (pod) * 100 > 1
+            for: 1m
+            labels:
+              severity: warning
+            annotations:
+              summary: GHA Listener is at high capacity
+              description: "{{ $labels.pod }}) is at {{ $value }}% capacity"
+
+          - alert: GHA Listener at Max Capacity
+            expr: sum(gha_desired_runners) by (pod) / sum(gha_max_runners) by (pod) * 100 >= 99
+            for: 1m
+            labels:
+              severity: major
+            annotations:
+              summary: GHA Listener is at max capacity
+              description: "{{ $labels.pod }}) is at {{ $value }}% capacity"
