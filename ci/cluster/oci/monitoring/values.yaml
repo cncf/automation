@@ -130,7 +130,7 @@ additionalPrometheusRulesMap:
       - name: gha.rules
         rules:
           - alert: GHA Listener at High Capacity
-            expr: sum(gha_desired_runners) by (pod) / sum(gha_max_runners) by (pod) * 100 > 1
+            expr: sum(gha_desired_runners) by (pod) / sum(gha_max_runners) by (pod) * 100 > 80
             for: 1m
             labels:
               severity: warning
