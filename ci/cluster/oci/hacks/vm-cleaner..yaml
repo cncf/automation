@@ -32,10 +32,10 @@ spec:
             - /bin/bash
             args:
             - -c
-            - for i in $(oci compute instance list --compartment-id ${COMPARTMENT_ID} --lifecycle-state RUNNING | jq -r '.data[] | select(."display-name" | startswith("gha-runner-")) | select((now - 86400 * 2) > (."time-created"[:19] | strptime("%Y-%m-%dT%H:%M:%S") | mktime)) | .id'); do oci compute instance terminate --instance-id ${i} --force && echo "Deleted instance ${i}"; done
+            - for i in $(oci compute instance list --compartment-id ${COMPARTMENT_ID} --lifecycle-state RUNNING --all | jq -r '.data[] | select(."display-name" | startswith("gha-runner-")) | select((now - 86400 * 2) > (."time-created"[:19] | strptime("%Y-%m-%dT%H:%M:%S") | mktime)) | .id'); do oci compute instance terminate --instance-id ${i} --force && echo "Deleted instance ${i}"; done
             resources:
               limits:
-                cpu: 100m
+                cpu: 500m
                 memory: 200Mi
           restartPolicy: Never
           volumes:
