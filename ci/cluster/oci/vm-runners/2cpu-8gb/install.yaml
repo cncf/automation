@@ -308,7 +308,7 @@ spec:
         env:
         - name: OCI_CONFIG_FILE
           value: /etc/oci/config
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - mountPath: /etc/oci
           name: oci-config
