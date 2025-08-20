@@ -99,6 +99,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		SourceDetails: &core.InstanceSourceViaImageDetails{
 			ImageId:             common.String(*latestImage.Id),
 			BootVolumeSizeInGBs: common.Int64(600),
+			BootVolumeVpusPerGB: common.Int64(120),
 		},
 	})
 	if err != nil {
