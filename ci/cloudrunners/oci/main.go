@@ -64,6 +64,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		SortBy:          core.ListImagesSortByTimecreated,
 		SortOrder:       core.ListImagesSortOrderDesc,
 		Limit:           common.Int(1),
+		LifecycleState:  core.ImageLifecycleStateAvailable,
 	})
 	if err != nil {
 		panic(err)
