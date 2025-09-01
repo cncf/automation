@@ -54,7 +54,7 @@ jobs:
             - role: control-plane
           containerdConfigPatches:
             - |-
-              [plugins."io.containerd.grpc.v1.cri".registry.mirrors."10.0.20.250:5000"]
+              [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
                 endpoint = ["http://10.0.20.250:5000"]
           EOF
 
