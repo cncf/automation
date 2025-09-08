@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guac-repo-list
+  namespace: guac
+data:
+  repositories.csv: |
+    # Comma-separated list of repositories to process.
+    # Format: GIT_HTTPS_URL,GITHUB_SHORT_NAME,GIT_BRANCH_OR_TAG,GUAC_COLLECT_MODE
+    # - GIT_HTTPS_URL: Full HTTPS URL to the git repository.
+    # - GITHUB_SHORT_NAME: The 'owner/repo' slug. Required for 'guacone collect github'.
+    # - GIT_BRANCH_OR_TAG: The branch, tag, or commit to check out.
+    # - GUAC_COLLECT_MODE: 'release' or 'workflow'. Used by 'guacone collect github'.
+    #
+    # <<< ADD YOUR REPOSITORIES HERE >>>
+    https://github.com/your-owner/your-target-repo.git,your-owner/your-target-repo,main,release
+    https://github.com/another-owner/another-repo.git,another-owner/another-repo,develop,workflow

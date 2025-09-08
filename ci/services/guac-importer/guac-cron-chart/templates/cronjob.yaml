@@ -1,0 +1,60 @@
+
+{{- range .Values.repositories }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "guac-cron.fullname" $ }}-{{ .name | lower | trunc 50 }}
+  labels:
+    {{- include "guac-cron.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: ingestor
+    guac.sh/repository: {{ .name | quote }}
+spec:
+  schedule: {{ .schedule | default $.Values.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "guac-cron.selectorLabels" $ | nindent 12 }}
+            app.kubernetes.io/component: ingestor
+            guac.sh/repository: {{ .name | quote }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: guac-ingestor
+              image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default "latest" }}"
+              imagePullPolicy: {{ $.Values.image.pullPolicy }}
+              command: ["/scripts/ingest-github-data.sh"]
+              env:
+                # --- GUAC Configuration ---
+                - name: GUAC_GQL_ADDR
+                  value: {{ $.Values.guac.graphql_addr | quote }}
+                # --- Repository-specific variables from values.yaml ---
+                - name: GITHUB_REPO_URL_FULL
+                  value: {{ .repoUrl | quote }}
+                - name: GIT_BRANCH_OR_TAG
+                  value: {{ .branch | quote }}
+                - name: GITHUB_REPO_SHORT_NAME
+                  value: {{ .shortName | quote }}
+                - name: GITHUB_COLLECT_MODE
+                  value: {{ .collectMode | quote }}
+                # --- GitHub Token from Secret ---
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ $.Values.guac.github_token_secret_name }}
+                      key: {{ $.Values.guac.github_token_secret_key }}
+              volumeMounts:
+                - name: ingest-script-volume
+                  mountPath: /scripts
+                  readOnly: true
+          volumes:
+            - name: ingest-script-volume
+              configMap:
+                name: {{ include "guac-cron.fullname" $ }}-ingest-script
+                defaultMode: 0755 # Make the script executable
+{{- end }}

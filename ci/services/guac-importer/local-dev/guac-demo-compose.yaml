@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+
+  graphql:
+    image: ghcr.io/guacsec/guac:v1.0.0
+    command: "/opt/guac/guacgql --gql-debug"
+    working_dir: /guac
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  collectsub:
+    image: ghcr.io/guacsec/guac:v1.0.0
+    command: "/opt/guac/guaccsub"
+    working_dir: /guac
+    restart: on-failure
+    ports:
+      - "2782:2782"
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:2782" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  depsdev-collector:
+    image: ghcr.io/guacsec/guac:v1.0.0
+    command: "/opt/guac/guacone collect deps_dev -p --csub-addr=collectsub:2782 --gql-addr=http://graphql:8080/query"
+    working_dir: /guac
+    restart: on-failure
+    environment:
+      - DEPS_DEV_APIKEY
+    depends_on:
+      collectsub:
+        condition: service_healthy
+      graphql:
+        condition: service_healthy
+
+  cd-certifier:
+    image: ghcr.io/guacsec/guac:v1.0.0
+    command: "/opt/guac/guacone certifier cd -p --csub-addr=collectsub:2782 --gql-addr=http://graphql:8080/query"
+    working_dir: /guac
+    restart: on-failure
+    depends_on:
+      collectsub:
+        condition: service_healthy
+      graphql:
+        condition: service_healthy
+
+  osv-certifier:
+    image: ghcr.io/guacsec/guac:v1.0.0
+    command: "/opt/guac/guacone certifier osv -p --csub-addr=collectsub:2782 --gql-addr=http://graphql:8080/query"
+    working_dir: /guac
+    restart: on-failure
+    depends_on:
+      collectsub:
+        condition: service_healthy
+      graphql:
+        condition: service_healthy
+
+  guac-rest:
+    image: ghcr.io/guacsec/guac:v1.0.0
+    command: "/opt/guac/guacrest --rest-api-server-port=8081 --gql-addr=http://graphql:8080/query"
+    working_dir: /guac
+    restart: on-failure
+    ports:
+      - "8081:8081"
+    depends_on:
+      graphql:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-O-",
+          "http://localhost:8081/healthz"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 5s

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "guac-cron.fullname" . }}-ingest-script
+  labels:
+    {{- include "guac-cron.labels" . | nindent 4 }}
+data:
+  ingest-github-data.sh: |
+    #!/bin/sh
+    # This script processes a SINGLE repository based on environment variables.
+    set -e
+
+    echo "--- Starting GUAC Ingestion for: ${GITHUB_REPO_SHORT_NAME} ---"
+
+    # --- Validate Environment Variables ---
+    if [ -z "$GITHUB_REPO_URL_FULL" ] || [ -z "$GIT_BRANCH_OR_TAG" ] || [ -z "$GITHUB_REPO_SHORT_NAME" ]; then
+        echo "ERROR: Required environment variables are not set."
+        echo "Need: GITHUB_REPO_URL_FULL, GIT_BRANCH_OR_TAG, GITHUB_REPO_SHORT_NAME"
+        exit 1
+    fi
+
+    # --- Main Logic ---
+    REPO_CLONE_DIR="/work/repo"
+    SBOM_OUTPUT_FILE="/work/repo.sbom.json"
+
+    echo "--> Cloning repository: ${GITHUB_REPO_URL_FULL} (Branch: ${GIT_BRANCH_OR_TAG})"
+    rm -rf "$REPO_CLONE_DIR"
+    git clone --quiet --depth 1 --branch "$GIT_BRANCH_OR_TAG" "$GITHUB_REPO_URL_FULL" "$REPO_CLONE_DIR"
+
+    echo "--> Generating SBOM..."
+    syft "$REPO_CLONE_DIR" -o spdx-json > "$SBOM_OUTPUT_FILE"
+
+    echo "--> Ingesting SBOM into GUAC..."
+    guacone ingest --gql-addr "$GUAC_GQL_ADDR" "file://$SBOM_OUTPUT_FILE"
+
+    echo "--> Running 'guacone collect github' for ${GITHUB_REPO_SHORT_NAME}..."
+    guacone collect github --gql-addr "$GUAC_GQL_ADDR" --github-repo "$GITHUB_REPO_SHORT_NAME" --mode "${GITHUB_COLLECT_MODE:-release}"
+
+    echo "--- Successfully Finished GUAC Ingestion for: ${GITHUB_REPO_SHORT_NAME} ---"
