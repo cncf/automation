@@ -178,7 +178,6 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-x86_64", "linux-aarch64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "x64", "arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"PyPy\",\n            \"arch\": \"arm64\"", "\"PyPy\",\n            \"arch\": \"aarch64\"")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"Ruby\",\n            \"platform_version\": \"24.04\"", "\"Ruby\",\n            \"platform_version\": \"24.04-arm64\"")
 	}
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
