@@ -217,7 +217,7 @@ spec:
       hostIPC: false
       initContainers:
         - name: init-chmod-data
-          image: docker.io/bitnami/os-shell:12-debian-12-r46
+          image: docker.io/bitnamilegacy/os-shell:12-debian-12-r46
           imagePullPolicy: "IfNotPresent"
           resources:
             limits:
@@ -255,7 +255,7 @@ spec:
               mountPath: /dev/shm
       containers:
         - name: postgresql
-          image: docker.io/bitnami/postgresql:17.5.0-debian-12-r10
+          image: docker.io/bitnamilegacy/postgresql:17.5.0-debian-12-r10
           imagePullPolicy: "IfNotPresent"
           securityContext:
             allowPrivilegeEscalation: false
@@ -411,7 +411,7 @@ spec:
         spec:
           containers:
             - name: codimd-postgresql-pgdumpall
-              image: docker.io/bitnami/postgresql:17.5.0-debian-12-r10
+              image: docker.io/bitnamilegacy/postgresql:17.5.0-debian-12-r10
               imagePullPolicy: "IfNotPresent"
               env:
                 - name: PGUSER
