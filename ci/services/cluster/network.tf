@@ -160,6 +160,7 @@ resource "oci_core_security_list" "svc_lb" {
   display_name   = "${var.cluster_name}-svclb-seclist"
 
   egress_security_rules {
+    description      = "kube-proxy access"
     destination      = "10.0.10.0/23"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
@@ -172,6 +173,7 @@ resource "oci_core_security_list" "svc_lb" {
   }
 
   egress_security_rules {
+    description      = "NodePort service access"
     destination      = "10.0.10.0/23"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
@@ -184,6 +186,7 @@ resource "oci_core_security_list" "svc_lb" {
   }
 
   egress_security_rules {
+    description      = "NodePort service access"
     destination      = "10.0.10.0/23"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
@@ -196,6 +199,7 @@ resource "oci_core_security_list" "svc_lb" {
   }
 
   egress_security_rules {
+    description      = "NodePort service access"
     destination      = "10.0.10.0/23"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
@@ -380,6 +384,7 @@ resource "oci_core_security_list" "node" {
   }
 
   ingress_security_rules {
+    description = "Access kube-proxy"
     protocol    = "6"
     source      = "10.0.20.0/24"
     source_type = "CIDR_BLOCK"
@@ -392,6 +397,7 @@ resource "oci_core_security_list" "node" {
   }
 
   ingress_security_rules {
+    description = "NodePort service access"
     protocol    = "6"
     source      = "10.0.20.0/24"
     source_type = "CIDR_BLOCK"
@@ -404,6 +410,7 @@ resource "oci_core_security_list" "node" {
   }
 
   ingress_security_rules {
+    description = "NodePort service access"
     protocol    = "6"
     source      = "10.0.20.0/24"
     source_type = "CIDR_BLOCK"
@@ -416,6 +423,7 @@ resource "oci_core_security_list" "node" {
   }
 
   ingress_security_rules {
+    description = "NodePort service access"
     protocol    = "6"
     source      = "10.0.20.0/24"
     source_type = "CIDR_BLOCK"
@@ -467,10 +475,12 @@ resource "oci_core_public_ip" "ingress_ip" {
   compartment_id = var.compartment_ocid
   lifetime       = "RESERVED"
   display_name   = "${var.cluster_name}-ingress-ip"
+  private_ip_id  = "ocid1.privateip.oc1.us-sanjose-1.abzwuljrkimbtnfaj5jjpepkmp4ifttqcltnmdldwvzviicmsk5foxp4oiwa"
 }
 
 resource "oci_core_public_ip" "kcp_lb_ip" {
   compartment_id = var.compartment_ocid
   lifetime       = "RESERVED"
   display_name   = "${var.cluster_name}-kcp-lp-ip"
+  private_ip_id  = "ocid1.privateip.oc1.us-sanjose-1.abzwuljrzbthnlqawsumhrda7i7ucfivjcirrw565fuomenlknsmcxpvn2ka"
 }

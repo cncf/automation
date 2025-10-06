@@ -48,7 +48,7 @@ variable "node_pool_worker_size" {
 
 variable "kubernetes_version" {
   type    = string
-  default = "v1.32.1"
+  default = "v1.33.1"
 }
 
 variable "cluster_autoscaler_min" {

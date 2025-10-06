@@ -1,7 +1,7 @@
 locals {
   # it can be aquired from:
   # oci ce node-pool-options get --node-pool-option-id all | jq '.data.sources.[] | select(."source-name" | match("Oracle-Linux-8.10-2025.*OKE-1.32.*"))'
-  oci_image_id = "ocid1.image.oc1.us-sanjose-1.aaaaaaaakex5p5yb4hudzzvmcoacq2lmjur3rwqmxdsqd4bol4npx2j6x7iq"
+  oci_image_id = "ocid1.image.oc1.us-sanjose-1.aaaaaaaa3rkpji3z32yqk5jaydjnxrlfwrgb5rqmyzak2ytcctjm7jrwdgya"
 }
 
 resource "oci_containerengine_cluster" "service" {
