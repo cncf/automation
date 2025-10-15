@@ -1,0 +1,27 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kubermatic-quay-credentials
+  namespace: argocd
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: oci-secret-store
+  target:
+    name: kubermatic-quay-credentials
+    creationPolicy: Owner
+    template:
+      metadata:
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      data:
+        type: helm
+        enableOCI: "true"
+        name: kubermatic-quay
+        url: oci://quay.io/kubermatic
+        username: "{{ .username }}"
+        password: "{{ .password }}"
+  dataFrom:
+  - extract:
+      key: kubermatic-quay-credentials
