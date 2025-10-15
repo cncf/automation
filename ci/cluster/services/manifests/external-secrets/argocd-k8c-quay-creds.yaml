@@ -19,7 +19,7 @@ spec:
         type: helm
         enableOCI: "true"
         name: kubermatic-quay
-        url: quay.io/kubermatic
+        url: quay.io/kubermatic/helm-charts
         username: "{{ .username }}"
         password: "{{ .password }}"
   dataFrom:
