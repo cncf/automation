@@ -11,17 +11,19 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/kubermatic/developer-platform-dashboard
-    path: deploy/chart
-    targetRevision: b43e1984fedd6ff9cc2709a46f7741aba1888366
+    repoURL: quay.io/kubermatic/helm-charts/
+    chart: developer-platform-dashboard
+    targetRevision: 0.9.0
     helm:
       releaseName: kdp-dashboard
       values: |
         dashboard:
-          configSecretName: kdp-dashboard-configuration
+          config:
+            create: false
+            secretRef: 
+              name: kdp-dashboard-configuration
+              key: ".env.local"
           imagePullSecret: ""
-          image:
-            tag: "v0.8.0"
           ingress:
             create: true
             host: services.cncf.io
