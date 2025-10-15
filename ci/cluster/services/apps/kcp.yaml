@@ -25,6 +25,7 @@ spec:
           volumeSize: 1Gi
           extraFlags:
             - '--enable-leader-election'
+            - --feature-gates=EnableDeprecatedAPIExportVirtualWorkspacesUrls=true
         kcpFrontProxy:
           replicas: 2
           certificate:
