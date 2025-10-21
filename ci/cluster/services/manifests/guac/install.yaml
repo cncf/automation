@@ -1526,7 +1526,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
       - name: nats
-        image: dokcer.io/nats:2.9.20-alpine
+        image: docker.io/nats:2.9.20-alpine
         imagePullPolicy: IfNotPresent
         resources:
           {}
