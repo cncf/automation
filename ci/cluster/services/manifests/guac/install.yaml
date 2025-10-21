@@ -1433,7 +1433,7 @@ spec:
       containers:
       # workaround the problem that next.config.js can't set gql-addr dynamically
       - name: nginx
-        image: nginx:1.25.1
+        image: docker.io/nginx:1.25.1
         ports:
         - containerPort: 8080
         volumeMounts:
@@ -1526,7 +1526,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
       - name: nats
-        image: nats:2.9.20-alpine
+        image: dokcer.io/nats:2.9.20-alpine
         imagePullPolicy: IfNotPresent
         resources:
           {}
@@ -1622,7 +1622,7 @@ spec:
       #                               #
       #################################
       - name: reloader
-        image: natsio/nats-server-config-reloader:0.11.0
+        image: docker.io/natsio/nats-server-config-reloader:0.11.0
         imagePullPolicy: IfNotPresent
         resources:
           {}
@@ -1730,7 +1730,7 @@ metadata:
 spec:
   containers:
   - name: nats-box
-    image: natsio/nats-box:0.13.8
+    image: docker.io/natsio/nats-box:0.13.8
     env:
     - name: NATS_HOST
       value: guac-nats
