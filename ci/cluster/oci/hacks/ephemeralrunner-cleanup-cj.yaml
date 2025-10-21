@@ -43,7 +43,7 @@ spec:
           serviceAccountName: ephemeralrunner-cleaner
           containers:
           - name: cleanup
-            image: bitnamilegacy/kubectl:1.32
+            image: docker.io/bitnamilegacy/kubectl:1.32
             imagePullPolicy: IfNotPresent
             command:
             - /bin/bash

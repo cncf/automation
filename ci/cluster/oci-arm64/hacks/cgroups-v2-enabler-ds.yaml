@@ -19,7 +19,7 @@ spec:
       hostNetwork: true
       containers:
         - name: cgroups-v2-enabler
-          image: alpine
+          image: docker.io/library/alpine
           command:
             - /bin/sh
           args:
