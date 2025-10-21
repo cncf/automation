@@ -111,7 +111,7 @@ template:
   ##           mountPath: /run/docker
   ##           readOnly: true
   ##     - name: dind
-  ##       image: docker:dind
+  ##       image: docker.io/library/docker:dind
   ##       args:
   ##         - dockerd
   ##         - --host=unix:///run/docker/docker.sock
@@ -238,7 +238,7 @@ template:
           name: work
           subPath: tmp
       - name: dind
-        image: docker:dind
+        image: docker.io/library/docker:dind
         args:
           - dockerd
           - --host=unix:///run/docker/docker.sock

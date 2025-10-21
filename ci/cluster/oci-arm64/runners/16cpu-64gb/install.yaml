@@ -347,7 +347,7 @@ spec:
         env:
         - name: DOCKER_GROUP_GID
           value: "123"
-        image: docker:dind
+        image: docker.io/library/docker:dind
         name: dind
         securityContext:
           privileged: true
