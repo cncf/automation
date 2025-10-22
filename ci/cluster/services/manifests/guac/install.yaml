@@ -1683,7 +1683,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: guac.k8c.io
+    - host: guac.cncf.io
       http: &http
         paths:
           - path: /playground
@@ -1700,7 +1700,7 @@ spec:
                 name: visualizer
                 port:
                   number: 3000
-    - host: api.guac.k8c.io
+    - host: api.guac.cncf.io
       http:
         paths:
     
@@ -1713,8 +1713,8 @@ spec:
                   number: 8080
   tls:
   - hosts:
-    - guac.k8c.io
-    - api.guac.k8c.io
+    - guac.cncf.io
+    - api.guac.cncf.io
     secretName: guac-tls
 ---
 # Source: guac/charts/nats/templates/tests/test-request-reply.yaml
