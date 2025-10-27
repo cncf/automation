@@ -144,7 +144,7 @@ spec:
     spec:
       serviceAccountName: cluster-autoscaler
       containers:
-        - image: phx.ocir.io/oracle/oci-cluster-autoscaler:1.31.0-1
+        - image: phx.ocir.io/oracle/oci-cluster-autoscaler:1.33.0-3
           name: cluster-autoscaler
           resources:
             limits:
