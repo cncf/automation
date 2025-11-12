@@ -147,7 +147,7 @@ spec:
   githubConfigUrl: https://github.com/enterprises/cncf
   githubConfigSecret: github-arc-secret
   maxRunners: 100
-  minRunners: 1
+  minRunners: 0
   listenerMetrics:
     counters:
       gha_started_jobs_total:
@@ -454,3 +454,9 @@ spec:
                   storage: 10Gi
               storageClassName: oci-bv
         name: overlay
+      tolerations:
+      - key: "cncf.io/gha-runner"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        nodepool: karpenter

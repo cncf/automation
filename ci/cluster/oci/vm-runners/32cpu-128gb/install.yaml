@@ -329,3 +329,10 @@ spec:
       - name: oci-api-key
         secret:
           secretName: oci-api-key
+      tolerations:
+      - key: "cncf.io/gha-runner"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        nodepool: karpenter
+
