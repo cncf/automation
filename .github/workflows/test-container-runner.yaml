@@ -1,0 +1,107 @@
+name: Test Container Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    strategy:
+      matrix:
+        shape: [2cpu-8gb, 4cpu-16gb, 8cpu-32gb, 16cpu-64gb, 24cpu-384gb]
+        arch: ["x86-64"]
+    runs-on: oracle-${{ matrix.shape }}-${{ matrix.arch }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run uname to verify architecture
+        run: |
+          uname -a
+          lsb_release -a
+          id
+          cat /etc/group
+
+      - name: Run a basic workload
+        run: |
+          echo "Testing Runner"
+          echo "CPU Info:"
+          lscpu
+          docker run hello-world
+
+      - name: Check local disk 
+        run: |
+         df -h /
+
+      - name: Run kind cluster
+        run: |
+          CLUSTER_NAME="kind-test"
+          KIND_CONFIG="kind-config.yaml"
+
+          sudo sysctl fs.inotify.max_user_instances=1280
+          sudo sysctl fs.inotify.max_user_watches=655360
+
+          cat <<EOF > $KIND_CONFIG
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+            - role: control-plane
+            - role: worker
+            - role: worker
+          EOF
+
+          echo "[*] Creating Kind cluster..."
+          kind create cluster --name $CLUSTER_NAME --config $KIND_CONFIG
+
+          kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+          echo "[*] Creating pods with large images..."
+          kubectl apply -f - <<EOF
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: large-pod-1
+          spec:
+            containers:
+            - name: tensorflow
+              image: tensorflow/tensorflow:latest
+              command: ["sleep", "300"]
+              resources:
+                requests:
+                  memory: "2Gi"
+                  cpu: "2"
+                limits:
+                  memory: "4Gi"
+                  cpu: "4"
+          ---
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: large-pod-2
+          spec:
+            containers:
+            - name: pytorch
+              image: pytorch/pytorch:latest
+              command: ["sleep", "300"]
+              resources:
+                requests:
+                  memory: "2Gi"
+                  cpu: "2"
+                limits:
+                  memory: "4Gi"
+                  cpu: "4"
+          EOF
+
+          echo "[*] Waiting for pods to be ready..."
+          kubectl wait --for=condition=Ready pod/large-pod-1 --timeout=300s
+          kubectl wait --for=condition=Ready pod/large-pod-2 --timeout=300s
+
+          echo "[*] Pods running, doing test workload..."
+          sleep 60
+
+          echo "[*] Deleting pods..."
+          kubectl delete pod large-pod-1 large-pod-2
+
+          echo "[*] Deleting Kind cluster..."
+          kind delete cluster --name $CLUSTER_NAME
+
+          echo "[*] Done!"
