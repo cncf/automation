@@ -102,6 +102,11 @@ func run(cmd *cobra.Command, argv []string) error {
 			BootVolumeSizeInGBs: common.Int64(600),
 			BootVolumeVpusPerGB: common.Int64(120),
 		},
+		AgentConfig: &core.LaunchInstanceAgentConfigDetails{PluginsConfig: []core.InstanceAgentPluginConfigDetails{{DesiredState: core.InstanceAgentPluginConfigDetailsDesiredStateEnabled,
+			Name: common.String("Compute Instance Monitoring")}},
+			AreAllPluginsDisabled: common.Bool(false),
+			IsMonitoringDisabled:  common.Bool(false),
+		},
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create machine: %w", err)
@@ -156,6 +161,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
 		"sudo sysctl fs.inotify.max_user_instances=1280",
 		"sudo sysctl fs.inotify.max_user_watches=655360",
+		"sudo snap install oracle-cloud-agent --classic",
 		"export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash -x /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
 	}
 
