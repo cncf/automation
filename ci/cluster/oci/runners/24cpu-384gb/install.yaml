@@ -307,7 +307,7 @@ spec:
           value: unix:///var/run/docker.sock
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:ac6bc3d1eaeb0976b3f5a55fed34a19209a15d5b4961dbe56309728adcbec8d4
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:30ef2db3377672970a0a173668212e5c39cdc21bae344f326bbd9018bca4747d
         imagePullPolicy: Always
         name: runner
         resources:
@@ -389,7 +389,7 @@ spec:
         - -R
         - "1777"
         - /tmp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:ac6bc3d1eaeb0976b3f5a55fed34a19209a15d5b4961dbe56309728adcbec8d4
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:30ef2db3377672970a0a173668212e5c39cdc21bae344f326bbd9018bca4747d
         name: chowner
         securityContext:
           capabilities:
@@ -411,7 +411,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:ac6bc3d1eaeb0976b3f5a55fed34a19209a15d5b4961dbe56309728adcbec8d4
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:30ef2db3377672970a0a173668212e5c39cdc21bae344f326bbd9018bca4747d
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
