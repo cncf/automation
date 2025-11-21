@@ -65,6 +65,10 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 			m.instance = &getInstanceResponse.Instance
 			break
 		}
+		// Sometimes the API request is correct, but machine creation fails and jumps to TERMINATED state, then the pod runs forever
+		if getInstanceResponse.Instance.LifecycleState == core.InstanceLifecycleStateTerminated {
+			return fmt.Errorf("failed to create the machine, it's in TERMINATED state")
+		}
 		time.Sleep(15 * time.Second)
 	}
 

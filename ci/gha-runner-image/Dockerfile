@@ -2,10 +2,10 @@ ARG BASE_IMAGE
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:8.0-${BASE_IMAGE} AS build
 
-ARG RUNNER_VERSION=2.329.0
+ARG RUNNER_VERSION=2.330.0
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.8.0
-ARG DOCKER_VERSION=28.5.1
-ARG BUILDX_VERSION=0.29.1
+ARG DOCKER_VERSION=29.0.2
+ARG BUILDX_VERSION=0.30.1
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -100,9 +100,9 @@ COPY --from=build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib
 
 RUN install -o root -g root -m 755 docker/* /usr/bin/ && rm -rf docker
 
-RUN curl -LO https://go.dev/dl/go1.25.3.linux-${TARGETARCH}.tar.gz \
-    && tar -C /usr/local -xzf go1.25.3.linux-${TARGETARCH}.tar.gz \
-    && rm go1.25.3.linux-${TARGETARCH}.tar.gz \
+RUN curl -LO https://go.dev/dl/go1.25.4.linux-${TARGETARCH}.tar.gz \
+    && tar -C /usr/local -xzf go1.25.4.linux-${TARGETARCH}.tar.gz \
+    && rm go1.25.4.linux-${TARGETARCH}.tar.gz \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /etc/profile \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.profile \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.bashrc
