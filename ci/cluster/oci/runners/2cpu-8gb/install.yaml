@@ -454,3 +454,9 @@ spec:
                   storage: 10Gi
               storageClassName: oci-bv
         name: overlay
+      tolerations:
+      - key: "cncf.io/gha-runner"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        nodepool: karpenter
