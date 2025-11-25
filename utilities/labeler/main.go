@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/google/go-github/v55/github"
@@ -95,7 +96,7 @@ func main() {
 	flag.Parse()
 
 	if len(flag.Args()) < 5 {
-		fmt.Println("Usage: labeler [flags] <labels_url> <owner> <repo> <issue_number> <comment_body> <changed_files>")
+		fmt.Println("Usage: labeler [flags] <labels_url> <owner> <repo> <issue_number> <comment_body> [changed_files]")
 		os.Exit(1)
 	}
 	labelsURL := flag.Arg(0)
@@ -103,7 +104,10 @@ func main() {
 	repo := flag.Arg(2)
 	issueNum := flag.Arg(3)
 	commentBody := flag.Arg(4)
-	changedFiles := flag.Arg(5)
+	var changedFiles string
+	if len(flag.Args()) >= 6 {
+		changedFiles = flag.Arg(5)
+	}
 
 	if labelsURL == "" {
 		log.Fatal("labels URL not set")
@@ -210,6 +214,12 @@ func main() {
 					*/
 					if len(rule.Spec.MatchList) > 0 {
 						// Validate argv.0 against matchList
+						if len(argv) == 0 {
+							if cfg.Debug {
+								log.Printf("No argument provided for command %s to validate against matchList", rule.Spec.Command)
+							}
+							continue
+						}
 						valid := slices.Contains(rule.Spec.MatchList, argv[0])
 						if !valid {
 							log.Printf("Invalid argument `%s` for command %s", argv[0], rule.Spec.Command)
@@ -453,11 +463,9 @@ func removeLabel(ctx context.Context, client *github.Client, owner, repo string,
 }
 
 func toInt(s string) int {
-	n, err := fmt.Sscanf(s, "%d", new(int))
-	if err != nil || n != 1 {
+	i, err := strconv.Atoi(strings.TrimSpace(s))
+	if err != nil {
 		log.Fatalf("invalid issue number: %s", s)
 	}
-	var i int
-	fmt.Sscanf(s, "%d", &i)
 	return i
 }

@@ -69,10 +69,13 @@ def update(frame):
     world['color'] = world['ADMIN'].apply(color_country)
     
     # Plot the countries with the specified color
-    world.plot(ax=ax, color=world['color'], edgecolor='black', transform=ccrs.Robinson(), alpha=0.8)
+    world.plot(ax=ax, color=world['color'], edgecolor='black', transform=ccrs.PlateCarree(), alpha=0.8)
 
-    # Add the OpenStreetMap basemap underneath the countries to give depth
-    cx.add_basemap(ax, crs=ccrs.Robinson().proj4_init, source=cx.providers.OpenStreetMap.Mapnik)
+    # Try to add a basemap for context; if unavailable, continue without it
+    try:
+        cx.add_basemap(ax, source=cx.providers.OpenStreetMap.Mapnik)
+    except Exception:
+        pass
 
     # Clear any previous text to avoid overlap and re-render fresh text
     fig.texts.clear()
