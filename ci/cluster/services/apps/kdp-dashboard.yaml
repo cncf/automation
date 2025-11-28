@@ -23,10 +23,6 @@ spec:
             secretRef: 
               name: kdp-dashboard-configuration
               key: ".env.local"
-            features:
-              kubeconfigDownload:
-                enabled: true
-                serverCA: /app/_config/user-kubeconfig/ca.crt
           imagePullSecret: ""
           ingress:
             create: true
