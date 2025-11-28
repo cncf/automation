@@ -23,6 +23,10 @@ spec:
             secretRef: 
               name: kdp-dashboard-configuration
               key: ".env.local"
+            features:
+              kubeconfigDownload:
+                enabled: true
+                serverCA: /app/_config/user-kubeconfig/ca.crt
           imagePullSecret: ""
           ingress:
             create: true
@@ -30,6 +34,13 @@ spec:
             certIssuer:
               kind: ClusterIssuer
               name: letsencrypt-prod
+          extraVolumeMounts:
+          - name: user-kubeconfig-ca
+            mountPath: /app/_config/user-kubeconfig
+            secretName: kcp-ca
+            items:
+              - key: tls.crt
+                path: ca.crt
   destination:
     server: https://kubernetes.default.svc
     namespace: kdp
