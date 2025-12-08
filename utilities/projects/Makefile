@@ -1,5 +1,7 @@
 # Project Validator Makefile
 
+REPO_ROOT := $(abspath ../..)
+
 .PHONY: all build test clean install run help
 
 # Default target
@@ -37,19 +39,19 @@ install:
 	go mod tidy
 
 # Run the validator with default settings
-run:
+run: build
 	@echo "Running validator..."
-	./validator --config yaml/projectlist.yaml --format text
+	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format text --verify-maintainers
 
 # Run the validator with JSON output
-run-json:
+run-json: build
 	@echo "Running validator with JSON output..."
-	./validator --config yaml/projectlist.yaml --format json
+	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format json --verify-maintainers
 
 # Run the validator and show changes only
-run-changes:
+run-changes: build
 	@echo "Running validator and filtering for changes..."
-	./validator --config yaml/projectlist.yaml --format text | grep -E "(CHANGED|INVALID|Summary)"
+	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format text --verify-maintainers | grep -E "(CHANGED|INVALID|Summary)"
 
 # Validate and format Go code
 fmt:
@@ -76,7 +78,7 @@ test-setup:
 
 # Run validator with test setup
 test-run: test-setup build
-	./validator --config yaml/test-projectlist.yaml --format text
+	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/test-projectlist.yaml --format text
 
 # Show help
 help:
