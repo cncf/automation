@@ -7,11 +7,11 @@ on:
   push:
     paths:
       - 'utilities/projects/**'
-      - 'projectlist.yaml'
+      - 'utilities/projects/yaml/**'
   pull_request:
     paths:
       - 'utilities/projects/**'
-      - 'projectlist.yaml'
+      - 'utilities/projects/yaml/**'
   workflow_dispatch:
 
 jobs:
@@ -59,15 +59,19 @@ jobs:
 
     - name: Run validation
       working-directory: utilities/projects
+      env:
+        REPO_ROOT: ${{ github.workspace }}
+        MAINTAINER_API_ENDPOINT: https://thirdparty.example.com/maintainers
+        MAINTAINER_API_STUB: "true"
       run: |
         # Run validation and capture output
-        echo "## Project Validation Results" > validation-report.md
+        echo "## Project & Maintainer Validation Results" > validation-report.md
         echo "" >> validation-report.md
         
-        if ./validator --config projectlist.yaml --format text > validation-output.txt 2>&1; then
-          echo "✅ All projects passed validation" >> validation-report.md
+        if ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format text --verify-maintainers > validation-output.txt 2>&1; then
+          echo "✅ All projects and maintainers passed validation" >> validation-report.md
         else
-          echo "❌ Some projects failed validation" >> validation-report.md
+          echo "❌ Validation issues detected" >> validation-report.md
           echo "" >> validation-report.md
           echo "### Detailed Report" >> validation-report.md
           echo "" >> validation-report.md
@@ -82,8 +86,12 @@ jobs:
 
     - name: Generate JSON report
       working-directory: utilities/projects
+      env:
+        REPO_ROOT: ${{ github.workspace }}
+        MAINTAINER_API_ENDPOINT: https://thirdparty.example.com/maintainers
+        MAINTAINER_API_STUB: "true"
       run: |
-        ./validator --config projectlist.yaml --format json > validation-results.json
+        ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format json --verify-maintainers > validation-results.json
         echo "JSON report generated:"
         cat validation-results.json
 
@@ -119,4 +127,8 @@ jobs:
       working-directory: utilities/projects
       run: |
         # Re-run validator to get exit code
-        ./validator --config projectlist.yaml --format text
+        ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format text --verify-maintainers
+      env:
+        REPO_ROOT: ${{ github.workspace }}
+        MAINTAINER_API_ENDPOINT: https://thirdparty.example.com/maintainers
+        MAINTAINER_API_STUB: "true"

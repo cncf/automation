@@ -206,7 +206,7 @@ func (pv *ProjectValidator) loadProjectList() ([]string, error) {
 
 	var urls []string
 	for _, project := range projectList.Projects {
-		urls = append(urls, project.URL)
+		urls = append(urls, os.ExpandEnv(project.URL))
 	}
 
 	return urls, nil
@@ -430,8 +430,9 @@ func (pv *ProjectValidator) GenerateDiff(results []ValidationResult) string {
 // NewValidator creates a new validator instance - compatibility alias
 func NewValidator(cacheDir string) *ProjectValidator {
 	config := &Config{
-		CacheDir:     cacheDir,
-		OutputFormat: "text",
+		ProjectListURL: "yaml/projectlist.yaml",
+		CacheDir:       cacheDir,
+		OutputFormat:   "text",
 	}
 
 	cache, _ := loadCache(cacheDir)
@@ -444,7 +445,10 @@ func NewValidator(cacheDir string) *ProjectValidator {
 }
 
 // ValidateAll validates all projects from a project list file - compatibility method
-func (pv *ProjectValidator) ValidateAll(configFile string) ([]ValidationResult, error) {
+func (pv *ProjectValidator) ValidateAll(projectListPath string) ([]ValidationResult, error) {
+	if projectListPath != "" {
+		pv.config.ProjectListURL = projectListPath
+	}
 	return pv.ValidateProjects()
 }
 
