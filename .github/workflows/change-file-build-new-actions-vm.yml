@@ -69,6 +69,7 @@ jobs:
         run: |
           export PATH=$PATH:$HOME/bin && \
           cd ci/gha-runner-vm && \
+          export PACKER_PLUGIN_PATH=$HOME/.config/packer/plugins && \
           PACKER_LOG=1 go run main.go \
             --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
             --arch amd64
