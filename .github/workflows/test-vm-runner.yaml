@@ -21,6 +21,7 @@ jobs:
           lsb_release -a
           id
           cat /etc/group
+          cat /proc/cpuinfo
 
       - name: Run a basic workload
         run: |
