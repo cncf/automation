@@ -1,5 +1,6 @@
 #!/bin/bash
 
+PACKER_VERSION=1.14.3
 # oci raw-request command requires key_file to be set
 # so, manually creating the OCI config files
 OCI_CONFIG_FILE="/home/ubuntu/.oci/config"
@@ -28,11 +29,11 @@ sudo udevadm control --reload-rules
 sudo udevadm trigger --name-match=kvm
 sudo kvm-ok
 
-curl -LO https://releases.hashicorp.com/packer/1.12.0/packer_1.12.0_linux_arm64.zip
-unzip packer_1.12.0_linux_arm64.zip
+curl -LO https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_arm64.zip
+unzip packer_${PACKER_VERSION}_linux_arm64.zip
 sudo mv packer /usr/local/bin/
-rm packer_1.12.0_linux_arm64.zip
-packer plugin install github.com/hashicorp/oracle
+rm packer_${PACKER_VERSION}_linux_arm64.zip
+packer plugins install github.com/hashicorp/oracle
 packer plugins install github.com/hashicorp/qemu
 packer plugins install github.com/hashicorp/azure
 
