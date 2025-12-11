@@ -551,10 +551,10 @@ func init() {
 
 source "qemu" "img" {
 	qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
-	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]] : []
 	efi_boot             = var.architecture == "arm64" ? true : false
 	efi_firmware_code    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_CODE.fd" : ""
 	efi_firmware_vars    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_VARS.fd" : ""
+	qemuargs             = [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]]
 	vm_name              = "image.raw"
 	cd_files             = ["./cloud-init/*"]
 	cd_label             = "cidata"
