@@ -43,6 +43,10 @@ jobs:
           packer plugins install github.com/hashicorp/oracle
           packer plugins install github.com/hashicorp/qemu
           packer plugins install github.com/hashicorp/azure
+          packer plugins list
+          packer version
+          packer plugins list
+          tree ~/.config/packer/plugins
 
       - name: Install OCI CLI
         env:
