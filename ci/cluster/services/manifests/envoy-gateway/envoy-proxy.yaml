@@ -17,5 +17,5 @@ spec:
                 podAffinityTerm:
                   labelSelector:
                     matchLabels:
-                      app.kubernetes.io/component: envoy-gateway
+                      app.kubernetes.io/component: proxy
                   topologyKey: kubernetes.io/hostname
