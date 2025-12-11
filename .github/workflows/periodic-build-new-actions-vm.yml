@@ -8,6 +8,8 @@ jobs:
   build:
     name: Build new Actions VM
     runs-on: oracle-vm-8cpu-32gb-x86-64
+    env:
+      PACKER_VERSION: 1.14.3
 
     steps:
       - uses: actions/checkout@v4
@@ -30,11 +32,11 @@ jobs:
         run: cd ci/gha-runner-vm && go get .
       - name: Install Packer
         run: |
-          curl -LO https://releases.hashicorp.com/packer/1.12.0/packer_1.12.0_linux_amd64.zip
-          unzip packer_1.12.0_linux_amd64.zip
+          curl -LO https://releases.hashicorp.com/packer/${{ env.PACKER_VERSION }}/packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
+          unzip packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
           sudo mv packer /usr/local/bin/
-          rm packer_1.12.0_linux_amd64.zip
-          packer plugin install github.com/hashicorp/oracle
+          rm packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
+          packer plugins install github.com/hashicorp/oracle
           packer plugins install github.com/hashicorp/qemu
           packer plugins install github.com/hashicorp/azure
 
