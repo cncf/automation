@@ -251,6 +251,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			"BM.Standard.E3.128",
 			"BM.Standard.E2.64",
 			"BM.DenseIO2.52",
+			"VM.Standard.E6.Flex",
 			"VM.Standard.E5.Flex",
 			"VM.Standard.E4.Flex",
 			"VM.Standard.E3.Flex",
@@ -619,7 +620,7 @@ build {
       inline = ["touch /etc/waagent.conf"]
 	}`
 
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `["sleep 30", "export HISTSIZE=0 && sync", "usermod -aG docker ubuntu", "apt install -y libelf-dev"]`
+	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `["sleep 30", "export HISTSIZE=0 && sync", "usermod -aG docker ubuntu", "apt install -y libelf-dev", "snap install oracle-cloud-agent --classic"]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
 	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
