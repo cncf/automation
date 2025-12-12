@@ -1,0 +1,213 @@
+Documentation: How to Test CNCF Automation GHA Configuration Using a Local KIND Cluster
+
+This document provides a clear, reproducible workflow for testing the CNCF Automation project's GitHub Actions (GHA) configuration locally using a KIND (Kubernetes-in-Docker) cluster.
+The purpose is to enable contributors to validate changes to CI runner images and workflow logic before opening a pull request.
+
+1. Introduction
+
+The CNCF Automation repository includes tooling under:
+
+ci/gha-runner-image/ - Custom GitHub Actions runner Docker image
+ci/gha-runner-vm/ - Runner VM orchestration component
+ci/services/cluster/ - Production OKE (Oracle Kubernetes Engine) infrastructure (Terraform)
+
+These components define how GitHub Action runners are built and executed inside Kubernetes clusters provided to CNCF.
+However, the repository currently lacks end-to-end documentation on how to test these configurations locally.
+
+This guide outlines a complete workflow to:
+
+Set up a KIND cluster
+Build and load the GHA runner image
+Deploy runner components
+Trigger and validate workflow execution
+
+This documentation aims to simplify onboarding and make local testing accessible for new contributors.
+
+Note: The ci/services/cluster/ directory contains Terraform configurations for production OKE infrastructure and is not used for local testing.
+
+2. Prerequisites
+
+You should have the following installed:
+
+Docker
+KIND → https://kind.sigs.k8s.io
+kubectl
+Helm (for Actions Runner Controller)
+GitHub CLI (optional but recommended)
+
+Verify installation:
+
+docker --version
+kind --version
+kubectl version --client
+helm version
+
+3. Create and Prepare a KIND Cluster
+
+Create a new cluster for testing CI components:
+
+kind create cluster --name cncf-ci
+
+
+Confirm node status:
+
+kubectl get nodes
+
+
+You should see a single Ready node.
+
+4. Build the GHA Runner Image
+
+Navigate to the runner image directory:
+
+cd ci/gha-runner-image
+
+
+Build the Docker image (this includes the GitHub Actions runner and all dependencies):
+
+docker build -t cncf/gha-runner:local --build-arg BASE_IMAGE=jammy .
+
+
+Load the image into the KIND cluster:
+
+kind load docker-image cncf/gha-runner:local --name cncf-ci
+
+
+KIND runs inside Docker, so images must be explicitly loaded.
+Otherwise, Kubernetes will fail to pull local runner images.
+
+Note: The BASE_IMAGE argument specifies the Ubuntu base (jammy = Ubuntu 22.04). You can also use other supported bases.
+
+5. Deploy Runner Components Into KIND
+
+For local testing, you'll need to create Kubernetes manifests manually or use the Actions Runner Controller (ARC).
+
+Option A — Using Actions Runner Controller (Recommended)
+
+Install the Actions Runner Controller:
+
+helm repo add actions-runner-controller https://actions-runner-controller.github.io/actions-runner-controller
+helm repo update
+helm install arc --namespace arc-systems --create-namespace actions-runner-controller/actions-runner-controller
+
+
+Create a runner deployment manifest (save as runner-deployment.yaml):
+
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: cncf-runner
+  namespace: arc-systems
+spec:
+  replicas: 1
+  template:
+    spec:
+      repository: <your-test-repo>
+      image: cncf/gha-runner:local
+      imagePullPolicy: Never
+
+
+Apply the manifest:
+
+kubectl apply -f runner-deployment.yaml
+
+
+Check runner pod status:
+
+kubectl get pods -n arc-systems
+
+
+Wait until the runner pod reaches the Running state.
+
+Option B — Manual Deployment
+
+If you prefer not to use ARC, you can create a simple pod manifest with the runner image and configure it manually with GitHub tokens.
+
+6. Validate Runner Functionality
+
+Check runner logs:
+
+kubectl logs -n arc-systems <runner-pod-name>
+
+
+A successful runner should display:
+
+Connected to GitHub...
+Listening for workflow jobs...
+
+
+If this connection is not established:
+- Verify the image was loaded correctly: docker exec -it cncf-ci-control-plane crictl images | grep cncf/gha-runner
+- Check GitHub token/PAT configuration
+- Review runner pod events: kubectl describe pod <runner-pod-name> -n arc-systems
+
+7. Test the GHA Configuration
+
+There are two ways to verify workflow execution.
+
+Option A — Run a Dry-Run Using GitHub CLI
+
+gh workflow run <workflow-file> --dry-run
+
+
+This validates:
+- Workflow syntax
+- Required secrets
+- Trigger compatibility
+
+Option B — Execute a Real Workflow in the Local Runner
+
+First, create a test branch if you haven't already:
+
+git checkout -b test-local-runner
+
+
+Create or modify a workflow file to use your local runner (e.g., .github/workflows/test.yml):
+
+jobs:
+  test:
+    runs-on: self-hosted
+
+
+Commit and push:
+
+git add .github/workflows/test.yml
+git commit -m "test: validate local runner setup"
+git push origin test-local-runner
+
+
+GitHub will queue a job. The runner inside your KIND cluster should pick it up automatically.
+
+Watch live logs:
+
+kubectl logs -f <runner-pod-name> -n arc-systems
+
+
+If the runner completes the job successfully, your GHA config is working as expected.
+
+8. Cleaning Up
+
+Delete the local cluster:
+
+kind delete cluster --name cncf-ci
+
+9. Notes & Recommendations
+
+KIND provides a fast, isolated environment ideal for debugging CI runner logic.
+
+Local testing significantly reduces turnaround time when working on gha-runner-image.
+
+Contributors modifying the runner image should always validate changes locally before creating a PR.
+
+This testing flow helps detect container image errors, dependency issues, or workflow misconfigurations early.
+
+The ci/services/cluster/ directory contains production Terraform configs for OKE and is not used for local testing.
+
+For testing gha-runner-vm orchestration logic, you may need additional setup beyond this guide.
+
+10. Conclusion
+
+This documentation provides a complete, reproducible workflow for testing CNCF Automation GitHub Actions configurations using a local KIND cluster.
+It aims to reduce contributor friction, improve testing reliability, and ensure that workflow changes are validated before they reach production CI environments.
+
+If additional test cases, troubleshooting tips, or automation scripts are needed, they can be added in future iterations.
