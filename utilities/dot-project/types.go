@@ -1,6 +1,9 @@
 package projects
 
-import "time"
+import (
+	"net/http"
+	"time"
+)
 
 type ProjectList []string
 
@@ -61,4 +64,73 @@ type Audit struct {
 	Date time.Time `json:"date" yaml:"date"` // Date of the audit
 	Type string    `json:"type" yaml:"type"` // Type of audit (e.g., "security", "performance")
 	URL  string    `json:"url" yaml:"url"`   // URL to the audit report
+}
+
+// MaintainersConfig represents the maintainers configuration file
+type MaintainersConfig struct {
+	Maintainers []MaintainerEntry `yaml:"maintainers"`
+}
+
+// MaintainerEntry represents maintainers for a single project
+type MaintainerEntry struct {
+	ProjectID string `yaml:"project_id"`
+	Org       string `yaml:"org,omitempty"`
+	Teams     []Team `yaml:"teams"`
+}
+
+// Team represents a GitHub team and its members
+type Team struct {
+	Name    string   `yaml:"name"`
+	Members []string `yaml:"members"`
+}
+
+// MaintainerValidationResult captures validation results for maintainers
+type MaintainerValidationResult struct {
+	ProjectID             string   `json:"project_id" yaml:"project_id"`
+	Org                   string   `json:"org,omitempty" yaml:"org,omitempty"`
+	Valid                 bool     `json:"valid" yaml:"valid"`
+	Errors                []string `json:"errors,omitempty" yaml:"errors,omitempty"`
+	VerificationAttempted bool     `json:"verification_attempted" yaml:"verification_attempted"`
+	VerificationPassed    bool     `json:"verification_passed" yaml:"verification_passed"`
+	VerifiedHandles       []string `json:"verified_handles,omitempty" yaml:"verified_handles,omitempty"`
+}
+
+// Config represents the validator configuration
+type Config struct {
+	ProjectListURL string `yaml:"project_list_url"`
+	CacheDir       string `yaml:"cache_dir"`
+	OutputFormat   string `yaml:"output_format"` // json, yaml, text
+}
+
+// ValidationResult represents the result of validating a project
+type ValidationResult struct {
+	URL          string    `json:"url"`
+	ProjectName  string    `json:"project_name,omitempty"`
+	Valid        bool      `json:"valid"`
+	Errors       []string  `json:"errors,omitempty"`
+	Changed      bool      `json:"changed"`
+	LastChecked  time.Time `json:"last_checked"`
+	PreviousHash string    `json:"previous_hash,omitempty"`
+	CurrentHash  string    `json:"current_hash"`
+}
+
+// CacheEntry represents cached project data
+type CacheEntry struct {
+	URL         string    `json:"url"`
+	Hash        string    `json:"hash"`
+	LastChecked time.Time `json:"last_checked"`
+	Content     string    `json:"content"`
+}
+
+// Cache manages cached project data
+type Cache struct {
+	Entries map[string]CacheEntry `json:"entries"`
+	dir     string
+}
+
+// ProjectValidator validates remote project YAML files
+type ProjectValidator struct {
+	config *Config
+	cache  *Cache
+	client *http.Client
 }

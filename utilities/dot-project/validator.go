@@ -16,46 +16,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Config represents the validator configuration
-type Config struct {
-	ProjectListURL string `yaml:"project_list_url"`
-	CacheDir       string `yaml:"cache_dir"`
-	OutputFormat   string `yaml:"output_format"` // json, yaml, text
-}
-
-// ValidationResult represents the result of validating a project
-type ValidationResult struct {
-	URL          string    `json:"url"`
-	ProjectName  string    `json:"project_name,omitempty"`
-	Valid        bool      `json:"valid"`
-	Errors       []string  `json:"errors,omitempty"`
-	Changed      bool      `json:"changed"`
-	LastChecked  time.Time `json:"last_checked"`
-	PreviousHash string    `json:"previous_hash,omitempty"`
-	CurrentHash  string    `json:"current_hash"`
-}
-
-// CacheEntry represents cached project data
-type CacheEntry struct {
-	URL         string    `json:"url"`
-	Hash        string    `json:"hash"`
-	LastChecked time.Time `json:"last_checked"`
-	Content     string    `json:"content"`
-}
-
-// Cache manages cached project data
-type Cache struct {
-	Entries map[string]CacheEntry `json:"entries"`
-	dir     string
-}
-
-// ProjectValidator validates remote project YAML files
-type ProjectValidator struct {
-	config *Config
-	cache  *Cache
-	client *http.Client
-}
-
 // NewProjectValidator creates a new project validator
 func NewProjectValidator(configPath string) (*ProjectValidator, error) {
 	config, err := loadConfig(configPath)
