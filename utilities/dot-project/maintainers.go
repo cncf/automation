@@ -12,35 +12,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// MaintainersConfig represents the maintainers configuration file
-type MaintainersConfig struct {
-	Maintainers []MaintainerEntry `yaml:"maintainers"`
-}
-
-// MaintainerEntry represents maintainers for a single project
-type MaintainerEntry struct {
-	ProjectID string `yaml:"project_id"`
-	Org       string `yaml:"org,omitempty"`
-	Teams     []Team `yaml:"teams"`
-}
-
-// Team represents a GitHub team and its members
-type Team struct {
-	Name    string   `yaml:"name"`
-	Members []string `yaml:"members"`
-}
-
-// MaintainerValidationResult captures validation results for maintainers
-type MaintainerValidationResult struct {
-	ProjectID             string   `json:"project_id" yaml:"project_id"`
-	Org                   string   `json:"org,omitempty" yaml:"org,omitempty"`
-	Valid                 bool     `json:"valid" yaml:"valid"`
-	Errors                []string `json:"errors,omitempty" yaml:"errors,omitempty"`
-	VerificationAttempted bool     `json:"verification_attempted" yaml:"verification_attempted"`
-	VerificationPassed    bool     `json:"verification_passed" yaml:"verification_passed"`
-	VerifiedHandles       []string `json:"verified_handles,omitempty" yaml:"verified_handles,omitempty"`
-}
-
 // ValidateMaintainersFile validates a maintainers configuration file against canonical sources
 func (pv *ProjectValidator) ValidateMaintainersFile(path string, verify bool) ([]MaintainerValidationResult, error) {
 	return pv.ValidateMaintainersFileWithExclusion(path, verify, nil)
