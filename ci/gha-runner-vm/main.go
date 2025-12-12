@@ -554,7 +554,7 @@ source "qemu" "img" {
 	efi_boot             = var.architecture == "arm64" ? true : false
 	efi_firmware_code    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_CODE.fd" : ""
 	efi_firmware_vars    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_VARS.fd" : ""
-	qemuargs             = [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]]
+	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]] : [["-cpu", "host"]]
 	vm_name              = "image.raw"
 	cd_files             = ["./cloud-init/*"]
 	cd_label             = "cidata"
