@@ -1,0 +1,77 @@
+name: Validate Maintainers Reusable
+
+on:
+  workflow_call:
+    inputs:
+      maintainers-file:
+        description: 'Path to the maintainers.yaml file'
+        required: true
+        type: string
+      config-file:
+        description: 'Path to the projectlist.yaml file (optional)'
+        required: false
+        type: string
+        default: ''
+    secrets:
+      LFX_AUTH_TOKEN:
+        description: 'LFX Auth Token'
+        required: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Caller Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: caller-repo
+
+      - name: Checkout Tool Repository
+        uses: actions/checkout@v4
+        with:
+          repository: cncf/automation
+          path: tool-repo
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Build Validator
+        run: |
+          cd tool-repo/utilities/dot-project
+          go build -o validator cmd/validator/main.go
+
+      - name: Get Base Maintainers File
+        if: github.event_name == 'pull_request'
+        run: |
+          cd caller-repo
+          git show origin/${{ github.base_ref }}:${{ inputs.maintainers-file }} > maintainers-base.yaml || echo "No base file found"
+
+      - name: Validate Maintainers
+        env:
+          LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
+        run: |
+          # Move validator to caller repo for easier execution context
+          cp tool-repo/utilities/dot-project/validator caller-repo/validator
+          
+          # If config file is not provided, create a dummy one or use one from tool repo if appropriate
+          # The validator currently requires a config file.
+          CONFIG_ARG=""
+          if [ -n "${{ inputs.config-file }}" ]; then
+             CONFIG_ARG="-config ${{ inputs.config-file }}"
+          else
+             # Create a dummy projectlist.yaml if not provided, as the tool requires it
+             echo "projects: []" > caller-repo/dummy-projectlist.yaml
+             CONFIG_ARG="-config dummy-projectlist.yaml"
+          fi
+
+          cd caller-repo
+          
+          BASE_ARG=""
+          if [ -f maintainers-base.yaml ]; then
+            BASE_ARG="-base-maintainers maintainers-base.yaml"
+          fi
+
+          ./validator $CONFIG_ARG -maintainers ${{ inputs.maintainers-file }} $BASE_ARG -verify-maintainers

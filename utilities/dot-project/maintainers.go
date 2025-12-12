@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"sort"
 	"strings"
@@ -18,26 +19,23 @@ type MaintainersConfig struct {
 
 // MaintainerEntry represents maintainers for a single project
 type MaintainerEntry struct {
-	ProjectID    string   `yaml:"project_id"`
-	Org          string   `yaml:"org,omitempty"`
-	Repository   string   `yaml:"repository,omitempty"`
-	Branch       string   `yaml:"branch,omitempty"`
-	Path         string   `yaml:"path,omitempty"`
-	CanonicalURL string   `yaml:"canonical_url,omitempty"`
-	Handles      []string `yaml:"handles"`
+	ProjectID string `yaml:"project_id"`
+	Org       string `yaml:"org,omitempty"`
+	Teams     []Team `yaml:"teams"`
+}
+
+// Team represents a GitHub team and its members
+type Team struct {
+	Name    string   `yaml:"name"`
+	Members []string `yaml:"members"`
 }
 
 // MaintainerValidationResult captures validation results for maintainers
 type MaintainerValidationResult struct {
 	ProjectID             string   `json:"project_id" yaml:"project_id"`
 	Org                   string   `json:"org,omitempty" yaml:"org,omitempty"`
-	CanonicalURL          string   `json:"canonical_url,omitempty" yaml:"canonical_url,omitempty"`
 	Valid                 bool     `json:"valid" yaml:"valid"`
 	Errors                []string `json:"errors,omitempty" yaml:"errors,omitempty"`
-	MissingHandles        []string `json:"missing_handles,omitempty" yaml:"missing_handles,omitempty"`
-	ExtraHandles          []string `json:"extra_handles,omitempty" yaml:"extra_handles,omitempty"`
-	LocalHandles          []string `json:"local_handles,omitempty" yaml:"local_handles,omitempty"`
-	CanonicalHandles      []string `json:"canonical_handles,omitempty" yaml:"canonical_handles,omitempty"`
 	VerificationAttempted bool     `json:"verification_attempted" yaml:"verification_attempted"`
 	VerificationPassed    bool     `json:"verification_passed" yaml:"verification_passed"`
 	VerifiedHandles       []string `json:"verified_handles,omitempty" yaml:"verified_handles,omitempty"`
@@ -45,6 +43,11 @@ type MaintainerValidationResult struct {
 
 // ValidateMaintainersFile validates a maintainers configuration file against canonical sources
 func (pv *ProjectValidator) ValidateMaintainersFile(path string, verify bool) ([]MaintainerValidationResult, error) {
+	return pv.ValidateMaintainersFileWithExclusion(path, verify, nil)
+}
+
+// ValidateMaintainersFileWithExclusion validates a maintainers configuration file, optionally excluding some handles from verification
+func (pv *ProjectValidator) ValidateMaintainersFileWithExclusion(path string, verify bool, excludedHandles map[string]bool) ([]MaintainerValidationResult, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read maintainers file: %w", err)
@@ -61,14 +64,41 @@ func (pv *ProjectValidator) ValidateMaintainersFile(path string, verify bool) ([
 
 	var results []MaintainerValidationResult
 	for _, entry := range config.Maintainers {
-		result := pv.validateMaintainerEntry(entry, verify)
+		result := pv.validateMaintainerEntry(entry, verify, excludedHandles)
 		results = append(results, result)
 	}
 
 	return results, nil
 }
 
-func (pv *ProjectValidator) validateMaintainerEntry(entry MaintainerEntry, verify bool) MaintainerValidationResult {
+// ExtractHandles reads a maintainers file and returns a set of all handles
+func (pv *ProjectValidator) ExtractHandles(path string) (map[string]bool, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read maintainers file: %w", err)
+	}
+
+	var config MaintainersConfig
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return nil, fmt.Errorf("failed to parse maintainers YAML: %w", err)
+	}
+
+	handles := make(map[string]bool)
+	for _, entry := range config.Maintainers {
+		for _, team := range entry.Teams {
+			for _, member := range team.Members {
+				trimmed := strings.TrimSpace(member)
+				trimmed = strings.TrimPrefix(trimmed, "@")
+				if trimmed != "" {
+					handles[strings.ToLower(trimmed)] = true
+				}
+			}
+		}
+	}
+	return handles, nil
+}
+
+func (pv *ProjectValidator) validateMaintainerEntry(entry MaintainerEntry, verify bool, excludedHandles map[string]bool) MaintainerValidationResult {
 	result := MaintainerValidationResult{
 		ProjectID: entry.ProjectID,
 		Org:       entry.Org,
@@ -78,64 +108,55 @@ func (pv *ProjectValidator) validateMaintainerEntry(entry MaintainerEntry, verif
 		result.Errors = append(result.Errors, "project_id is required")
 	}
 
-	cleanHandles, duplicateErrors := normalizeHandles(entry.Handles)
-	result.LocalHandles = cleanHandles
-	if len(cleanHandles) == 0 {
-		result.Errors = append(result.Errors, "handles list cannot be empty")
-	}
-	result.Errors = append(result.Errors, duplicateErrors...)
-
-	canonicalURL, err := resolveCanonicalURL(entry)
-	if err != nil {
-		result.Errors = append(result.Errors, err.Error())
-	} else {
-		result.CanonicalURL = canonicalURL
+	if len(entry.Teams) == 0 {
+		result.Errors = append(result.Errors, "teams list cannot be empty")
 	}
 
-	var canonicalHandles []string
-	if result.CanonicalURL != "" {
-		content, fetchErr := pv.fetchContent(result.CanonicalURL)
-		if fetchErr != nil {
-			result.Errors = append(result.Errors, fmt.Sprintf("failed to fetch canonical maintainers: %v", fetchErr))
-		} else {
-			handles, parseErr := parseCanonicalMaintainers(content)
-			if parseErr != nil {
-				result.Errors = append(result.Errors, parseErr.Error())
-			} else {
-				canonicalHandles = handles
-				result.CanonicalHandles = handles
+	hasProjectMaintainers := false
+	var allVerifiedHandles []string
+	allPassed := true
+
+	for _, team := range entry.Teams {
+		if team.Name == "project-maintainers" {
+			hasProjectMaintainers = true
+			if len(team.Members) == 0 {
+				result.Errors = append(result.Errors, "team 'project-maintainers' cannot be empty")
+			}
+		}
+
+		cleanHandles, duplicateErrors := normalizeHandles(team.Members)
+		if len(duplicateErrors) > 0 {
+			for _, err := range duplicateErrors {
+				result.Errors = append(result.Errors, fmt.Sprintf("team '%s': %s", team.Name, err))
+			}
+		}
+
+		if verify && len(cleanHandles) > 0 {
+			result.VerificationAttempted = true
+			for _, handle := range cleanHandles {
+				if excludedHandles != nil && excludedHandles[strings.ToLower(handle)] {
+					continue
+				}
+				if err := pv.verifyHandleWithExternalService(entry.ProjectID, handle); err != nil {
+					result.Errors = append(result.Errors, fmt.Sprintf("verification failed for %s (team %s): %v", handle, team.Name, err))
+					allPassed = false
+				} else {
+					allVerifiedHandles = append(allVerifiedHandles, handle)
+				}
 			}
 		}
 	}
 
-	missing, extra := compareHandles(cleanHandles, canonicalHandles)
-	if len(missing) > 0 {
-		result.MissingHandles = missing
-	}
-	if len(extra) > 0 {
-		result.ExtraHandles = extra
+	if !hasProjectMaintainers {
+		result.Errors = append(result.Errors, "team 'project-maintainers' is required")
 	}
 
-	if verify && len(cleanHandles) > 0 {
-		result.VerificationAttempted = true
-		var verified []string
-		for _, handle := range cleanHandles {
-			if err := pv.verifyHandleWithExternalService(entry.ProjectID, handle); err != nil {
-				result.Errors = append(result.Errors, fmt.Sprintf("verification failed for %s: %v", handle, err))
-			} else {
-				verified = append(verified, handle)
-			}
-		}
-		if len(verified) == len(cleanHandles) && len(result.Errors) == 0 {
-			result.VerificationPassed = true
-		}
-		result.VerifiedHandles = verified
+	if result.VerificationAttempted {
+		result.VerificationPassed = allPassed && len(result.Errors) == 0
+		result.VerifiedHandles = allVerifiedHandles
 	}
 
-	result.Valid = len(result.Errors) == 0 && len(result.MissingHandles) == 0 && len(result.ExtraHandles) == 0
-	if result.VerificationPassed && !result.Valid {
-		result.VerificationPassed = false
-	}
+	result.Valid = len(result.Errors) == 0
 	return result
 }
 
@@ -162,89 +183,15 @@ func normalizeHandles(handles []string) ([]string, []string) {
 	return cleaned, errors
 }
 
-func resolveCanonicalURL(entry MaintainerEntry) (string, error) {
-	if entry.CanonicalURL != "" {
-		return os.ExpandEnv(entry.CanonicalURL), nil
-	}
-	if entry.Org == "" {
-		return "", fmt.Errorf("org is required when canonical_url is not provided")
-	}
-	repo := entry.Repository
-	if repo == "" {
-		repo = ".project"
-	}
-	branch := entry.Branch
-	if branch == "" {
-		branch = "main"
-	}
-	path := entry.Path
-	if path == "" {
-		path = "MAINTAINERS.yaml"
-	}
-
-	return os.ExpandEnv(fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/%s", entry.Org, repo, branch, path)), nil
-}
-
-func parseCanonicalMaintainers(content string) ([]string, error) {
-	type wrapper struct {
-		Maintainers []string `yaml:"maintainers"`
-		Handles     []string `yaml:"handles"`
-	}
-
-	var w wrapper
-	if err := yaml.Unmarshal([]byte(content), &w); err == nil {
-		if len(w.Maintainers) > 0 {
-			return normalizeAndSort(w.Maintainers), nil
-		}
-		if len(w.Handles) > 0 {
-			return normalizeAndSort(w.Handles), nil
-		}
-	}
-
-	var list []string
-	if err := yaml.Unmarshal([]byte(content), &list); err == nil && len(list) > 0 {
-		return normalizeAndSort(list), nil
-	}
-
-	return nil, fmt.Errorf("canonical maintainers file is empty or in an unsupported format")
-}
-
-func normalizeAndSort(values []string) []string {
-	normalized, _ := normalizeHandles(values)
-	return normalized
-}
-
-func compareHandles(local []string, canonical []string) ([]string, []string) {
-	localSet := make(map[string]struct{})
-	for _, h := range local {
-		localSet[strings.ToLower(h)] = struct{}{}
-	}
-
-	canonicalSet := make(map[string]struct{})
-	for _, h := range canonical {
-		canonicalSet[strings.ToLower(h)] = struct{}{}
-	}
-
-	var missing []string
-	for _, h := range canonical {
-		if _, ok := localSet[strings.ToLower(h)]; !ok {
-			missing = append(missing, h)
-		}
-	}
-
-	var extra []string
-	for _, h := range local {
-		if _, ok := canonicalSet[strings.ToLower(h)]; !ok {
-			extra = append(extra, h)
-		}
-	}
-
-	sort.Strings(missing)
-	sort.Strings(extra)
-	return missing, extra
-}
-
 func (pv *ProjectValidator) verifyHandleWithExternalService(projectID, handle string) error {
+	// If LFX_AUTH_TOKEN is set, perform LFX validation
+	if os.Getenv("LFX_AUTH_TOKEN") != "" {
+		if !checkMaintainerInLFX(handle) {
+			return fmt.Errorf("handle %s not found in LFX", handle)
+		}
+		return nil
+	}
+
 	endpoint := os.Getenv("MAINTAINER_API_ENDPOINT")
 	if endpoint == "" {
 		log.Printf("[maintainers] Skipping external verification for %s (no MAINTAINER_API_ENDPOINT set)", handle)
@@ -290,24 +237,9 @@ func formatMaintainersText(results []MaintainerValidationResult) string {
 		if !result.Valid {
 			invalidCount++
 			b.WriteString(fmt.Sprintf("INVALID: %s", result.ProjectID))
-			if result.CanonicalURL != "" {
-				b.WriteString(fmt.Sprintf(" (canonical: %s)", result.CanonicalURL))
-			}
 			b.WriteString("\n")
 			for _, err := range result.Errors {
 				b.WriteString(fmt.Sprintf("  - %s\n", err))
-			}
-			if len(result.MissingHandles) > 0 {
-				b.WriteString("  Missing handles:\n")
-				for _, h := range result.MissingHandles {
-					b.WriteString(fmt.Sprintf("    - %s\n", h))
-				}
-			}
-			if len(result.ExtraHandles) > 0 {
-				b.WriteString("  Extra handles:\n")
-				for _, h := range result.ExtraHandles {
-					b.WriteString(fmt.Sprintf("    - %s\n", h))
-				}
 			}
 			b.WriteString("\n")
 		}
@@ -315,4 +247,49 @@ func formatMaintainersText(results []MaintainerValidationResult) string {
 
 	b.WriteString(fmt.Sprintf("Summary: %d maintainer entries validated, %d with issues\n", len(results), invalidCount))
 	return b.String()
+}
+
+func checkMaintainerInLFX(handle string) bool {
+	token := os.Getenv("LFX_AUTH_TOKEN")
+	if token == "" {
+		log.Printf("LFX_AUTH_TOKEN environment variable is not set")
+		return false
+	}
+	apiURL := "https://api-gw.platform.linuxfoundation.org/user-service/v1/users/search"
+
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		log.Printf("Error creating request: %v", err)
+		return false
+	}
+
+	q := req.URL.Query()
+	q.Add("githubID", handle)
+	req.URL.RawQuery = q.Encode()
+
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Error making request to LFX: %v", err)
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("LFX API returned status: %d", resp.StatusCode)
+		return false
+	}
+
+	var result struct {
+		Data []interface{} `json:"data"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		log.Printf("Error decoding response: %v", err)
+		return false
+	}
+
+	return len(result.Data) > 0
 }
