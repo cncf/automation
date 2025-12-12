@@ -67,14 +67,16 @@ projects:
 maintainers:
   - project_id: "service"
     org: "my-org"              # Optional if canonical_url provided
-    repository: ".project"     # Optional (defaults to .project)
-    branch: "main"             # Optional (defaults to main)
-    path: "MAINTAINERS.yaml"   # Optional (defaults to MAINTAINERS.yaml)
-    canonical_url: "https://raw.githubusercontent.com/my-org/.project/main/MAINTAINERS.yaml" # Optional override
-    handles:
-      - alice
-      - bob
-      - carol
+    teams:
+      - name: "project-maintainers"
+        members:
+          - alice
+          - bob
+      - name: "other-team"
+        members:
+          - carol
+
+### Project YAML Format
 ```
 
 ### Project YAML Format
@@ -123,7 +125,7 @@ documentation:
   api: { path: "docs/API.md" }
 ```
 
-Each maintainer entry compares the local list of GitHub handles against the canonical roster sourced from the referenced `.project` repository (or explicit `canonical_url`). Handles are normalized (trimmed and stripped of leading `@`) before comparison.
+Each maintainer entry must contain a `project-maintainers` team which cannot be empty. Handles are normalized (trimmed and stripped of leading `@`) before verification.
 
 ## Maintainer Verification Stub
 
@@ -155,9 +157,8 @@ Summary: 2 projects validated, 1 changed, 1 with errors
 Maintainers Validation Report
 ============================
 
-INVALID: service (canonical: https://...)
-  Missing handles:
-    - carol
+INVALID: service
+  - team 'project-maintainers' is required
 
 Summary: 1 maintainer entries validated, 1 with issues
 ```
@@ -180,8 +181,8 @@ projects:
 maintainers:
   - project_id: service
     valid: false
-    missing_handles:
-      - carol
+    errors:
+      - "team 'project-maintainers' is required"
 ```
 
 ## Makefile Targets

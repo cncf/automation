@@ -1,7 +1,6 @@
 package projects
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -260,20 +259,15 @@ func TestValidateMaintainersFile(t *testing.T) {
 	cacheDir := filepath.Join(tempDir, "cache")
 	validator := NewValidator(cacheDir)
 
-	canonicalPath := filepath.Join(tempDir, "canonical.yaml")
-	canonicalContent := "maintainers:\n  - alice\n  - bob\n"
-	if err := os.WriteFile(canonicalPath, []byte(canonicalContent), 0644); err != nil {
-		t.Fatalf("failed to write canonical file: %v", err)
-	}
-
 	maintainersPath := filepath.Join(tempDir, "maintainers.yaml")
-	maintainersContent := fmt.Sprintf(`maintainers:
+	maintainersContent := `maintainers:
 - project_id: "test-project"
-  canonical_url: "file://%s"
-  handles:
-    - alice
-    - bob
-`, filepath.ToSlash(canonicalPath))
+  teams:
+    - name: "project-maintainers"
+      members:
+        - alice
+        - bob
+`
 	if err := os.WriteFile(maintainersPath, []byte(maintainersContent), 0644); err != nil {
 		t.Fatalf("failed to write maintainers file: %v", err)
 	}
@@ -296,25 +290,20 @@ func TestValidateMaintainersFile(t *testing.T) {
 	}
 }
 
-func TestValidateMaintainersFile_DifferencesAndVerification(t *testing.T) {
+func TestValidateMaintainersFile_Verification(t *testing.T) {
 	tempDir := t.TempDir()
 	cacheDir := filepath.Join(tempDir, "cache")
 	validator := NewValidator(cacheDir)
 
-	canonicalPath := filepath.Join(tempDir, "canonical.yaml")
-	canonicalContent := "handles:\n  - alice\n  - bob\n  - carol\n"
-	if err := os.WriteFile(canonicalPath, []byte(canonicalContent), 0644); err != nil {
-		t.Fatalf("failed to write canonical file: %v", err)
-	}
-
 	maintainersPath := filepath.Join(tempDir, "maintainers.yaml")
-	maintainersContent := fmt.Sprintf(`maintainers:
+	maintainersContent := `maintainers:
 - project_id: "test-project"
-  canonical_url: "file://%s"
-  handles:
-    - alice
-    - dave
-`, filepath.ToSlash(canonicalPath))
+  teams:
+    - name: "project-maintainers"
+      members:
+        - alice
+        - bob
+`
 	if err := os.WriteFile(maintainersPath, []byte(maintainersContent), 0644); err != nil {
 		t.Fatalf("failed to write maintainers file: %v", err)
 	}
@@ -332,28 +321,20 @@ func TestValidateMaintainersFile_DifferencesAndVerification(t *testing.T) {
 	}
 
 	res := results[0]
-	if res.Valid {
-		t.Fatalf("expected invalid result due to mismatched handles")
-	}
-
-	if len(res.MissingHandles) != 2 || res.MissingHandles[0] != "bob" || res.MissingHandles[1] != "carol" {
-		t.Fatalf("unexpected missing handles: %v", res.MissingHandles)
-	}
-
-	if len(res.ExtraHandles) != 1 || res.ExtraHandles[0] != "dave" {
-		t.Fatalf("unexpected extra handles: %v", res.ExtraHandles)
+	if !res.Valid {
+		t.Fatalf("expected valid result, got errors: %v", res.Errors)
 	}
 
 	if !res.VerificationAttempted {
 		t.Fatalf("expected verification to be attempted")
 	}
 
-	if res.VerificationPassed {
-		t.Fatalf("verification should not pass when validation fails")
+	if !res.VerificationPassed {
+		t.Fatalf("expected verification to pass")
 	}
 
-	if len(res.VerifiedHandles) == 0 {
-		t.Fatalf("expected verified handles list to include attempted handles")
+	if len(res.VerifiedHandles) != 2 {
+		t.Fatalf("expected 2 verified handles, got %d", len(res.VerifiedHandles))
 	}
 }
 

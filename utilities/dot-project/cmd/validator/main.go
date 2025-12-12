@@ -14,16 +14,25 @@ import (
 
 func main() {
 	var (
-		configFile        = flag.String("config", "yaml/projectlist.yaml", "Path to project list configuration file")
-		cacheDir          = flag.String("cache", ".cache", "Directory to store cached validation results")
-		format            = flag.String("format", "text", "Output format: text, json, yaml")
-		maintainersFile   = flag.String("maintainers", "yaml/maintainers.yaml", "Path to maintainers file (set empty to skip)")
-		verifyMaintainers = flag.Bool("verify-maintainers", false, "Verify maintainer handles via external service (stubbed)")
+		configFile          = flag.String("config", "yaml/projectlist.yaml", "Path to project list configuration file")
+		cacheDir            = flag.String("cache", ".cache", "Directory to store cached validation results")
+		format              = flag.String("format", "text", "Output format: text, json, yaml")
+		maintainersFile     = flag.String("maintainers", "yaml/maintainers.yaml", "Path to maintainers file (set empty to skip)")
+		baseMaintainersFile = flag.String("base-maintainers", "", "Path to base maintainers file for diff validation")
+		verifyMaintainers   = flag.Bool("verify-maintainers", false, "Verify maintainer handles via external service (stubbed)")
 	)
 	flag.Parse()
 
 	if *configFile == "" {
-		log.Fatal("config file is required")
+		// Create a temporary dummy config file if none provided
+		f, err := os.CreateTemp("", "dummy-projectlist-*.yaml")
+		if err != nil {
+			log.Fatal("failed to create temporary config file")
+		}
+		f.WriteString("projects: []")
+		f.Close()
+		defer os.Remove(f.Name())
+		*configFile = f.Name()
 	}
 
 	validator := projects.NewValidator(*cacheDir)
@@ -36,7 +45,16 @@ func main() {
 	var maintainerResults []projects.MaintainerValidationResult
 	maintainersEnabled := *maintainersFile != ""
 	if maintainersEnabled {
-		results, err := validator.ValidateMaintainersFile(*maintainersFile, *verifyMaintainers)
+		var excludedHandles map[string]bool
+		if *baseMaintainersFile != "" {
+			handles, err := validator.ExtractHandles(*baseMaintainersFile)
+			if err != nil {
+				log.Fatalf("failed to extract handles from base maintainers file: %v", err)
+			}
+			excludedHandles = handles
+		}
+
+		results, err := validator.ValidateMaintainersFileWithExclusion(*maintainersFile, *verifyMaintainers, excludedHandles)
 		if err != nil {
 			log.Fatalf("maintainers validation failed: %v", err)
 		}
