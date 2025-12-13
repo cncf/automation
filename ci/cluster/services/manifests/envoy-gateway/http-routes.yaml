@@ -1,0 +1,142 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: guac-api
+  namespace: guac
+  labels:
+    use-shared-gateway: "true"
+spec:
+  hostnames:
+  - api.guac.cncf.io
+  parentRefs:
+  - name: shared-gateway
+    namespace: envoy-gateway
+  rules:
+  - backendRefs:
+    - name: graphql-server
+      namespace: guac
+      port: 8080
+    matches:
+    - path:
+        type: PathPrefix
+        value: /query
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: guac
+  namespace: guac
+  labels:
+    use-shared-gateway: "true"
+spec:
+  hostnames:
+  - guac.cncf.io
+  parentRefs:
+  - name: shared-gateway
+    namespace: envoy-gateway
+  rules:
+  - backendRefs:
+    - name: graphql-server
+      namespace: guac
+      port: 8080
+    matches:
+    - path:
+        type: PathPrefix
+        value: /playground
+  - backendRefs:
+    - name: visualizer
+      port: 3000
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: codimd
+  namespace: codimd
+  labels:
+    use-shared-gateway: "true"
+spec:
+  hostnames:
+  - notes.cncf.io
+  parentRefs:
+  - name: shared-gateway
+    namespace: envoy-gateway
+  rules:
+  - backendRefs:
+    - name: codimd
+      namespace: codimd
+      port: 80
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: dex
+  namespace: auth
+  labels:
+    use-shared-gateway: "true"
+spec:
+  hostnames:
+  - auth.services.cncf.io
+  parentRefs:
+  - name: shared-gateway
+    namespace: envoy-gateway
+  rules:
+  - backendRefs:
+    - name: dex
+      namespace: auth
+      port: 5556
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kdp-dashboard
+  namespace: kdp
+  labels:
+    use-shared-gateway: "true"
+spec:
+  hostnames:
+  - services.cncf.io
+  parentRefs:
+  - name: shared-gateway
+    namespace: envoy-gateway
+  rules:
+  - backendRefs:
+    - name: kdp-dashboard
+      port: 3000
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kdp-kcp-public
+  namespace: kdp
+  labels:
+    use-shared-gateway: "true"
+spec:
+  hostnames:
+  - public.api.services.cncf.io
+  parentRefs:
+  - name: shared-gateway
+    namespace: envoy-gateway
+  rules:
+  - backendRefs:
+    - name: kcp-front-proxy
+      port: 8443
+    matches:
+    - path:
+        type: PathPrefix
+        value: /
