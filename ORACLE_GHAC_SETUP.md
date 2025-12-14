@@ -1,20 +1,20 @@
 # Oracle Cloud GitHub Actions Controller (GHAC) & ArgoCD Setup Guide
 
-## 📖 Overview
+## Overview
 
 This document provides a comprehensive guide for understanding and managing the Oracle Cloud Infrastructure (OCI) based GitHub Actions runner infrastructure for CNCF projects.
 
-## 🎯 What This Setup Does
+## What This Setup Does
 
 This infrastructure enables CNCF projects to run GitHub Actions workflows on self-hosted runners deployed in Oracle Kubernetes Engine (OKE), providing:
 
-- **Cost Efficiency:** Utilizing donated Oracle Cloud resources
-- **Performance:** Dedicated runners with various CPU/memory configurations
-- **Flexibility:** Support for both AMD64 and ARM64 architectures
-- **Scalability:** Auto-scaling based on workflow demand
-- **Reliability:** GitOps-based deployment with ArgoCD
+- Cost Efficiency: Utilizing donated Oracle Cloud resources
+- Performance: Dedicated runners with various CPU/memory configurations
+- Flexibility: Support for both AMD64 and ARM64 architectures
+- Scalability: Auto-scaling based on workflow demand
+- Reliability: GitOps-based deployment with ArgoCD
 
-## 🏛️ High-Level Architecture
+## High-Level Architecture
 
 ### Component Flow
 
@@ -73,7 +73,7 @@ Kubernetes Cluster (OKE)
 Runners Updated Automatically
 ```
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 ci/
@@ -144,11 +144,11 @@ ci/
         └── README.md
 ```
 
-## 🔄 Deployment Workflow
+## Deployment Workflow
 
 ### Initial Setup (One-Time)
 
-1. **Provision OKE Cluster**
+1. Provision OKE Cluster
    ```bash
    cd ci/services/cluster
    make init
@@ -156,37 +156,37 @@ ci/
    make apply
    ```
 
-2. **Install ArgoCD**
+2. Install ArgoCD
    ```bash
    kubectl apply -k ci/argocd
    ```
 
-3. **Configure GitHub Secrets**
+3. Configure GitHub Secrets
    - Create GitHub App or PAT
    - Store in External Secrets backend (Oracle Vault)
 
-4. **Deploy Applications**
+4. Deploy Applications
    ```bash
    kubectl apply -f ci/cluster/oci/argo-automation.yaml
    ```
 
 ### Ongoing Changes (GitOps)
 
-1. **Make Configuration Changes**
+1. Make Configuration Changes
    - Edit files in `ci/cluster/oci/`
    - Commit to Git
 
-2. **ArgoCD Auto-Sync**
+2. ArgoCD Auto-Sync
    - ArgoCD detects changes
    - Automatically applies to cluster
    - Slack notification sent
 
-3. **Verify Deployment**
+3. Verify Deployment
    - Check ArgoCD UI
    - Monitor runner pods
    - Review metrics in Grafana
 
-## 🎮 Using the Runners
+## Using the Runners
 
 ### In GitHub Workflows
 
@@ -235,11 +235,11 @@ jobs:
 | Large builds (e.g., Kubernetes) | `oracle-24cpu-384gb-x86-64` | Memory-intensive builds |
 | Multi-arch builds | Both `*-x86-64` and `*-arm64` | Cross-platform testing |
 
-## 🔐 Security Considerations
+## Security Considerations
 
 ### Secrets Management
 
-- **Never commit secrets to Git**
+- Never commit secrets to Git
 - Use External Secrets Operator for all sensitive data
 - Rotate GitHub tokens regularly
 - Use GitHub Apps instead of PATs when possible
@@ -256,21 +256,21 @@ jobs:
 - No persistent state between jobs
 - Clean environment for each workflow
 
-## 📊 Monitoring & Observability
+## Monitoring & Observability
 
 ### Key Metrics
 
-1. **Runner Availability**
+1. Runner Availability
    - Number of idle runners
    - Queue depth
    - Average wait time
 
-2. **Resource Utilization**
+2. Resource Utilization
    - CPU usage per runner
    - Memory consumption
    - Disk I/O
 
-3. **Job Performance**
+3. Job Performance
    - Job duration
    - Success/failure rates
    - Retry counts
@@ -293,21 +293,21 @@ Configured alerts for:
 - Resource exhaustion
 - Sync failures in ArgoCD
 
-## 🛠️ Maintenance Tasks
+## Maintenance Tasks
 
 ### Regular Maintenance
 
-1. **Update Runner Images**
+1. Update Runner Images
    - Modify `ci/gha-runner-image/Dockerfile`
    - Build and push new image
    - Update runner manifests
 
-2. **Update ARC Version**
+2. Update ARC Version
    - Edit `ci/cluster/oci/arc/arc.yaml`
    - Change `targetRevision`
    - ArgoCD auto-syncs
 
-3. **Review Resource Limits**
+3. Review Resource Limits
    - Monitor actual usage
    - Adjust requests/limits
    - Optimize costs
@@ -315,58 +315,58 @@ Configured alerts for:
 ### Cleanup Jobs
 
 Automated cleanup via CronJobs:
-- **Ephemeral Runner Cleanup:** Runs every 6 hours
-- **VM Cleaner:** Runs daily
-- **Old Pod Cleanup:** Kubernetes garbage collection
+- Ephemeral Runner Cleanup: Runs every 6 hours
+- VM Cleaner: Runs daily
+- Old Pod Cleanup: Kubernetes garbage collection
 
-## 🐛 Common Issues & Solutions
+## Common Issues & Solutions
 
 ### Issue: Runners Not Picking Up Jobs
 
-**Symptoms:**
+Symptoms:
 - Jobs queued in GitHub
 - No runner pods created
 
-**Solutions:**
+Solutions:
 1. Check ARC controller logs
 2. Verify GitHub token validity
 3. Ensure webhook connectivity
 
 ### Issue: Pods Stuck in Pending
 
-**Symptoms:**
+Symptoms:
 - Runner pods in Pending state
 - Jobs timing out
 
-**Solutions:**
+Solutions:
 1. Check node availability
 2. Verify Karpenter is running
 3. Review resource requests
 
 ### Issue: ArgoCD Out of Sync
 
-**Symptoms:**
+Symptoms:
 - Applications show "OutOfSync" status
 - Changes not applied
 
-**Solutions:**
+Solutions:
 1. Manual sync: `argocd app sync <app-name>`
 2. Check for YAML errors
 3. Review sync waves
 
-## 📚 Learning Resources
+## Learning Resources
 
 ### Essential Reading
 
-1. **Actions Runner Controller**
+1. Actions Runner Controller
    - [Official Documentation](https://github.com/actions/actions-runner-controller)
    - [Scaling Strategies](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners)
 
-2. **ArgoCD**
+2. ArgoCD
    - [Getting Started](https://argo-cd.readthedocs.io/en/stable/getting_started/)
    - [Best Practices](https://argo-cd.readthedocs.io/en/stable/user-guide/best_practices/)
 
-3. **Karpenter**
+3. Karpenter
    - [OCI Provider](https://github.com/zoom/karpenter-oci)
    - [Node Provisioning](https://karpenter.sh/docs/concepts/nodepools/)
 
@@ -375,18 +375,18 @@ Automated cleanup via CronJobs:
 - [GitOps with ArgoCD](https://www.youtube.com/results?search_query=argocd+tutorial)
 - [Self-Hosted GitHub Runners](https://www.youtube.com/results?search_query=github+actions+self+hosted+runners)
 
-## 🤝 Contributing
+## Contributing
 
 ### Making Changes
 
-1. **Fork the repository**
-2. **Create a feature branch**
+1. Fork the repository
+2. Create a feature branch
    ```bash
    git checkout -b feature/improve-runner-config
    ```
-3. **Make changes**
-4. **Test locally** (see `documentation.txt` for KIND testing)
-5. **Submit PR** with detailed description
+3. Make changes
+4. Test locally (see `documentation.txt` for KIND testing)
+5. Submit PR with detailed description
 
 ### PR Guidelines
 
@@ -395,13 +395,13 @@ Automated cleanup via CronJobs:
 - Include testing steps
 - Update documentation if needed
 
-## 📞 Support
+## Support
 
 ### Getting Help
 
-- **GitHub Issues:** [cncf/automation/issues](https://github.com/cncf/automation/issues)
-- **CNCF Slack:** #cncf-ci channel
-- **Documentation:** This repository's README files
+- GitHub Issues: [cncf/automation/issues](https://github.com/cncf/automation/issues)
+- CNCF Slack: #cncf-ci channel
+- Documentation: This repository's README files
 
 ### Reporting Issues
 
@@ -413,7 +413,7 @@ Include:
 
 ---
 
-## 🎓 Quick Start Checklist
+## Quick Start Checklist
 
 For new contributors or operators:
 
@@ -430,6 +430,6 @@ For new contributors or operators:
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** December 2025  
-**Maintained By:** CNCF Projects Team
+Document Version: 1.0  
+Last Updated: December 2025  
+Maintained By: CNCF Projects Team

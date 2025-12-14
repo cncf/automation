@@ -2,7 +2,7 @@
 
 Quick commands and references for managing the Oracle Cloud GitHub Actions infrastructure.
 
-## 🚀 Quick Commands
+## Quick Commands
 
 ### Check Cluster Status
 
@@ -68,7 +68,7 @@ kubectl logs -n arc-systems -l app.kubernetes.io/name=gha-runner-scale-set-contr
 kubectl logs -n karpenter -l app.kubernetes.io/name=karpenter
 ```
 
-## 📋 Sync Wave Order
+## Sync Wave Order
 
 Applications deploy in this order:
 
@@ -81,7 +81,7 @@ Applications deploy in this order:
 | 5 | Hacks | Cleanup utilities |
 | 10 | Karpenter | Node autoscaling |
 
-## 🏷️ Available Runner Labels
+## Available Runner Labels
 
 ### AMD64 Runners
 - `oracle-2cpu-8gb-x86-64`
@@ -97,7 +97,7 @@ Applications deploy in this order:
 - `oracle-16cpu-64gb-arm64`
 - `oracle-32cpu-128gb-arm64`
 
-## 🔧 Common Fixes
+## Common Fixes
 
 ### Restart ARC Controller
 
@@ -124,7 +124,7 @@ argocd app delete <app-name>
 kubectl apply -f ci/cluster/oci/argo-automation.yaml
 ```
 
-## 📊 Useful Prometheus Queries
+## Useful Prometheus Queries
 
 ```promql
 # Active runners
@@ -143,7 +143,7 @@ sum(rate(container_cpu_usage_seconds_total{namespace="arc-systems"}[5m])) by (po
 sum(container_memory_working_set_bytes{namespace="arc-systems"}) by (pod)
 ```
 
-## 🔐 Secrets
+## Secrets
 
 ### Required Secrets
 
@@ -167,7 +167,7 @@ kubectl create secret generic github-arc-secret \
   --namespace=arc-systems
 ```
 
-## 📁 Important Files
+## Important Files
 
 | File | Purpose |
 |------|---------|
@@ -178,7 +178,7 @@ kubectl create secret generic github-arc-secret \
 | `karpenter/nodepool.yaml` | Node autoscaling config |
 | `monitoring/values.yaml` | Prometheus/Grafana config |
 
-## 🔄 Update Workflows
+## Update Workflows
 
 ### Update Runner Image
 
@@ -202,7 +202,7 @@ kubectl create secret generic github-arc-secret \
 3. Update runner labels
 4. Commit and push
 
-## 🚨 Emergency Procedures
+## Emergency Procedures
 
 ### All Runners Down
 
@@ -244,7 +244,7 @@ kubectl rollout restart statefulset -n argocd argocd-application-controller
 argocd app sync --force --prune -l cluster=oci-gha-amd64-runners
 ```
 
-## 📞 Escalation
+## Escalation
 
 If issues persist:
 
@@ -253,13 +253,13 @@ If issues persist:
 3. Check OCI console for infrastructure issues
 4. Create GitHub issue with logs and details
 
-## 🔗 Quick Links
+## Quick Links
 
-- **ArgoCD UI:** `kubectl port-forward -n argocd svc/argocd-server 8080:443` → https://localhost:8080
-- **Grafana:** `kubectl port-forward -n default svc/kube-prometheus-stack-grafana 3000:80` → http://localhost:3000
-- **GitHub Actions:** https://github.com/cncf/automation/actions
-- **OCI Console:** https://cloud.oracle.com/
+- ArgoCD UI: `kubectl port-forward -n argocd svc/argocd-server 8080:443` then https://localhost:8080
+- Grafana: `kubectl port-forward -n default svc/kube-prometheus-stack-grafana 3000:80` then http://localhost:3000
+- GitHub Actions: https://github.com/cncf/automation/actions
+- OCI Console: https://cloud.oracle.com/
 
 ---
 
-**Tip:** Bookmark this page for quick access during incidents!
+Tip: Bookmark this page for quick access during incidents!

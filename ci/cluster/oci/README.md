@@ -1,8 +1,8 @@
- Oracle Cloud Infrastructure (OCI) GitHub Actions Runner Setup
+# Oracle Cloud Infrastructure (OCI) GitHub Actions Runner Setup
 
 This directory contains the complete GitOps configuration for deploying and managing GitHub Actions runners on Oracle Kubernetes Engine (OKE) using ArgoCD.
 
- 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Architecture](#architecture)
@@ -13,7 +13,7 @@ This directory contains the complete GitOps configuration for deploying and mana
 - [Monitoring](#monitoring)
 - [Troubleshooting](#troubleshooting)
 
- 🎯 Overview
+## Overview
 
 This setup provides self-hosted GitHub Actions runners for CNCF projects on Oracle Cloud Infrastructure. The infrastructure is managed using GitOps principles with ArgoCD, ensuring declarative and version-controlled deployments.
 
@@ -25,7 +25,7 @@ Key Features:
 - Secure secrets management with External Secrets Operator
 - Automated cleanup and maintenance tasks
 
- 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -57,8 +57,10 @@ Key Features:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-📦 Components
- 1. Actions Runner Controller (ARC)
+## Components
+
+### 1. Actions Runner Controller (ARC)
+
 Path: `ci/cluster/oci/arc/`
 
 The ARC manages the lifecycle of GitHub Actions runners in Kubernetes.
@@ -74,9 +76,10 @@ Key Features:
 - GitHub webhook integration
 
 ### 2. GitHub Runners
+
 Paths:
-- `ci/cluster/oci/runners/` (Container runners)
-- `ci/cluster/oci/vm-runners/` (VM-based runners)
+- ci/cluster/oci/runners/ (Container runners)
+- ci/cluster/oci/vm-runners/ (VM-based runners)
 
 Multiple runner configurations for different workload requirements:
 
@@ -92,91 +95,96 @@ Multiple runner configurations for different workload requirements:
 Sync Wave: 3 (deployed after ARC)
 
 ### 3. Karpenter
-**Path:** `ci/cluster/oci/karpenter/`
+
+Path: `ci/cluster/oci/karpenter/`
 
 Kubernetes node autoscaler optimized for Oracle Cloud.
 
-- **Chart:** `karpenter` v1.4.2 (from zoom.github.io/karpenter-oci)
-- **Namespace:** `karpenter`
-- **Sync Wave:** 10 (deployed last)
+- Chart: `karpenter` v1.4.2 (from zoom.github.io/karpenter-oci)
+- Namespace: `karpenter`
+- Sync Wave: 10 (deployed last)
 
-**Configuration:**
+Configuration:
 - Cluster: `gha-amd64-runners`
 - Region: `us-sanjose-1`
 - Flexible CPU/Memory ratios: 4, 8, 16
 
 ### 4. External Secrets Operator
-**Path:** `ci/cluster/oci/external-secrets/`
+
+Path: `ci/cluster/oci/external-secrets/`
 
 Manages secrets synchronization from external secret stores (e.g., Oracle Vault, AWS Secrets Manager).
 
-- **Namespace:** `default`
-- **Sync Wave:** -1 (deployed first, before everything else)
+- Namespace: `default`
+- Sync Wave: -1 (deployed first, before everything else)
 
-**Purpose:**
+Purpose:
 - Secure GitHub PAT/token management
 - Centralized secrets management
 - Automatic secret rotation support
 
 ### 5. Monitoring Stack
-**Path:** `ci/cluster/oci/monitoring/`
+
+Path: `ci/cluster/oci/monitoring/`
 
 Prometheus and Grafana stack for observability.
 
-- **Chart:** `kube-prometheus-stack`
-- **Namespace:** `default`
-- **Sync Wave:** 4
+- Chart: `kube-prometheus-stack`
+- Namespace: `default`
+- Sync Wave: 4
 
-**Includes:**
-- Prometheus for metricollection
+Includes:
+- Prometheus for metrics collection
 - Grafana dashboards for visualization
 - AlertManager for notifications
 - Custom dashboards for runner metrics
 
 ### 6. Cluster Autoscaler
-**Path:** `ci/cluster/oci/autoscaler/`
+
+Path: `ci/cluster/oci/autoscaler/`
 
 OKE-native cluster autoscaler (alternative/complement to Karpenter).
 
-**Features:**
+Features:
 - OCI Workload Identity integration
 - Dynamic node pool scaling
 - Cost optimization
 
 ### 7. Hacks & Utilities
-**Path:** `ci/cluster/oci/hacks/`
+
+Path: `ci/cluster/oci/hacks/`
 
 Maintenance and cleanup utilities:
 
-- **cgroups-v2-enabler-ds.yaml:** Enables cgroups v2 support for containers
-- **ephemeralrunner-cleanup-cj.yaml:** CronJob to clean up stale ephemeral runners
-- **vm-cleaner.yaml:** Cleanup job for VM-based runners
+- cgroups-v2-enabler-ds.yaml: Enables cgroups v2 support for containers
+- ephemeralrunner-cleanup-cj.yaml: CronJob to clean up stale ephemeral runners
+- vm-cleaner.yaml: Cleanup job for VM-based runners
 
-**Sync Wave:** 5
+Sync Wave: 5
 
-## 🔧 Prerequisites
+## Prerequisites
 
 Before deploying this setup, ensure you have:
 
-1. **Oracle Cloud Infrastructure Access:**
+1. Oracle Cloud Infrastructure Access:
    - OKE cluster provisioned (see `ci/services/cluster/`)
    - Appropriate IAM policies configured
    - Workload Identity or Instance Principal setup
 
-2. **Tools Installed:**
-   - `kubectl` (configured for your OKE cluster)
-   - `argocd` CLI (optional, for management)
-   - `helm` (for manual operations)
+2. Tools Installed:
+   - kubectl (configured for your OKE cluster)
+   - argocd CLI (optional, for management)
+   - helm (for manual operations)
 
-3. **GitHub Configuration:**
+3. GitHub Configuration:
    - GitHub App or Personal Access Token (PAT) with appropriate permissions
    - Token stored in External Secrets backend
 
-4. **ArgoCD Deployed:**
+4. ArgoCD Deployed:
    - ArgoCD installed in the cluster (see `ci/argocd/README.md`)
    - Slack notifications configured (optional)
 
-## 🚀 Deployment Guide
+## Deployment Guide
 
 ### Step 1: Verify Cluster Access
 
@@ -200,7 +208,7 @@ kubectl create secret generic github-arc-secret \
   --namespace=arc-systems
 ```
 
-**Note:** In production, use External Secrets Operator to manage this secret.
+Note: In production, use External Secrets Operator to manage this secret.
 
 ### Step 3: Deploy ArgoCD Applications
 
@@ -212,12 +220,12 @@ kubectl apply -f ci/cluster/oci/argo-automation.yaml
 
 This will deploy all components in the correct order based on sync waves:
 
-1. **Wave -1:** External Secrets Operator
-2. **Wave 2:** Actions Runner Controller
-3. **Wave 3:** GitHub Runners (container & VM)
-4. **Wave 4:** Monitoring Stack
-5. **Wave 5:** Hacks & Utilities
-6. **Wave 10:** Karpenter
+1. Wave -1: External Secrets Operator
+2. Wave 2: Actions Runner Controller
+3. Wave 3: GitHub Runners (container & VM)
+4. Wave 4: Monitoring Stack
+5. Wave 5: Hacks & Utilities
+6. Wave 10: Karpenter
 
 ### Step 4: Verify Deployment
 
@@ -249,7 +257,7 @@ kubectl get applications -n argocd -w
 argocd app get github-runners
 ```
 
-## 🎮 Runner Configuration
+## Runner Configuration
 
 ### Using Runners in GitHub Workflows
 
@@ -289,7 +297,7 @@ To add or modify runner configurations:
 4. Update the runner label
 5. Commit and push - ArgoCD will automatically sync
 
-## 📊 Monitoring
+## Monitoring
 
 ### Accessing Grafana
 
@@ -300,15 +308,15 @@ kubectl port-forward -n default svc/kube-prometheus-stack-grafana 3000:80
 
 Access at: http://localhost:3000
 
-**Default credentials:** Check the monitoring values.yaml or secret
+Default credentials: Check the monitoring values.yaml or secret
 
 ### Key Metrics to Monitor
 
-- **Runner Queue Length:** Number of pending workflow jobs
-- **Runner Utilization:** Active vs idle runners
-- **Job Duration:** Time taken for workflow jobs
-- **Node Scaling:** Karpenter/autoscaler activity
-- **Resource Usage:** CPU, memory, disk usage per runner
+- Runner Queue Length: Number of pending workflow jobs
+- Runner Utilization: Active vs idle runners
+- Job Duration: Time taken for workflow jobs
+- Node Scaling: Karpenter/autoscaler activity
+- Resource Usage: CPU, memory, disk usage per runner
 
 ### Prometheus Queries
 
@@ -323,73 +331,73 @@ histogram_quantile(0.95, rate(github_runner_job_duration_seconds_bucket[5m]))
 rate(github_runner_job_status{status="failed"}[5m])
 ```
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Runners Not Starting
 
-**Check ARC controller logs:**
+Check ARC controller logs:
 ```bash
 kubectl logs -n arc-systems -l app.kubernetes.io/name=gha-runner-scale-set-controller
 ```
 
-**Common issues:**
+Common issues:
 - Invalid GitHub token
 - Network connectivity to GitHub
 - Insufficient cluster resources
 
 ### Runners Stuck in Pending
 
-**Check node availability:**
+Check node availability:
 ```bash
 kubectl get nodes
 kubectl describe pod <runner-pod-name> -n arc-systems
 ```
 
-**Possible causes:**
+Possible causes:
 - Karpenter/autoscaler not scaling
 - Resource constraints
 - Node affinity/taints issues
 
 ### ArgoCD Sync Failures
 
-**Check application status:**
+Check application status:
 ```bash
 argocd app get <app-name>
 kubectl describe application <app-name> -n argocd
 ```
 
-**Common fixes:**
+Common fixes:
 - Verify source repository access
 - Check YAML syntax
 - Review sync waves and dependencies
 
 ### Secrets Not Available
 
-**Verify External Secrets Operator:**
+Verify External Secrets Operator:
 ```bash
 kubectl get externalsecrets -A
 kubectl logs -n default -l app.kubernetes.io/name=external-secrets
 ```
 
-**Check secret synchronization:**
+Check secret synchronization:
 ```bash
 kubectl get secret github-arc-secret -n arc-systems
 ```
 
 ### High Resource Usage
 
-**Check runner resource limits:**
+Check runner resource limits:
 ```bash
 kubectl top pods -n arc-systems
 kubectl describe pod <runner-pod-name> -n arc-systems
 ```
 
-**Solutions:**
+Solutions:
 - Adjust runner resource requests/limits
 - Scale down unused runners
 - Review Karpenter node provisioning
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Actions Runner Controller Documentation](https://github.com/actions/actions-runner-controller)
 - [ArgoCD Documentation](https://argo-cd.readthedocs.io/)
@@ -397,7 +405,7 @@ kubectl describe pod <runner-pod-name> -n arc-systems
 - [OKE Documentation](https://docs.oracle.com/en-us/iaas/Content/ContEng/home.htm)
 - [External Secrets Operator](https://external-secrets.io/)
 
-## 🤝 Contributing
+## Contributing
 
 When making changes to this configuration:
 
@@ -407,14 +415,14 @@ When making changes to this configuration:
 4. Ensure all ArgoCD applications sync successfully
 5. Monitor the deployment in the OCI cluster
 
-## 📝 Notes
+## Notes
 
-- **Sync Waves:** Control deployment order. Lower numbers deploy first.
-- **Auto-Sync:** Most applications have automated sync enabled for continuous deployment.
-- **Pruning:** Enabled for most apps to remove resources deleted from Git.
-- **Notifications:** Slack notifications configured for deployment events.
+- Sync Waves: Control deployment order. Lower numbers deploy first.
+- Auto-Sync: Most applications have automated sync enabled for continuous deployment.
+- Pruning: Enabled for most apps to remove resources deleted from Git.
+- Notifications: Slack notifications configured for deployment events.
 
 ---
 
-**Maintained by:** CNCF Projects Team  
-**Last Updated:** December 2025
+Maintained by: CNCF Projects Team  
+Last Updated: December 2025
