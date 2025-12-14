@@ -1,0 +1,194 @@
+---
+name: Monitor Upstream Runner Changes
+
+on:
+  # Check for upstream changes daily
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  check-upstream-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      runner-version-changed: ${{ steps.check-versions.outputs.runner-version-changed }}
+      docker-version-changed: ${{ steps.check-versions.outputs.docker-version-changed }}
+      buildx-version-changed: ${{ steps.check-versions.outputs.buildx-version-changed }}
+      hooks-version-changed: ${{ steps.check-versions.outputs.hooks-version-changed }}
+      go-version-changed: ${{ steps.check-versions.outputs.go-version-changed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for upstream version changes
+        id: check-versions
+        run: |
+          # Extract current versions from Dockerfile
+          CURRENT_RUNNER_VERSION=$(grep "ARG RUNNER_VERSION=" ci/gha-runner-image/Dockerfile | cut -d'=' -f2)
+          CURRENT_DOCKER_VERSION=$(grep "ARG DOCKER_VERSION=" ci/gha-runner-image/Dockerfile | cut -d'=' -f2)
+          CURRENT_BUILDX_VERSION=$(grep "ARG BUILDX_VERSION=" ci/gha-runner-image/Dockerfile | cut -d'=' -f2)
+          CURRENT_HOOKS_VERSION=$(grep "ARG RUNNER_CONTAINER_HOOKS_VERSION=" ci/gha-runner-image/Dockerfile | cut -d'=' -f2)
+          CURRENT_GO_VERSION=$(grep "curl -LO https://go.dev/dl/go" ci/gha-runner-image/Dockerfile | sed -n 's/.*go\([0-9.]*\)\.linux.*/\1/p')
+          
+          echo "Current versions:"
+          echo "Runner: $CURRENT_RUNNER_VERSION"
+          echo "Docker: $CURRENT_DOCKER_VERSION"
+          echo "Buildx: $CURRENT_BUILDX_VERSION"
+          echo "Hooks: $CURRENT_HOOKS_VERSION"
+          echo "Go: $CURRENT_GO_VERSION"
+          
+          # Check latest GitHub Actions runner version
+          LATEST_RUNNER_VERSION=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          echo "Latest runner version: $LATEST_RUNNER_VERSION"
+          
+          # Check latest Docker version
+          LATEST_DOCKER_VERSION=$(curl -s https://api.github.com/repos/docker/docker-ce/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          echo "Latest Docker version: $LATEST_DOCKER_VERSION"
+          
+          # Check latest Buildx version
+          LATEST_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          echo "Latest Buildx version: $LATEST_BUILDX_VERSION"
+          
+          # Check latest container hooks version
+          LATEST_HOOKS_VERSION=$(curl -s https://api.github.com/repos/actions/runner-container-hooks/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          echo "Latest hooks version: $LATEST_HOOKS_VERSION"
+          
+          # Check latest Go version
+          LATEST_GO_VERSION=$(curl -s https://go.dev/VERSION?m=text | sed 's/go//')
+          echo "Latest Go version: $LATEST_GO_VERSION"
+          
+          # Compare versions and set outputs
+          if [[ "$CURRENT_RUNNER_VERSION" != "$LATEST_RUNNER_VERSION" ]]; then
+            echo "runner-version-changed=true" >> $GITHUB_OUTPUT
+            echo "Runner version changed: $CURRENT_RUNNER_VERSION -> $LATEST_RUNNER_VERSION"
+          else
+            echo "runner-version-changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if [[ "$CURRENT_DOCKER_VERSION" != "$LATEST_DOCKER_VERSION" ]]; then
+            echo "docker-version-changed=true" >> $GITHUB_OUTPUT
+            echo "Docker version changed: $CURRENT_DOCKER_VERSION -> $LATEST_DOCKER_VERSION"
+          else
+            echo "docker-version-changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if [[ "$CURRENT_BUILDX_VERSION" != "$LATEST_BUILDX_VERSION" ]]; then
+            echo "buildx-version-changed=true" >> $GITHUB_OUTPUT
+            echo "Buildx version changed: $CURRENT_BUILDX_VERSION -> $LATEST_BUILDX_VERSION"
+          else
+            echo "buildx-version-changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if [[ "$CURRENT_HOOKS_VERSION" != "$LATEST_HOOKS_VERSION" ]]; then
+            echo "hooks-version-changed=true" >> $GITHUB_OUTPUT
+            echo "Hooks version changed: $CURRENT_HOOKS_VERSION -> $LATEST_HOOKS_VERSION"
+          else
+            echo "hooks-version-changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if [[ "$CURRENT_GO_VERSION" != "$LATEST_GO_VERSION" ]]; then
+            echo "go-version-changed=true" >> $GITHUB_OUTPUT
+            echo "Go version changed: $CURRENT_GO_VERSION -> $LATEST_GO_VERSION"
+          else
+            echo "go-version-changed=false" >> $GITHUB_OUTPUT
+          fi
+
+  create-update-pr:
+    needs: check-upstream-changes
+    if: |
+      needs.check-upstream-changes.outputs.runner-version-changed == 'true' ||
+      needs.check-upstream-changes.outputs.docker-version-changed == 'true' ||
+      needs.check-upstream-changes.outputs.buildx-version-changed == 'true' ||
+      needs.check-upstream-changes.outputs.hooks-version-changed == 'true' ||
+      needs.check-upstream-changes.outputs.go-version-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Dockerfile with latest versions
+        run: |
+          # Get latest versions
+          LATEST_RUNNER_VERSION=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          LATEST_DOCKER_VERSION=$(curl -s https://api.github.com/repos/docker/docker-ce/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          LATEST_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          LATEST_HOOKS_VERSION=$(curl -s https://api.github.com/repos/actions/runner-container-hooks/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          LATEST_GO_VERSION=$(curl -s https://go.dev/VERSION?m=text | sed 's/go//')
+          
+          # Update Dockerfile
+          sed -i "s/ARG RUNNER_VERSION=.*/ARG RUNNER_VERSION=$LATEST_RUNNER_VERSION/" ci/gha-runner-image/Dockerfile
+          sed -i "s/ARG DOCKER_VERSION=.*/ARG DOCKER_VERSION=$LATEST_DOCKER_VERSION/" ci/gha-runner-image/Dockerfile
+          sed -i "s/ARG BUILDX_VERSION=.*/ARG BUILDX_VERSION=$LATEST_BUILDX_VERSION/" ci/gha-runner-image/Dockerfile
+          sed -i "s/ARG RUNNER_CONTAINER_HOOKS_VERSION=.*/ARG RUNNER_CONTAINER_HOOKS_VERSION=$LATEST_HOOKS_VERSION/" ci/gha-runner-image/Dockerfile
+          sed -i "s/go[0-9.]*\.linux/go$LATEST_GO_VERSION.linux/g" ci/gha-runner-image/Dockerfile
+          
+          echo "Updated versions:"
+          echo "Runner: $LATEST_RUNNER_VERSION"
+          echo "Docker: $LATEST_DOCKER_VERSION"
+          echo "Buildx: $LATEST_BUILDX_VERSION"
+          echo "Hooks: $LATEST_HOOKS_VERSION"
+          echo "Go: $LATEST_GO_VERSION"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            Update upstream dependencies in runner image
+            
+            - Runner: ${{ needs.check-upstream-changes.outputs.runner-version-changed == 'true' && 'Updated' || 'No change' }}
+            - Docker: ${{ needs.check-upstream-changes.outputs.docker-version-changed == 'true' && 'Updated' || 'No change' }}
+            - Buildx: ${{ needs.check-upstream-changes.outputs.buildx-version-changed == 'true' && 'Updated' || 'No change' }}
+            - Hooks: ${{ needs.check-upstream-changes.outputs.hooks-version-changed == 'true' && 'Updated' || 'No change' }}
+            - Go: ${{ needs.check-upstream-changes.outputs.go-version-changed == 'true' && 'Updated' || 'No change' }}
+          title: 'Update upstream dependencies in runner image'
+          body: |
+            This PR updates upstream dependencies in the GitHub Actions runner image.
+            
+            ## Changes
+            
+            - **Runner**: ${{ needs.check-upstream-changes.outputs.runner-version-changed == 'true' && '✅ Updated' || '⏸️ No change' }}
+            - **Docker**: ${{ needs.check-upstream-changes.outputs.docker-version-changed == 'true' && '✅ Updated' || '⏸️ No change' }}
+            - **Buildx**: ${{ needs.check-upstream-changes.outputs.buildx-version-changed == 'true' && '✅ Updated' || '⏸️ No change' }}
+            - **Container Hooks**: ${{ needs.check-upstream-changes.outputs.hooks-version-changed == 'true' && '✅ Updated' || '⏸️ No change' }}
+            - **Go**: ${{ needs.check-upstream-changes.outputs.go-version-changed == 'true' && '✅ Updated' || '⏸️ No change' }}
+            
+            ## Testing
+            
+            This PR will automatically trigger E2E tests for all runner types to ensure compatibility.
+            
+            ## Auto-generated
+            
+            This PR was automatically created by the upstream dependency monitoring workflow.
+          branch: update-upstream-dependencies
+          delete-branch: true
+
+  trigger-e2e-tests:
+    needs: check-upstream-changes
+    if: |
+      needs.check-upstream-changes.outputs.runner-version-changed == 'true' ||
+      needs.check-upstream-changes.outputs.docker-version-changed == 'true' ||
+      needs.check-upstream-changes.outputs.buildx-version-changed == 'true' ||
+      needs.check-upstream-changes.outputs.hooks-version-changed == 'true' ||
+      needs.check-upstream-changes.outputs.go-version-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger E2E tests
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'e2e-runner-tests.yml',
+              ref: 'main',
+              inputs: {
+                test_scope: 'all'
+              }
+            });
+            
+            console.log('Triggered E2E runner tests due to upstream changes');
