@@ -1,0 +1,221 @@
+---
+name: E2E Runner Tests
+
+on:
+  # Trigger when runner image changes
+  push:
+    branches: [main]
+    paths: 
+      - 'ci/gha-runner-image/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ci/gha-runner-image/**'
+  
+  # Trigger when upstream runner versions change (manual for now, can be automated later)
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: 'Test scope'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - oracle-only
+          - container-only
+          - vm-only
+          - equinix-only
+      
+  # Trigger after successful image build
+  workflow_run:
+    workflows: ["Build GitHub Runner Images"]
+    types:
+      - completed
+
+  # Weekly schedule to catch upstream changes
+  schedule:
+    - cron: '0 2 * * 1'  # Every Monday at 2 AM UTC
+
+jobs:
+  # Test Oracle runners (both x86 and ARM)
+  test-oracle-runners:
+    if: |
+      github.event_name != 'workflow_dispatch' || 
+      github.event.inputs.test_scope == 'all' || 
+      github.event.inputs.test_scope == 'oracle-only'
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: 
+          - oracle-4cpu-16gb-x86-64
+          - oracle-8cpu-32gb-x86-64
+          - oracle-16cpu-64gb-x86-64
+          - oracle-24cpu-384gb-x86-64
+          - oracle-2cpu-8gb-arm64
+          - oracle-16cpu-64gb-arm64
+          - oracle-32cpu-128gb-arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test runner basic functionality
+        run: |
+          echo "Testing runner: ${{ matrix.runner }}"
+          echo "Architecture: $(uname -m)"
+          echo "OS: $(lsb_release -d)"
+          echo "CPU cores: $(nproc)"
+          echo "Memory: $(free -h | grep Mem | awk '{print $2}')"
+
+      - name: Test Docker functionality
+        run: |
+          docker --version
+          docker run --rm alpine:latest echo "Docker test successful on ${{ matrix.runner }}"
+
+      - name: Test development tools
+        run: |
+          echo "::group::Go version"
+          go version
+          echo "::endgroup::"
+          
+          echo "::group::Python version"
+          python3 --version
+          pip3 --version
+          echo "::endgroup::"
+          
+          echo "::group::Git version"
+          git --version
+          echo "::endgroup::"
+          
+          echo "::group::Make version"
+          make --version
+          echo "::endgroup::"
+
+      - name: Test container build capability
+        run: |
+          cat > Dockerfile.test << 'EOF'
+          FROM alpine:latest
+          RUN echo "Test build on ${{ matrix.runner }}"
+          CMD echo "Container works"
+          EOF
+          
+          docker build -t test-image:${{ matrix.runner }} -f Dockerfile.test .
+          docker run --rm test-image:${{ matrix.runner }}
+
+  # Test container runners
+  test-container-runners:
+    if: |
+      github.event_name != 'workflow_dispatch' || 
+      github.event.inputs.test_scope == 'all' || 
+      github.event.inputs.test_scope == 'container-only'
+    strategy:
+      fail-fast: false
+      matrix:
+        shape: [2cpu-8gb, 4cpu-16gb, 8cpu-32gb, 16cpu-64gb]
+        arch: ["x86-64"]
+    runs-on: oracle-${{ matrix.shape }}-${{ matrix.arch }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test container runner
+        run: |
+          echo "Testing container runner: oracle-${{ matrix.shape }}-${{ matrix.arch }}"
+          uname -a
+          docker run --rm hello-world
+          
+      - name: Test resource limits
+        run: |
+          echo "CPU Info:"
+          lscpu | grep -E "CPU\(s\)|Model name"
+          echo "Memory Info:"
+          free -h
+          echo "Disk Info:"
+          df -h /
+
+  # Test VM runners
+  test-vm-runners:
+    if: |
+      github.event_name != 'workflow_dispatch' || 
+      github.event.inputs.test_scope == 'all' || 
+      github.event.inputs.test_scope == 'vm-only'
+    strategy:
+      fail-fast: false
+      matrix:
+        shape: [2cpu-8gb]
+        arch: ["x86-64", "arm64"]
+    runs-on: oracle-vm-${{ matrix.shape }}-${{ matrix.arch }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test VM runner basic functionality
+        run: |
+          echo "Testing VM runner: oracle-vm-${{ matrix.shape }}-${{ matrix.arch }}"
+          uname -a
+          docker run --rm hello-world
+
+      - name: Test Kubernetes capability with kind
+        run: |
+          echo "Testing kind cluster creation..."
+          CLUSTER_NAME="e2e-test-$(date +%s)"
+          
+          # Create simple kind cluster
+          cat > kind-config.yaml << 'EOF'
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+            - role: control-plane
+          EOF
+          
+          kind create cluster --name $CLUSTER_NAME --config kind-config.yaml --wait 60s
+          
+          # Test basic kubectl functionality
+          kubectl cluster-info
+          kubectl get nodes
+          
+          # Cleanup
+          kind delete cluster --name $CLUSTER_NAME
+
+  # Test Equinix runners (if available)
+  test-equinix-runners:
+    if: |
+      github.event_name != 'workflow_dispatch' || 
+      github.event.inputs.test_scope == 'all' || 
+      github.event.inputs.test_scope == 'equinix-only'
+    runs-on: equinix-2cpu-8gb
+    continue-on-error: true  # Don't fail the entire workflow if Equinix runners are unavailable
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test Equinix runner
+        run: |
+          echo "Testing Equinix runner"
+          uname -a
+          docker run --rm alpine:latest echo "Equinix runner test successful"
+
+  # Summary job that depends on all test jobs
+  test-summary:
+    needs: [test-oracle-runners, test-container-runners, test-vm-runners, test-equinix-runners]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check test results
+        run: |
+          echo "E2E Runner Test Results:"
+          echo "Oracle runners: ${{ needs.test-oracle-runners.result }}"
+          echo "Container runners: ${{ needs.test-container-runners.result }}"
+          echo "VM runners: ${{ needs.test-vm-runners.result }}"
+          echo "Equinix runners: ${{ needs.test-equinix-runners.result }}"
+          
+          # Fail if any critical tests failed (excluding Equinix which can be unavailable)
+          if [[ "${{ needs.test-oracle-runners.result }}" == "failure" ]] || \
+             [[ "${{ needs.test-container-runners.result }}" == "failure" ]] || \
+             [[ "${{ needs.test-vm-runners.result }}" == "failure" ]]; then
+            echo "❌ Critical runner tests failed"
+            exit 1
+          else
+            echo "✅ All critical runner tests passed"
+          fi

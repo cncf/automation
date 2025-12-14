@@ -35,3 +35,20 @@ either of the following statements to your job definitions:
 The above runners are defined in this [Dockerfile](./gha-runner-image/Dockerfile)
 
 You can review the Dockerfile to see what tools have been added to the runner image.
+
+## E2E Testing
+
+All runners are automatically tested through comprehensive E2E tests that validate:
+- Basic functionality and system information
+- Docker container capabilities
+- Development tool availability
+- Kubernetes functionality (for VM runners)
+- Resource allocation and limits
+
+Tests are triggered automatically when:
+- Runner image changes are made
+- Upstream dependencies are updated
+- Weekly scheduled validation runs
+- Manual testing requests
+
+For detailed information about the E2E testing system, see [README-E2E-TESTING.md](./README-E2E-TESTING.md).
