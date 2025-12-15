@@ -327,6 +327,8 @@ func getImageState(imageID string) (string, error) {
 		} `json:"data"`
 	}
 
+	// for debugging
+	log.Printf("%s", output)
 	if err := json.Unmarshal(output, &result); err != nil {
 		return "", fmt.Errorf("failed to parse JSON: %w", err)
 	}
