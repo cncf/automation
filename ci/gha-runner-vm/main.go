@@ -205,34 +205,39 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatal("failed to run OCI command: ", err)
 	}
 
+	var result struct {
+		Data struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+
+	if err := json.Unmarshal(output, &result); err != nil {
+		log.Fatal("failed to parse JSON: ", err)
+	}
+	imageID := result.Data.ID
+
+	// expose Image Id to GitHub action
+	f, _ := os.OpenFile(os.Getenv("GITHUB_OUTPUT"), os.O_APPEND|os.O_WRONLY, 0600)
+	defer f.Close()
+	fmt.Fprintf(f, "image_id=%s\n", imageID)
+
+	for {
+		state, err := getImageState(imageID)
+		if err != nil {
+			log.Println("Error checking image state:", err)
+		} else {
+			log.Println("Current lifecycle-state:", state)
+			if state == "AVAILABLE" {
+				log.Printf("Image %s is AVAILABLE!", imageID)
+				break
+			}
+		}
+		log.Println("Waiting for 30 seconds before retrying...")
+		time.Sleep(30 * time.Second)
+	}
+
 	// Need to update arm64 image capabilities
 	if args.arch == "arm64" {
-		var result struct {
-			Data struct {
-				ID string `json:"id"`
-			} `json:"data"`
-		}
-
-		if err := json.Unmarshal(output, &result); err != nil {
-			log.Fatal("failed to parse JSON: ", err)
-		}
-		imageID := result.Data.ID
-
-		for {
-			state, err := getImageState(imageID)
-			if err != nil {
-				log.Println("Error checking image state:", err)
-			} else {
-				log.Println("Current lifecycle-state:", state)
-				if state == "AVAILABLE" {
-					log.Printf("Image %s is AVAILABLE!", imageID)
-					break
-				}
-			}
-			log.Println("Waiting for 30 seconds before retrying...")
-			time.Sleep(30 * time.Second)
-		}
-
 		// Add VM.Standard.A1.Flex compatibility
 		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\""+imageID+"\",\"shape\":\"VM.Standard.A1.Flex\"}")
 		output, err = command.CombinedOutput()
@@ -240,6 +245,8 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Print(command.String())
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
+			exec.Command("oci", "compute", "image", "delete", "--image-id", imageID)
+			return nil
 		}
 		log.Println("VM.Standard.A1.Flex compatibility added")
 
@@ -279,6 +286,8 @@ func run(cmd *cobra.Command, argv []string) error {
 				log.Print(command.String())
 				log.Printf("OCI command failed. Output:\n%s", string(output))
 				log.Fatal("could not run command: ", err)
+				exec.Command("oci", "compute", "image", "delete", "--image-id", imageID)
+				return nil
 			}
 			log.Printf("%s compatibility removed", machine)
 			time.Sleep(time.Second)
@@ -293,6 +302,8 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Print(command.String())
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
+			exec.Command("oci", "compute", "image", "delete", "--image-id", imageID)
+			return nil
 		}
 		log.Printf("Image capabilities updated:\n%s", string(output))
 	}
