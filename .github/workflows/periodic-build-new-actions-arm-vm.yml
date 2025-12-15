@@ -62,7 +62,7 @@ jobs:
           OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-        run: oci compute image delete --image-id ${{ steps.build_image.outputs.image_id }}
+        run: oci compute image delete --force --image-id ${{ steps.build_image.outputs.image_id }}
 
       - name: Terminate Arm64 BareMetal Instance
         if: ${{ always() }}
@@ -161,4 +161,4 @@ jobs:
           chmod +x install.sh
           ./install.sh --accept-all-defaults
           export PATH=$PATH:$HOME/bin
-          oci compute image delete --image-id ${{ needs.build.outputs.image_id }}
+          oci compute image delete --force --image-id ${{ needs.build.outputs.image_id }}

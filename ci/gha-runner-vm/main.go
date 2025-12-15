@@ -138,7 +138,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	if args.arch == "arm64" {
 		baseDir := strings.Split(filename, "/")[0]
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-azcopy.sh", "https://aka.ms/downloadazcopy-v10-linux", "https://github.com/Azure/azure-storage-azcopy/releases/download/v10.29.1/azcopy_linux_arm64_10.29.1.tar.gz")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
+		// replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
@@ -245,7 +245,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Print(command.String())
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
-			exec.Command("oci", "compute", "image", "delete", "--image-id", imageID)
+			exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
 			return nil
 		}
 		log.Println("VM.Standard.A1.Flex compatibility added")
@@ -286,7 +286,7 @@ func run(cmd *cobra.Command, argv []string) error {
 				log.Print(command.String())
 				log.Printf("OCI command failed. Output:\n%s", string(output))
 				log.Fatal("could not run command: ", err)
-				exec.Command("oci", "compute", "image", "delete", "--image-id", imageID)
+				exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
 				return nil
 			}
 			log.Printf("%s compatibility removed", machine)
@@ -302,7 +302,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Print(command.String())
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
-			exec.Command("oci", "compute", "image", "delete", "--image-id", imageID)
+			exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
 			return nil
 		}
 		log.Printf("Image capabilities updated:\n%s", string(output))
@@ -315,7 +315,7 @@ func run(cmd *cobra.Command, argv []string) error {
 func getImageState(imageID string) (string, error) {
 	command := exec.Command("oci", "compute", "image", "get", "--image-id", imageID)
 
-	output, err := command.CombinedOutput()
+	output, err := command.Output()
 	if err != nil {
 		log.Printf("OCI command failed. Output:\n%s", string(output))
 		return "", fmt.Errorf("failed to run OCI command: %w", err)
@@ -327,8 +327,6 @@ func getImageState(imageID string) (string, error) {
 		} `json:"data"`
 	}
 
-	// for debugging
-	log.Printf("%s", output)
 	if err := json.Unmarshal(output, &result); err != nil {
 		return "", fmt.Errorf("failed to parse JSON: %w", err)
 	}
