@@ -89,7 +89,7 @@ jobs:
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
         run: |
           export PATH=$PATH:/home/ubuntu/bin
-          oci compute image delete --image-id ${{ steps.build_image.outputs.image_id }}
+          oci compute image delete --force --image-id ${{ steps.build_image.outputs.image_id }}
 
   test-new-image:
     runs-on: oracle-vm-2cpu-8gb-x86-64
@@ -177,4 +177,4 @@ jobs:
           chmod +x install.sh
           ./install.sh --accept-all-defaults
           export PATH=$PATH:$HOME/bin
-          oci compute image delete --image-id ${{ needs.build.outputs.image_id }}
+          oci compute image delete --force --image-id ${{ needs.build.outputs.image_id }}
