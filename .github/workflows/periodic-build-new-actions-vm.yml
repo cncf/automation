@@ -83,7 +83,9 @@ jobs:
           OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-        run: oci compute image delete --image-id ${{ steps.build_image.outputs.image_id }}
+        run: |
+          export PATH=$PATH:/home/ubuntu/bin
+          oci compute image delete --image-id ${{ steps.build_image.outputs.image_id }}
 
   test-new-image:
     runs-on: oracle-vm-2cpu-8gb-x86-64

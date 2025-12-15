@@ -21,8 +21,17 @@ echo $4 | base64 -d > ${OCI_KEY_FILE}
 chmod 600 ${OCI_CONFIG_FILE}
 chmod 600 ${OCI_KEY_FILE}
 
-sudo apt update
-sudo apt install -y xorriso qemu-system-arm qemu-efi-aarch64 git golang zip
+echo "Waiting for apt lock..."
+while sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1; do
+  sleep 3
+done
+
+while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
+  sleep 3
+done
+
+sudo apt-get update
+sudo apt-get install -y xorriso qemu-system-arm qemu-efi-aarch64 git golang zip
 
 echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
 sudo udevadm control --reload-rules
@@ -40,7 +49,7 @@ packer plugins install github.com/hashicorp/azure
 curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
 chmod +x install.sh
 ./install.sh --accept-all-defaults
-export PATH=$PATH:$HOME/bin
+export PATH=$PATH:/home/ubuntu/bin
 
 oci compute image list \
   --compartment-id ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a \
