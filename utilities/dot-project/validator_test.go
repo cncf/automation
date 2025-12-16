@@ -308,8 +308,9 @@ func TestValidateMaintainersFile_Verification(t *testing.T) {
 		t.Fatalf("failed to write maintainers file: %v", err)
 	}
 
-	t.Setenv("MAINTAINER_API_ENDPOINT", "https://api.example.com/verify")
+	t.Setenv("MAINTAINER_API_ENDPOINT", "https://api-gw.platform.linuxfoundation.org/")
 	t.Setenv("MAINTAINER_API_STUB", "")
+	t.Setenv("LFX_AUTH_TOKEN", "") // Ensure LFX token is unset for stub test
 
 	results, err := validator.ValidateMaintainersFile(maintainersPath, true)
 	if err != nil {

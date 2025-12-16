@@ -29,7 +29,6 @@ go build ./cmd/validator
 - `-config string`: Path to project list configuration file (default `yaml/projectlist.yaml`)
 - `-maintainers string`: Path to maintainer roster file (default `yaml/maintainers.yaml`, set empty to skip)
 - `-cache string`: Directory for cached validation results (default `.cache`)
-- `-format string`: Output format (`text`, `json`, or `yaml`; default `text`)
 - `-verify-maintainers`: Toggle stubbed external maintainer verification (default `false`)
 
 ### Examples
@@ -38,8 +37,8 @@ go build ./cmd/validator
 # Validate projects and maintainers with default configuration
 ./validator
 
-# Validate only projects and emit JSON
-./validator -maintainers "" -format json
+# Validate only projects
+./validator -maintainers "" 
 
 # Validate projects and maintainers from custom paths with verification enabled
 ./validator -config configs/projectlist.yaml \
