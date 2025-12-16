@@ -1,19 +1,30 @@
-output "api_endpoints" {
-  description = "The API endpoints for the cluster"
-  value       = linode_lke_cluster.cncf_poc_cluster.api_endpoints
+# Output cluster connection information
+output "cluster_id" {
+  description = "The unique ID of the LKE cluster"
+  value       = linode_lke_cluster.github_runners.id
 }
 
-output "status" {
-  description = "The status of the cluster"
-  value       = linode_lke_cluster.cncf_poc_cluster.status
+output "api_endpoints" {
+  description = "The API endpoints for the Kubernetes cluster"
+  value       = linode_lke_cluster.github_runners.api_endpoints
+}
+
+output "cluster_status" {
+  description = "The operational status of the cluster"
+  value       = linode_lke_cluster.github_runners.status
 }
 
 output "kubeconfig_path" {
-  description = "Path to the kubeconfig file"
-  value       = "${path.module}/kubeconfig.yaml"
+  description = "Path to the generated kubeconfig file for kubectl access"
+  value       = local_file.kubeconfig.filename
 }
 
-output "dashboard_url" {
-  description = "URL to access the Kubernetes Dashboard"
-  value       = "https://${linode_lke_cluster.cncf_poc_cluster.api_endpoints[0]}/kubernetes-dashboard"
+output "region" {
+  description = "The region where the cluster is deployed"
+  value       = linode_lke_cluster.github_runners.region
+}
+
+output "k8s_version" {
+  description = "The Kubernetes version running on the cluster"
+  value       = linode_lke_cluster.github_runners.k8s_version
 }
