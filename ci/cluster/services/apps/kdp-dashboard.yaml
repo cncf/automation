@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kdp-dashboard
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "05"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oke-cncf-automation
+spec:
+  project: default
+  source:
+    repoURL: quay.io/kubermatic/helm-charts
+    chart: developer-platform-dashboard
+    targetRevision: 0.9.0
+    helm:
+      releaseName: kdp-dashboard
+      values: |
+        dashboard:
+          config:
+            create: false
+            secretRef: 
+              name: kdp-dashboard-configuration
+              key: ".env.local"
+          imagePullSecret: ""
+          ingress:
+            create: true
+            host: services.cncf.io
+            certIssuer:
+              kind: ClusterIssuer
+              name: letsencrypt-prod
+          extraVolumeMounts:
+          - name: user-kubeconfig-ca
+            mountPath: /app/_config/user-kubeconfig
+            secretName: kcp-ca
+            items:
+              - key: tls.crt
+                path: ca.crt
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kdp
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

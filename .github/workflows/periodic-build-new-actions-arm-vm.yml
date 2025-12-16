@@ -1,0 +1,164 @@
+name: Periodic Build New Actions ARM VM
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+
+jobs:
+  build:
+    name: Build new Actions ARM VM
+    runs-on: oracle-2cpu-8gb-x86-64
+    outputs:
+      image_id: ${{ steps.build_image.outputs.image_id }}
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Change Ubuntu mirrors
+        uses: vegardit/fast-apt-mirror.sh@v1
+        with:
+          exclude-current: true
+
+      - name: Install OCI CLI
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+
+      - name: Create Arm64 BareMetal Instance
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: |
+          ${{ github.workspace }}/.github/scripts/create_bare_metal.sh
+          cat ${{ github.workspace }}/.env >> $GITHUB_ENV
+        shell: bash
+
+      - name: Build VM Image
+        id: build_image
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: |
+          scp -i ${{ github.workspace }}/id_rsa ${{ github.workspace }}/.github/scripts/build_arm_image.sh ubuntu@$PUBLIC_IP:.
+          ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh ${{ env.OCI_CLI_USER }} ${{ env.OCI_CLI_TENANCY }} ${{ env.OCI_CLI_FINGERPRINT}} $(echo "${{ env.OCI_CLI_KEY_CONTENT }}" | base64 -w0) ${{ env.OCI_CLI_REGION }}
+          scp -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP:/home/ubuntu/github_output_file .
+          cat ./github_output_file >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Is Build Cancelled
+        if: ${{ cancelled() }}
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: oci compute image delete --force --image-id ${{ steps.build_image.outputs.image_id }}
+
+      - name: Terminate Arm64 BareMetal Instance
+        if: ${{ always() }}
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: /home/runner/bin/oci compute instance terminate --instance-id "$INSTANCE_OCID" --force
+        shell: bash
+
+  test-new-image:
+    runs-on: oracle-vm-2cpu-8gb-arm64
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update APT
+        run: |
+          apt-get update
+          apt-get install -y mc
+
+      - name: Run uname to verify architecture
+        run: |
+          uname -a
+          lsb_release -a
+          cat /proc/cpuinfo
+
+      - name: Run kind cluster
+        run: |
+          CLUSTER_NAME="kind-test"
+          KIND_CONFIG="kind-config.yaml"
+
+          sudo sysctl fs.inotify.max_user_instances=1280
+          sudo sysctl fs.inotify.max_user_watches=655360
+
+          cat <<EOF > $KIND_CONFIG
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+            - role: control-plane
+            - role: worker
+            - role: worker
+          EOF
+
+          echo "[*] Creating Kind cluster..."
+          kind create cluster --name $CLUSTER_NAME --config $KIND_CONFIG
+
+          kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+          echo "[*] Creating pod ..."
+          kubectl apply -f - <<EOF
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: nginx
+          spec:
+            containers:
+            - name: nginx
+              image: nginx:latest
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "500m"
+          EOF
+
+          echo "[*] Waiting for pods to be ready..."
+          kubectl wait --for=condition=Ready pod/nginx --timeout=300s
+
+          echo "[*] Pods running, doing test workload..."
+          sleep 60
+
+          echo "[*] Deleting pods..."
+          kubectl delete pod nginx
+
+          echo "[*] Deleting Kind cluster..."
+          kind delete cluster --name $CLUSTER_NAME
+
+          echo "[*] Done!"
+
+      - name: Remove image on Failure
+        if: ${{ failure() }}
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          export PATH=$PATH:$HOME/bin
+          oci compute image delete --force --image-id ${{ needs.build.outputs.image_id }}

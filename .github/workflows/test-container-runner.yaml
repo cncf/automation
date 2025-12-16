@@ -1,0 +1,33 @@
+name: Test Container Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    strategy:
+      matrix:
+        shape: [2cpu-8gb, 4cpu-16gb, 8cpu-32gb, 16cpu-64gb, 24cpu-384gb]
+        arch: ["x86-64"]
+    runs-on: oracle-${{ matrix.shape }}-${{ matrix.arch }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run uname to verify architecture
+        run: |
+          uname -a
+          lsb_release -a
+          id
+          cat /etc/group
+
+      - name: Run a basic workload
+        run: |
+          echo "Testing Runner"
+          echo "CPU Info:"
+          lscpu
+          docker run hello-world
+
+      - name: Check local disk 
+        run: |
+         df -h /

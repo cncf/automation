@@ -1,31 +1,74 @@
-name: Test oracle-16cpu-64gb-x86-64
+name: Test all Oracle Runners
 
 on:
-  push:
-    branches:
-      - main
+#  push:
+#    branches:
+#      - main
   workflow_dispatch:
 
 jobs:
-  test-runner:
-    runs-on: oracle-16cpu-64gb-x86-64
+  cncf_ora_rnrs_matrix:
+    strategy:
+      matrix:
+        cncf_runner: [oracle-16cpu-64gb-x86-64, oracle-16cpu-64gb-arm64, oracle-4cpu-16gb-x86-64, oracle-8cpu-32gb-x86-64, oracle-24cpu-384gb-x86-64, oracle-2cpu-8gb-arm64, oracle-32cpu-128gb-arm64]
+
+    runs-on: ${{ matrix.cncf_runner }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run uname to verify architecture
         run: uname -a
 
       - name: Run a basic workload
         run: |
-          echo "Testing Oracle Runner"
+          echo "Testing Oracle runner ${{matrix.cncf_runner}}"
           echo "CPU Info:"
           lscpu
 
       - name: Run a Docker container
         run: |
-          docker run --rm alpine echo "Docker is working on the runner"
+          docker run --rm alpine echo "Docker is working on ${{matrix.cncf_runner}}"
 
       - name: Check local disk
         run: |
+         echo "df -h on ${{matrix.cncf_runner}}"
          df -h /
+
+      - name: Get versions of installed tools, list supported locales
+        run: |
+          echo "::group::kmod version"
+          kmod --version
+          echo "::endgroup::"
+
+          echo "::group::zstd version"
+          zstd --version
+          echo "::endgroup::"
+
+          echo "::group::dirmngr version"
+          dirmngr --version
+          echo "::endgroup::"
+
+          echo "::group::wget version"
+          wget --version
+          echo "::endgroup::"
+
+          echo "::group::gpg version"
+          gpg --version
+          echo "::endgroup::"
+
+          echo "::group::pip version"
+          pip --version
+          echo "::endgroup::"
+
+          echo "::group::locale list"
+          locale -a
+          echo "::endgroup::"
+
+          echo "::group::make version"
+          make --version
+          echo "::endgroup::"
+
+          echo "::group::which eatmydata"
+          which eatmydata
+          echo "::endgroup::"

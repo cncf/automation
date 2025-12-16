@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mongodb-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oke-cncf-services
+spec:
+  project: default
+  source:
+    repoURL: https://mongodb.github.io/helm-charts
+    targetRevision: 0.13.0
+    chart: community-operator
+    helm:
+      values: |
+        community-operator-crds:
+          enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: slack-archive
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
