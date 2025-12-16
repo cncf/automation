@@ -1,0 +1,42 @@
+name: Validate Maintainers
+
+on:
+  pull_request:
+    paths:
+      - 'utilities/dot-project/yaml/maintainers.yaml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Build Validator
+        run: |
+          cd utilities/dot-project
+          go build -o validator cmd/validator/main.go
+
+      - name: Get Base Maintainers File
+        if: github.event_name == 'pull_request'
+        run: |
+          git show origin/${{ github.base_ref }}:utilities/dot-project/yaml/maintainers.yaml > utilities/dot-project/yaml/maintainers-base.yaml || echo "No base file found"
+
+      - name: Validate Maintainers
+        env:
+          LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
+        run: |
+          cd utilities/dot-project
+          if [ -f yaml/maintainers-base.yaml ]; then
+            ./validator -config yaml/projectlist.yaml -maintainers yaml/maintainers.yaml -base-maintainers yaml/maintainers-base.yaml -verify-maintainers
+          else
+            ./validator -config yaml/projectlist.yaml -maintainers yaml/maintainers.yaml -verify-maintainers
+          fi
