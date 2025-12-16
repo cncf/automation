@@ -174,8 +174,8 @@ func (pv *ProjectValidator) loadProjectList() ([]string, error) {
 
 // fetchContent fetches content from a URL or local file
 func (pv *ProjectValidator) fetchContent(url string) (string, error) {
-	// Handle file:// URLs
-	if strings.HasPrefix(url, "file://") {
+	// Handle file:// URLs or local paths
+	if strings.HasPrefix(url, "file://") || (!strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://")) {
 		filePath := strings.TrimPrefix(url, "file://")
 		data, err := os.ReadFile(filePath)
 		if err != nil {

@@ -41,17 +41,12 @@ install:
 # Run the validator with default settings
 run: build
 	@echo "Running validator..."
-	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format text --verify-maintainers
-
-# Run the validator with JSON output
-run-json: build
-	@echo "Running validator with JSON output..."
-	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format json --verify-maintainers
+	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --verify-maintainers
 
 # Run the validator and show changes only
 run-changes: build
 	@echo "Running validator and filtering for changes..."
-	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format text --verify-maintainers | grep -E "(CHANGED|INVALID|Summary)"
+	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --verify-maintainers | grep -E "(CHANGED|INVALID|Summary)"
 
 # Validate and format Go code
 fmt:
@@ -78,7 +73,7 @@ test-setup:
 
 # Run validator with test setup
 test-run: test-setup build
-	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/test-projectlist.yaml --format text
+	REPO_ROOT=$(REPO_ROOT) ./validator --config yaml/test-projectlist.yaml
 
 # Show help
 help:

@@ -1,13 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"os"
-
-	"gopkg.in/yaml.v3"
 
 	"projects"
 )
@@ -16,7 +13,6 @@ func main() {
 	var (
 		configFile          = flag.String("config", "yaml/projectlist.yaml", "Path to project list configuration file")
 		cacheDir            = flag.String("cache", ".cache", "Directory to store cached validation results")
-		format              = flag.String("format", "text", "Output format: text, json, yaml")
 		maintainersFile     = flag.String("maintainers", "yaml/maintainers.yaml", "Path to maintainers file (set empty to skip)")
 		baseMaintainersFile = flag.String("base-maintainers", "", "Path to base maintainers file for diff validation")
 		verifyMaintainers   = flag.Bool("verify-maintainers", false, "Verify maintainer handles via external service (stubbed)")
@@ -61,45 +57,18 @@ func main() {
 		maintainerResults = results
 	}
 
-	switch *format {
-	case "json":
-		payload := map[string]interface{}{
-			"projects": projectResults,
-		}
-		if maintainersEnabled {
-			payload["maintainers"] = maintainerResults
-		}
-		data, err := json.MarshalIndent(payload, "", "  ")
+	output, err := validator.FormatResults(projectResults, "text")
+	if err != nil {
+		log.Fatalf("failed to format project results: %v", err)
+	}
+	fmt.Print(output)
+	if maintainersEnabled {
+		fmt.Println()
+		maintainersOutput, err := validator.FormatMaintainersResults(maintainerResults, "text")
 		if err != nil {
-			log.Fatalf("failed to marshal JSON output: %v", err)
+			log.Fatalf("failed to format maintainer results: %v", err)
 		}
-		fmt.Println(string(data))
-	case "yaml":
-		payload := map[string]interface{}{
-			"projects": projectResults,
-		}
-		if maintainersEnabled {
-			payload["maintainers"] = maintainerResults
-		}
-		data, err := yaml.Marshal(payload)
-		if err != nil {
-			log.Fatalf("failed to marshal YAML output: %v", err)
-		}
-		fmt.Print(string(data))
-	default:
-		output, err := validator.FormatResults(projectResults, "text")
-		if err != nil {
-			log.Fatalf("failed to format project results: %v", err)
-		}
-		fmt.Print(output)
-		if maintainersEnabled {
-			fmt.Println()
-			maintainersOutput, err := validator.FormatMaintainersResults(maintainerResults, "text")
-			if err != nil {
-				log.Fatalf("failed to format maintainer results: %v", err)
-			}
-			fmt.Print(maintainersOutput)
-		}
+		fmt.Print(maintainersOutput)
 	}
 
 	// Check if any validation failed
