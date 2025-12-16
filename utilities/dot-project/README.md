@@ -14,7 +14,7 @@ A Go utility that validates CNCF project metadata and maintainer rosters. It che
 ## Installation
 
 ```bash
-cd utilities/projects
+cd utilities/dot-project/
 go build ./cmd/validator
 ```
 

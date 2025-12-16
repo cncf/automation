@@ -46,19 +46,19 @@ jobs:
           ${{ runner.os }}-validator-cache-
 
     - name: Download dependencies
-      working-directory: utilities/projects
+      working-directory: utilities/dot-project/
       run: go mod download
 
     - name: Run tests
-      working-directory: utilities/projects
+      working-directory: utilities/dot-project/
       run: go test -v
 
     - name: Build validator
-      working-directory: utilities/projects
+      working-directory: utilities/dot-project/
       run: go build ./cmd/validator
 
     - name: Run validation
-      working-directory: utilities/projects
+      working-directory: utilities/dot-project/
       env:
         REPO_ROOT: ${{ github.workspace }}
         MAINTAINER_API_ENDPOINT: https://thirdparty.example.com/maintainers
@@ -85,7 +85,7 @@ jobs:
         cat validation-output.txt
 
     - name: Generate JSON report
-      working-directory: utilities/projects
+      working-directory: utilities/dot-project/
       env:
         REPO_ROOT: ${{ github.workspace }}
         MAINTAINER_API_ENDPOINT: https://thirdparty.example.com/maintainers
@@ -124,7 +124,7 @@ jobs:
           }
 
     - name: Fail on validation errors
-      working-directory: utilities/projects
+      working-directory: utilities/dot-project/
       run: |
         # Re-run validator to get exit code
         ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --format text --verify-maintainers

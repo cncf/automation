@@ -251,6 +251,13 @@ func validateProjectStruct(project Project) []string {
 		errors = append(errors, fmt.Sprintf("artwork is not a valid URL: %s", project.Artwork))
 	}
 
+	// Validate social links
+	for platform, url := range project.Social {
+		if !isValidURL(url) {
+			errors = append(errors, fmt.Sprintf("social.%s is not a valid URL: %s", platform, url))
+		}
+	}
+
 	// Validate audits
 	for i, audit := range project.Audits {
 		if audit.Date.IsZero() {
