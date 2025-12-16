@@ -1,0 +1,45 @@
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: mongodb
+spec:
+  members: 3
+  type: ReplicaSet
+  version: 7.0.20
+  security:
+    authentication:
+      modes: ["SCRAM"]
+  users:
+  - name: root
+    db: admin
+    passwordSecretRef:
+      name: mongodb-credentials
+    roles:
+      - name: clusterAdmin
+        db: admin
+      - name: userAdminAnyDatabase
+        db: admin
+      - name: readWriteAnyDatabase
+        db: admin
+      - name: dbAdminAnyDatabase
+        db: admin
+    scramCredentialsSecretName: root-user
+  additionalMongodConfig:
+    storage.wiredTiger.engineConfig.journalCompressor: zlib
+  statefulSet:
+    spec:
+      volumeClaimTemplates:
+        - metadata:
+            name: data-volume
+          spec:
+            accessModes: [ "ReadWriteOnce" ]
+            resources:
+              requests:
+                storage: 100Gi
+        - metadata:
+            name: logs-volume
+          spec:
+            accessModes: [ "ReadWriteOnce" ]
+            resources:
+              requests:
+                storage: 20Gi

@@ -1,12 +1,16 @@
 TOPDIR=$(PWD)
 WHOAMI=$(shell whoami)
 
-image:
-	docker buildx build --platform=linux/amd64,linux/arm64 -t ${WHOAMI}/gha-runner -f Dockerfile .
-	docker buildx build --platform=linux/arm64 -t ${WHOAMI}/gha-runner:openeuler -f Dockerfile.openeuler .
+images: image-noble image-jammy
 
-image-push: image
+image-noble:
+	docker buildx build --build-arg BASE_IMAGE=noble --platform=linux/amd64 -t ${WHOAMI}/gha-runner:noble -f Dockerfile .
+
+image-jammy:
+	docker buildx build --build-arg BASE_IMAGE=jammy --platform=linux/amd64 -t ${WHOAMI}/gha-runner:jammy -f Dockerfile .
+
+images-push: images
 	docker push ${WHOAMI}/gha-runner
 
-image-run: image
-	docker run -ti --rm ${WHOAMI}/gha-runner
+images-run: images
+	docker run -ti --rm ${WHOAMI}/gha-runner:noble
