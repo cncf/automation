@@ -6,12 +6,12 @@ on:
     - cron: '0 9 * * *'
   push:
     paths:
-      - 'utilities/projects/**'
-      - 'utilities/projects/yaml/**'
+      - 'utilities/dot-project/**'
+      - 'utilities/dot-project/yaml/**'
   pull_request:
     paths:
-      - 'utilities/projects/**'
-      - 'utilities/projects/yaml/**'
+      - 'utilities/dot-project/**'
+      - 'utilities/dot-project/yaml/**'
   workflow_dispatch:
 
 jobs:
@@ -40,7 +40,7 @@ jobs:
     - name: Cache validation results
       uses: actions/cache@v4
       with:
-        path: utilities/projects/.cache
+        path: utilities/dot-project/.cache
         key: ${{ runner.os }}-validator-cache-${{ github.run_id }}
         restore-keys: |
           ${{ runner.os }}-validator-cache-
@@ -100,9 +100,9 @@ jobs:
       with:
         name: validation-results
         path: |
-          utilities/projects/validation-report.md
-          utilities/projects/validation-results.json
-          utilities/projects/validation-output.txt
+          utilities/dot-project/validation-report.md
+          utilities/dot-project/validation-results.json
+          utilities/dot-project/validation-output.txt
 
     - name: Comment on PR
       if: github.event_name == 'pull_request'
@@ -110,7 +110,7 @@ jobs:
       with:
         script: |
           const fs = require('fs');
-          const path = './utilities/projects/validation-report.md';
+          const path = './utilities/dot-project/validation-report.md';
           
           if (fs.existsSync(path)) {
             const report = fs.readFileSync(path, 'utf8');
