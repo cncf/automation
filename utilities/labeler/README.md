@@ -1,40 +1,102 @@
-## Label Config / General Notes
+# GitHub Labeler
 
-When a label configuration is supplied, they should be the only labels that exist unless we set auto-delete to FALSE
+A Go program that automatically labels GitHub issues and pull requests based on configurable rules defined in a `labels.yaml` file.
 
-When the label configuration is updated (name, color, description etc), it should update the label and all items the label was previously tagged with.
+## Rule Types Supported
 
-When a label that isn't defined is attempted to be applied, it should not create the label and prompt the user UNLESS we set auto-create to TRUE
+### 1. Match Rules (`kind: match`)
+Process slash commands in comments:
+```yaml
+- name: apply-triage
+  kind: match
+  spec:
+    command: "/triage"
+    matchList: ["valid", "duplicate", "needs-information", "not-planned"]
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-triage
+  - kind: apply-label
+    spec:
+      label: "triage/{{ argv.0 }}"
+```
 
-When there are multiple matching commands, it should it process all of them.
+### 2. Label Rules (`kind: label`)
+Apply labels based on existing label presence:
+```yaml
+- name: needs-triage
+  kind: label
+  spec:
+    match: "triage/*"
+    matchCondition: NOT
+  actions:
+  - kind: apply-label
+    spec:
+      label: "needs-triage"
+```
 
-When the labeler executes, it should only attempt to modify the label state IF the end state is different from the current state e.g. it should not remove and re-add a label if the end condition is the same.
+### 3. File Path Rules (`kind: filePath`)
+Apply labels based on changed file paths:
+```yaml
+- name: charter
+  kind: filePath
+  spec:
+    matchPath: "tags/*/charter.md"
+  actions:
+  - kind: apply-label
+    spec:
+      label: toc
+```
 
-A label should be able to be removed by some method e.g. /remove-<foo> <bar> would remove the label foo/bar or /foo -bar.
-No preference, just a method of removing a label needs to exist
-  
-##  kind/match
-  
-When the matchList rule is used, it should ONLY execute the actions if the text supplied by the user matches one of the items in the list
+## Action Types
 
-When the unique rule is used, only ONE of the defined labels should be present
+### Apply Label
+```yaml
+- kind: apply-label
+  spec:
+    label: "label-name"
+```
 
-- This can be renamed / adjusted - essentially need to restrict a set of labels to a 'namespace' and only one can be present in the final state. Maybe this should be processed as soemthing different? definine an end state condition vs matching whats there initially?
+### Remove Label
+```yaml
+- kind: remove-label
+  spec:
+    match: "label-pattern"  # Supports wildcards like "triage/*"
+```
 
+## Testing
 
-## kind/label
+Run tests:
+```bash
+go test -v
+```
 
-When the kind/label rule is used, it should ignore issue/PR bodies and check label state only for taking action.
+## Usage
 
-## kind/filePath
- 
-Only applies to PRs
- 
-When a commit changes anything that matches the filepath, the rules defined should execute
-  
-  
-## rules / actions
-  
-When the remove-label action is present, it should remove the matching label if present
+### CLI
+```bash
+./labeler <labels_url> <owner> <repo> <issue_number> <comment_body> <changed_files>
+```
 
-When the apply-label action is used, it should ONLY apply a label if the label exists.
+### GitHub Actions Workflow
+The included workflow automatically runs the labeler on issue comments.
+
+## Configuration
+
+The labeler reads configuration from a `labels.yaml` file that defines:
+
+- **Label definitions** with colors and descriptions
+- **Rule sets** for automated labeling
+- **Global settings** for auto-creation/deletion
+
+## Development
+
+### Adding New Rule Types
+
+1. Add new rule processing function in `labeler.go`
+2. Update `processRule()` to handle the new rule type
+3. Add corresponding tests in test files
+
+### Mock Testing
+
+The `MockGitHubClient` provides comprehensive mocking for testing complex scenarios without hitting the GitHub API.
