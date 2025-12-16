@@ -6,6 +6,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
 spec:
   syncPolicy:
     automated:
@@ -16,7 +19,7 @@ spec:
     namespace: default
   sources:
     - repoURL: https://github.com/cncf/automation.git
-      path: ci/cluster/oci/
+      path: ci/cluster/oci/arc/
       targetRevision: HEAD
 ---
 apiVersion: argoproj.io/v1alpha1
@@ -26,6 +29,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "3"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
 spec:
   syncPolicy:
     automated: {}
@@ -39,4 +45,148 @@ spec:
       targetRevision: HEAD
       directory:
         recurse: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci/monitoring/
+      targetRevision: HEAD
+      directory:
+        recurse: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-secrets-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
+spec:
+  syncPolicy:
+    automated: {}
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci/external-secrets/
+      targetRevision: HEAD
+      directory:
+        recurse: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hacks
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
+spec:
+  syncPolicy:
+    automated: {}
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci/hacks/
+      targetRevision: HEAD
+      directory:
+        recurse: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: github-vm-runners
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
+spec:
+  syncPolicy:
+    automated: {}
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: arc-systems
+  sources:
+    - repoURL: https://github.com/cncf/automation.git
+      path: ci/cluster/oci/vm-runners/
+      targetRevision: HEAD
+      directory:
+        recurse: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: karpenter
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
+spec:
+  project: default
+  sources:
+    - repoURL: https://zoom.github.io/karpenter-oci
+      chart: karpenter-crd
+      targetRevision: 1.4.2
+      helm:
+        releaseName: karpenter-crd
+    - repoURL: https://zoom.github.io/karpenter-oci
+      chart: karpenter
+      targetRevision: 1.4.2
+      helm:
+        releaseName: karpenter
+        values: |
+          settings:
+            clusterName: gha-amd64-runners
+            clusterEndpoint: https://10.0.0.7:6443
+            clusterDns: 10.96.5.5
+            compartmentId: ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
+            ociResourcePrincipalRegion: us-sanjose-1
+            tagNamespace: oke-karpenter-ns-sanjose
+            flexCpuMemRatios: 4,8,16
+    # NodePool & NodeClass YAMLs
+    - repoURL: https://github.com/cncf/automation.git
+      targetRevision: HEAD
+      path: ci/cluster/oci/karpenter/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: karpenter
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
 ---

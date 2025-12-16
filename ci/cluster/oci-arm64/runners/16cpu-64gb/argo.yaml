@@ -3,19 +3,16 @@ kind: Application
 metadata:
   name: oracle-16cpu-64gb-arm64
   namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-arm64-runners
 spec:
   project: default
   sources:
-  - chart: gha-runner-scale-set
-    repoURL: ghcr.io/actions/actions-runner-controller-charts
-    targetRevision: 0.10.1
-    helm:
-      releaseName: oracle-16cpu-64gb-arm64
-      valueFiles:
-      - $values/ci/cluster/oci-arm64/runners/16cpu-64gb/values.yaml
   - repoURL: 'https://github.com/cncf/automation.git'
     targetRevision: main
-    ref: values
+    path: ci/cluster/oci-arm64/runners/16cpu-64gb/
   destination:
     server: "https://kubernetes.default.svc"
     namespace: arc-systems

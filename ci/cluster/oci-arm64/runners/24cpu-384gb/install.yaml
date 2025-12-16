@@ -1,0 +1,457 @@
+---
+# Source: gha-runner-scale-set/templates/no_permission_serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: oracle-24cpu-384gb-arm64-gha-rs-no-permission
+  namespace: arc-systems
+  labels:
+    helm.sh/chart: gha-rs-0.11.0
+    app.kubernetes.io/name: oracle-24cpu-384gb-arm64
+    app.kubernetes.io/instance: oracle-24cpu-384gb-arm64
+    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: gha-rs
+    actions.github.com/scale-set-name: oracle-24cpu-384gb-arm64
+    actions.github.com/scale-set-namespace: arc-systems
+  finalizers:
+    - actions.github.com/cleanup-protection
+---
+# Source: gha-runner-scale-set/templates/manager_role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: oracle-24cpu-384gb-arm64-gha-rs-manager
+  namespace: arc-systems
+  labels:
+    helm.sh/chart: gha-rs-0.11.0
+    app.kubernetes.io/name: oracle-24cpu-384gb-arm64
+    app.kubernetes.io/instance: oracle-24cpu-384gb-arm64
+    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: gha-rs
+    actions.github.com/scale-set-name: oracle-24cpu-384gb-arm64
+    actions.github.com/scale-set-namespace: arc-systems
+    app.kubernetes.io/component: manager-role
+  finalizers:
+    - actions.github.com/cleanup-protection
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - create
+  - delete
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods/status
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings
+  verbs:
+  - create
+  - delete
+  - get
+  - patch
+  - update
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  verbs:
+  - create
+  - delete
+  - get
+  - patch
+  - update
+---
+# Source: gha-runner-scale-set/templates/manager_role_binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: oracle-24cpu-384gb-arm64-gha-rs-manager
+  namespace: arc-systems
+  labels:
+    helm.sh/chart: gha-rs-0.11.0
+    app.kubernetes.io/name: oracle-24cpu-384gb-arm64
+    app.kubernetes.io/instance: oracle-24cpu-384gb-arm64
+    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: gha-rs
+    actions.github.com/scale-set-name: oracle-24cpu-384gb-arm64
+    actions.github.com/scale-set-namespace: arc-systems
+    app.kubernetes.io/component: manager-role-binding
+  finalizers:
+    - actions.github.com/cleanup-protection
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: oracle-24cpu-384gb-arm64-gha-rs-manager
+subjects:
+- kind: ServiceAccount
+  name: 
+    cncf-gha-controller-gha-rs-controller
+  namespace: 
+    arc-systems
+---
+# Source: gha-runner-scale-set/templates/autoscalingrunnerset.yaml
+apiVersion: actions.github.com/v1alpha1
+kind: AutoscalingRunnerSet
+metadata:
+  name: oracle-24cpu-384gb-arm64
+  namespace: arc-systems
+  labels:
+    app.kubernetes.io/component: "autoscaling-runner-set"
+    helm.sh/chart: gha-rs-0.11.0
+    app.kubernetes.io/name: oracle-24cpu-384gb-arm64
+    app.kubernetes.io/instance: oracle-24cpu-384gb-arm64
+    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: gha-rs
+    actions.github.com/scale-set-name: oracle-24cpu-384gb-arm64
+    actions.github.com/scale-set-namespace: arc-systems
+  annotations:
+    actions.github.com/values-hash: 5a160ea308cd51d6f4c27515e5040d9dc34be0acda7289ea0d7ad9cffff39e1
+    actions.github.com/cleanup-manager-role-binding: oracle-24cpu-384gb-arm64-gha-rs-manager
+    actions.github.com/cleanup-manager-role-name: oracle-24cpu-384gb-arm64-gha-rs-manager
+    actions.github.com/cleanup-no-permission-service-account-name: oracle-24cpu-384gb-arm64-gha-rs-no-permission
+spec:
+  githubConfigUrl: https://github.com/enterprises/cncf
+  githubConfigSecret: github-arc-secret
+  maxRunners: 100
+  minRunners: 0
+  listenerMetrics:
+    counters:
+      gha_started_jobs_total:
+        labels:
+          ["repository", "organization", "enterprise", "job_name", "event_name"]
+      gha_completed_jobs_total:
+        labels:
+          [
+            "repository",
+            "organization",
+            "enterprise",
+            "job_name",
+            "event_name",
+            "job_result",
+          ]
+    gauges:
+      gha_assigned_jobs:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_running_jobs:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_registered_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_busy_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_min_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_max_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_desired_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_idle_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+    histograms:
+      gha_job_startup_duration_seconds:
+        labels:
+          ["repository", "organization", "enterprise", "job_name", "event_name"]
+        buckets:
+          [
+            0.01,
+            0.05,
+            0.1,
+            0.5,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            12.0,
+            15.0,
+            18.0,
+            20.0,
+            25.0,
+            30.0,
+            40.0,
+            50.0,
+            60.0,
+            70.0,
+            80.0,
+            90.0,
+            100.0,
+            110.0,
+            120.0,
+            150.0,
+            180.0,
+            210.0,
+            240.0,
+            300.0,
+            360.0,
+            420.0,
+            480.0,
+            540.0,
+            600.0,
+            900.0,
+            1200.0,
+            1800.0,
+            2400.0,
+            3000.0,
+            3600.0,
+          ]
+      gha_job_execution_duration_seconds:
+        labels:
+          [
+            "repository",
+            "organization",
+            "enterprise",
+            "job_name",
+            "event_name",
+            "job_result",
+          ]
+        buckets:
+          [
+            0.01,
+            0.05,
+            0.1,
+            0.5,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            12.0,
+            15.0,
+            18.0,
+            20.0,
+            25.0,
+            30.0,
+            40.0,
+            50.0,
+            60.0,
+            70.0,
+            80.0,
+            90.0,
+            100.0,
+            110.0,
+            120.0,
+            150.0,
+            180.0,
+            210.0,
+            240.0,
+            300.0,
+            360.0,
+            420.0,
+            480.0,
+            540.0,
+            600.0,
+            900.0,
+            1200.0,
+            1800.0,
+            2400.0,
+            3000.0,
+            3600.0,
+          ]
+  listenerTemplate:
+    spec:
+      containers:
+      - name: listener
+        securityContext:
+          runAsUser: 1000
+
+  template:
+    spec:
+      containers:
+      - command:
+        - /home/runner/run.sh
+        env:
+        - name: DOCKER_HOST
+          value: unix:///var/run/docker.sock
+        - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
+          value: "120"
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:5b1300413a87274d29f2c4c5ce8490117d2d2d65c700f3dcf129aa4ee37fc2fa
+        imagePullPolicy: Always
+        name: runner
+        resources:
+          limits:
+            cpu: 26
+            memory: 392Gi
+          requests:
+            cpu: 24
+            memory: 384Gi
+        volumeMounts:
+        - mountPath: /home/runner/_work
+          name: work
+          subPath: _work
+        - mountPath: /home/runner/.cache
+          name: work
+          subPath: .cache
+        - mountPath: /home/runner/.gradle
+          name: work
+          subPath: .gradle
+        - mountPath: /home/runner/go
+          name: work
+          subPath: go
+        - mountPath: /home/runner/.m2
+          name: work
+          subPath: .m2
+        - mountPath: /var/run
+          name: dind-sock
+        - mountPath: /tmp
+          name: work
+          subPath: tmp
+      - args:
+        - dockerd
+        - --host=unix:///var/run/docker.sock
+        - --group=$(DOCKER_GROUP_GID)
+        - --data-root=/docker/
+        - --mtu=1400
+        - --default-network-opt=bridge=com.docker.network.driver.mtu=1400
+        env:
+        - name: DOCKER_GROUP_GID
+          value: "123"
+        image: docker.io/library/docker:dind
+        name: dind
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /home/runner/_work
+          name: work
+          subPath: _work
+        - mountPath: /var/run
+          name: dind-sock
+        - mountPath: /home/runner/externals
+          name: dind-externals
+        - mountPath: /home/runner/.cache
+          name: work
+          subPath: .cache
+        - mountPath: /home/runner/.gradle
+          name: work
+          subPath: .gradle
+        - mountPath: /home/runner/go
+          name: work
+          subPath: go
+        - mountPath: /home/runner/.m2
+          name: work
+          subPath: .m2
+        - mountPath: /docker
+          name: work
+          subPath: docker
+        - mountPath: /tmp
+          name: work
+          subPath: tmp
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      initContainers:
+      - command:
+        - chmod
+        - -R
+        - "1777"
+        - /tmp
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:5b1300413a87274d29f2c4c5ce8490117d2d2d65c700f3dcf129aa4ee37fc2fa
+        name: chowner
+        securityContext:
+          capabilities:
+            add:
+            - CHOWN
+            drop:
+            - all
+          readOnlyRootFilesystem: true
+          runAsNonRoot: false
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /tmp
+          name: work
+          subPath: tmp
+      - args:
+        - -r
+        - -v
+        - /home/runner/externals/.
+        - /home/runner/tmpDir/
+        command:
+        - cp
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:5b1300413a87274d29f2c4c5ce8490117d2d2d65c700f3dcf129aa4ee37fc2fa
+        name: init-dind-externals
+        volumeMounts:
+        - mountPath: /home/runner/tmpDir
+          name: dind-externals
+      restartPolicy: Never
+      securityContext:
+        fsGroup: 1001
+        supplementalGroups:
+        - 999
+      serviceAccountName: oracle-16cpu-64gb-arm64-gha-rs-no-permission
+      volumes:
+      - name: modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+      - name: cgroup
+        hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+      - emptyDir: {}
+        name: dind-sock
+      - emptyDir: {}
+        name: dind-externals
+      - ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes:
+              - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 50Gi
+              storageClassName: oci-bv
+        name: work
+      - ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes:
+              - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 10Gi
+              storageClassName: oci-bv
+        name: overlay

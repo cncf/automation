@@ -1,0 +1,16 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: basic-auth
+  namespace: slack-archive
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: oci-secret-store
+  target:
+    name: basic-auth
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: basic-auth

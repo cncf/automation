@@ -1,0 +1,31 @@
+apiVersion: karpenter.k8s.oracle/v1alpha1
+kind: OciNodeClass
+metadata:
+  name: karpenter-onc
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+spec:
+  bootConfig:
+    bootVolumeSizeInGBs: 100
+    bootVolumeVpusPerGB: 120
+  imageSelector:
+    - name: Oracle-Linux-8.10-2025.08.31-0-OKE-1.34.1-1191
+      compartmentId: ocid1.compartment.oc1..aaaaaaaab4u67dhgtj5gpdpp3z42xqqsdnufxkatoild46u3hb67vzojfmzq
+  imageFamily: OracleOKELinux
+  metaData:
+    oke-native-pod-networking: "true"
+  kubelet:
+    evictionHard:
+      imagefs.available: 15%
+      imagefs.inodesFree: 10%
+      memory.available: 750Mi
+      nodefs.available: 10%
+      nodefs.inodesFree: 5%
+    systemReserved:
+      memory: 100Mi
+  subnetSelector: 
+    - id: ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahxqrau6rrexqb3vw7bpezn5jztwlbwfmyaedxvnij4jdmmshtv3a
+    - id: ocid1.subnet.oc1.us-sanjose-1.aaaaaaaay4gfxbetypb7brgw7y34536ra2ma6ulecalag3ql623fvblojciq
+  vcnId: ocid1.vcn.oc1.us-sanjose-1.amaaaaaa2lro64iaeqfw4gc4yj4g3l3uxt3i4vatnhgx4tzhwm7dfobqjniq
+  securityGroupSelector:
+    - id: ocid1.networksecuritygroup.oc1.us-sanjose-1.aaaaaaaacdslwjhhqio2iotcjypwcn5drgvjnmtndj3wtte7chbhnxpr5n6q

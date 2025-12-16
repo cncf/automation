@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: github-arc
   namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oci-gha-amd64-runners
 spec:
   project: default
   destination:
@@ -18,7 +22,7 @@ spec:
   sources:
   - repoURL: ghcr.io/actions/actions-runner-controller-charts
     chart: gha-runner-scale-set-controller
-    targetRevision: 0.10.1
+    targetRevision: 0.11.0
     helm:
       releaseName: cncf-gha-controller
       valueFiles:

@@ -111,7 +111,7 @@ template:
   ##           mountPath: /run/docker
   ##           readOnly: true
   ##     - name: dind
-  ##       image: docker:dind
+  ##       image: docker.io/library/docker:dind
   ##       args:
   ##         - dockerd
   ##         - --host=unix:///run/docker/docker.sock
@@ -166,23 +166,83 @@ template:
   ##                 requests:
   ##                   storage: 1Gi
   spec:
+    securityContext:    
+      fsGroup: 1001
+      supplementalGroups:
+      - 999
+    initContainer:
+      - command:
+        - chmod
+        - -R
+        - "1777"
+        - /tmp
+        image: ghcr.io/cncf/external-gha-runner:noble
+        name: chowner
+        securityContext:
+          capabilities:
+            add:
+            - CHOWN
+            drop:
+            - all
+          readOnlyRootFilesystem: true
+          runAsNonRoot: false
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /tmp
+          name: work
+          subPath: tmp
+      - args:
+        - -r
+        - -v
+        - /home/runner/externals/.
+        - /home/runner/tmpDir/
+        command:
+        - cp
+        image: ghcr.io/cncf/external-gha-runner:noble
+        name: init-dind-externals
+        volumeMounts:
+        - mountPath: /home/runner/tmpDir
+          name: work
+          subPath: tmpDir
     containers:
       - name: runner
-        image: ghcr.io/cncf/external-gha-runner:main
+        image: ghcr.io/cncf/external-gha-runner:noble
         imagePullPolicy: Always
         command: ["/home/runner/run.sh"]
         resources:
           requests:
-            memory: 64Gi
-            cpu: 16
+            memory: 16Gi
+            cpu: 4
           limits:
-            memory: 68Gi
-            cpu: 20
+            memory: 20Gi
+            cpu: 6
+        volumeMounts:
+        - mountPath: /home/runner/_work
+          name: work
+          subPath: _work
+        - mountPath: /home/runner/.cache
+          name: work
+          subPath: .cache
+        - mountPath: /home/runner/.gradle
+          name: work
+          subPath: .gradle
+        - mountPath: /home/runner/go
+          name: work
+          subPath: go
+        - mountPath: /home/runner/.m2
+          name: work
+          subPath: .m2
+        - mountPath: /var/run
+          name: dind-sock
+        - mountPath: /tmp
+          name: work
+          subPath: tmp
       - name: dind
-        image: docker:dind
+        image: docker.io/library/docker:dind
         args:
           - dockerd
           - --host=unix:///run/docker/docker.sock
+          - --data-root=/docker
           - --group=$(DOCKER_GROUP_GID)
           - --mtu=1400
           - --default-network-opt=bridge=com.docker.network.driver.mtu=1400
@@ -192,12 +252,48 @@ template:
         securityContext:
           privileged: true
         volumeMounts:
-          - name: work
-            mountPath: /home/runner/_work
-          - name: dind-sock
-            mountPath: /run/docker
-          - name: dind-externals
-            mountPath: /home/runner/externals
+        - mountPath: /home/runner/_work
+          name: work
+          subPath: _work
+        - mountPath: /var/run
+          name: dind-sock
+        - mountPath: /home/runner/externals
+          name: work
+          subPath: tmpDir
+        - mountPath: /home/runner/.cache
+          name: work
+          subPath: .cache
+        - mountPath: /home/runner/.gradle
+          name: work
+          subPath: .gradle
+        - mountPath: /home/runner/go
+          name: work
+          subPath: go
+        - mountPath: /home/runner/.m2
+          name: work
+          subPath: .m2
+        - mountPath: /docker
+          name: work
+          subPath: docker
+        - mountPath: /tmp
+          name: work
+          subPath: tmp
     volumes:
       - name: work
-        emptyDir: {}
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: oci-bv
+              resources:
+                requests:
+                  storage: 50Gi
+      - name: overlay
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: oci-bv
+              resources:
+                requests:
+                  storage: 10Gi

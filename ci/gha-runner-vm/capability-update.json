@@ -1,0 +1,98 @@
+{
+  "schemaData": {
+    "Compute.Firmware": {
+      "values": [
+        "BIOS",
+        "UEFI_64"
+      ],
+      "defaultValue": "UEFI_64",
+      "source": "IMAGE",
+      "descriptorType": "enumstring"
+    },
+    "Compute.LaunchMode": {
+      "values": [
+        "PARAVIRTUALIZED"
+      ],
+      "defaultValue": "PARAVIRTUALIZED",
+      "source": "IMAGE",
+      "descriptorType": "enumstring"
+    },
+    "Compute.AMD_SecureEncryptedVirtualization": {
+      "defaultValue": "false",
+      "source": "IMAGE",
+      "descriptorType": "boolean"
+    },
+    "Compute.SecureBoot": {
+      "defaultValue": "false",
+      "source": "IMAGE",
+      "descriptorType": "boolean"
+    },
+    "Network.AttachmentType": {
+      "values": [
+        "PARAVIRTUALIZED"
+      ],
+      "defaultValue": "PARAVIRTUALIZED",
+      "source": "IMAGE",
+      "descriptorType": "enumstring"
+    },
+    "Network.IPv6Only": {
+      "defaultValue": "false",
+      "source": "IMAGE",
+      "descriptorType": "boolean"
+    },
+    "Storage.BootVolumeType": {
+      "values": [
+        "ISCSI",
+        "PARAVIRTUALIZED"
+      ],
+      "defaultValue": "PARAVIRTUALIZED",
+      "source": "IMAGE",
+      "descriptorType": "enumstring"
+    },
+    "Storage.LocalDataVolumeType": {
+      "values": [
+        "ISCSI",
+        "PARAVIRTUALIZED"
+      ],
+      "defaultValue": "PARAVIRTUALIZED",
+      "source": "IMAGE",
+      "descriptorType": "enumstring"
+    },
+    "Storage.RemoteDataVolumeType": {
+      "values": [
+        "ISCSI",
+        "PARAVIRTUALIZED"
+      ],
+      "defaultValue": "PARAVIRTUALIZED",
+      "source": "IMAGE",
+      "descriptorType": "enumstring"
+    },
+    "Storage.ConsistentVolumeNaming": {
+      "defaultValue": "true",
+      "source": "IMAGE",
+      "descriptorType": "boolean"
+    },
+    "Storage.Iscsi.MultipathDeviceSupported": {
+      "defaultValue": "false",
+      "source": "IMAGE",
+      "descriptorType": "boolean"
+    },
+    "Storage.ParaVirtualization.EncryptionInTransit": {
+      "defaultValue": "true",
+      "source": "IMAGE",
+      "descriptorType": "boolean"
+    },
+    "Storage.ParaVirtualization.AttachmentVersion": {
+      "values": [
+        "1",
+        "2"
+      ],
+      "defaultValue": "2",
+      "source": "IMAGE",
+      "descriptorType": "enuminteger"
+    }
+  },
+  "imageId": "REPLACE_IMAGE_ID",
+  "compartmentId": "ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a",
+  "computeGlobalImageCapabilitySchemaVersionName": "a3c588d1-282b-4937-9928-2570b5133968"
+}
