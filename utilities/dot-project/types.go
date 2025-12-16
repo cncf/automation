@@ -21,7 +21,7 @@ type Project struct {
 	// New fields merged from project.toml
 	SchemaVersion string               `json:"schema_version,omitempty" yaml:"schema_version,omitempty"`
 	Type          string               `json:"type,omitempty" yaml:"type,omitempty"`
-	Security      *SecurityConfig      `json:"security,omitempty" yaml:"security,omitempty"`
+	Security      *SecurityConfig      `json:"security" yaml:"security"`
 	Governance    *GovernanceConfig    `json:"governance,omitempty" yaml:"governance,omitempty"`
 	Legal         *LegalConfig         `json:"legal,omitempty" yaml:"legal,omitempty"`
 	Documentation *DocumentationConfig `json:"documentation,omitempty" yaml:"documentation,omitempty"`
@@ -32,8 +32,9 @@ type PathRef struct {
 }
 
 type SecurityConfig struct {
-	Policy      *PathRef `json:"policy,omitempty" yaml:"policy,omitempty"`
+	Policy      *PathRef `json:"policy" yaml:"policy"`
 	ThreatModel *PathRef `json:"threat_model,omitempty" yaml:"threat_model,omitempty"`
+	Contact     string   `json:"contact" yaml:"contact"`
 }
 
 type GovernanceConfig struct {
