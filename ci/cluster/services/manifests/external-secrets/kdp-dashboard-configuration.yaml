@@ -1,0 +1,20 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: kdp-dashboard-configuration
+  namespace: kdp
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: oci-secret-store
+  target:
+    name: kdp-dashboard-configuration
+    creationPolicy: Owner
+    template:
+      data:
+        .env.local: "{{ .config | toString }}"
+  data:
+  - secretKey: config
+    remoteRef:
+      key: kdp-dashboard-configuration

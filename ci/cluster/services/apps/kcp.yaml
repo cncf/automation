@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kcp
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "05"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oke-cncf-automation
+spec:
+  project: default
+  source:
+    repoURL: https://kcp-dev.github.io/helm-charts
+    targetRevision: 0.12.5
+    chart: kcp
+    helm:
+      values: |
+        externalHostname: "api.services.cncf.io"
+        etcd:
+          enabled: true
+        kcp:
+          replicas: 2
+          volumeClassName: oci-bv
+          volumeSize: 1Gi
+          extraFlags:
+            - '--enable-leader-election'
+            - --feature-gates=EnableDeprecatedAPIExportVirtualWorkspacesUrls=true
+        kcpFrontProxy:
+          replicas: 2
+          certificate:
+            issuer: kcp-server-issuer
+          service:
+            type: LoadBalancer
+            loadBalancerIP: "64.181.244.33"
+          additionalPathMappings:
+            - path: /services/organization/
+              backend: https://kdp-virtual-workspaces:6444
+              backend_server_ca: /etc/kcp/tls/ca/tls.crt
+              proxy_client_cert: /etc/kcp-front-proxy/requestheader-client/tls.crt
+              proxy_client_key: /etc/kcp-front-proxy/requestheader-client/tls.key
+            - path: /services/service/
+              backend: https://kdp-virtual-workspaces:6444
+              backend_server_ca: /etc/kcp/tls/ca/tls.crt
+              proxy_client_cert: /etc/kcp-front-proxy/requestheader-client/tls.crt
+              proxy_client_key: /etc/kcp-front-proxy/requestheader-client/tls.key
+          extraFlags:
+            - '--cors-allowed-origins=localhost,services.cncf.io$'
+            - '--authentication-drop-groups=system:kcp:logical-cluster-admin'
+        # OIDC-specific configuration which is applied to both kcp and kcp-front-proxy
+        oidc:
+          enabled: true
+          issuerUrl: https://auth.services.cncf.io/dex
+          clientId: kdp-kubelogin
+          groupClaim: groups
+          usernameClaim: email
+          usernamePrefix: 'oidc:'
+          groupsPrefix: 'oidc:'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kdp
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

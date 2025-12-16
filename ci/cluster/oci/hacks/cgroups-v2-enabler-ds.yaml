@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cgroups-v2-enabler
+  namespace: kube-system
+  labels:
+    app: cgroups-v2-enabler
+spec:
+  selector:
+    matchLabels:
+      app: cgroups-v2-enabler
+  template:
+    metadata:
+      labels:
+        app: cgroups-v2-enabler
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+        - name: cgroups-v2-enabler
+          image: docker.io/library/alpine
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - nsenter -t 1 -m -u -i -n -p -- /bin/sh -c 'if test -f /sys/fs/cgroup/cgroup.controllers; then echo "cgroup v2 detected"; else "cgroup v1 detected, fixing..."; /usr/sbin/grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=1"; /usr/bin/systemctl reboot; fi; /bin/sleep infinity'
+          securityContext:
+            privileged: true
+      terminationGracePeriodSeconds: 10

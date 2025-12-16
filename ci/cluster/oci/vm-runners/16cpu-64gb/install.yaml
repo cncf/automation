@@ -1,0 +1,337 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: oracle-vm-16cpu-64gb-x86-64-gha-rs-no-permission
+  namespace: arc-systems
+  labels:
+    helm.sh/chart: gha-rs-0.11.0
+    app.kubernetes.io/name: oracle-vm-16cpu-64gb-x86-64
+    app.kubernetes.io/instance: oracle-vm-16cpu-64gb-x86-64
+    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: gha-rs
+    actions.github.com/scale-set-name: oracle-vm-16cpu-64gb-x86-64
+    actions.github.com/scale-set-namespace: arc-systems
+  finalizers:
+    - actions.github.com/cleanup-protection
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: oracle-vm-16cpu-64gb-x86-64-gha-rs-manager
+  namespace: arc-systems
+  labels:
+    helm.sh/chart: gha-rs-0.11.0
+    app.kubernetes.io/name: oracle-vm-16cpu-64gb-x86-64
+    app.kubernetes.io/instance: oracle-vm-16cpu-64gb-x86-64
+    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: gha-rs
+    actions.github.com/scale-set-name: oracle-vm-16cpu-64gb-x86-64
+    actions.github.com/scale-set-namespace: arc-systems
+    app.kubernetes.io/component: manager-role
+  finalizers:
+    - actions.github.com/cleanup-protection
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - create
+  - delete
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods/status
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings
+  verbs:
+  - create
+  - delete
+  - get
+  - patch
+  - update
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  verbs:
+  - create
+  - delete
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: oracle-vm-16cpu-64gb-x86-64-gha-rs-manager
+  namespace: arc-systems
+  labels:
+    helm.sh/chart: gha-rs-0.11.0
+    app.kubernetes.io/name: oracle-vm-16cpu-64gb-x86-64
+    app.kubernetes.io/instance: oracle-vm-16cpu-64gb-x86-64
+    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: gha-rs
+    actions.github.com/scale-set-name: oracle-vm-16cpu-64gb-x86-64
+    actions.github.com/scale-set-namespace: arc-systems
+    app.kubernetes.io/component: manager-role-binding
+  finalizers:
+    - actions.github.com/cleanup-protection
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: oracle-vm-16cpu-64gb-x86-64-gha-rs-manager
+subjects:
+- kind: ServiceAccount
+  name: 
+    cncf-gha-controller-gha-rs-controller
+  namespace: 
+    arc-systems
+---
+apiVersion: actions.github.com/v1alpha1
+kind: AutoscalingRunnerSet
+metadata:
+  name: oracle-vm-16cpu-64gb-x86-64
+  namespace: arc-systems
+  labels:
+    app.kubernetes.io/component: "autoscaling-runner-set"
+    helm.sh/chart: gha-rs-0.11.0
+    app.kubernetes.io/name: oracle-vm-16cpu-64gb-x86-64
+    app.kubernetes.io/instance: oracle-vm-16cpu-64gb-x86-64
+    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: gha-rs
+    actions.github.com/scale-set-name: oracle-vm-16cpu-64gb-x86-64
+    actions.github.com/scale-set-namespace: arc-systems
+  annotations:
+    actions.github.com/values-hash: 5a160ea308cd51d6f4c27515e5040d9dc34be0acda7289ea0d7ad9cffff39e1
+    actions.github.com/cleanup-manager-role-binding: oracle-vm-16cpu-64gb-x86-64-gha-rs-manager
+    actions.github.com/cleanup-manager-role-name: oracle-vm-16cpu-64gb-x86-64-gha-rs-manager
+    actions.github.com/cleanup-no-permission-service-account-name: oracle-vm-16cpu-64gb-x86-64-gha-rs-no-permission
+spec:
+  githubConfigUrl: https://github.com/enterprises/cncf
+  githubConfigSecret: github-arc-secret
+  maxRunners: 100
+  minRunners: 0
+  listenerMetrics:
+    counters:
+      gha_started_jobs_total:
+        labels:
+          ["repository", "organization", "enterprise", "job_name", "event_name"]
+      gha_completed_jobs_total:
+        labels:
+          [
+            "repository",
+            "organization",
+            "enterprise",
+            "job_name",
+            "event_name",
+            "job_result",
+          ]
+    gauges:
+      gha_assigned_jobs:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_running_jobs:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_registered_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_busy_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_min_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_max_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_desired_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+      gha_idle_runners:
+        labels: ["name", "namespace", "repository", "organization", "enterprise"]
+    histograms:
+      gha_job_startup_duration_seconds:
+        labels:
+          ["repository", "organization", "enterprise", "job_name", "event_name"]
+        buckets:
+          [
+            0.01,
+            0.05,
+            0.1,
+            0.5,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            12.0,
+            15.0,
+            18.0,
+            20.0,
+            25.0,
+            30.0,
+            40.0,
+            50.0,
+            60.0,
+            70.0,
+            80.0,
+            90.0,
+            100.0,
+            110.0,
+            120.0,
+            150.0,
+            180.0,
+            210.0,
+            240.0,
+            300.0,
+            360.0,
+            420.0,
+            480.0,
+            540.0,
+            600.0,
+            900.0,
+            1200.0,
+            1800.0,
+            2400.0,
+            3000.0,
+            3600.0,
+          ]
+      gha_job_execution_duration_seconds:
+        labels:
+          [
+            "repository",
+            "organization",
+            "enterprise",
+            "job_name",
+            "event_name",
+            "job_result",
+          ]
+        buckets:
+          [
+            0.01,
+            0.05,
+            0.1,
+            0.5,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            12.0,
+            15.0,
+            18.0,
+            20.0,
+            25.0,
+            30.0,
+            40.0,
+            50.0,
+            60.0,
+            70.0,
+            80.0,
+            90.0,
+            100.0,
+            110.0,
+            120.0,
+            150.0,
+            180.0,
+            210.0,
+            240.0,
+            300.0,
+            360.0,
+            420.0,
+            480.0,
+            540.0,
+            600.0,
+            900.0,
+            1200.0,
+            1800.0,
+            2400.0,
+            3000.0,
+            3600.0,
+          ]
+  listenerTemplate:
+    spec:
+      containers:
+      - name: listener
+        securityContext:
+          runAsUser: 1000
+  template:
+    spec:
+      containers:
+      - name: runner
+        image: ghcr.io/cncf/gha-cloudrunner:20187466606
+        args:
+        - --arch=amd64
+        - --shape=VM.Standard.E6.Flex
+        - --shape-ocpus=16.0
+        - --shape-memory-in-gbs=64.0
+        - --availability-domain=bzBe:US-SANJOSE-1-AD-1
+        - --compartment-id=ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
+        - --subnet-id=ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq
+        env:
+        - name: OCI_CONFIG_FILE
+          value: /etc/oci/config
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /etc/oci
+          name: oci-config
+          readOnly: true
+        - mountPath: /oci
+          name: oci-api-key
+          readOnly: true
+      restartPolicy: Never
+      securityContext:
+        fsGroup: 1001
+        supplementalGroups:
+        - 999
+      serviceAccountName: oracle-vm-16cpu-64gb-x86-64-gha-rs-no-permission
+      volumes:
+      - name: oci-config
+        secret:
+          secretName: oci-config
+      - name: oci-api-key
+        secret:
+          secretName: oci-api-key
+      tolerations:
+      - key: "cncf.io/gha-runner"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        nodepool: karpenter

@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kdp
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "05"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oke-cncf-automation
+spec:
+  project: default
+  source:
+    repoURL: quay.io/kubermatic/helm-charts
+    chart: developer-platform
+    targetRevision: 0.9.0
+    helm:
+      releaseName: kdp
+      values: |
+        kdp:
+          frontProxy:
+            publicDomain: public.api.services.cncf.io
+            internalDomain: api.services.cncf.io
+            url: https://api.services.cncf.io:8443
+          virtualWorkspaces:
+            shardExternalURL: https://api.services.cncf.io:8443
+          hooks:
+            bootstrap:
+              enabled: true
+              extraManifests:
+                kubermatic-rbac.yaml: |
+                  apiVersion: rbac.authorization.k8s.io/v1
+                  kind: ClusterRoleBinding
+                  metadata:
+                    name: root:admin
+                  subjects:
+                    - kind: User
+                      name: oidc:koray.oksay@gmail.com
+                    - kind: User
+                      name: oidc:me@jeefy.dev
+                    - kind: User
+                      name: oidc:robert.kielty@cncf.io
+                    - kind: User
+                      name: oidc:wojciech.barczynski@kubermatic.com
+                  roleRef:
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: ClusterRole
+                    name: cluster-admin
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kdp
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
