@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/mail"
 	"os"
 	"path/filepath"
 	"strings"
@@ -280,6 +281,11 @@ func validateProjectStruct(project Project) []string {
 		}
 		if project.Security.ThreatModel != nil && project.Security.ThreatModel.Path == "" {
 			errors = append(errors, "security.threat_model.path is required")
+		}
+		if project.Security.Contact != "" {
+			if _, err := mail.ParseAddress(project.Security.Contact); err != nil {
+				errors = append(errors, fmt.Sprintf("security.contact is not a valid email: %s", project.Security.Contact))
+			}
 		}
 	}
 
