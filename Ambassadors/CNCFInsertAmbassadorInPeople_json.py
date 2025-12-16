@@ -279,6 +279,7 @@ def process_entries(firstLine, lastLine):
 
                 # Insert new person in sorted order
                 indexPeople = 0
+                inserted = False
                 for people in data:
                     if people["name"].lower() < newPerson.name.lower():
                         indexPeople += 1
@@ -290,7 +291,14 @@ def process_entries(firstLine, lastLine):
                         data.insert(indexPeople, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPerson.toJSON()))
                         split_tup = os.path.splitext(newPerson.image)
                         os.rename("imageTemp" + split_tup[1], "../../people/images/" + newPerson.image)
+                        inserted = True
                         break
+
+                if not inserted:
+                    # Append to end if new name sorts after all existing entries
+                    data.append(json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPerson.toJSON()))
+                    split_tup = os.path.splitext(newPerson.image)
+                    os.rename("imageTemp" + split_tup[1], "../../people/images/" + newPerson.image)
 
                 # Write updated data back to file
                 with open(PEOPLE_JSON_PATH, "w", encoding='utf-8') as jsonfile:
