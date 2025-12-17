@@ -67,7 +67,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		LifecycleState:  core.ImageLifecycleStateAvailable,
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to list images: %w", err)
 	}
 	if len(images.Items) == 0 {
 		return fmt.Errorf("no images found")

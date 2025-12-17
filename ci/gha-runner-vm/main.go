@@ -75,11 +75,13 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Printf("Found %s %s release: %s\n", args.os, args.osVersion, release.GetTagName())
 			downloadURL := release.GetTarballURL()
 
-			if exists, _ := imageExists(imageName, release.GetTagName()); exists {
-				if os.Getenv("GITHUB_PERIODIC") == "true" {
-					log.Println("Image already exists.")
-					return nil
-				}
+			exists, err := imageExists(imageName, release.GetTagName())
+			if err != nil {
+				return fmt.Errorf("checking for existing image: %w", err)
+			}
+			if exists && os.Getenv("GITHUB_PERIODIC") == "true" {
+				log.Println("Image already exists.")
+				return nil
 			}
 
 			log.Printf("Download URL: %s\n", downloadURL)
@@ -153,7 +155,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-microsoft-edge.sh", "arch=amd64", "arch=arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-kubernetes-tools.sh", "linux-amd64", "linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "http://archive.ubuntu.com/.*", "https://launchpadlibrarian.net/683466454/containernetworking-plugins_1.1.1+ds1-3build1_arm64.deb")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "amd64.deb", "arm64.db")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "amd64.deb", "arm64.deb")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-oras-cli.sh", "linux_amd64", "linux_arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-yq.sh", "linux_amd64", "linux_arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-docker.sh", "amd64", "arm64")
@@ -323,14 +325,23 @@ func getImageState(imageID string) (string, error) {
 }
 
 func imageExists(imageName, imageVersion string) (bool, error) {
-	command := exec.Command("oci", "compute", "image", "list", "--compartment-id", args.compartmentId, "--operating-system", imageName, "--operating-system-version", imageVersion)
+	command := exec.Command(
+		"oci",
+		"compute",
+		"image",
+		"list",
+		"--compartment-id",
+		args.compartmentId,
+		"--operating-system",
+		imageName,
+		"--operating-system-version",
+		imageVersion,
+	)
 	output, err := command.CombinedOutput()
-
 	if err != nil {
 		log.Print(command.String())
 		log.Printf("OCI command failed. Output:\n%s", string(output))
-		log.Fatal("could not run command: ", err)
-		return false, err
+		return false, fmt.Errorf("oci compute image list failed: %w", err)
 	}
 
 	var response struct {
@@ -349,7 +360,7 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 		}
 	}
 
-	return true, nil
+	return false, nil
 }
 
 func replaceArmPackageLinks(baseDir string, filename string, searchString string, replaceString string) (string, error) {
@@ -381,7 +392,7 @@ func extractPackerFileFromURL(url string, path string) (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", err
+		return "", fmt.Errorf("unexpected HTTP status %s while downloading %s", resp.Status, url)
 	}
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
@@ -394,15 +405,13 @@ func extractPackerFileFromURL(url string, path string) (string, error) {
 func extractPackerFileFromTarball(tarballPath string, path string) (string, error) {
 	f, err := os.Open(tarballPath)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return "", fmt.Errorf("opening tarball %q: %w", tarballPath, err)
 	}
 	defer f.Close()
 
 	gzf, err := gzip.NewReader(f)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return "", fmt.Errorf("creating gzip reader for %q: %w", tarballPath, err)
 	}
 	defer gzf.Close()
 
@@ -465,7 +474,12 @@ func replaceInFileRegex(path string, patterns map[*regexp.Regexp]string) error {
 	for re, replacement := range patterns {
 		content = re.ReplaceAllString(content, replacement)
 	}
-	return os.WriteFile(path, []byte(content), 0755)
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, []byte(content), fi.Mode().Perm())
 }
 
 func init() {
