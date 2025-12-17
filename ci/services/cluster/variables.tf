@@ -64,17 +64,17 @@ variable "cluster_autoscaler_max" {
 variable "oke_node_shape" {
   type        = string
   description = "OKE Nodepool node shape"
-  default     = "VM.Standard.E4.Flex"
+  default     = "VM.Standard.E6.Flex"
 }
 
 variable "oke_node_memory" {
   type        = number
   description = "OKE worker node memory in GBs"
-  default     = 32
+  default     = 64
 }
 
 variable "oke_node_cpu" {
   type        = number
   description = "OKE worker node CPUs"
-  default     = 8
+  default     = 16
 }
