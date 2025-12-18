@@ -9,7 +9,7 @@ A Go utility that validates CNCF project metadata and maintainer rosters. It che
 - Validates maintainer definitions against canonical `.project` repository data
 - Stubbed third-party verification hook for maintainer identity checks
 - Multiple output formats: human-readable text, JSON, YAML
-- Includes GitHub Actions workflow and Makefile helpers
+- Includes GitHub Action and Makefile helpers
 
 ## Installation
 
@@ -205,3 +205,83 @@ make test
 ```
 
 Tests cover project schema validation, URL validation, hash calculation, maintainer normalization, roster reconciliation, and verification stubs.
+
+## Landscape Updater
+
+The `landscape-updater` tool automates the process of updating the CNCF Landscape YAML based on changes in project metadata.
+
+### Usage
+
+```bash
+./landscape-updater --project <path-to-project.yaml> --landscape <path-to-landscape.yml> [flags]
+```
+
+### Flags
+
+- `--project`: Path to the project's `project.yaml` file (required).
+- `--landscape`: Path to the `landscape.yml` file (required).
+- `--landscape-repo`: Target repository for the PR (default: "cncf/landscape").
+- `--create-pr`: If set, creates a Pull Request with the changes.
+- `--dry-run`: If set, prints the diff and PR details to stdout without modifying files or creating a PR.
+
+### Example
+
+```bash
+# Dry run to see what would change
+./landscape-updater --project ./project.yaml --landscape ./landscape.yml --dry-run
+
+# Apply changes and create a PR
+./landscape-updater --project ./project.yaml --landscape ./landscape.yml --create-pr
+```
+
+### GitHub Action
+
+You can use the `landscape-update` action in your GitHub Workflows to automatically update the landscape when your `project.yaml` changes.
+
+```yaml
+name: Update Landscape
+on:
+  push:
+    paths:
+      - 'project.yaml'
+    branches:
+      - main
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update Landscape
+        uses: cncf/automation/.github/actions/landscape-update@main
+        with:
+          project_file: './project.yaml'
+          token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}
+```
+
+### Validate Maintainers Action
+
+You can use the `validate-maintainers` action to validate your `MAINTAINERS.yaml` file.
+
+```yaml
+name: Validate Maintainers
+on:
+  pull_request:
+    paths:
+      - 'MAINTAINERS.yaml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Maintainers
+        uses: cncf/automation/.github/actions/validate-maintainers@main
+        with:
+          maintainers_file: './MAINTAINERS.yaml'
+          verify_maintainers: 'true'
+```
