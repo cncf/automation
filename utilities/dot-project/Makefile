@@ -10,7 +10,14 @@ all: build
 # Build the validator
 build:
 	@echo "Building project validator..."
-	go build -o validator ./cmd/validator
+	go build -o bin/validator ./cmd/validator
+	@echo "Building landscape updater..."
+	go build -o bin/landscape-updater ./cmd/landscape-updater
+
+# Build docker image
+docker-build:
+	@echo "Building docker image..."
+	docker build -t dot-project-validator .
 
 # Run tests
 test:
@@ -79,6 +86,7 @@ test-run: test-setup build
 help:
 	@echo "Available targets:"
 	@echo "  build         - Build the validator binary"
+	@echo "  docker-build  - Build docker image"
 	@echo "  test          - Run tests"
 	@echo "  test-coverage - Run tests with coverage report"
 	@echo "  clean         - Clean build artifacts"
