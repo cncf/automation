@@ -7,6 +7,8 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
+      envoyService:
+        externalTrafficPolicy: Cluster
       envoyDeployment:
         replicas: 3
         pod:
