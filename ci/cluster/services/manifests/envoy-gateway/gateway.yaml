@@ -6,10 +6,9 @@ metadata:
   namespace: envoy-gateway
 spec:
   gatewayClassName: envoy
-  # Enable below after taking ingress-nginx down
-  # addresses:
-  # - type: IPAddress
-  #   value: 146.235.214.235
+  addresses:
+   - type: IPAddress
+     value: 146.235.214.235
   listeners:
   - name: https
     protocol: HTTPS

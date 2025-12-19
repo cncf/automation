@@ -10,7 +10,6 @@ spec:
       envoyService:
         externalTrafficPolicy: Cluster
       envoyDeployment:
-        replicas: 3
         pod:
           affinity:
             podAntiAffinity:
@@ -21,3 +20,13 @@ spec:
                     matchLabels:
                       app.kubernetes.io/component: proxy
                   topologyKey: kubernetes.io/hostname
+      envoyHpa:
+        minReplicas: 3
+        maxReplicas: 10
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80
