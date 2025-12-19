@@ -43,7 +43,7 @@ variable "cluster_name" {
 
 variable "node_pool_worker_size" {
   type    = number
-  default = 3
+  default = 4
 }
 
 variable "kubernetes_version" {
