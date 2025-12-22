@@ -59,19 +59,17 @@ jobs:
             | sed 's/20187466606/20428190013/' \
             | sed '/nodeSelector/,+1d'| kubectl apply -f -
 
-          kubectl wait --for=condition=Ready pod -l app.kubernetes.io/instance=oci-ci-test --timeout=600s -n arc-systems
-
       - name: Wait for completion signal
         run: |
           while true; do
             PENDING=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs \
-              --jq '[.jobs[] | select(.name != "start-kind-runner" and .status != "completed")] | length')
-            
+              --jq '[.jobs[] | select(.name != "run-kind-with-arc" and .status != "completed")] | length')
+
             if [[ "$PENDING" == "0" ]]; then
               echo "All jobs completed"
               break
             fi
-            
+
             sleep 30
           done
         env:
