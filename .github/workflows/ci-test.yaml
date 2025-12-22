@@ -27,7 +27,12 @@ jobs:
 
           kubectl wait --for=condition=Ready nodes --all --timeout=120s
 
-          kubectl create ns arc-systems
+          helm install arc \
+            --namespace arc-systems \
+            --create-namespace \
+            --version 0.11.0
+            oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+
           kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem="${{ secrets.OCI_CLI_KEY_CONTENT }}" -n arc-systems
 
           cat <<EOF | kubectl apply -f -
