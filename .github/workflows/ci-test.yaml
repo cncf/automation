@@ -1,0 +1,124 @@
+name: Test VM Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-kind-with-arc:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Checkout code
+        uses: actions/checkout@v3
+      - 
+        name: Start kind cluster
+        run: |
+          cat <<EOF > kind-config.yaml
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+          - role: control-plane
+            image: kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
+          - role: worker
+            image: kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
+          EOF
+
+          kind create cluster --config kind-config.yaml
+
+          kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+          kubectl create ns arc-systems
+          kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem=${{ secrets.OCI_CLI_KEY_CONTENT }} -n arc-systems
+
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: oci-config
+            namespace: arc-systems
+          type: Opaque
+          stringData:
+            config: |
+              [DEFAULT]
+              user=${{ secrets.OCI_CLI_USER }}
+              fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}
+              tenancy=${{ secrets.OCI_CLI_TENANCY }}
+              region=${{ secrets.OCI_CLI_REGION }}
+              key_file=/oci/oci_api_key.pem
+          EOF
+
+          sed 's/oracle-vm-2cpu-8gb-x86-64/oci-ci-test/g' ci/cluster/oci/vm-runners/2cpu-8gb/install.yaml \
+            | sed '/subnet-id/a \        - --runEnv=ci' \
+            | sed 's/20187466606/20428190013/' | kubectl apply -f -
+
+  test-runner:
+    runs-on: oci-ci-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update APT
+        run: |
+          apt-get update
+          apt-get install -y mc
+
+      - name: Run uname to verify architecture
+        run: |
+          uname -a
+          lsb_release -a
+          cat /proc/cpuinfo
+
+      - name: Run kind cluster
+        run: |
+          CLUSTER_NAME="kind-test"
+          KIND_CONFIG="kind-config.yaml"
+
+          sudo sysctl fs.inotify.max_user_instances=1280
+          sudo sysctl fs.inotify.max_user_watches=655360
+
+          cat <<EOF > $KIND_CONFIG
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+            - role: control-plane
+            - role: worker
+            - role: worker
+          EOF
+
+          echo "[*] Creating Kind cluster..."
+          kind create cluster --name $CLUSTER_NAME --config $KIND_CONFIG
+
+          kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+          echo "[*] Creating pod ..."
+          kubectl apply -f - <<EOF
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: nginx
+          spec:
+            containers:
+            - name: nginx
+              image: nginx:latest
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "500m"
+          EOF
+
+          echo "[*] Waiting for pods to be ready..."
+          kubectl wait --for=condition=Ready pod/nginx --timeout=300s
+
+          echo "[*] Pods running, doing test workload..."
+          sleep 60
+
+          echo "[*] Deleting pods..."
+          kubectl delete pod nginx
+
+          echo "[*] Deleting Kind cluster..."
+          kind delete cluster --name $CLUSTER_NAME
+
+          echo "[*] Done!"
