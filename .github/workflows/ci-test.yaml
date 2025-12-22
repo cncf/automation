@@ -70,6 +70,16 @@ jobs:
               break
             fi
 
+            echo ""
+            echo "There are $PENDING pending jobs..."
+            echo "-----"
+            kubectl get autoscalingrunnerset -n arc-systems
+            echo "-----"
+            kubectl get ephemeralrunners -n arc-systems
+            echo "-----"
+            kubectl get pods -n arc-systems
+            echo "-----"
+
             sleep 30
           done
         env:
