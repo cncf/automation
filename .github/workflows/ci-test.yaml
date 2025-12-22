@@ -33,6 +33,8 @@ jobs:
             --version 0.11.0 \
             oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
 
+          kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=controller-manager --timeout=600s -n arc-systems
+
           kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem="${{ secrets.OCI_CLI_KEY_CONTENT }}" -n arc-systems
 
           cat <<EOF | kubectl apply -f -
@@ -54,7 +56,10 @@ jobs:
 
           sed 's/oracle-vm-2cpu-8gb-x86-64/oci-ci-test/g' ci/cluster/oci/vm-runners/2cpu-8gb/install.yaml \
             | sed '/subnet-id/a \        - --runEnv=ci' \
-            | sed 's/20187466606/20428190013/' | kubectl apply -f -
+            | sed 's/20187466606/20428190013/' \
+            | sed '/nodeSelector/,+1d'| kubectl apply -f -
+
+          kubectl wait --for=condition=Ready pod -l app.kubernetes.io/instance=oci-ci-test --timeout=600s -n arc-systems
 
       - name: Wait for completion signal
         run: |
