@@ -1,4 +1,4 @@
-name: Test VM Runner
+name: CI Tests
 
 on:
   workflow_dispatch:
@@ -28,7 +28,7 @@ jobs:
           kubectl wait --for=condition=Ready nodes --all --timeout=120s
 
           kubectl create ns arc-systems
-          kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem=${{ secrets.OCI_CLI_KEY_CONTENT }} -n arc-systems
+          kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem="${{ secrets.OCI_CLI_KEY_CONTENT }}" -n arc-systems
 
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
@@ -50,6 +50,22 @@ jobs:
           sed 's/oracle-vm-2cpu-8gb-x86-64/oci-ci-test/g' ci/cluster/oci/vm-runners/2cpu-8gb/install.yaml \
             | sed '/subnet-id/a \        - --runEnv=ci' \
             | sed 's/20187466606/20428190013/' | kubectl apply -f -
+
+      - name: Wait for completion signal
+        run: |
+          while true; do
+            PENDING=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs \
+              --jq '[.jobs[] | select(.name != "start-kind-runner" and .status != "completed")] | length')
+            
+            if [[ "$PENDING" == "0" ]]; then
+              echo "All jobs completed"
+              break
+            fi
+            
+            sleep 30
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   test-runner:
     runs-on: oci-ci-test
