@@ -37,6 +37,8 @@ jobs:
 
           kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem="${{ secrets.OCI_CLI_KEY_CONTENT }}" -n arc-systems
 
+          kubectl create secret generic github-arc-secret --from-literal=github_token=${{ secrets.GHA_PAT }} -n arc-systems
+
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
           kind: Secret
