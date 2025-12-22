@@ -199,7 +199,8 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatal("could not run command: ", err)
 	}
 
-	command = exec.Command("oci", "compute", "image", "import", "from-object", "--bucket-name", args.bucketName, "--compartment-id", args.compartmentId, "--namespace", args.namespace, "--operating-system", imageName, "--display-name", imageName, "--name", fmt.Sprintf("ubuntu-gha-image-%s", timestamp), "--operating-system-version", *selectedRelease.TagName, "--launch-mode", "PARAVIRTUALIZED")
+	// Import image name starting with rc- (release-candidate) -- github action will update it if tests are successful.
+	command = exec.Command("oci", "compute", "image", "import", "from-object", "--bucket-name", args.bucketName, "--compartment-id", args.compartmentId, "--namespace", args.namespace, "--operating-system", "rc-" + imageName, "--display-name", "rc-" + imageName, "--name", fmt.Sprintf("ubuntu-gha-image-%s", timestamp), "--operating-system-version", *selectedRelease.TagName, "--launch-mode", "PARAVIRTUALIZED")
 	output, err := command.Output()
 	if err != nil {
 		log.Fatal("failed to run OCI command: ", err)
@@ -217,7 +218,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	imageID := result.Data.ID
 
 	// expose Image Id to GitHub action
-	f, _ := os.OpenFile(os.Getenv("GITHUB_OUTPUT"), os.O_APPEND|os.O_WRONLY, 0600)
+	f, _ := os.OpenFile(os.Getenv("GITHUB_OUTPUT"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 	defer f.Close()
 	fmt.Fprintf(f, "image_id=%s\n", imageID)
 
