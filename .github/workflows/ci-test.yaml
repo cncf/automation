@@ -27,7 +27,7 @@ jobs:
 
           kubectl wait --for=condition=Ready nodes --all --timeout=120s
 
-          helm install arc \
+          helm install cncf-gha-controller \
             --namespace arc-systems \
             --create-namespace \
             --version 0.11.0 \
