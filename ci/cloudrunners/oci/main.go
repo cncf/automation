@@ -31,6 +31,7 @@ var args struct {
 	shape              string
 	shapeOcpus         float32
 	shapeMemoryInGBs   float32
+	runEnv             string
 }
 
 func main() {
@@ -58,9 +59,13 @@ func run(cmd *cobra.Command, argv []string) error {
 
 	// List Images and retrieve the latest ID by type and arch
 
+	osname := fmt.Sprintf("ubuntu-24.04-%s-gha-image", args.arch)
+	if args.runEnv != "production" {
+		osname = fmt.Sprintf("rc-ubuntu-24.04-%s-gha-image", args.arch)
+	}
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
 		CompartmentId:   common.String(args.compartmentId),
-		OperatingSystem: common.String(fmt.Sprintf("ubuntu-24.04-%s-gha-image", args.arch)),
+		OperatingSystem: common.String(osname),
 		SortBy:          core.ListImagesSortByTimecreated,
 		SortOrder:       core.ListImagesSortOrderDesc,
 		Limit:           common.Int(1),
@@ -231,5 +236,11 @@ func init() {
 		"shape-memory-in-gbs",
 		0.0, // Default to 0.
 		"Amount of memory in GBs for flexible shapes (e.g., 16.0, 32.0). Required if a '.Flex' shape is used.",
+	)
+	flags.StringVar(
+		&args.runEnv,
+		"running-environment",
+		"production",
+		"Running Environment: production or ci",
 	)
 }
