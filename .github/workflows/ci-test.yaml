@@ -81,6 +81,8 @@ jobs:
             echo "-----"
             kubectl get pods -n arc-systems
             echo "-----"
+            kubectl logs -l app.kubernetes.io/component=controller-manager -n arc-systems
+            echo "-----"
 
             sleep 30
           done
