@@ -135,10 +135,11 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatalf("Failed to remove tarball: %s\n", err)
 	}
 
+	baseDir := strings.Split(filename, "/")[0]
+	replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"maven\": \"3.9.11\"", "\"maven\": \"3.9.12\"")
+
 	if args.arch == "arm64" {
-		baseDir := strings.Split(filename, "/")[0]
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-azcopy.sh", "https://aka.ms/downloadazcopy-v10-linux", "https://github.com/Azure/azure-storage-azcopy/releases/download/v10.29.1/azcopy_linux_arm64_10.29.1.tar.gz")
-		// replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
@@ -152,8 +153,6 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-swift.sh", "\\$\\(lsb_release -rs\\)", "24.04-aarch64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-microsoft-edge.sh", "arch=amd64", "arch=arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-kubernetes-tools.sh", "linux-amd64", "linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "http://archive.ubuntu.com/.*", "https://launchpadlibrarian.net/683466454/containernetworking-plugins_1.1.1+ds1-3build1_arm64.deb")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "amd64.deb", "arm64.db")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-oras-cli.sh", "linux_amd64", "linux_arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-yq.sh", "linux_amd64", "linux_arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-docker.sh", "amd64", "arm64")
@@ -348,6 +347,10 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 
 	var response struct {
 		Data []core.Image `json:"data"`
+	}
+
+	if len(output) == 0 {
+		return false, fmt.Errorf("could not find image")
 	}
 
 	if err := json.Unmarshal(output, &response); err != nil {
