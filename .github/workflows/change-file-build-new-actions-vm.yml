@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build new Actions VM
+    name: Build new Actions x86-64 VM
     runs-on: oracle-vm-8cpu-32gb-x86-64
     env:
       PACKER_VERSION: 1.14.3
@@ -83,6 +83,7 @@ jobs:
   run-kind-with-arc:
     runs-on: ubuntu-latest
     needs: build
+    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -131,7 +132,7 @@ jobs:
               key_file=/oci/oci_api_key.pem
           EOF
 
-          sed 's/oracle-vm-2cpu-8gb-x86-64/oci-ci-test/g' ci/cluster/oci/vm-runners/2cpu-8gb/install.yaml \
+          sed 's/oracle-vm-2cpu-8gb/oci-ci-test/g' ci/cluster/oci/vm-runners/2cpu-8gb/install.yaml \
             | sed '/subnet-id/a \        - --running-environment=ci' \
             | sed 's/20187466606/20428190013/' \
             | sed '/nodeSelector/,+1d'| kubectl apply -f -
@@ -157,8 +158,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
   test-runner:
-    runs-on: oci-ci-test
+    runs-on: oci-ci-test-x86-64
     needs: build
+    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
