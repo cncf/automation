@@ -136,10 +136,14 @@ func run(cmd *cobra.Command, argv []string) error {
 	}
 
 	baseDir := strings.Split(filename, "/")[0]
+	installRunnerPackage(baseDir)
+
+	//temp for the maven error, probably will be fixed on the next action-runner release
 	replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"maven\": \"3.9.11\"", "\"maven\": \"3.9.12\"")
 
 	if args.arch == "arm64" {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-azcopy.sh", "https://aka.ms/downloadazcopy-v10-linux", "https://github.com/Azure/azure-storage-azcopy/releases/download/v10.29.1/azcopy_linux_arm64_10.29.1.tar.gz")
+		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
@@ -484,6 +488,37 @@ func replaceInFileRegex(path string, patterns map[*regexp.Regexp]string) error {
 	return os.WriteFile(path, []byte(content), 0755)
 }
 
+func installRunnerPackage(baseDir string) error {
+	// MS removed the runner package installation script. This one puts it back manually
+	log.Println("Creating runner package installation script...")
+
+	scriptContent := `#!/bin/bash -e
+################################################################################
+##  File:  install-runner-package.sh
+##  Desc:  Download and Install runner package
+################################################################################
+
+# Source the helpers for use with the script
+source $HELPER_SCRIPTS/install.sh
+
+download_url=$(resolve_github_release_asset_url "actions/runner" 'test("actions-runner-linux-x64-[0-9]+\\.[0-9]{3}\\.[0-9]+\\.tar\\.gz$")' "latest")
+archive_name="${download_url##*/}"
+archive_path=$(download_with_retry "$download_url")
+
+mkdir -p /opt/runner-cache
+mv "$archive_path" "/opt/runner-cache/$archive_name"
+`
+
+	// Write the script to the scripts directory where packer expects it
+	scriptPath := baseDir + "/images/ubuntu/scripts/build/install-runner-package.sh"
+	if err := os.WriteFile(scriptPath, []byte(scriptContent), 0755); err != nil {
+		return fmt.Errorf("failed to create install-runner-package.sh: %w", err)
+	}
+
+	log.Println("Runner package installation script created successfully")
+	return nil
+}
+
 func init() {
 	flags := Cmd.Flags()
 
@@ -628,6 +663,9 @@ build {
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
 	}
+
+	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
+      "${path.root}/../scripts/build/install-runner-package.sh",`
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
 	provisioner "shell" {
