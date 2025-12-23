@@ -1,13 +1,7 @@
-import csv
-import json
 import os
-from collections import OrderedDict
 import argparse
-import shutil
 import pygsheets
-import pandas as pd
 from dotenv import load_dotenv
-
 
 
 parser = argparse.ArgumentParser(description='Ack the reception of a Kubestronaut in the sheet')
@@ -19,7 +13,7 @@ email = args['email']
 
 load_dotenv()
 # Store credentials
-pwd = os.getenv('KUBESTRONAUT_RECEIVERS')
+KUBESTRONAUT_RECEIVERS = os.getenv('KUBESTRONAUT_RECEIVERS')
 
 
 # Let's open the GoogleSheet to write Kubestronaut info + coupons
