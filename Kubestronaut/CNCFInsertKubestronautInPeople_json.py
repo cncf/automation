@@ -176,17 +176,25 @@ for lineToBeInserted in range(firstLineToBeInserted, lastLineToBeInserted+1, 1):
     if (peopleFound == True) :
         print(newPeople.toJSON())
 
-        indexPeople=0
+        # Check for duplicates FIRST before inserting
+        duplicate_found = False
         for people in data:
             if people["name"].lower() == newPeople.name.lower():
-                print("{newPeople.name} already in people.json, abort !")
-                exit(2)
-            else:
-                print('Adding '+newPeople.name)
-                data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
-                os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
-                ack_kubestronaut(row[12])
+                print(f"WARNING: {newPeople.name} already in people.json, skipping!")
+                duplicate_found = True
                 break
+        
+        if duplicate_found:
+            # Clean up temporary image file if it exists
+            if os.path.exists("imageTemp.jpg"):
+                os.remove("imageTemp.jpg")
+            continue
+        
+        # Only insert if no duplicate was found
+        print('Adding '+newPeople.name)
+        data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
+        os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
+        ack_kubestronaut(row[12])
 
 sorted_people = sorted(data, key=lambda x: x['name'])
 
