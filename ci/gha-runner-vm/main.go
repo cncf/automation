@@ -221,9 +221,9 @@ func run(cmd *cobra.Command, argv []string) error {
 	imageID := result.Data.ID
 
 	// expose Image Id to GitHub action
-	f, _ := os.OpenFile(os.Getenv("GITHUB_OUTPUT"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+	f, _ := os.OpenFile("/tmp/image_ocid", os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0600)
 	defer f.Close()
-	fmt.Fprintf(f, "image_id=%s\n", imageID)
+	fmt.Fprintln(f, imageID)
 
 	for {
 		state, err := getImageState(imageID)
@@ -679,7 +679,8 @@ build {
       "usermod -aG docker ubuntu",
       "apt install -y libelf-dev",
       "snap install oracle-cloud-agent --classic",
-      "echo \"agent:\n  upgrade_interval: -1\" > /etc/oracle-cloud-agent/overrides/updater_override.yml"
+      "systemctl stop snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
+      "systemctl disable snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true"
     ]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.

@@ -80,6 +80,12 @@ jobs:
             --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
             --arch amd64
 
+      - name: Upload image OCID
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-ocid
+          path: /tmp/image_ocid
+
   run-kind-with-arc:
     runs-on: ubuntu-latest
     needs: build
@@ -233,7 +239,7 @@ jobs:
 
   release-new-image:
     runs-on: ubuntu-latest
-    needs: [build, run-kind-with-arc, test-runner]
+    needs: [run-kind-with-arc, test-runner]
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
@@ -241,10 +247,16 @@ jobs:
       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
     steps:
+      - name: Download image OCID
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ocid
+
       - name: Release
         run: |
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
           ./install.sh --accept-all-defaults
           export PATH=$PATH:$HOME/bin
-          oci compute image update --image-id ${{ needs.build.outputs.image_id }} --operating-system ubuntu-24.04-amd64-gha-image --display-name ubuntu-24.04-amd64-gha-image
+          IMAGE_ID=$(cat image_ocid)
+          oci compute image update --image-id ${IMAGE_ID} --operating-system ubuntu-24.04-amd64-gha-image --display-name ubuntu-24.04-amd64-gha-image
