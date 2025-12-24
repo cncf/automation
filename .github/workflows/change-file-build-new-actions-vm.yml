@@ -76,7 +76,7 @@ jobs:
           export PATH=$PATH:$HOME/bin && \
           cd ci/gha-runner-vm && \
           export PACKER_PLUGIN_PATH=/home/ubuntu/.config/packer/plugins && \
-          PACKER_LOG=1 go run main.go \
+          PACKER_LOG=1 go run main.go build \
             --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
             --arch amd64
 
@@ -85,6 +85,17 @@ jobs:
         with:
           name: image-ocid
           path: /tmp/image_ocid
+
+      - name: Generate VM Capabilities Documentation
+        run: |
+          cd ci/gha-runner-vm
+          go run main.go list-capabilities > /tmp/vm-capabilities-x86-64.txt
+
+      - name: Upload VM Capabilities
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-capabilities-x86-64
+          path: /tmp/vm-capabilities-x86-64.txt
 
   run-kind-with-arc:
     runs-on: ubuntu-latest
