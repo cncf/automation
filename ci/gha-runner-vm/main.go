@@ -600,32 +600,32 @@ func init() {
 }
 
 source "qemu" "img" {
-	qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
-	efi_boot             = var.architecture == "arm64" ? true : false
-	efi_firmware_code    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_CODE.fd" : ""
-	efi_firmware_vars    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_VARS.fd" : ""
-	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]] : [["-cpu", "host"]]
-	vm_name              = "image.raw"
-	cd_files             = ["./cloud-init/*"]
-	cd_label             = "cidata"
-	disk_compression     = true
-	disk_image           = true
-	iso_url              = "%s"
-	iso_checksum         = "%s"
-	memory               = 12000
-	cpus                 = 6
-	output_directory     = "build/"
-	accelerator          = "kvm"
-	disk_size            = "80G"
-	disk_interface       = "virtio"
-	format               = "raw"
-	net_device           = "virtio-net"
-	boot_wait            = "15s"
-	shutdown_command     = "echo 'packer' | sudo -S shutdown -P now"
-	ssh_username         = "ubuntu"
-	ssh_password         = "ubuntu"
-	ssh_timeout          = "60m"
-	headless             = true
+  qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
+  efi_boot             = var.architecture == "arm64" ? true : false
+  efi_firmware_code    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_CODE.fd" : ""
+  efi_firmware_vars    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_VARS.fd" : ""
+  qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]] : [["-cpu", "host"]]
+  vm_name              = "image.raw"
+  cd_files             = ["./cloud-init/*"]
+  cd_label             = "cidata"
+  disk_compression     = true
+  disk_image           = true
+  iso_url              = "%s"
+  iso_checksum         = "%s"
+  memory               = 12000
+  cpus                 = 6
+  output_directory     = "build/"
+  accelerator          = "kvm"
+  disk_size            = "80G"
+  disk_interface       = "virtio"
+  format               = "raw"
+  net_device           = "virtio-net"
+  boot_wait            = "15s"
+  shutdown_command     = "echo 'packer' | sudo -S shutdown -P now"
+  ssh_username         = "ubuntu"
+  ssh_password         = "ubuntu"
+  ssh_timeout          = "60m"
+  headless             = true
 }
 
 build {
@@ -645,12 +645,12 @@ build {
     environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     inline           = [
-			"curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.5.1/powershell-7.5.1-linux-arm64.tar.gz",
-			"mkdir -p /opt/microsoft/powershell/7",
-			"tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7",
-			"chmod +x /opt/microsoft/powershell/7/pwsh",
-			"ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
-		]
+      "curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.5.1/powershell-7.5.1-linux-arm64.tar.gz",
+      "mkdir -p /opt/microsoft/powershell/7",
+      "tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7",
+      "chmod +x /opt/microsoft/powershell/7/pwsh",
+      "ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
+    ]
   }`
 
 		replacements[`provisioner "shell" {
@@ -673,7 +673,14 @@ build {
       inline = ["touch /etc/waagent.conf"]
 	}`
 
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `["sleep 30", "export HISTSIZE=0 && sync", "usermod -aG docker ubuntu", "apt install -y libelf-dev", "snap install oracle-cloud-agent --classic"]`
+	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+      "sleep 30",
+      "export HISTSIZE=0 && sync",
+      "usermod -aG docker ubuntu",
+      "apt install -y libelf-dev",
+      "snap install oracle-cloud-agent --classic",
+      "echo \"agent:\n  upgrade_interval: -1\" > /etc/oracle-cloud-agent/overrides/updater_override.yml"
+    ]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
 	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
