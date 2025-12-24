@@ -680,7 +680,8 @@ build {
       "apt install -y libelf-dev",
       "snap install oracle-cloud-agent --classic",
       "systemctl stop snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
-      "systemctl disable snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true"
+      "systemctl disable snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
+      "snap refresh --hold oracle-cloud-agent"
     ]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
