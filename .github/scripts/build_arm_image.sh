@@ -63,5 +63,7 @@ PACKER_LOG=1 GITHUB_PERIODIC=true go run main.go build \
   --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-arm64.img \
   --arch arm64
 
-# Generate VM capabilities documentation
-go run main.go list-capabilities > /tmp/vm-capabilities-arm64.txt
+# Generate VM capabilities documentation (only if build succeeded)
+if [ $? -eq 0 ]; then
+  go run main.go list-capabilities > /tmp/vm-capabilities-arm64.txt
+fi
