@@ -24,11 +24,26 @@ import (
 
 var replacements = make(map[string]string)
 var selectedRelease *github.RepositoryRelease
-var Cmd = &cobra.Command{
-	Use:  "gha-runner-vm",
-	Long: "Generate and upload a new GHA runner image to OCI (Oracle Cloud Infrastructure)",
-	RunE: run,
+var rootCmd = &cobra.Command{
+	Use:   "gha-runner-vm",
+	Short: "Manage GHA runner VM images",
+	Long:  "Tools for managing GitHub Actions runner VM images on OCI (Oracle Cloud Infrastructure)",
 }
+
+var buildCmd = &cobra.Command{
+	Use:   "build",
+	Short: "Build and upload a new GHA runner image",
+	Long:  "Generate and upload a new GHA runner image to OCI (Oracle Cloud Infrastructure)",
+	RunE:  run,
+}
+
+var listCapabilitiesCmd = &cobra.Command{
+	Use:   "list-capabilities",
+	Short: "List VM capabilities",
+	Long:  "Display the virtual machine capabilities defined for the GHA runner images",
+	RunE:  listCapabilities,
+}
+
 var args struct {
 	debug         bool
 	os            string
@@ -44,7 +59,7 @@ var args struct {
 func main() {
 	log.SetFlags(log.Flags() | log.Lshortfile)
 
-	if err := Cmd.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -519,8 +534,80 @@ mv "$archive_path" "/opt/runner-cache/$archive_name"
 	return nil
 }
 
+// Capability represents the structure of image capability settings
+type Capability struct {
+	Values        []string `json:"values,omitempty"`
+	DefaultValue  string   `json:"defaultValue"`
+	Source        string   `json:"source"`
+	DescriptorType string   `json:"descriptorType"`
+}
+
+// CapabilitySchema represents the schema data structure
+type CapabilitySchema struct {
+	SchemaData map[string]Capability `json:"schemaData"`
+	ImageID    string                `json:"imageId"`
+	CompartmentID string             `json:"compartmentId"`
+	SchemaVersionName string         `json:"computeGlobalImageCapabilitySchemaVersionName"`
+}
+
+func listCapabilities(cmd *cobra.Command, argv []string) error {
+	// Read the capability-update.json file
+	data, err := os.ReadFile("capability-update.json")
+	if err != nil {
+		return fmt.Errorf("failed to read capability-update.json: %w", err)
+	}
+
+	var schema CapabilitySchema
+	if err := json.Unmarshal(data, &schema); err != nil {
+		return fmt.Errorf("failed to parse capability-update.json: %w", err)
+	}
+
+	fmt.Println("Virtual Machine Capabilities for GitHub Action Runners")
+	fmt.Println("========================================================")
+	fmt.Println()
+
+	// Print capabilities organized by category
+	categories := map[string][]string{
+		"Compute": {"Compute.Firmware", "Compute.LaunchMode", "Compute.AMD_SecureEncryptedVirtualization", "Compute.SecureBoot"},
+		"Network": {"Network.AttachmentType", "Network.IPv6Only"},
+		"Storage": {"Storage.BootVolumeType", "Storage.LocalDataVolumeType", "Storage.RemoteDataVolumeType", 
+					"Storage.ConsistentVolumeNaming", "Storage.Iscsi.MultipathDeviceSupported", 
+					"Storage.ParaVirtualization.EncryptionInTransit", "Storage.ParaVirtualization.AttachmentVersion"},
+	}
+
+	for _, category := range []string{"Compute", "Network", "Storage"} {
+		fmt.Printf("%s Capabilities:\n", category)
+		fmt.Println(strings.Repeat("-", 50))
+		
+		for _, capName := range categories[category] {
+			if cap, exists := schema.SchemaData[capName]; exists {
+				shortName := strings.TrimPrefix(capName, category+".")
+				fmt.Printf("\n  %s:\n", shortName)
+				fmt.Printf("    Type: %s\n", cap.DescriptorType)
+				fmt.Printf("    Default: %s\n", cap.DefaultValue)
+				if len(cap.Values) > 0 {
+					fmt.Printf("    Supported Values: %s\n", strings.Join(cap.Values, ", "))
+				}
+				fmt.Printf("    Source: %s\n", cap.Source)
+			}
+		}
+		fmt.Println()
+	}
+
+	fmt.Println("\nConfiguration Details:")
+	fmt.Println(strings.Repeat("-", 50))
+	fmt.Printf("  Compartment ID: %s\n", schema.CompartmentID)
+	fmt.Printf("  Schema Version: %s\n", schema.SchemaVersionName)
+	
+	return nil
+}
+
 func init() {
-	flags := Cmd.Flags()
+	// Add subcommands to root
+	rootCmd.AddCommand(buildCmd)
+	rootCmd.AddCommand(listCapabilitiesCmd)
+	
+	flags := buildCmd.Flags()
 
 	flags.BoolVar(
 		&args.debug,
@@ -584,11 +671,7 @@ func init() {
 		"ISO Checksum for Packer to use",
 	)
 
-	if err := flags.Parse(os.Args[1:]); err != nil {
-		log.Fatal(err)
-	}
-
-	Cmd.RegisterFlagCompletionFunc("output-format", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	buildCmd.RegisterFlagCompletionFunc("output-format", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"json", "prom"}, cobra.ShellCompDirectiveDefault
 	})
 
