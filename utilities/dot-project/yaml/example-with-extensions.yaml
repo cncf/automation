@@ -1,0 +1,196 @@
+name: "Example Project with Extensions"
+description: "Demonstrates the new extension mechanism for third-party tools"
+schema_version: "1.1.0"
+type: "application"
+
+maturity_log:
+  - phase: "sandbox"
+    date: "2024-01-01T00:00:00Z"
+    issue: "https://github.com/cncf/toc/issues/1001"
+  - phase: "incubating"
+    date: "2024-06-01T00:00:00Z"
+    issue: "https://github.com/cncf/toc/issues/1002"
+
+repositories:
+  - "https://github.com/example/main"
+  - "https://github.com/example/docs"
+
+social:
+  twitter: "https://twitter.com/example_project"
+  slack: "https://example.slack.com"
+  discord: "https://discord.gg/example"
+
+artwork: "https://github.com/example/artwork"
+website: "https://example-project.io"
+
+mailing_lists:
+  - "example-dev@lists.cncf.io"
+  - "example-users@lists.cncf.io"
+
+audits:
+  - date: "2024-03-01T00:00:00Z"
+    type: "security"
+    url: "https://github.com/example/audits/security-2024.pdf"
+
+security:
+  policy:
+    path: "https://github.com/example/main/blob/main/SECURITY.md"
+  contact: "security@example-project.io"
+
+governance:
+  contributing:
+    path: "https://github.com/example/main/blob/main/CONTRIBUTING.md"
+  codeowners:
+    path: "https://github.com/example/main/blob/main/.github/CODEOWNERS"
+
+legal:
+  license:
+    path: "https://github.com/example/main/blob/main/LICENSE"
+
+documentation:
+  readme:
+    path: "https://github.com/example/main/blob/main/README.md"
+  api:
+    path: "https://example-project.io/docs/api/"
+
+# Extension examples for different use cases
+extensions:
+  # Security scanning tool
+  security-scanner:
+    version: "2.1.0"
+    description: "Automated vulnerability scanning and compliance checks"
+    config:
+      scan_schedule: "daily"
+      scan_types: ["sast", "dast", "dependency"]
+      exclude_paths:
+        - "vendor/"
+        - "test/"
+        - "docs/"
+        - "*.md"
+      severity_threshold: "medium"
+      auto_fix: false
+      notifications:
+        slack_channel: "#security-alerts"
+        email: "security@example-project.io"
+    metadata:
+      author: "Security Engineering Team"
+      homepage: "https://security-scanner.example.com"
+      repository: "https://github.com/security-team/scanner"
+      license: "Apache-2.0"
+
+  # CI/CD deployment tool
+  deployment-automation:
+    version: "3.2.1"
+    description: "Multi-environment deployment pipeline management"
+    config:
+      environments:
+        - name: "development"
+          auto_deploy: true
+          approval_required: false
+          health_checks: true
+        - name: "staging"
+          auto_deploy: true
+          approval_required: true
+          approvers: ["@devops-team", "@project-leads"]
+        - name: "production"
+          auto_deploy: false
+          approval_required: true
+          approvers: ["@project-leads", "@security-team"]
+      rollback_strategy: "blue-green"
+      deployment_timeout: "15m"
+      health_checks:
+        enabled: true
+        timeout: "5m"
+        endpoints: ["/health", "/ready"]
+    metadata:
+      author: "DevOps Platform Team"
+      homepage: "https://deploy.example.com"
+      repository: "https://github.com/devops/deployment-tool"
+      license: "MIT"
+
+  # Monitoring and observability
+  observability-stack:
+    version: "1.5.2"
+    description: "Comprehensive monitoring, logging, and tracing configuration"
+    config:
+      metrics:
+        enabled: true
+        retention: "30d"
+        scrape_interval: "15s"
+        exporters: ["prometheus", "datadog"]
+      logging:
+        enabled: true
+        level: "info"
+        retention: "7d"
+        structured: true
+        destinations: ["stdout", "elasticsearch"]
+      tracing:
+        enabled: true
+        sampling_rate: 0.1
+        jaeger_endpoint: "https://jaeger.example.com"
+      alerting:
+        enabled: true
+        rules_path: "monitoring/alerts/"
+        notification_channels: ["slack", "pagerduty"]
+    metadata:
+      author: "SRE Team"
+      homepage: "https://observability.example.com"
+      license: "Apache-2.0"
+
+  # Documentation generator
+  docs-generator:
+    version: "1.0.3"
+    description: "Automated API documentation and changelog generation"
+    config:
+      api_docs:
+        enabled: true
+        format: "openapi"
+        output_path: "docs/api/"
+        auto_update: true
+      changelog:
+        enabled: true
+        format: "keepachangelog"
+        auto_generate: true
+        include_prs: true
+      website:
+        generator: "hugo"
+        theme: "cncf-theme"
+        deploy_branch: "gh-pages"
+    metadata:
+      author: "Documentation Team"
+      repository: "https://github.com/docs-team/generator"
+      license: "BSD-3-Clause"
+
+# Experimental features being tested
+experimental:
+  # AI-powered code analysis
+  ai_code_analysis:
+    enabled: false
+    model: "gpt-4"
+    features:
+      - "code-review"
+      - "bug-detection"
+      - "performance-optimization"
+    confidence_threshold: 0.8
+
+  # Advanced metrics collection
+  custom_metrics:
+    enabled: true
+    endpoint: "https://metrics.example-project.io"
+    collection_interval: "30s"
+    custom_labels:
+      team: "platform"
+      environment: "production"
+
+  # Feature flag management
+  feature_flags:
+    provider: "launchdarkly"
+    project_key: "example-project"
+    environments: ["development", "staging", "production"]
+    default_variation: false
+
+  # Beta API versions
+  beta_apis:
+    v2_enabled: true
+    v3_preview: false
+    deprecation_warnings: true

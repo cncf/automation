@@ -25,6 +25,10 @@ type Project struct {
 	Governance    *GovernanceConfig    `json:"governance,omitempty" yaml:"governance,omitempty"`
 	Legal         *LegalConfig         `json:"legal,omitempty" yaml:"legal,omitempty"`
 	Documentation *DocumentationConfig `json:"documentation,omitempty" yaml:"documentation,omitempty"`
+
+	// Extension support for third-party tools
+	Extensions   map[string]Extension `json:"extensions,omitempty" yaml:"extensions,omitempty"`
+	Experimental map[string]interface{} `json:"experimental,omitempty" yaml:"experimental,omitempty"`
 }
 
 type PathRef struct {
@@ -53,6 +57,23 @@ type DocumentationConfig struct {
 	Support      *PathRef `json:"support,omitempty" yaml:"support,omitempty"`
 	Architecture *PathRef `json:"architecture,omitempty" yaml:"architecture,omitempty"`
 	API          *PathRef `json:"api,omitempty" yaml:"api,omitempty"`
+}
+
+// Extension represents a third-party tool extension
+type Extension struct {
+	Version     string                 `json:"version" yaml:"version"`
+	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
+	Config      map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`
+	Metadata    *ExtensionMetadata     `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+}
+
+// ExtensionMetadata provides additional information about the extension
+type ExtensionMetadata struct {
+	Author      string `json:"author,omitempty" yaml:"author,omitempty"`
+	Homepage    string `json:"homepage,omitempty" yaml:"homepage,omitempty"`
+	Repository  string `json:"repository,omitempty" yaml:"repository,omitempty"`
+	License     string `json:"license,omitempty" yaml:"license,omitempty"`
+	Deprecated  bool   `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
 }
 
 type MaturityEntry struct {

@@ -322,6 +322,10 @@ func validateProjectStruct(project Project) []string {
 		}
 	}
 
+	// Validate extensions
+	extensionErrors := validateExtensions(project)
+	errors = append(errors, extensionErrors...)
+
 	return errors
 }
 
@@ -338,6 +342,101 @@ func isValidURL(str string) bool {
 		return false
 	}
 	return true
+}
+
+// validateExtensions validates project extensions
+func validateExtensions(project Project) []string {
+	var errors []string
+
+	// Validate extensions
+	for toolName, ext := range project.Extensions {
+		// Validate tool name format (alphanumeric, hyphens, underscores only)
+		if !isValidExtensionName(toolName) {
+			errors = append(errors, fmt.Sprintf("extension name '%s' is invalid (use alphanumeric, hyphens, underscores only)", toolName))
+			continue
+		}
+
+		// Validate extension version
+		if ext.Version == "" {
+			errors = append(errors, fmt.Sprintf("extension '%s' missing version", toolName))
+		}
+
+		// Validate metadata URLs if present
+		if ext.Metadata != nil {
+			if ext.Metadata.Homepage != "" && !isValidURL(ext.Metadata.Homepage) {
+				errors = append(errors, fmt.Sprintf("extension '%s' metadata.homepage is not a valid URL: %s", toolName, ext.Metadata.Homepage))
+			}
+			if ext.Metadata.Repository != "" && !isValidURL(ext.Metadata.Repository) {
+				errors = append(errors, fmt.Sprintf("extension '%s' metadata.repository is not a valid URL: %s", toolName, ext.Metadata.Repository))
+			}
+		}
+
+		// Validate reserved extension names
+		if isReservedExtensionName(toolName) {
+			errors = append(errors, fmt.Sprintf("extension name '%s' is reserved", toolName))
+		}
+	}
+
+	// Validate experimental fields (basic structure check)
+	for fieldName := range project.Experimental {
+		if !isValidExtensionName(fieldName) {
+			errors = append(errors, fmt.Sprintf("experimental field name '%s' is invalid (use alphanumeric, hyphens, underscores only)", fieldName))
+		}
+		if isReservedExtensionName(fieldName) {
+			errors = append(errors, fmt.Sprintf("experimental field name '%s' is reserved", fieldName))
+		}
+	}
+
+	return errors
+}
+
+// isValidExtensionName checks if extension name follows naming conventions
+func isValidExtensionName(name string) bool {
+	if len(name) == 0 || len(name) > 64 {
+		return false
+	}
+	
+	// Allow alphanumeric, hyphens, underscores, and dots
+	for _, char := range name {
+		if !((char >= 'a' && char <= 'z') || 
+			 (char >= 'A' && char <= 'Z') || 
+			 (char >= '0' && char <= '9') || 
+			 char == '-' || char == '_' || char == '.') {
+			return false
+		}
+	}
+	
+	// Must start with alphanumeric
+	first := rune(name[0])
+	return (first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z') || (first >= '0' && first <= '9')
+}
+
+// isReservedExtensionName checks if extension name conflicts with core fields
+func isReservedExtensionName(name string) bool {
+	reserved := map[string]bool{
+		"name":          true,
+		"description":   true,
+		"maturity_log":  true,
+		"repositories":  true,
+		"social":        true,
+		"artwork":       true,
+		"website":       true,
+		"mailing_lists": true,
+		"audits":        true,
+		"security":      true,
+		"governance":    true,
+		"legal":         true,
+		"documentation": true,
+		"schema_version": true,
+		"type":          true,
+		"extensions":    true,
+		"experimental":  true,
+		"cncf":          true,
+		"kubernetes":    true,
+		"core":          true,
+		"system":        true,
+	}
+	return reserved[strings.ToLower(name)]
 }
 
 // calculateHash calculates SHA256 hash of content

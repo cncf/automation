@@ -1,12 +1,14 @@
 # Project Validator
 
-A Go utility that validates CNCF project metadata and maintainer rosters. It checks project YAML manifests, reconciles maintainer lists against canonical sources, and surfaces changes via cached diffs.
+A Go utility that validates CNCF project metadata and maintainer rosters. It checks project YAML manifests, reconciles maintainer lists against canonical sources, and surfaces changes via cached diffs. **Now with extension support for third-party tools!**
 
 ## Features
 
 - Validates project YAML files against structured schema requirements
 - Detects content drift using SHA256 hashes and cached history
 - Validates maintainer definitions against canonical `.project` repository data
+- **NEW: Extension mechanism for third-party tool integration**
+- **NEW: Experimental fields for testing new functionality**
 - Stubbed third-party verification hook for maintainer identity checks
 - Multiple output formats: human-readable text, JSON, YAML
 - Includes GitHub Actions workflow and Makefile helpers
@@ -86,7 +88,7 @@ Each project YAML file should follow this structure:
 name: "Project Name"
 description: "Project description"
 type: "software" # Optional
-schema_version: "0.1" # Optional
+schema_version: "1.1.0" # Updated for extension support
 maturity_log:
   - phase: "incubating"
     date: "2024-01-15T00:00:00Z"
@@ -104,7 +106,7 @@ audits:
     type: "security"
     url: "https://github.com/project/audits/security-2023.pdf"
 
-# New optional sections
+# Core configuration sections
 security:
   policy: { path: "SECURITY.md" }
   threat_model: { path: "docs/THREAT_MODEL.md" }
@@ -122,7 +124,92 @@ documentation:
   support: { path: "SUPPORT.md" }
   architecture: { path: "docs/ARCHITECTURE.md" }
   api: { path: "docs/API.md" }
+
+# NEW: Extension support for third-party tools
+extensions:
+  security-scanner:
+    version: "1.2.0"
+    description: "Automated security scanning configuration"
+    config:
+      scan_schedule: "daily"
+      exclude_paths: ["vendor/", "test/"]
+      severity_threshold: "medium"
+    metadata:
+      author: "Security Team"
+      homepage: "https://security-scanner.example.com"
+      repository: "https://github.com/security-team/scanner"
+      license: "Apache-2.0"
+  
+  deployment-tool:
+    version: "2.1.0"
+    description: "Deployment automation"
+    config:
+      environments: ["staging", "production"]
+      auto_deploy: true
+    metadata:
+      author: "DevOps Team"
+
+# NEW: Experimental fields for testing new functionality
+experimental:
+  custom_metrics:
+    enabled: true
+    endpoint: "https://metrics.example.com"
+  
+  feature_flags:
+    provider: "launchdarkly"
+    project_key: "my-project"
 ```
+
+## Extension System
+
+The `.project` format now supports extensions to allow third-party tools to store their configuration alongside core project metadata.
+
+### Extension Structure
+
+```yaml
+extensions:
+  tool-name:
+    version: "1.0.0"                    # Required: Extension version
+    description: "Tool description"      # Optional: Human-readable description
+    config:                             # Optional: Tool-specific configuration
+      key: "value"
+      nested:
+        setting: true
+    metadata:                           # Optional: Extension metadata
+      author: "Tool Author"
+      homepage: "https://tool.example.com"
+      repository: "https://github.com/author/tool"
+      license: "Apache-2.0"
+      deprecated: false
+```
+
+### Extension Naming Rules
+
+- Extension names must be 1-64 characters long
+- Use alphanumeric characters, hyphens (-), underscores (_), and dots (.)
+- Must start with an alphanumeric character
+- Cannot use reserved names: `name`, `description`, `cncf`, `kubernetes`, `core`, `system`, etc.
+
+### Experimental Fields
+
+For testing new functionality that may not fit the extension model:
+
+```yaml
+experimental:
+  custom_feature:
+    enabled: true
+    config: "value"
+  
+  beta_api: "v2"
+```
+
+### Validation
+
+The validator will:
+- Check extension name format and reserved name conflicts
+- Validate required fields (version)
+- Validate metadata URLs if provided
+- Ensure experimental field names follow naming conventions
 
 Each maintainer entry must contain a `project-maintainers` team which cannot be empty. Handles are normalized (trimmed and stripped of leading `@`) before verification.
 
