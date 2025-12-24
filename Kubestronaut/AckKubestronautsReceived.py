@@ -19,7 +19,12 @@ email = args['email']
 
 load_dotenv()
 # Store credentials
-pwd = os.getenv('KUBESTRONAUT_RECEIVERS')
+KUBESTRONAUT_RECEIVERS = os.getenv('KUBESTRONAUT_RECEIVERS')
+if not KUBESTRONAUT_RECEIVERS:
+    raise RuntimeError(
+        "Environment variable 'KUBESTRONAUT_RECEIVERS' is not set. "
+        "Please set it to the Google Sheets key before running this script."
+    )
 
 
 # Let's open the GoogleSheet to write Kubestronaut info + coupons
