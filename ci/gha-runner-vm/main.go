@@ -681,7 +681,8 @@ build {
       "snap install oracle-cloud-agent --classic",
       "systemctl stop snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
       "systemctl disable snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
-      "snap refresh --hold oracle-cloud-agent"
+      "snap refresh --hold oracle-cloud-agent",
+      "snap stop --disable oracle-cloud-agent.oracle-cloud-agent-updater"
     ]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
