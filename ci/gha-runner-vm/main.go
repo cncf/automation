@@ -236,8 +236,8 @@ func run(cmd *cobra.Command, argv []string) error {
 				break
 			}
 		}
-		log.Println("Waiting for 30 seconds before retrying...")
-		time.Sleep(30 * time.Second)
+		log.Println("Waiting for 60 seconds before retrying...")
+		time.Sleep(60 * time.Second)
 	}
 
 	// Need to update arm64 image capabilities
@@ -677,13 +677,7 @@ build {
       "sleep 30",
       "export HISTSIZE=0 && sync",
       "usermod -aG docker ubuntu",
-      "apt install -y libelf-dev",
-      "snap install oracle-cloud-agent --classic",
-      "systemctl stop snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
-      "systemctl disable snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
-      "snap refresh --hold oracle-cloud-agent",
-      "snap stop --disable oracle-cloud-agent.oracle-cloud-agent-updater",
-			"echo \"agent:\n  upgrade_interval: -1\" > /etc/oracle-cloud-agent/overrides/updater_override.yml"
+      "apt install -y libelf-dev"
     ]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
