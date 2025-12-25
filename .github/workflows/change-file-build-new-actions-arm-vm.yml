@@ -131,7 +131,6 @@ jobs:
 
           sed 's/oracle-vm-2cpu-8gb/oci-ci-test/g' ci/cluster/oci/vm-runners/2cpu-8gb-arm64/install.yaml \
             | sed '/subnet-id/a \        - --running-environment=ci' \
-            | sed 's/20187466606/20428190013/' \
             | sed '/nodeSelector/,+1d'| kubectl apply -f -
 
       - name: Wait for completion signal
