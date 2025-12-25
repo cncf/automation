@@ -74,8 +74,8 @@ jobs:
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
         run: |
           export PATH=$PATH:$HOME/bin && \
-          cd ci/gha-runner-vm && \
           export PACKER_PLUGIN_PATH=/home/ubuntu/.config/packer/plugins && \
+          cd ci/gha-runner-vm && \
           PACKER_LOG=1 go run main.go \
             --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
             --arch amd64
@@ -140,7 +140,6 @@ jobs:
 
           sed 's/oracle-vm-2cpu-8gb/oci-ci-test/g' ci/cluster/oci/vm-runners/2cpu-8gb/install.yaml \
             | sed '/subnet-id/a \        - --running-environment=ci' \
-            | sed 's/20187466606/20428190013/' \
             | sed '/nodeSelector/,+1d'| kubectl apply -f -
 
       - name: Wait for completion signal
