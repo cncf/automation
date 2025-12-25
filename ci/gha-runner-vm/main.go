@@ -682,7 +682,8 @@ build {
       "systemctl stop snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
       "systemctl disable snap.oracle-cloud-agent.oracle-cloud-agent-updater.service || true",
       "snap refresh --hold oracle-cloud-agent",
-      "snap stop --disable oracle-cloud-agent.oracle-cloud-agent-updater"
+      "snap stop --disable oracle-cloud-agent.oracle-cloud-agent-updater",
+			"echo \"agent:\n  upgrade_interval: -1\" > /etc/oracle-cloud-agent/overrides/updater_override.yml"
     ]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
