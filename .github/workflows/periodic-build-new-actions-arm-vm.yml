@@ -26,6 +26,7 @@ jobs:
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
           ./install.sh --accept-all-defaults
+          echo 'PATH=$PATH:$HOME/bin' >> $GITHUB_ENV
 
       - name: Check latest release
         id: check_latest
