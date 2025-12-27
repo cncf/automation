@@ -1,0 +1,51 @@
+name: 'Update CNCF Landscape'
+description: 'Updates the CNCF Landscape based on project metadata changes'
+inputs:
+  project_file:
+    description: 'Path to the project YAML file'
+    required: true
+  landscape_repo:
+    description: 'Landscape repository (e.g., cncf/landscape)'
+    required: false
+    default: 'cncf/landscape'
+  token:
+    description: 'GitHub Token with permissions to create PRs on the landscape repo'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Automation Repo
+      uses: actions/checkout@v4
+      with:
+        repository: cncf/automation
+        path: .cncf-automation-tool
+        ref: main
+
+    - name: Checkout Landscape Repo
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.landscape_repo }}
+        path: .cncf-landscape
+        token: ${{ inputs.token }}
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Build Updater
+      shell: bash
+      run: |
+        cd .cncf-automation-tool/utilities/dot-project
+        go build -o ../../../.cncf-landscape-updater ./cmd/landscape-updater
+
+    - name: Run Updater
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      run: |
+        ./.cncf-landscape-updater \
+          --project "${{ inputs.project_file }}" \
+          --landscape ".cncf-landscape/landscape.yml" \
+          --landscape-repo "${{ inputs.landscape_repo }}" \
+          --create-pr

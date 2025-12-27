@@ -1,0 +1,52 @@
+name: 'Validate Maintainers'
+description: 'Validates the maintainers file against schema and optional external verification'
+inputs:
+  maintainers_file:
+    description: 'Path to the maintainers YAML file'
+    required: true
+  base_maintainers_file:
+    description: 'Path to a base maintainers file to exclude handles from'
+    required: false
+  verify_maintainers:
+    description: 'Enable external verification of maintainer handles'
+    required: false
+    default: 'false'
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Automation Repo
+      uses: actions/checkout@v4
+      with:
+        repository: cncf/automation
+        path: .cncf-automation-tool
+        ref: main
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Build Validator
+      shell: bash
+      run: |
+        cd .cncf-automation-tool/utilities/dot-project
+        go build -o ../../../.cncf-validator ./cmd/validator
+
+    - name: Run Validator
+      shell: bash
+      run: |
+        VERIFY_FLAG=""
+        if [ "${{ inputs.verify_maintainers }}" == "true" ]; then
+          VERIFY_FLAG="-verify-maintainers"
+        fi
+        
+        BASE_FLAG=""
+        if [ -n "${{ inputs.base_maintainers_file }}" ]; then
+          BASE_FLAG="-base-maintainers ${{ inputs.base_maintainers_file }}"
+        fi
+
+        ./.cncf-validator \
+          -maintainers "${{ inputs.maintainers_file }}" \
+          $BASE_FLAG \
+          $VERIFY_FLAG \
+          -config ""
