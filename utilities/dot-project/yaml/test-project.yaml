@@ -1,6 +1,6 @@
 name: "Test Project - Updated"
 description: "A test project for validation - now with changes!"
-schema_version: "1.0.0"
+schema_version: "1.1.0"
 type: "platform"
 maturity_log:
   - phase: "incubating"
@@ -52,3 +52,13 @@ documentation:
     path: "https://github.com/testproject/community/blob/master/architecture/README.md"
   api:
     path: "https://testproject.io/docs/reference/"
+
+# Extensions for third-party tools
+extensions:
+  scorecard:
+    metadata:
+      author: "OSSF"
+      homepage: "https://securityscorecards.dev"
+      repository: "https://github.com/ossf/scorecard"
+    config:
+      enabled: true

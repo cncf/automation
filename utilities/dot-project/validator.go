@@ -322,7 +322,79 @@ func validateProjectStruct(project Project) []string {
 		}
 	}
 
+	// Validate extensions
+	if len(project.Extensions) > 0 {
+		extensionErrors := validateExtensions(project)
+		errors = append(errors, extensionErrors...)
+	}
+
 	return errors
+}
+
+// reservedExtensionNames contains names that cannot be used as extension keys
+// to prevent conflicts with core project fields
+var reservedExtensionNames = map[string]bool{
+	"name": true, "description": true, "maturity_log": true,
+	"repositories": true, "social": true, "artwork": true,
+	"website": true, "mailing_lists": true, "audits": true,
+	"schema_version": true, "type": true, "security": true,
+	"governance": true, "legal": true, "documentation": true,
+	"extensions": true,
+}
+
+// validateExtensions validates the extensions section of a project
+func validateExtensions(project Project) []string {
+	var errors []string
+
+	// Check schema version requirement
+	if project.SchemaVersion == "" || !isVersionAtLeast(project.SchemaVersion, SchemaVersionWithExtensions) {
+		errors = append(errors, fmt.Sprintf("extensions require schema_version >= %s", SchemaVersionWithExtensions))
+		return errors
+	}
+
+	for name, ext := range project.Extensions {
+		// Validate extension name format (alphanumeric, hyphens, underscores, dots)
+		if !isValidExtensionName(name) {
+			errors = append(errors, fmt.Sprintf("extensions.%s: invalid name format (use alphanumeric, hyphens, underscores, dots)", name))
+		}
+
+		// Check for reserved names
+		if reservedExtensionNames[name] {
+			errors = append(errors, fmt.Sprintf("extensions.%s: '%s' is a reserved name", name, name))
+		}
+
+		// Validate metadata URLs if provided
+		if ext.Metadata != nil {
+			if ext.Metadata.Homepage != "" && !isValidURL(ext.Metadata.Homepage) {
+				errors = append(errors, fmt.Sprintf("extensions.%s.metadata.homepage is not a valid URL", name))
+			}
+			if ext.Metadata.Repository != "" && !isValidURL(ext.Metadata.Repository) {
+				errors = append(errors, fmt.Sprintf("extensions.%s.metadata.repository is not a valid URL", name))
+			}
+		}
+	}
+
+	return errors
+}
+
+// isValidExtensionName checks if an extension name follows naming conventions
+func isValidExtensionName(name string) bool {
+	if name == "" {
+		return false
+	}
+	for _, r := range name {
+		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9') || r == '-' || r == '_' || r == '.') {
+			return false
+		}
+	}
+	return true
+}
+
+// isVersionAtLeast compares semantic versions (simple comparison)
+func isVersionAtLeast(version, minVersion string) bool {
+	// Simple version comparison for x.y.z format
+	return version >= minVersion
 }
 
 // isValidURL checks if a string is a valid URL
