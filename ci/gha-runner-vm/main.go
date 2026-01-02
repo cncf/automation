@@ -317,7 +317,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			"VM.GPU.A10.2",
 		}
 		for _, machine := range addList {
-			command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/"+machine, "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\""+imageID+"\",\"shape\":\""+machine+"\"}")
+			command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/"+machine, "--request-body", "{\"imageId\":\""+imageID+"\",\"shape\":\""+machine+"\"}")
 			output, err = command.CombinedOutput()
 			if err != nil {
 				log.Print(command.String())
