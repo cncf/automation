@@ -2,7 +2,15 @@ name: Test VM Runner
 
 on:
   workflow_dispatch:
-
+    inputs:
+      test_gpu:
+        description: 'Test GPU Runner'
+        required: false
+        type: choice
+        options:
+        - 'yes'
+        - 'no'
+        default: 'no'
 jobs:
   test-runner:
     strategy:
@@ -107,3 +115,15 @@ jobs:
           kind delete cluster --name $CLUSTER_NAME
 
           echo "[*] Done!"
+  test-gpu-runner:
+    runs-on: oracle-vm-gpu-a10-1
+    if: ${{ github.event.inputs.test_gpu == 'yes' }}
+    steps:
+      - name: checkout gpus
+        run: |
+          # Detailed GPU query
+          nvidia-smi -q
+          # Specific information (e.g., GPU name)
+          nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv
+          # NVIDIA driver version
+          cat /proc/driver/nvidia/version
