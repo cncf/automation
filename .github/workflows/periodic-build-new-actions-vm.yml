@@ -87,13 +87,21 @@ jobs:
       - name: Build VM Images
         if: steps.check_latest.outputs.image_exists == 'false'
         id: build_image
-        env:
-          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
-          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
-          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
-          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
-          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
         run: |
+          export OCI_CONFIG_FILE="/home/ubuntu/.oci/config"
+          export OCI_KEY_FILE="/home/ubuntu/.oci/oci_api_key.pem"
+
+          cat > ${OCI_CONFIG_FILE} << EOF
+          [DEFAULT]
+          user=${{ secrets.OCI_CLI_USER }}
+          fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}
+          tenancy=${{ secrets.OCI_CLI_TENANCY }}
+          region=${{ secrets.OCI_CLI_REGION }}
+          key_file=${OCI_KEY_FILE}
+          EOF
+
+          echo ${{ secrets.OCI_CLI_KEY_CONTENT }} > ${OCI_KEY_FILE}
+
           export PATH=$PATH:$HOME/bin && \
           export PACKER_PLUGIN_PATH=/home/ubuntu/.config/packer/plugins && \
           cd ci/gha-runner-vm && \
