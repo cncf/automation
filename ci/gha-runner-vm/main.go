@@ -310,6 +310,24 @@ func run(cmd *cobra.Command, argv []string) error {
 			return nil
 		}
 		log.Printf("Image capabilities updated:\n%s", string(output))
+	} else {
+		// Add VM.GPU.A10.1 and VM.GPU.A10.2
+		addList := []string{
+			"VM.GPU.A10.1",
+			"VM.GPU.A10.2",
+		}
+		for _, machine := range addList {
+			command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/"+machine, "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\""+imageID+"\",\"shape\":\""+machine+"\"}")
+			output, err = command.CombinedOutput()
+			if err != nil {
+				log.Print(command.String())
+				log.Printf("OCI command failed. Output:\n%s", string(output))
+				log.Fatal("could not run command: ", err)
+				exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
+				return nil
+			}
+			log.Printf("%s compatibility added", machine)
+		}
 	}
 
 	log.Println("New Ubuntu 24.04 image created successfully.")
@@ -662,6 +680,19 @@ build {
 
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
+	} else {
+		replacements[`provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script          = "${path.root}/../scripts/build/list-dpkg.sh"
+  }`] = `provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script          = "${path.root}/../scripts/build/list-dpkg.sh"
+  }
+
+  provisioner "shell" {
+    execute_command   = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline            = ["apt install -y ubuntu-drivers-common", "ubuntu-drivers install nvidia:570-server"]
+  }`
 	}
 
 	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
