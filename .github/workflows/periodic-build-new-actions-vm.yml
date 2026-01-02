@@ -90,6 +90,7 @@ jobs:
         run: |
           export OCI_CONFIG_FILE="/home/ubuntu/.oci/config"
           export OCI_KEY_FILE="/home/ubuntu/.oci/oci_api_key.pem"
+          mkdir /home/ubuntu/.oci
 
           cat > ${OCI_CONFIG_FILE} << EOF
           [DEFAULT]
