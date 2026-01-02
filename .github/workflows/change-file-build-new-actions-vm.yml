@@ -79,7 +79,7 @@ jobs:
           key_file=${OCI_KEY_FILE}
           EOF
 
-          echo ${{ secrets.OCI_CLI_KEY_CONTENT }} > ${OCI_KEY_FILE}
+          echo "${{ secrets.OCI_CLI_KEY_CONTENT }}" > ${OCI_KEY_FILE}
 
           export PATH=$PATH:$HOME/bin && \
           export PACKER_PLUGIN_PATH=/home/ubuntu/.config/packer/plugins && \
