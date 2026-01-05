@@ -64,52 +64,38 @@ jobs:
 
           kubectl wait --for=condition=Ready nodes --all --timeout=120s
 
-          echo "[*] Creating pods with large images..."
+          echo "[*] Creating Kind cluster..."
+          kind create cluster --name $CLUSTER_NAME --config $KIND_CONFIG
+
+          kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+          echo "[*] Creating pod ..."
           kubectl apply -f - <<EOF
           apiVersion: v1
           kind: Pod
           metadata:
-            name: large-pod-1
+            name: nginx
           spec:
             containers:
-            - name: tensorflow
-              image: tensorflow/tensorflow:latest
-              command: ["sleep", "300"]
+            - name: nginx
+              image: nginx:latest
               resources:
                 requests:
-                  memory: "2Gi"
-                  cpu: "2"
+                  memory: "256Mi"
+                  cpu: "100m"
                 limits:
-                  memory: "4Gi"
-                  cpu: "4"
-          ---
-          apiVersion: v1
-          kind: Pod
-          metadata:
-            name: large-pod-2
-          spec:
-            containers:
-            - name: pytorch
-              image: pytorch/pytorch:latest
-              command: ["sleep", "300"]
-              resources:
-                requests:
-                  memory: "2Gi"
-                  cpu: "2"
-                limits:
-                  memory: "4Gi"
-                  cpu: "4"
+                  memory: "256Mi"
+                  cpu: "500m"
           EOF
 
           echo "[*] Waiting for pods to be ready..."
-          kubectl wait --for=condition=Ready pod/large-pod-1 --timeout=600s
-          kubectl wait --for=condition=Ready pod/large-pod-2 --timeout=600s
+          kubectl wait --for=condition=Ready pod/nginx --timeout=300s
 
           echo "[*] Pods running, doing test workload..."
           sleep 60
 
           echo "[*] Deleting pods..."
-          kubectl delete pod large-pod-1 large-pod-2
+          kubectl delete pod nginx
 
           echo "[*] Deleting Kind cluster..."
           kind delete cluster --name $CLUSTER_NAME
