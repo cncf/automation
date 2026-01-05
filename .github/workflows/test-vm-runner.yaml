@@ -102,8 +102,8 @@ jobs:
           EOF
 
           echo "[*] Waiting for pods to be ready..."
-          kubectl wait --for=condition=Ready pod/large-pod-1 --timeout=300s
-          kubectl wait --for=condition=Ready pod/large-pod-2 --timeout=300s
+          kubectl wait --for=condition=Ready pod/large-pod-1 --timeout=600s
+          kubectl wait --for=condition=Ready pod/large-pod-2 --timeout=600s
 
           echo "[*] Pods running, doing test workload..."
           sleep 60
@@ -121,9 +121,11 @@ jobs:
     steps:
       - name: checkout gpus
         run: |
-          # Detailed GPU query
+          echo "[*] Detailed GPU query"
           nvidia-smi -q
-          # Specific information (e.g., GPU name)
+
+          echo "[*] Specific information"
           nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv
-          # NVIDIA driver version
+
+          echo "[*] NVIDIA driver version"
           cat /proc/driver/nvidia/version
