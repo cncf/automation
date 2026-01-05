@@ -691,7 +691,7 @@ build {
 
   provisioner "shell" {
     execute_command   = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    inline            = ["apt install -y ubuntu-drivers-common", "ubuntu-drivers install nvidia:570-server"]
+    inline            = ["apt install -y nvidia-driver-570-server nvidia-utils-570-server"]
   }`
 	}
 
