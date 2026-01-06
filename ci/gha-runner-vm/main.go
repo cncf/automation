@@ -691,7 +691,14 @@ build {
 
   provisioner "shell" {
     execute_command   = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    inline            = ["apt install -y nvidia-driver-570-server nvidia-utils-570-server"]
+    inline            = [
+      "apt install -y nvidia-driver-570-server nvidia-utils-570-server",
+      "curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg",
+      "curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list",
+      "apt-get update",
+      "apt install -y nvidia-container-toolkit",
+      "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest"
+    ]
   }`
 	}
 
