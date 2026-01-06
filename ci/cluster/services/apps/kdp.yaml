@@ -24,6 +24,11 @@ spec:
             url: https://api.services.cncf.io:8443
           virtualWorkspaces:
             shardExternalURL: https://api.services.cncf.io:8443
+            resources:
+              requests:
+                memory: 128Mi
+              limits:
+                memory: 256i
           hooks:
             bootstrap:
               enabled: true
