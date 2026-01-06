@@ -12,7 +12,7 @@ spec:
   project: default
   source:
     repoURL: https://kcp-dev.github.io/helm-charts
-    targetRevision: 0.12.5
+    targetRevision: 0.11.1
     chart: kcp
     helm:
       values: |
@@ -46,7 +46,6 @@ spec:
               proxy_client_key: /etc/kcp-front-proxy/requestheader-client/tls.key
           extraFlags:
             - '--cors-allowed-origins=localhost,services.cncf.io$'
-            - '--authentication-drop-groups=system:kcp:logical-cluster-admin'
         # OIDC-specific configuration which is applied to both kcp and kcp-front-proxy
         oidc:
           enabled: true
