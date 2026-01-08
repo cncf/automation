@@ -34,7 +34,7 @@ number_matching_cells = len(list_kubestronauts_cells)
 
 if (number_matching_cells==1):
         email_cell = list_kubestronauts_cells[0]
-        wks.update_value("S"+str(email_cell.row),annotation)
+        wks.update_value("T"+str(email_cell.row),annotation)
         print(email+" : OK")
 elif (number_matching_cells==0):
         print("Kubestronaut with email "+email+" not found !!")
