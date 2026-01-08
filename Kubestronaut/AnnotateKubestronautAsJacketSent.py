@@ -1,11 +1,6 @@
-import csv
-import json
 import os
-from collections import OrderedDict
 import argparse
-import shutil
 import pygsheets
-import pandas as pd
 from dotenv import load_dotenv
 
 parser = argparse.ArgumentParser(description='Annotate the Kubestronaut sheet to reflect shipping associated to a Kubestronauts email')
