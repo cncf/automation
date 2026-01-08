@@ -5,6 +5,7 @@ import re
 import json
 from contextlib import contextmanager
 import time
+import secrets
 
 # Authenticate
 gc = pygsheets.authorize(service_file='kubestronauts-handling-service-file.json')
@@ -25,8 +26,8 @@ welcome_worksheet = golden_welcome_sheet.sheet1
 infos_worksheet = infos_sheet.sheet1
 
 # Get emails and welcome emails
-emails_to_check = weekly_temp_worksheet.get_col(3, include_tailing_empty=False)
-already_welcome_emails = welcome_worksheet.get_col(2, include_tailing_empty=False)
+emails_to_check = weekly_temp_worksheet.get_col(4, include_tailing_empty=False)
+already_welcome_emails = welcome_worksheet.get_col(3, include_tailing_empty=False)
 
 # Load people.json
 with open('../../people/people.json', "r+", encoding='utf-8') as jsonfile:
@@ -57,7 +58,9 @@ for idx, email in enumerate(emails_to_check, start=1):
             valid_kubestronauts.append({
                 "email": email_sep,
                 "row": row,
-                "full_name": full_name
+                "full_name": full_name,
+                "lfid": weekly_temp_worksheet.cell("A" + str(idx)).value.strip(),
+                "token": secrets.token_hex(16)
             })
             found = True
             print(f"[{idx:2}/{len(emails_to_check)}] {email_sep:<40} ✅ OK")
@@ -111,7 +114,7 @@ with rollback_guard(golden_welcome_sheet, main_worksheet_title='Sheet1', temp_wo
         print(f"✨ Welcoming Kubestronaut: {k['email']}")
 
         # Mark as GK in infos sheet
-        infos_worksheet.update_value("Y" + str(k["row"]), "1")
+        infos_worksheet.update_value("Z" + str(k["row"]), "1")
 
         # Format names with capitalized first letter
         name_parts = k["full_name"].strip().split()
@@ -122,7 +125,7 @@ with rollback_guard(golden_welcome_sheet, main_worksheet_title='Sheet1', temp_wo
             first = name_parts[0].capitalize()
             last = ""
 
-        welcome_worksheet.insert_rows(1, number=1, values=["", k["email"], last, first])
+        welcome_worksheet.insert_rows(1, number=1, values=["", k["lfid"], k["email"], first, last, "", k["token"]])
 
         # Tag in people.json
         tagged = False
