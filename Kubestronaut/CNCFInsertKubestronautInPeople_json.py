@@ -197,22 +197,24 @@ for lineToBeInserted in range(firstLineToBeInserted, lastLineToBeInserted+1, 1):
     if (peopleFound == True) :
         print(newPeople.toJSON())
 
-        indexPeople=0
+        # Check if person already exists
+        name_exists = False
         for people in data:
             if people["name"].lower() == newPeople.name.lower():
-                print("{newPeople.name} already in people.json, abort !")
+                print(f"{newPeople.name} already in people.json, abort !")
                 exit(2)
-            else:
-                print('Adding '+newPeople.name)
-                data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
-                os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
-                ack_kubestronaut(row[12])
-                break
 
+        # If we reach here, name doesn't exist, so add it
+        print('Adding '+newPeople.name)
+        data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
+        os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
+        ack_kubestronaut(row[12])
+
+# Sort the data before writing to maintain alphabetical order
 sorted_people = sorted(data, key=lambda x: x['name'])
 
 with open('../../people/people.json', "w", encoding='utf-8') as jsonfile:
-    jsonfile.write(json.dumps(data, indent=4, ensure_ascii=False))
+    jsonfile.write(json.dumps(sorted_people, indent=4, ensure_ascii=False))
 
 if NON_acked_Kubestronauts:
     print("\n\nList of Kubestroauts that were NOT ACKED:")
