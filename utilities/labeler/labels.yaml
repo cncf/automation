@@ -695,6 +695,20 @@ ruleset:
 # Misc Commands
 ##############################################################################
 
+- name: assign
+  kind: match
+  spec:
+    command: /assign
+  actions:
+  - kind: assign
+
+- name: unassign
+  kind: match
+  spec:
+    command: /unassign
+  actions:
+  - kind: unassign
+
 - name: help
   kind: match
   spec:
