@@ -47,7 +47,7 @@ jobs:
         run: |
           export PATH=$PATH:$HOME/bin
           LATEST_RELEASE=$(curl -fsSL https://api.github.com/repos/actions/runner-images/releases | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu 24.04")) | .tag_name' | head -1)
-          IMAGE_EXISTS=IMAGE_EXISTS=$(oci compute image list --compartment-id ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a --operating-system "ubuntu-24.04-amd64-gha-image" --operating-system-version ${LATEST_RELEASE})
+          IMAGE_EXISTS=$(oci compute image list --compartment-id ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a --operating-system "ubuntu-24.04-amd64-gha-image" --operating-system-version ${LATEST_RELEASE})
           if [ -z "$IMAGE_EXISTS" ]; then
             echo "image_exists=false" >> "$GITHUB_OUTPUT"
           else
