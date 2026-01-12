@@ -214,7 +214,6 @@ func queryProjects(ds *Dataset, maturity, name, graduatedFrom, graduatedTo, incu
 
 	// Parse date filters
 	var gradFromDate, gradToDate, incFromDate, incToDate, accFromDate, accToDate *time.Time
-	var err error
 
 	if graduatedFrom != "" {
 		d, err := time.Parse("2006-01-02", graduatedFrom)
