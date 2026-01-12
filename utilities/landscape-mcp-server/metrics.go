@@ -362,7 +362,6 @@ func queryMembers(ds *Dataset, tier, joinedFrom, joinedTo string, limit int) (st
 
 	// Parse date filters
 	var joinFromDate, joinToDate *time.Time
-	var err error
 
 	if joinedFrom != "" {
 		d, err := time.Parse("2006-01-02", joinedFrom)
