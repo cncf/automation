@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/oracle/oci-go-sdk/v65/core"
+	"github.com/oracle/oci-go-sdk/v65/common"
 	"k8s.io/klog/v2"
 )
 
@@ -55,6 +56,13 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 		}
 		getInstanceResponse, err := m.computeClient.GetInstance(ctx, getInstanceRequest)
 		if err != nil {
+			// Handle rate limiting (429)
+			if svcErr, ok := common.IsServiceError(err); ok && svcErr.GetHTTPStatusCode() == 429 {
+				log.Info("rate limited by OCI API, retrying in 20 seconds","instanceID", m.instanceID)
+				time.Sleep(20 * time.Second)
+				continue
+			}
+
 			if err := m.Delete(context.Background()); err != nil {
 				log.Error(err, "deleting machine that failed to create")
 			}

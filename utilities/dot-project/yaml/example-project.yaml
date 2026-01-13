@@ -1,0 +1,66 @@
+name: "Kubernetes"
+description: "Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications."
+schema_version: "1.0.0"
+type: "platform"
+maturity_log:
+  - phase: "sandbox"
+    date: 2016-03-10T00:00:00Z
+    issue: "https://github.com/cncf/toc/issues/123"
+  - phase: "incubating" 
+    date: 2017-03-01T00:00:00Z
+    issue: "https://github.com/cncf/toc/issues/123"
+  - phase: "graduated"
+    date: 2018-03-06T00:00:00Z
+    issue: "https://github.com/cncf/toc/issues/123"
+repositories:
+  - "https://github.com/kubernetes/kubernetes"
+  - "https://github.com/kubernetes/kubectl"
+  - "https://github.com/kubernetes/client-go"
+  - "https://github.com/kubernetes/api"
+social:
+  twitter: "https://twitter.com/kubernetesio"
+  slack: "https://kubernetes.slack.com"
+  youtube: "https://www.youtube.com/user/KubernetesCommunity" 
+  linkedin: "https://www.linkedin.com/company/kubernetes"
+  reddit: "https://www.reddit.com/r/kubernetes"
+  stackoverflow: "https://stackoverflow.com/questions/tagged/kubernetes"
+artwork: "https://github.com/cncf/artwork/tree/master/projects/kubernetes"
+website: "https://kubernetes.io"
+mailing_lists:
+  - "kubernetes-dev@googlegroups.com"
+  - "kubernetes-users@googlegroups.com"
+  - "kubernetes-sig-release@googlegroups.com"
+audits:
+  - date: 2019-08-06T00:00:00Z
+    type: "security"
+    url: "https://example.com"
+  - date: 2021-05-17T00:00:00Z
+    type: "security"
+    url: "https://example.com"
+  - date: 2022-11-30T00:00:00Z
+    type: "performance"
+    url: "https://example.com"
+security:
+  policy:
+    path: "https://github.com/kubernetes/kubernetes/blob/master/SECURITY.md"
+  threat_model:
+    path: "https://github.com/kubernetes/community/blob/master/sig-security/threat-model.md"
+  contact: security@kubernetes.io
+  contributing:
+    path: "https://github.com/kubernetes/community/blob/master/CONTRIBUTING.md"
+  codeowners:
+    path: "https://github.com/kubernetes/kubernetes/blob/master/CODEOWNERS"
+  governance_doc:
+    path: "https://github.com/kubernetes/community/blob/master/governance.md"
+legal:
+  license:
+    path: "https://github.com/kubernetes/kubernetes/blob/master/LICENSE"
+documentation:
+  readme:
+    path: "https://github.com/kubernetes/kubernetes/blob/master/README.md"
+  support:
+    path: "https://github.com/kubernetes/community/blob/master/SUPPORT.md"
+  architecture:
+    path: "https://github.com/kubernetes/community/blob/master/architecture/README.md"
+  api:
+    path: "https://kubernetes.io/docs/reference/"

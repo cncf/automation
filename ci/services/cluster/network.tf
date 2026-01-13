@@ -223,6 +223,18 @@ resource "oci_core_security_list" "svc_lb" {
     }
   }
 
+  egress_security_rules {
+    destination      = "10.0.10.0/23"
+    destination_type = "CIDR_BLOCK"
+    protocol         = "6"
+    stateless        = false
+
+    tcp_options {
+      max = 32050
+      min = 32050
+    }
+  }
+
   ingress_security_rules {
     protocol    = "6"
     source      = "0.0.0.0/0"
@@ -449,6 +461,7 @@ resource "oci_core_security_list" "node" {
   }
 
   ingress_security_rules {
+    description = "NodePort service access"
     protocol    = "6"
     source      = "10.0.20.0/24"
     source_type = "CIDR_BLOCK"
@@ -457,6 +470,19 @@ resource "oci_core_security_list" "node" {
     tcp_options {
       max = 30628
       min = 30628
+    }
+  }
+
+  ingress_security_rules {
+    description = "Access Envoy Gateway Node Port"
+    protocol    = "6"
+    source      = "10.0.20.0/24"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+
+    tcp_options {
+      max = 32050
+      min = 32050
     }
   }
 }
@@ -508,4 +534,11 @@ resource "oci_core_public_ip" "kcp_lb_ip" {
   lifetime       = "RESERVED"
   display_name   = "${var.cluster_name}-kcp-lp-ip"
   private_ip_id  = "ocid1.privateip.oc1.us-sanjose-1.abzwuljrzbthnlqawsumhrda7i7ucfivjcirrw565fuomenlknsmcxpvn2ka"
+}
+
+// Below IP address will be used for migration from ingress-nginx to Envoy GW
+resource "oci_core_public_ip" "temp_ingress_ip" {
+  compartment_id = var.compartment_ocid
+  lifetime       = "RESERVED"
+  display_name   = "${var.cluster_name}-temp-ingress-ip"
 }

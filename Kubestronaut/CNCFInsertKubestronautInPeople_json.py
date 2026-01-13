@@ -29,10 +29,11 @@ gc = pygsheets.authorize(service_file='kubestronauts-handling-service-file.json'
 #open the google spreadsheet
 sh = gc.open_by_key(KUBESTRONAUT_RECEIVERS)
 # Select the first sheet
-wks = sh[0]
+issued = sh[0]
+invited = sh.worksheet_by_title("Invited")
 # Define elements used to ACK
 NON_acked_Kubestronauts=[]
-cell_f2 = wks.cell('F2')
+cell_f2 = issued.cell('F2')
 bg_color_f2 = cell_f2.color
 
 class People:
@@ -129,14 +130,34 @@ class People:
             indent=4)
 
 def ack_kubestronaut(email):
-    list_kubestronauts_cells=wks.find(pattern=email, cols=(2,2), matchEntireCell=False)
+#   list_kubestronauts_cells=issued.find(pattern=email, cols=(2,2), matchEntireCell=False)
+    list_kubestronauts_cells=invited.find(pattern=email, cols=(2,2), matchEntireCell=False)
     number_matching_cells = len(list_kubestronauts_cells)
 
     if (number_matching_cells==1):
         email_cell = list_kubestronauts_cells[0]
-        wks.update_value("G"+str(email_cell.row),"")
-        cell=wks.cell("F"+str(email_cell.row))
+        invited.update_value("G"+str(email_cell.row),"")
+        cell=invited.cell("F"+str(email_cell.row))
         cell.color = bg_color_f2
+
+
+        existing_emails = issued.get_col(2, include_tailing_empty=False)
+        next_row = len(existing_emails) + 1
+        # Insert a blank row before the next row
+        issued.insert_rows(next_row - 1, number=1)
+
+        # Add the email to column B in the newly inserted row
+        issued.update_value(f"B{next_row}", email)
+
+        # Add the first name to column C and last name to column D
+        issued.update_value(f"C{next_row}", invited.get_value("C"+str(email_cell.row)))
+        issued.update_value(f"D{next_row}", invited.get_value("D"+str(email_cell.row)))
+
+
+        # Set the background color of column F to green
+        issued.cell(f"F{next_row}").color = (0, 1.0, 0.0)
+
+
         print("Kubestronaut with email "+email+" : ACKed")
     elif (number_matching_cells==0):
         print("Kubestronaut with email "+email+" not found !!")
@@ -176,22 +197,24 @@ for lineToBeInserted in range(firstLineToBeInserted, lastLineToBeInserted+1, 1):
     if (peopleFound == True) :
         print(newPeople.toJSON())
 
-        indexPeople=0
+        # Check if person already exists
+        name_exists = False
         for people in data:
             if people["name"].lower() == newPeople.name.lower():
-                print("{newPeople.name} already in people.json, abort !")
+                print(f"{newPeople.name} already in people.json, abort !")
                 exit(2)
-            else:
-                print('Adding '+newPeople.name)
-                data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
-                os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
-                ack_kubestronaut(row[12])
-                break
 
+        # If we reach here, name doesn't exist, so add it
+        print('Adding '+newPeople.name)
+        data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
+        os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
+        ack_kubestronaut(row[12])
+
+# Sort the data before writing to maintain alphabetical order
 sorted_people = sorted(data, key=lambda x: x['name'])
 
 with open('../../people/people.json', "w", encoding='utf-8') as jsonfile:
-    jsonfile.write(json.dumps(data, indent=4, ensure_ascii=False))
+    jsonfile.write(json.dumps(sorted_people, indent=4, ensure_ascii=False))
 
 if NON_acked_Kubestronauts:
     print("\n\nList of Kubestroauts that were NOT ACKED:")

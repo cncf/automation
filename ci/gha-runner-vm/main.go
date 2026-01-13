@@ -137,8 +137,13 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatalf("Failed to remove tarball: %s\n", err)
 	}
 
+	baseDir := strings.Split(filename, "/")[0]
+	installRunnerPackage(baseDir)
+
+	//temp for the maven error, probably will be fixed on the next action-runner release
+	replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"maven\": \"3.9.11\"", "\"maven\": \"3.9.12\"")
+
 	if args.arch == "arm64" {
-		baseDir := strings.Split(filename, "/")[0]
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-azcopy.sh", "https://aka.ms/downloadazcopy-v10-linux", "https://github.com/Azure/azure-storage-azcopy/releases/download/v10.29.1/azcopy_linux_arm64_10.29.1.tar.gz")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
@@ -154,8 +159,6 @@ func run(cmd *cobra.Command, argv []string) error {
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-swift.sh", "\\$\\(lsb_release -rs\\)", "24.04-aarch64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-microsoft-edge.sh", "arch=amd64", "arch=arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-kubernetes-tools.sh", "linux-amd64", "linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "http://archive.ubuntu.com/.*", "https://launchpadlibrarian.net/683466454/containernetworking-plugins_1.1.1+ds1-3build1_arm64.deb")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-container-tools.sh", "amd64.deb", "arm64.deb")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-oras-cli.sh", "linux_amd64", "linux_arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-yq.sh", "linux_amd64", "linux_arm64")
 		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-docker.sh", "amd64", "arm64")
@@ -201,40 +204,46 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatal("could not run command: ", err)
 	}
 
-	command = exec.Command("oci", "compute", "image", "import", "from-object", "--bucket-name", args.bucketName, "--compartment-id", args.compartmentId, "--namespace", args.namespace, "--operating-system", imageName, "--display-name", imageName, "--name", fmt.Sprintf("ubuntu-gha-image-%s", timestamp), "--operating-system-version", *selectedRelease.TagName, "--launch-mode", "PARAVIRTUALIZED")
+	// Import image name starting with rc- (release-candidate) -- github action will update it if tests are successful.
+	command = exec.Command("oci", "compute", "image", "import", "from-object", "--bucket-name", args.bucketName, "--compartment-id", args.compartmentId, "--namespace", args.namespace, "--operating-system", "rc-" + imageName, "--display-name", "rc-" + imageName, "--name", fmt.Sprintf("ubuntu-gha-image-%s", timestamp), "--operating-system-version", *selectedRelease.TagName, "--launch-mode", "PARAVIRTUALIZED")
 	output, err := command.Output()
 	if err != nil {
 		log.Fatal("failed to run OCI command: ", err)
 	}
 
+	var result struct {
+		Data struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+
+	if err := json.Unmarshal(output, &result); err != nil {
+		log.Fatal("failed to parse JSON: ", err)
+	}
+	imageID := result.Data.ID
+
+	// expose Image Id to GitHub action
+	f, _ := os.OpenFile("/tmp/image_ocid", os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0600)
+	defer f.Close()
+	fmt.Fprintln(f, imageID)
+
+	for {
+		state, err := getImageState(imageID)
+		if err != nil {
+			log.Println("Error checking image state:", err)
+		} else {
+			log.Println("Current lifecycle-state:", state)
+			if state == "AVAILABLE" {
+				log.Printf("Image %s is AVAILABLE!", imageID)
+				break
+			}
+		}
+		log.Println("Waiting for 60 seconds before retrying...")
+		time.Sleep(60 * time.Second)
+	}
+
 	// Need to update arm64 image capabilities
 	if args.arch == "arm64" {
-		var result struct {
-			Data struct {
-				ID string `json:"id"`
-			} `json:"data"`
-		}
-
-		if err := json.Unmarshal(output, &result); err != nil {
-			log.Fatal("failed to parse JSON: ", err)
-		}
-		imageID := result.Data.ID
-
-		for {
-			state, err := getImageState(imageID)
-			if err != nil {
-				log.Println("Error checking image state:", err)
-			} else {
-				log.Println("Current lifecycle-state:", state)
-				if state == "AVAILABLE" {
-					log.Printf("Image %s is AVAILABLE!", imageID)
-					break
-				}
-			}
-			log.Println("Waiting for 30 seconds before retrying...")
-			time.Sleep(30 * time.Second)
-		}
-
 		// Add VM.Standard.A1.Flex compatibility
 		command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/VM.Standard.A1.Flex", "--request-body", "{\"ocpuConstraints\":{\"min\":\"1\",\"max\":\"80\"},\"memoryConstraints\":{\"minInGBs\":\"1\",\"maxInGBs\":\"512\"},\"imageId\":\""+imageID+"\",\"shape\":\"VM.Standard.A1.Flex\"}")
 		output, err = command.CombinedOutput()
@@ -242,6 +251,8 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Print(command.String())
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
+			exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
+			return nil
 		}
 		log.Println("VM.Standard.A1.Flex compatibility added")
 
@@ -253,6 +264,7 @@ func run(cmd *cobra.Command, argv []string) error {
 			"BM.Standard.E3.128",
 			"BM.Standard.E2.64",
 			"BM.DenseIO2.52",
+			"VM.Standard.E6.Flex",
 			"VM.Standard.E5.Flex",
 			"VM.Standard.E4.Flex",
 			"VM.Standard.E3.Flex",
@@ -280,6 +292,8 @@ func run(cmd *cobra.Command, argv []string) error {
 				log.Print(command.String())
 				log.Printf("OCI command failed. Output:\n%s", string(output))
 				log.Fatal("could not run command: ", err)
+				exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
+				return nil
 			}
 			log.Printf("%s compatibility removed", machine)
 			time.Sleep(time.Second)
@@ -294,8 +308,28 @@ func run(cmd *cobra.Command, argv []string) error {
 			log.Print(command.String())
 			log.Printf("OCI command failed. Output:\n%s", string(output))
 			log.Fatal("could not run command: ", err)
+			exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
+			return nil
 		}
 		log.Printf("Image capabilities updated:\n%s", string(output))
+	} else {
+		// Add VM.GPU.A10.1 and VM.GPU.A10.2
+		addList := []string{
+			"VM.GPU.A10.1",
+			"VM.GPU.A10.2",
+		}
+		for _, machine := range addList {
+			command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/"+machine, "--request-body", "{\"imageId\":\""+imageID+"\",\"shape\":\""+machine+"\"}")
+			output, err = command.CombinedOutput()
+			if err != nil {
+				log.Print(command.String())
+				log.Printf("OCI command failed. Output:\n%s", string(output))
+				log.Fatal("could not run command: ", err)
+				exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
+				return nil
+			}
+			log.Printf("%s compatibility added", machine)
+		}
 	}
 
 	log.Println("New Ubuntu 24.04 image created successfully.")
@@ -305,7 +339,7 @@ func run(cmd *cobra.Command, argv []string) error {
 func getImageState(imageID string) (string, error) {
 	command := exec.Command("oci", "compute", "image", "get", "--image-id", imageID)
 
-	output, err := command.CombinedOutput()
+	output, err := command.Output()
 	if err != nil {
 		log.Printf("OCI command failed. Output:\n%s", string(output))
 		return "", fmt.Errorf("failed to run OCI command: %w", err)
@@ -346,6 +380,10 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 
 	var response struct {
 		Data []core.Image `json:"data"`
+	}
+
+	if len(output) == 0 {
+		return false, fmt.Errorf("could not find image")
 	}
 
 	if err := json.Unmarshal(output, &response); err != nil {
@@ -482,6 +520,37 @@ func replaceInFileRegex(path string, patterns map[*regexp.Regexp]string) error {
 	return os.WriteFile(path, []byte(content), fi.Mode().Perm())
 }
 
+func installRunnerPackage(baseDir string) error {
+	// MS removed the runner package installation script. This one puts it back manually
+	log.Println("Creating runner package installation script...")
+
+	scriptContent := `#!/bin/bash -e
+################################################################################
+##  File:  install-runner-package.sh
+##  Desc:  Download and Install runner package
+################################################################################
+
+# Source the helpers for use with the script
+source $HELPER_SCRIPTS/install.sh
+
+download_url=$(resolve_github_release_asset_url "actions/runner" 'test("actions-runner-linux-x64-[0-9]+\\.[0-9]{3}\\.[0-9]+\\.tar\\.gz$")' "latest")
+archive_name="${download_url##*/}"
+archive_path=$(download_with_retry "$download_url")
+
+mkdir -p /opt/runner-cache
+mv "$archive_path" "/opt/runner-cache/$archive_name"
+`
+
+	// Write the script to the scripts directory where packer expects it
+	scriptPath := baseDir + "/images/ubuntu/scripts/build/install-runner-package.sh"
+	if err := os.WriteFile(scriptPath, []byte(scriptContent), 0755); err != nil {
+		return fmt.Errorf("failed to create install-runner-package.sh: %w", err)
+	}
+
+	log.Println("Runner package installation script created successfully")
+	return nil
+}
+
 func init() {
 	flags := Cmd.Flags()
 
@@ -563,32 +632,32 @@ func init() {
 }
 
 source "qemu" "img" {
-	qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
-	qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]] : []
-	efi_boot             = var.architecture == "arm64" ? true : false
-	efi_firmware_code    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_CODE.fd" : ""
-	efi_firmware_vars    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_VARS.fd" : ""
-	vm_name              = "image.raw"
-	cd_files             = ["./cloud-init/*"]
-	cd_label             = "cidata"
-	disk_compression     = true
-	disk_image           = true
-	iso_url              = "%s"
-	iso_checksum         = "%s"
-	memory               = 12000
-	cpus                 = 6
-	output_directory     = "build/"
-	accelerator          = "kvm"
-	disk_size            = "80G"
-	disk_interface       = "virtio"
-	format               = "raw"
-	net_device           = "virtio-net"
-	boot_wait            = "15s"
-	shutdown_command     = "echo 'packer' | sudo -S shutdown -P now"
-	ssh_username         = "ubuntu"
-	ssh_password         = "ubuntu"
-	ssh_timeout          = "60m"
-	headless             = true
+  qemu_binary          = var.architecture == "arm64" ? "/usr/bin/qemu-system-aarch64" : "/usr/bin/qemu-system-x86_64"
+  efi_boot             = var.architecture == "arm64" ? true : false
+  efi_firmware_code    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_CODE.fd" : ""
+  efi_firmware_vars    = var.architecture == "arm64" ? "/usr/share/AAVMF/AAVMF_VARS.fd" : ""
+  qemuargs             = var.architecture == "arm64" ? [["-machine", "virt"], ["-cpu", "host"], ["-accel", "kvm"]] : [["-cpu", "host"]]
+  vm_name              = "image.raw"
+  cd_files             = ["./cloud-init/*"]
+  cd_label             = "cidata"
+  disk_compression     = true
+  disk_image           = true
+  iso_url              = "%s"
+  iso_checksum         = "%s"
+  memory               = 12000
+  cpus                 = 6
+  output_directory     = "build/"
+  accelerator          = "kvm"
+  disk_size            = "80G"
+  disk_interface       = "virtio"
+  format               = "raw"
+  net_device           = "virtio-net"
+  boot_wait            = "15s"
+  shutdown_command     = "echo 'packer' | sudo -S shutdown -P now"
+  ssh_username         = "ubuntu"
+  ssh_password         = "ubuntu"
+  ssh_timeout          = "60m"
+  headless             = true
 }
 
 build {
@@ -608,12 +677,12 @@ build {
     environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     inline           = [
-			"curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.5.1/powershell-7.5.1-linux-arm64.tar.gz",
-			"mkdir -p /opt/microsoft/powershell/7",
-			"tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7",
-			"chmod +x /opt/microsoft/powershell/7/pwsh",
-			"ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
-		]
+      "curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.5.1/powershell-7.5.1-linux-arm64.tar.gz",
+      "mkdir -p /opt/microsoft/powershell/7",
+      "tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7",
+      "chmod +x /opt/microsoft/powershell/7/pwsh",
+      "ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
+    ]
   }`
 
 		replacements[`provisioner "shell" {
@@ -625,7 +694,30 @@ build {
 
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
+	} else {
+		replacements[`provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script          = "${path.root}/../scripts/build/list-dpkg.sh"
+  }`] = `provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script          = "${path.root}/../scripts/build/list-dpkg.sh"
+  }
+
+  provisioner "shell" {
+    execute_command   = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline            = [
+      "apt install -y nvidia-driver-570-server nvidia-utils-570-server",
+      "curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg",
+      "curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list",
+      "apt-get update",
+      "apt install -y nvidia-container-toolkit",
+      "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest"
+    ]
+  }`
 	}
+
+	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
+      "${path.root}/../scripts/build/install-runner-package.sh",`
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
 	provisioner "shell" {
@@ -633,7 +725,12 @@ build {
       inline = ["touch /etc/waagent.conf"]
 	}`
 
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `["sleep 30", "export HISTSIZE=0 && sync", "usermod -aG docker ubuntu", "apt install -y libelf-dev"]`
+	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+      "sleep 30",
+      "export HISTSIZE=0 && sync",
+      "usermod -aG docker ubuntu",
+      "apt install -y libelf-dev"
+    ]`
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
 	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]

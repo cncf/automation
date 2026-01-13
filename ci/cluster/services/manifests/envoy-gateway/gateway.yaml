@@ -1,0 +1,42 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: shared-gateway
+  namespace: envoy-gateway
+spec:
+  gatewayClassName: envoy
+  addresses:
+   - type: IPAddress
+     value: 146.235.214.235
+  listeners:
+  - name: https
+    protocol: HTTPS
+    port: 443
+    hostname: "*.cncf.io"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: guac-tls
+        namespace: guac
+        kind: Secret
+        group: ""
+      - name: auth-dex-tls
+        namespace: auth
+        kind: Secret
+        group: ""
+      - name: codimd-tls
+        namespace: codimd
+        kind: Secret
+        group: ""
+      - name: kdp-dashboard-tls
+        namespace: kdp
+        kind: Secret
+        group: ""
+      - name: kdp-kcp-public
+        namespace: kdp
+        kind: Secret
+        group: ""
+    allowedRoutes:
+      namespaces:
+        from: All

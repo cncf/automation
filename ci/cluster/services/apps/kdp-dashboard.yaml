@@ -30,6 +30,13 @@ spec:
             certIssuer:
               kind: ClusterIssuer
               name: letsencrypt-prod
+          extraVolumeMounts:
+          - name: user-kubeconfig-ca
+            mountPath: /app/_config/user-kubeconfig
+            secretName: kcp-ca
+            items:
+              - key: tls.crt
+                path: ca.crt
   destination:
     server: https://kubernetes.default.svc
     namespace: kdp

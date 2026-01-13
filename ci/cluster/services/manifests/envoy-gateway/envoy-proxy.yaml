@@ -1,0 +1,44 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: ha-envoy-proxy
+  namespace: envoy-gateway
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        externalTrafficPolicy: Cluster
+        type: LoadBalancer
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              loadBalancerIP: "146.235.214.235"
+              ports:
+              - name: https-443
+                port: 443
+                targetPort: 10443
+                protocol: TCP
+                nodePort: 32050
+      envoyDeployment:
+        pod:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: proxy
+                  topologyKey: kubernetes.io/hostname
+      envoyHpa:
+        minReplicas: 3
+        maxReplicas: 10
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80

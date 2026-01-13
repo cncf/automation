@@ -13,8 +13,11 @@ on:
 
 jobs:
   build:
-    name: Build new Actions VM
+    name: Build new Actions arm64 VM
     runs-on: oracle-2cpu-8gb-x86-64
+    outputs:
+      image_id: ${{ steps.build_image.outputs.image_id }}
+    timeout-minutes: 180
 
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +46,7 @@ jobs:
         shell: bash
 
       - name: Build VM Image
+        id: build_image
         env:
           OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
           OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
@@ -52,10 +56,17 @@ jobs:
         run: |
           scp -i ${{ github.workspace }}/id_rsa ${{ github.workspace }}/.github/scripts/build_arm_image.sh ubuntu@$PUBLIC_IP:.
           ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh ${{ env.OCI_CLI_USER }} ${{ env.OCI_CLI_TENANCY }} ${{ env.OCI_CLI_FINGERPRINT}} $(echo "${{ env.OCI_CLI_KEY_CONTENT }}" | base64 -w0) ${{ env.OCI_CLI_REGION }}
+          scp -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP:/tmp/image_ocid .
         shell: bash
 
+      - name: Upload image OCID
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-ocid
+          path: ./image_ocid
+
       - name: Terminate Arm64 BareMetal Instance
-        if: always()
+        if: ${{ always() }}
         env:
           OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
           OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
@@ -64,3 +75,126 @@ jobs:
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
         run: /home/runner/bin/oci compute instance terminate --instance-id "$INSTANCE_OCID" --force
         shell: bash
+
+  run-kind-with-arc:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Start kind cluster
+        run: |
+          cat <<EOF > kind-config.yaml
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+          - role: control-plane
+            image: kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
+          - role: worker
+            image: kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
+          EOF
+
+          kind create cluster --config kind-config.yaml
+
+          kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+          helm install cncf-gha-controller \
+            --namespace arc-systems \
+            --create-namespace \
+            --version 0.11.0 \
+            oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+
+          kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=controller-manager --timeout=600s -n arc-systems
+
+          kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem="${{ secrets.OCI_CLI_KEY_CONTENT }}" -n arc-systems
+
+          kubectl create secret generic github-arc-secret --from-literal=github_token=${{ secrets.GHA_PAT }} -n arc-systems
+
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: oci-config
+            namespace: arc-systems
+          type: Opaque
+          stringData:
+            config: |
+              [DEFAULT]
+              user=${{ secrets.OCI_CLI_USER }}
+              fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}
+              tenancy=${{ secrets.OCI_CLI_TENANCY }}
+              region=${{ secrets.OCI_CLI_REGION }}
+              key_file=/oci/oci_api_key.pem
+          EOF
+
+          sed 's/oracle-vm-2cpu-8gb/oci-ci-test/g' ci/cluster/oci/vm-runners/2cpu-8gb-arm64/install.yaml \
+            | sed '/subnet-id/a \        - --running-environment=ci' \
+            | sed '/nodeSelector/,+1d'| kubectl apply -f -
+
+      - name: Wait for completion signal
+        run: |
+          while true; do
+            PENDING=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs \
+              --jq '[.jobs[] | select(.name != "run-kind-with-arc" and .status != "completed")] | length')
+
+            if [[ "$PENDING" == "0" ]]; then
+              echo "All jobs completed"
+              break
+            fi
+
+            echo "There are $PENDING pending jobs..."
+
+            sleep 30
+          done
+
+          kind delete cluster
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  test-runner:
+    runs-on: oci-ci-test-arm64
+    needs: build
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update APT
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mc
+
+      - name: Run uname to verify architecture
+        run: |
+          uname -a
+          lsb_release -a
+          cat /proc/cpuinfo
+
+      - name: Run kind cluster
+        run: ${{ github.workspace }}/.github/scripts/test_with_kind_cluster.sh
+
+  release-new-image:
+    runs-on: ubuntu-latest
+    needs: [run-kind-with-arc, test-runner]
+    env:
+      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+    steps:
+      - name: Download image OCID
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ocid
+
+      - name: Release
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          export PATH=$PATH:$HOME/bin
+          IMAGE_ID=$(cat image_ocid)
+          oci compute image update --image-id ${IMAGE_ID} --operating-system ubuntu-24.04-arm64-gha-image --display-name ubuntu-24.04-arm64-gha-image

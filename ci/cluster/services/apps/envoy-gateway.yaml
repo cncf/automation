@@ -1,29 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: mongodb-operator
+  name: envoy-gateway
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "5"
     notifications.argoproj.io/subscribe.slack: internal-gha-argo
   labels:
-    cluster: oke-cncf-services
+    cluster: oke-cncf-automation
 spec:
   project: default
   source:
-    repoURL: https://mongodb.github.io/helm-charts
-    targetRevision: 0.13.0
-    chart: community-operator
-    helm:
-      values: |
-        community-operator-crds:
-          enabled: true
+    chart: gateway-helm
+    repoURL: docker.io/envoyproxy
+    targetRevision: v1.6.0
   destination:
+    namespace: envoy-gateway-system
     server: https://kubernetes.default.svc
-    namespace: slack-archive
   syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-    - CreateNamespace=true

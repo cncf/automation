@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: slack-vuesualizer
+  name: envoy-gateway-resources
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "25"
+    argocd.argoproj.io/sync-wave: "10"
     notifications.argoproj.io/subscribe.slack: internal-gha-argo
   labels:
     cluster: oke-cncf-automation
@@ -12,12 +12,14 @@ spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
-    namespace: slack-archive
+    namespace: envoy-gateway
   source:
-    path: ci/cluster/services/manifests/slack-vuesualizer
+    path: ci/cluster/services/manifests/envoy-gateway
     repoURL: https://github.com/cncf/automation
     targetRevision: HEAD
   syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
     automated:
       prune: true
     retry:

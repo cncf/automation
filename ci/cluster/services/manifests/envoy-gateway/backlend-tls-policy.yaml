@@ -1,0 +1,16 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: BackendTLSPolicy
+metadata:
+  name: kdp-backend-tls
+  namespace: kdp
+spec:
+  targetRefs:
+  - group: ''
+    kind: Service
+    name: kcp-front-proxy
+  validation:
+    caCertificateRefs:
+    - name: kcp-ca
+      group: ''
+      kind: Secret
+    hostname: api.services.cncf.io

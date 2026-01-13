@@ -31,6 +31,7 @@ var args struct {
 	shape              string
 	shapeOcpus         float32
 	shapeMemoryInGBs   float32
+	runEnv             string
 }
 
 func main() {
@@ -58,9 +59,13 @@ func run(cmd *cobra.Command, argv []string) error {
 
 	// List Images and retrieve the latest ID by type and arch
 
+	osname := fmt.Sprintf("ubuntu-24.04-%s-gha-image", args.arch)
+	if args.runEnv != "production" {
+		osname = fmt.Sprintf("rc-ubuntu-24.04-%s-gha-image", args.arch)
+	}
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
 		CompartmentId:   common.String(args.compartmentId),
-		OperatingSystem: common.String(fmt.Sprintf("ubuntu-24.04-%s-gha-image", args.arch)),
+		OperatingSystem: common.String(osname),
 		SortBy:          core.ListImagesSortByTimecreated,
 		SortOrder:       core.ListImagesSortOrderDesc,
 		Limit:           common.Int(1),
@@ -81,7 +86,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	}
 
 	// Create a new ephemeral machine
-	machine, err := oci.NewEphemeralMachine(ctx, computeClient, networkClient, core.LaunchInstanceDetails{
+	launchDetails := core.LaunchInstanceDetails{
 		AvailabilityDomain: common.String(args.availabilityDomain),
 		CompartmentId:      common.String(args.compartmentId),
 		Shape:              common.String(args.shape),
@@ -89,10 +94,6 @@ func run(cmd *cobra.Command, argv []string) error {
 		CreateVnicDetails: &core.CreateVnicDetails{
 			SubnetId:       common.String(args.subnetId),
 			AssignPublicIp: common.Bool(true),
-		},
-		ShapeConfig: &core.LaunchInstanceShapeConfigDetails{
-			MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
-			Ocpus:       common.Float32(args.shapeOcpus),
 		},
 		Metadata: map[string]string{
 			"ssh_authorized_keys": sshKeyPair.PublicKey,
@@ -107,7 +108,17 @@ func run(cmd *cobra.Command, argv []string) error {
 			AreAllPluginsDisabled: common.Bool(false),
 			IsMonitoringDisabled:  common.Bool(false),
 		},
-	})
+	}
+
+	if args.shapeMemoryInGBs > 0.0 && args.shapeOcpus > 0.0 {
+		launchDetails.ShapeConfig = &core.LaunchInstanceShapeConfigDetails{
+			MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
+			Ocpus:       common.Float32(args.shapeOcpus),
+		}
+	}
+
+	machine, err := oci.NewEphemeralMachine(ctx, computeClient, networkClient, launchDetails)
+
 	if err != nil {
 		return fmt.Errorf("failed to create machine: %w", err)
 	}
@@ -231,5 +242,11 @@ func init() {
 		"shape-memory-in-gbs",
 		0.0, // Default to 0.
 		"Amount of memory in GBs for flexible shapes (e.g., 16.0, 32.0). Required if a '.Flex' shape is used.",
+	)
+	flags.StringVar(
+		&args.runEnv,
+		"running-environment",
+		"production",
+		"Running Environment: production or ci",
 	)
 }

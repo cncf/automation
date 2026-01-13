@@ -1,0 +1,68 @@
+name: Project Validator
+
+on:
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: '0 9 * * *'
+  push:
+    paths:
+      - 'utilities/dot-project/**'
+      - 'utilities/dot-project/yaml/**'
+  pull_request:
+    paths:
+      - 'utilities/dot-project/**'
+      - 'utilities/dot-project/yaml/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Cache validation results
+      uses: actions/cache@v4
+      with:
+        path: utilities/dot-project/.cache
+        key: ${{ runner.os }}-validator-cache-${{ github.run_id }}
+        restore-keys: |
+          ${{ runner.os }}-validator-cache-
+
+    - name: Download dependencies
+      working-directory: utilities/dot-project/
+      run: go mod download
+
+    - name: Run tests
+      working-directory: utilities/dot-project/
+      run: go test -v
+
+    - name: Build validator
+      working-directory: utilities/dot-project/
+      run: go build ./cmd/validator
+
+    - name: Run Validator
+      working-directory: utilities/dot-project/
+      run: |
+        # Re-run validator to get exit code
+        ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --verify-maintainers
+      env:
+        REPO_ROOT: ${{ github.workspace }}
+        MAINTAINER_API_ENDPOINT: https://api-gw.platform.linuxfoundation.org/
+        MAINTAINER_API_STUB: "true"
