@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// SchemaVersionWithExtensions is the minimum version that supports extensions
+const SchemaVersionWithExtensions = "1.1.0"
+
 type ProjectList []string
 
 type Project struct {
@@ -25,6 +28,26 @@ type Project struct {
 	Governance    *GovernanceConfig    `json:"governance,omitempty" yaml:"governance,omitempty"`
 	Legal         *LegalConfig         `json:"legal,omitempty" yaml:"legal,omitempty"`
 	Documentation *DocumentationConfig `json:"documentation,omitempty" yaml:"documentation,omitempty"`
+
+	// Extensions for third-party tools (requires schema_version >= 1.1.0)
+	Extensions map[string]Extension `json:"extensions,omitempty" yaml:"extensions,omitempty"`
+}
+
+// Extension represents a third-party tool extension configuration
+type Extension struct {
+	// Metadata about the extension
+	Metadata *ExtensionMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	// Tool-specific configuration (arbitrary key-value pairs)
+	Config map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`
+}
+
+// ExtensionMetadata contains information about the extension provider
+type ExtensionMetadata struct {
+	Author     string `json:"author,omitempty" yaml:"author,omitempty"`
+	Homepage   string `json:"homepage,omitempty" yaml:"homepage,omitempty"`
+	Repository string `json:"repository,omitempty" yaml:"repository,omitempty"`
+	License    string `json:"license,omitempty" yaml:"license,omitempty"`
+	Version    string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 type PathRef struct {
