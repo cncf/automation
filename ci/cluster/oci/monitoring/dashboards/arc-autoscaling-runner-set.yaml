@@ -483,7 +483,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "builder",
-              "expr": "sum by(job) (gha_assigned_jobs)",
+              "expr": "sum by (name) (label_replace(gha_assigned_jobs, "name", "$1", "name", "(.*)-[^-]+$"))",
               "instant": false,
               "interval": "1m",
               "legendFormat": "{{job}}",
