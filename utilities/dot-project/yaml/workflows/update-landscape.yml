@@ -1,0 +1,14 @@
+name: Update Landscape
+on:
+  push:
+    paths:
+      - 'project.yaml' # Adjust to match the project's YAML file
+  workflow_dispatch:
+
+jobs:
+  update:
+    uses: cncf/automation/.github/workflows/update-landscape.yml@main
+    with:
+      project_file: 'project.yaml'
+    secrets:
+      LANDSCAPE_REPO_TOKEN: ${{ secrets.LANDSCAPE_REPO_TOKEN }}
