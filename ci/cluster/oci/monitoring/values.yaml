@@ -35,6 +35,9 @@ defaultRules:
     prometheus: true
     prometheusOperator: true
     windows: false
+  disabled:
+    KubeCPUOvercommit: true
+    KubeMemoryOvercommit: true
 
 kubeStateMetrics:
   enabled: true
