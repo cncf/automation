@@ -12,6 +12,9 @@ jobs:
       - name: Post message to Slack
         uses: rtCamp/action-slack-notify@v2
         env:
+          SLACK_ICON: https://github.com/cncf.png?size=48
+          SLACK_USERNAME: github-actions
+          SLACK_TITLE: "CNCF Automation Testing"
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_TEST }}
           SLACK_CHANNEL: cncf-automation-scheduled-message-testing
           MSG_MINIMAL: "true"
