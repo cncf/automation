@@ -32,12 +32,12 @@ When a new workflow with a `schedule` trigger is added or modified, GitHub Actio
 - Propagate changes across GitHub's infrastructure
 
 ### 2. Minimum Lead Time
-Based on empirical observation, there's typically a delay between when a workflow is added/modified and when its scheduled triggers become active. This delay is observed to be:
+Based on empirical observation from this and similar cases, there's typically a delay between when a workflow is added/modified and when its scheduled triggers become active. Observed delays include:
 - **Minimum**: 10-15 minutes in most cases
 - **Typical**: 15-30 minutes
 - **Maximum**: Can be longer during high load periods
 
-Note: GitHub documentation states that scheduled workflows may experience delays but does not specify exact timeframes.
+**Important**: These timeframes are based on observation and may vary. GitHub documentation states that scheduled workflows may experience delays but does not specify exact timeframes or guarantees. These should be treated as rough guidelines, not guaranteed behavior.
 
 ### 3. First Run Behavior
 Based on empirical observation, the workflow will trigger at the **NEXT** scheduled time that occurs **after** it's been properly registered in GitHub's scheduling system, not at any time that technically matches the cron pattern but occurred before registration.
@@ -48,12 +48,12 @@ The workflow defines two cron patterns:
 
 ```yaml
 schedule:
-  # 11:20am PT = 18:00 UTC (PDT) or 19:00 UTC (PST)
-  - cron: "20 18 15-21 * 5"  # Triggers at 18:20 UTC
-  - cron: "20 19 15-21 * 5"  # Triggers at 19:20 UTC
+  # Comment in workflow file: "11:20am PT = 18:00 UTC (PDT) or 19:00 UTC (PST)"
+  - cron: "20 18 15-21 * 5"  # Triggers at 18:20 UTC (minute 20, hour 18)
+  - cron: "20 19 15-21 * 5"  # Triggers at 19:20 UTC (minute 20, hour 19)
 ```
 
-Note: The workflow file's comment shows hours only (18:00/19:00), but the actual cron triggers at minute 20 of those hours (18:20/19:20).
+**Note**: The workflow file's comment shows hours only (18:00/19:00 UTC), which may be shorthand or an oversight. The actual cron patterns specify minute 20, so the triggers occur at 18:20 UTC and 19:20 UTC respectively.
 
 ### Cron Pattern Breakdown
 
@@ -140,7 +140,7 @@ Based on the cron pattern `20 19 15-21 * 5` (Friday, days 15-21, at 19:20 UTC):
 
 ### March 2026
 - **March 20, 2026** (Friday, day 20) at 19:20 UTC / 12:20 PM PDT ✓
-  - March is in PDT (daylight saving time starts 2nd Sunday of March)
+  - Daylight saving time starts March 8, 2026 (2nd Sunday), so March 20 is in PDT
 
 The workflow should now be properly registered and will trigger at these times (assuming it remains enabled and unchanged).
 
@@ -161,7 +161,7 @@ This is different from using `*` for day-of-month, which would mean "any Friday"
 
 ## References
 
-- GitHub Actions Workflow Run History: Queried via `github-mcp-server-actions_list` API for workflow `test-scheduled-slack-message.yaml`
+- GitHub Actions Workflow Run History: Queried via GitHub Actions API (using MCP server tooling)
 - Workflow File: `.github/workflows/test-scheduled-slack-message.yaml`
 - Commit: `9eb29c2` - "Merge pull request #142"
 - Date Created: January 16, 2026 at 11:10:35 AM PST
