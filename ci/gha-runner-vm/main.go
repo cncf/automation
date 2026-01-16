@@ -690,13 +690,19 @@ build {
   }
 
   provisioner "shell" {
+    environment_vars = ["TOOLKIT_VERSION=1.17.0-1"]
     execute_command   = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     inline            = [
       "apt install -y nvidia-driver-570-server nvidia-utils-570-server",
       "curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg",
       "curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list",
       "apt-get update",
-      "apt install -y nvidia-container-toolkit",
+      "apt install -y --allow-downgrades nvidia-container-toolkit=${TOOLKIT_VERSION} nvidia-container-toolkit-base=${TOOLKIT_VERSION} libnvidia-container-tools=${TOOLKIT_VERSION}",
+      "apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools ibnvidia-container1",
+      "nvidia-ctk runtime configure --runtime=docker --set-as-default --cdi.enabled",
+      "nvidia-ctk config --set accept-nvidia-visible-devices-as-volume-mounts=true --in-place",
+      "systemctl restart docker",
+      "sed -i '/#accept-nvidia-visible-devices-as-volume-mounts/a accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml"
       "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest"
     ]
   }`
