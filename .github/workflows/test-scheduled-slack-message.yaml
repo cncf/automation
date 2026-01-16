@@ -17,8 +17,15 @@ jobs:
           SLACK_ICON: https://github.com/cncf.png?size=48
           SLACK_USERNAME: cncf-slack-reminders
           SLACK_MSG_AUTHOR: cncf-automation
-          SLACK_TITLE: "CNCF Automation Testing"
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_TEST }}
-          SLACK_CHANNEL: cncf-automation-scheduled-message-testing
           MSG_MINIMAL: "true"
+          # add a new SLACK_WEBHOOK for each channel you want to message
+          # create the webhook here:
+          # https://api.slack.com/apps/A0A9VUYC3ME/incoming-webhooks
+          SLACK_CHANNEL: cncf-automation-scheduled-message-testing
+          # add secrets in the cncf/automation repo here:
+          # https://github.com/cncf/automation/settings/secrets/actions
+          # name format: `SLACK_WEBHOOK_<channel_name_in_uppercase_and_underscores>`
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_TEST }}
+          # change the title and message as needed
+          SLACK_TITLE: "CNCF Automation Testing"
           SLACK_MESSAGE: "testing scheduled messaging, every 20 minutes"
