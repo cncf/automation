@@ -13,7 +13,8 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_ICON: https://github.com/cncf.png?size=48
-          SLACK_USERNAME: github-actions
+          SLACK_USERNAME: cncf-slack-reminders
+          SLACK_MSG_AUTHOR: cncf-automation
           SLACK_TITLE: "CNCF Automation Testing"
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_TEST }}
           SLACK_CHANNEL: cncf-automation-scheduled-message-testing
