@@ -136,9 +136,11 @@ Based on the cron pattern `20 19 15-21 * 5` (Friday, days 15-21, at 19:20 UTC):
 
 ### February 2026
 - **February 20, 2026** (Friday, day 20) at 19:20 UTC / 11:20 AM PST ✓
+  - February is still in PST (winter time)
 
 ### March 2026
-- **March 20, 2026** (Friday, day 20) at 19:20 UTC / 11:20 AM PDT ✓
+- **March 20, 2026** (Friday, day 20) at 19:20 UTC / 12:20 PM PDT ✓
+  - March is in PDT (daylight saving time starts 2nd Sunday of March)
 
 The workflow should now be properly registered and will trigger at these times (assuming it remains enabled and unchanged).
 
