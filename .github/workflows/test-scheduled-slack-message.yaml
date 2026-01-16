@@ -11,7 +11,7 @@ jobs:
   remind:
     runs-on: ubuntu-latest
     steps:
-      - name: Guard: only run at 1:00pm Pacific
+      - name: Guard: only run at 1pm Pacific
         shell: bash
         run: |
           hour_pt=$(TZ=America/Los_Angeles date +%H)
