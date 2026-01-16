@@ -20,7 +20,7 @@ jobs:
           # create the webhook here:
           # https://api.slack.com/apps/A0A9VUYC3ME/incoming-webhooks
           SLACK_CHANNEL: cncf-automation-scheduled-message-testing
-          # add screts in the cncf/automation repo here:
+          # add secrets in the cncf/automation repo here:
           # https://github.com/cncf/automation/settings/secrets/actions
           # name format: `SLACK_WEBHOOK_<channel_name_in_uppercase_and_underscores>`
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_TEST }}
