@@ -1,24 +1,23 @@
-name: "Slack scheduled message testing (every 20 minutes)"
+name: "Slack scheduled message testing"
 
 on:
   workflow_dispatch:
   schedule:
     # 3rd Friday is always the 15th–21st, on weekday 5 (Friday)
-    # 11:20am PT = 18:00 UTC (PDT) or 19:00 UTC (PST)
-    - cron: "20 18 15-21 * 5"
-    - cron: "20 19 15-21 * 5"
-
+    # 1:00pm PT = 20:00 UTC (PDT) or 21:00 UTC (PST)
+    - cron: "0 20 15-21 * 5"
+    - cron: "0 21 15-21 * 5"
 jobs:
   remind:
     runs-on: ubuntu-latest
     steps:
-      - name: Guard: only run at 11:20am Pacific
+      - name: Guard: only run at 1:00pm Pacific
         shell: bash
         run: |
           hour_pt=$(TZ=America/Los_Angeles date +%H)
           min_pt=$(TZ=America/Los_Angeles date +%M)
-          if [[ "$hour_pt" != "11" || "$min_pt" != "20" ]]; then
-            echo "Not 11:20 PT (currently ${hour_pt}:${min_pt}). Exiting."
+          if [[ "$hour_pt" != "13" || "$min_pt" != "00" ]]; then
+            echo "Not 1:00pm PT (currently ${hour_pt}:${min_pt}). Exiting."
             exit 0
           fi
 
@@ -39,4 +38,4 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_TEST }}
           # change the title and message as needed
           SLACK_TITLE: "CNCF Automation Testing"
-          SLACK_MESSAGE: "testing scheduled messaging, every 20 minutes"
+          SLACK_MESSAGE: "testing scheduled messaging, this messages should be sent every third friday at 1pm pst" 
