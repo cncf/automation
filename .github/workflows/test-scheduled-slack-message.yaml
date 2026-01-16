@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # 3rd Friday is always the 15th–21st, on weekday 5 (Friday)
-    # 11:00am PT = 18:00 UTC (PDT) or 19:00 UTC (PST)
+    # 11:20am PT = 18:00 UTC (PDT) or 19:00 UTC (PST)
     - cron: "20 18 15-21 * 5"
     - cron: "20 19 15-21 * 5"
 
