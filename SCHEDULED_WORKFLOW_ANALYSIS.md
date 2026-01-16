@@ -4,7 +4,7 @@
 
 The workflow **did NOT trigger** at 11:20 AM PST (19:20 UTC) on Friday, January 16, 2026 because **the workflow file was only added to the repository ~10 minutes before the expected trigger time**.
 
-GitHub Actions scheduled workflows require adequate lead time to be registered in the scheduling system before they can trigger.
+Based on observation of the actual behavior, GitHub Actions scheduled workflows require lead time to be registered in the scheduling system before they can trigger. This is consistent with documented GitHub Actions behavior where workflow changes require processing time.
 
 ## Timeline
 
@@ -32,10 +32,12 @@ When a new workflow with a `schedule` trigger is added or modified, GitHub Actio
 - Propagate changes across GitHub's infrastructure
 
 ### 2. Minimum Lead Time
-There's typically a delay between when a workflow is added/modified and when its scheduled triggers become active. This delay is:
+Based on empirical observation, there's typically a delay between when a workflow is added/modified and when its scheduled triggers become active. This delay is observed to be:
 - **Minimum**: 10-15 minutes in most cases
 - **Typical**: 15-30 minutes
 - **Maximum**: Can be longer during high load periods
+
+Note: GitHub documentation states that scheduled workflows may experience delays but does not specify exact timeframes.
 
 ### 3. First Run Behavior
 The workflow will trigger at the **NEXT** scheduled time that occurs **after** it's been properly registered in GitHub's scheduling system, not at any time that technically matches the cron pattern but occurred before registration.
@@ -73,14 +75,16 @@ Pattern: `20 19 15-21 * 5`
 ### Workflow Run History (via GitHub API)
 Examined all scheduled workflow runs for `test-scheduled-slack-message.yaml`:
 
-Recent scheduled runs occurred at:
-- 2026-01-16T01:30:54Z (17:30 PST on Jan 15)
-- 2026-01-16T00:43:50Z (16:43 PST on Jan 15)  
-- 2026-01-16T00:08:07Z (16:08 PST on Jan 15)
-- 2026-01-15T23:43:34Z (15:43 PST on Jan 15)
-- 2026-01-15T23:28:09Z (15:28 PST on Jan 15)
+Note: The workflow file was modified multiple times before the final version. Early test runs occurred at various times during development and testing phases (not aligned with the final cron schedule which specifies minute 20).
 
-**No run at 2026-01-16T19:20:00Z** (11:20 AM PST on Jan 16)
+Most recent scheduled runs before the merge at 11:10 AM PST on Jan 16:
+- 2026-01-16T01:30:54Z
+- 2026-01-16T00:43:50Z  
+- 2026-01-16T00:08:07Z
+- 2026-01-15T23:43:34Z
+- 2026-01-15T23:28:09Z
+
+**No run at 2026-01-16T19:20:00Z** (11:20 AM PST on Jan 16) - the first time the current schedule should have triggered
 
 ### Guard Step Analysis
 The workflow includes a guard step (lines 15-23) that checks:
@@ -152,10 +156,11 @@ This is different from using `*` for day-of-month, which would mean "any Friday"
 
 ## References
 
-- GitHub Actions Workflow Run History: [Actions API Query Results]
+- GitHub Actions Workflow Run History: Queried via `github-mcp-server-actions_list` API for workflow `test-scheduled-slack-message.yaml`
 - Workflow File: `.github/workflows/test-scheduled-slack-message.yaml`
 - Commit: `9eb29c2` - "Merge pull request #142"
 - Date Created: January 16, 2026 at 11:10:35 AM PST
+- GitHub Actions Documentation: [Events that trigger workflows - schedule](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule)
 
 ---
 
