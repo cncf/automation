@@ -702,7 +702,7 @@ build {
       "nvidia-ctk runtime configure --runtime=docker --set-as-default --cdi.enabled",
       "nvidia-ctk config --set accept-nvidia-visible-devices-as-volume-mounts=true --in-place",
       "systemctl restart docker",
-      "sed -i '/#accept-nvidia-visible-devices-as-volume-mounts/a accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml"
+      "sed -i '/#accept-nvidia-visible-devices-as-volume-mounts/a accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml",
       "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest"
     ]
   }`
