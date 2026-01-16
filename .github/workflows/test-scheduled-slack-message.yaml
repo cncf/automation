@@ -11,13 +11,13 @@ jobs:
   remind:
     runs-on: ubuntu-latest
     steps:
-      - name: Guard: only run at 1pm Pacific
+      - name: "Guard: only run at 1pm Pacific"
         shell: bash
         run: |
           hour_pt=$(TZ=America/Los_Angeles date +%H)
           min_pt=$(TZ=America/Los_Angeles date +%M)
           if [[ "$hour_pt" != "13" || "$min_pt" != "00" ]]; then
-            echo "Not 1:00pm PT (currently ${hour_pt}:${min_pt}). Exiting."
+            echo "Not 1:00pm PT (currently ${hour_pt} ${min_pt}). Exiting."
             exit 0
           fi
 
