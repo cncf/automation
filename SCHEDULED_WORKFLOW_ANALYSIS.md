@@ -4,7 +4,7 @@
 
 The workflow **did NOT trigger** at 11:20 AM PST (19:20 UTC) on Friday, January 16, 2026 because **the workflow file was only added to the repository ~10 minutes before the expected trigger time**.
 
-Based on observation of the actual behavior, GitHub Actions scheduled workflows require lead time to be registered in the scheduling system before they can trigger. This is consistent with documented GitHub Actions behavior where workflow changes require processing time.
+Based on empirical observation, GitHub Actions scheduled workflows require lead time to be registered in the scheduling system before they can trigger. GitHub's documentation notes that scheduled workflows may experience delays, though specific timeframes are not documented.
 
 ## Timeline
 
@@ -40,7 +40,7 @@ Based on empirical observation, there's typically a delay between when a workflo
 Note: GitHub documentation states that scheduled workflows may experience delays but does not specify exact timeframes.
 
 ### 3. First Run Behavior
-The workflow will trigger at the **NEXT** scheduled time that occurs **after** it's been properly registered in GitHub's scheduling system, not at any time that technically matches the cron pattern but occurred before registration.
+Based on empirical observation, the workflow will trigger at the **NEXT** scheduled time that occurs **after** it's been properly registered in GitHub's scheduling system, not at any time that technically matches the cron pattern but occurred before registration.
 
 ## Cron Schedule Analysis
 
@@ -48,9 +48,12 @@ The workflow defines two cron patterns:
 
 ```yaml
 schedule:
-  - cron: "20 18 15-21 * 5"  # 18:20 UTC = 10:20 AM PST / 11:20 AM PDT
-  - cron: "20 19 15-21 * 5"  # 19:20 UTC = 11:20 AM PST / 12:20 PM PDT
+  # 11:20am PT = 18:00 UTC (PDT) or 19:00 UTC (PST)
+  - cron: "20 18 15-21 * 5"  # Triggers at 18:20 UTC
+  - cron: "20 19 15-21 * 5"  # Triggers at 19:20 UTC
 ```
+
+Note: The workflow file's comment shows hours only (18:00/19:00), but the actual cron triggers at minute 20 of those hours (18:20/19:20).
 
 ### Cron Pattern Breakdown
 
