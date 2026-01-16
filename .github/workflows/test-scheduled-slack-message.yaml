@@ -3,14 +3,25 @@ name: "Slack scheduled message testing (every 20 minutes)"
 on:
   workflow_dispatch:
   schedule:
-    # Run at :03, :23, and :43 of every hour to avoid high-load periods
-    # Staggered minutes reduce delays from GitHub Actions resource contention
-    - cron: "3,23,43 * * * *"
+    # 3rd Friday is always the 15th–21st, on weekday 5 (Friday)
+    # 11:20am PT = 18:00 UTC (PDT) or 19:00 UTC (PST)
+    - cron: "20 18 15-21 * 5"
+    - cron: "20 19 15-21 * 5"
 
 jobs:
   remind:
     runs-on: ubuntu-latest
     steps:
+      - name: Guard: only run at 11:20am Pacific
+        shell: bash
+        run: |
+          hour_pt=$(TZ=America/Los_Angeles date +%H)
+          min_pt=$(TZ=America/Los_Angeles date +%M)
+          if [[ "$hour_pt" != "11" || "$min_pt" != "20" ]]; then
+            echo "Not 11:20 PT (currently ${hour_pt}:${min_pt}). Exiting."
+            exit 0
+          fi
+
       - name: Post message to Slack
         uses: rtCamp/action-slack-notify@v2
         env:
