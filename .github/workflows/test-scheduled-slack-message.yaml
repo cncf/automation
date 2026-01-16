@@ -3,7 +3,9 @@ name: "Slack scheduled message testing (every 20 minutes)"
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/20 * * * *"
+    # Run at :03, :23, and :43 of every hour to avoid high-load periods
+    # Staggered minutes reduce delays from GitHub Actions resource contention
+    - cron: "3,23,43 * * * *"
 
 jobs:
   remind:
