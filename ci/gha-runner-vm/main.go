@@ -697,7 +697,7 @@ build {
       "curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg",
       "curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list",
       "apt-get update",
-      "apt install -y --allow-downgrades nvidia-container-toolkit=${TOOLKIT_VERSION} nvidia-container-toolkit-base=${TOOLKIT_VERSION} libnvidia-container-tools=${TOOLKIT_VERSION}",
+      "apt install -y --allow-downgrades nvidia-container-toolkit=$TOOLKIT_VERSION nvidia-container-toolkit-base=$TOOLKIT_VERSION libnvidia-container-tools=$TOOLKIT_VERSION",
       "apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools ibnvidia-container1",
       "nvidia-ctk runtime configure --runtime=docker --set-as-default --cdi.enabled",
       "nvidia-ctk config --set accept-nvidia-visible-devices-as-volume-mounts=true --in-place",
