@@ -12,7 +12,6 @@
 | container2wasm | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | sandbox | sandbox | sandbox | sandbox | - | - |
 | Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Headlamp | sandbox | - | sandbox | sandbox | sandbox | sandbox |
 | Hexa | sandbox | sandbox | - | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
