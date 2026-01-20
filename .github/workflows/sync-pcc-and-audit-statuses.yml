@@ -29,7 +29,7 @@ jobs:
           LFX_TOKEN: ${{ secrets.LFX_TOKEN }}
         run: |
           python scripts/fetch_pcc_projects.py
-        working-directory: ./audit_project_lifecycle_across_tools
+        working-directory: ./utilities/audit_project_lifecycle_across_tools
       - name: Fetch external data sources
         run: |
           mkdir -p datasources
@@ -38,11 +38,11 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/cncf/foundation/main/project-maintainers.csv -o datasources/project-maintainers.csv
           curl -fsSL https://devstats.cncf.io/ -o datasources/devstats.html
           curl -fsSL https://raw.githubusercontent.com/cncf/artwork/main/README.md -o datasources/artwork.md
-        working-directory: ./audit_project_lifecycle_across_tools
+        working-directory: ./utilities/audit_project_lifecycle_across_tools
       - name: Generate status audit
         run: |
           python scripts/audit_landscape_status.py
-        working-directory: ./audit_project_lifecycle_across_tools
+        working-directory: ./utilities/audit_project_lifecycle_across_tools
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
