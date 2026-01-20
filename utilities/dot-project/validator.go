@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -391,10 +392,50 @@ func isValidExtensionName(name string) bool {
 	return true
 }
 
-// isVersionAtLeast compares semantic versions (simple comparison)
+// isVersionAtLeast compares semantic versions properly
 func isVersionAtLeast(version, minVersion string) bool {
-	// Simple version comparison for x.y.z format
-	return version >= minVersion
+	// Parse version strings into comparable parts
+	vParts, err := parseVersion(version)
+	if err != nil {
+		return false
+	}
+	
+	minParts, err := parseVersion(minVersion)
+	if err != nil {
+		return false
+	}
+	
+	// Compare major, minor, patch in order
+	for i := 0; i < 3; i++ {
+		if vParts[i] > minParts[i] {
+			return true
+		}
+		if vParts[i] < minParts[i] {
+			return false
+		}
+	}
+	
+	// All parts are equal
+	return true
+}
+
+// parseVersion parses a semantic version string into [major, minor, patch]
+func parseVersion(version string) ([3]int, error) {
+	parts := strings.Split(version, ".")
+	if len(parts) != 3 {
+		return [3]int{}, fmt.Errorf("invalid version format: %s", version)
+	}
+	
+	var result [3]int
+	for i, part := range parts {
+		num, err := strconv.Atoi(part)
+		if err != nil {
+			return [3]int{}, fmt.Errorf("invalid version component: %s", part)
+		}
+		result[i] = num
+	}
+	
+	return result, nil
 }
 
 // isValidURL checks if a string is a valid URL

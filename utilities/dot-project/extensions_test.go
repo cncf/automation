@@ -177,11 +177,25 @@ func TestIsVersionAtLeast(t *testing.T) {
 		minVersion string
 		expected   bool
 	}{
+		// Basic cases
 		{"1.1.0", "1.1.0", true},
 		{"1.2.0", "1.1.0", true},
 		{"2.0.0", "1.1.0", true},
 		{"1.0.0", "1.1.0", false},
 		{"0.9.0", "1.1.0", false},
+		
+		// Edge cases that Copilot mentioned - multi-digit version components
+		{"1.10.0", "1.2.0", true},   // This was the bug: "1.10.0" > "1.2.0" should be true
+		{"1.2.0", "1.10.0", false},  // "1.2.0" < "1.10.0" should be false
+		{"10.0.0", "2.0.0", true},   // Major version multi-digit
+		{"1.1.10", "1.1.2", true},   // Patch version multi-digit
+		{"2.1.0", "2.1.0", true},    // Equal versions
+		
+		// Invalid versions should return false
+		{"invalid", "1.0.0", false},
+		{"1.0.0", "invalid", false},
+		{"1.0", "1.0.0", false},     // Missing patch version
+		{"1.0.0", "1.0", false},     // Missing patch version in minVersion
 	}
 
 	for _, tc := range testCases {
