@@ -1,0 +1,41 @@
+name: "Slack scheduled message: CNCF Glossary WG reminder"
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 4th Thursday is always the 22nd–28th, on weekday 4 (Thursday)
+    # Every 2 months starting January:  Jan, Mar, May, Jul, Sep, Nov
+    # 00:00 UTC
+    - cron: "0 0 22-28 1,3,5,7,9,11 4"
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name:  "Guard: only run on 4th Thursday"
+        shell: bash
+        run: |
+          day_of_week=$(date -u +%u)  # 1=Mon, 4=Thu, 7=Sun
+          day_of_month=$(date -u +%d)
+          if [[ "$day_of_week" != "4" || "$day_of_month" -lt 22 || "$day_of_month" -gt 28 ]]; then
+            echo "Not the 4th Thursday (day_of_week=$day_of_week, day_of_month=$day_of_month). Exiting."
+            exit 0
+          fi
+      - name: Post message to Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_ICON: https://github.com/cncf.png?size=48
+          SLACK_USERNAME: cncf-slack-reminders
+          SLACK_MSG_AUTHOR: cncf-automation
+          MSG_MINIMAL: "true"
+          # add a new SLACK_WEBHOOK for each channel you want to message
+          # create the webhook here:
+          # https://api.slack.com/apps/A0A9VUYC3ME/incoming-webhooks
+          SLACK_CHANNEL: cncf-automation-scheduled-message-testing
+          # add secrets in the cncf/automation repo here:
+          # https://github.com/cncf/automation/settings/secrets/actions
+          # name format: `SLACK_WEBHOOK_<channel_name_in_uppercase_and_underscores>`
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_GLOSSARY_MAINTAINERS }}
+          # change the title and message as needed
+          SLACK_TITLE: "CNCF Glossary Maintainer Meeting"
+          SLACK_MESSAGE: "Hello everyone, our CNCF Glossary Maintainer Bi-onthly meeting is starting now.\n\nAgenda: https://docs.google.com/document/d/1kjNrLWbMHSQ3x4ob8Q_lNOoJ4f8uPQcuD9a0Sif24NY/edit?usp=sharing \nJoin Zoom Meeting: https://zoom-lfx.platform.linuxfoundation.org/meeting/91402732746?password=446b5757-c5cc-445f-a960-6750842194fb" 
