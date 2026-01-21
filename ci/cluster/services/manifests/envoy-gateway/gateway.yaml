@@ -20,7 +20,6 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: guac-tls-gw
-        namespace: guac
         kind: Secret
         group: ""
     allowedRoutes:
@@ -35,9 +34,24 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: api-guac-tls-gw
-        namespace: guac
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-guac
+    protocol: HTTP
+    port: 80
+    hostname: guac.cncf.io
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-api-guac
+    protocol: HTTP
+    port: 80
+    hostname: api.guac.cncf.io
     allowedRoutes:
       namespaces:
         from: All
@@ -50,9 +64,16 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: codimd-tls
-        namespace: codimd
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-notes
+    protocol: HTTP
+    port: 80
+    hostname: notes.cncf.io
     allowedRoutes:
       namespaces:
         from: All
@@ -65,9 +86,16 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: auth-dex-tls
-        namespace: auth
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-auth-services
+    protocol: HTTP
+    port: 80
+    hostname: auth.services.cncf.io
     allowedRoutes:
       namespaces:
         from: All
@@ -80,9 +108,16 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: kdp-dashboard-tls
-        namespace: kdp
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-services
+    protocol: HTTP
+    port: 80
+    hostname: services.cncf.io
     allowedRoutes:
       namespaces:
         from: All
@@ -95,9 +130,16 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: kdp-kcp-public
-        namespace: kdp
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-public-api-services
+    protocol: HTTP
+    port: 80
+    hostname: public.api.services.cncf.io
     allowedRoutes:
       namespaces:
         from: All
