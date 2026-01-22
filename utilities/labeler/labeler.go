@@ -25,6 +25,8 @@ type GitHubClient interface {
 	EditLabel(ctx context.Context, owner, repo, name string, label *github.Label) (*github.Label, *github.Response, error)
 	DeleteLabel(ctx context.Context, owner, repo, name string) (*github.Response, error)
 	GetLabel(ctx context.Context, owner, repo, name string) (*github.Label, *github.Response, error)
+	AddAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error)
+	RemoveAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error)
 }
 
 // GitHubClientWrapper wraps the actual GitHub client
@@ -66,6 +68,14 @@ func (g *GitHubClientWrapper) DeleteLabel(ctx context.Context, owner, repo, name
 
 func (g *GitHubClientWrapper) GetLabel(ctx context.Context, owner, repo, name string) (*github.Label, *github.Response, error) {
 	return g.client.Issues.GetLabel(ctx, owner, repo, name)
+}
+
+func (g *GitHubClientWrapper) AddAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error) {
+	return g.client.Issues.AddAssignees(ctx, owner, repo, number, assignees)
+}
+
+func (g *GitHubClientWrapper) RemoveAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error) {
+	return g.client.Issues.RemoveAssignees(ctx, owner, repo, number, assignees)
 }
 
 // Labeler handles the core labeling logic
@@ -230,7 +240,7 @@ func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule 
 	shouldApply := !foundNamespace
 
 	if l.config.Debug {
-		log.Printf("Label rule %s: foundNamespace=%v, matchCondition=%s, shouldApply=%v", 
+		log.Printf("Label rule %s: foundNamespace=%v, matchCondition=%s, shouldApply=%v",
 			rule.Name, foundNamespace, rule.Spec.MatchCondition, shouldApply)
 	}
 
@@ -266,6 +276,10 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 		if label != "" {
 			return l.removeLabel(ctx, req.Owner, req.Repo, req.IssueNumber, label)
 		}
+	case "assign":
+		return l.assignUsers(ctx, req.Owner, req.Repo, req.IssueNumber, argv)
+	case "unassign":
+		return l.unassignUsers(ctx, req.Owner, req.Repo, req.IssueNumber, argv)
 	}
 	return nil
 }
@@ -377,6 +391,51 @@ func (l *Labeler) removeLabel(ctx context.Context, owner, repo string, issueNum 
 		return fmt.Errorf("failed to remove label %s: %v", label, err)
 	}
 	return nil
+}
+
+func (l *Labeler) assignUsers(ctx context.Context, owner, repo string, issueNum int, users []string) error {
+	cleanUsers := l.cleanUsernames(users)
+	if len(cleanUsers) == 0 {
+		return fmt.Errorf("no valid users specified for assignment")
+	}
+
+	if l.config.Debug {
+		log.Printf("Assigning users: %v", cleanUsers)
+	}
+
+	_, _, err := l.client.AddAssignees(ctx, owner, repo, issueNum, cleanUsers)
+	if err != nil {
+		return fmt.Errorf("failed to assign users %v: %v", cleanUsers, err)
+	}
+	return nil
+}
+
+func (l *Labeler) unassignUsers(ctx context.Context, owner, repo string, issueNum int, users []string) error {
+	cleanUsers := l.cleanUsernames(users)
+	if len(cleanUsers) == 0 {
+		return fmt.Errorf("no valid users specified for unassignment")
+	}
+
+	if l.config.Debug {
+		log.Printf("Unassigning users: %v", cleanUsers)
+	}
+
+	_, _, err := l.client.RemoveAssignees(ctx, owner, repo, issueNum, cleanUsers)
+	if err != nil {
+		return fmt.Errorf("failed to unassign users %v: %v", cleanUsers, err)
+	}
+	return nil
+}
+
+func (l *Labeler) cleanUsernames(users []string) []string {
+	cleanUsers := make([]string, 0, len(users))
+	for _, user := range users {
+		cleanUser := strings.TrimSpace(strings.TrimPrefix(user, "@"))
+		if cleanUser != "" {
+			cleanUsers = append(cleanUsers, cleanUser)
+		}
+	}
+	return cleanUsers
 }
 
 func (l *Labeler) getLabelDefinition(labelName string) (string, string, string) {

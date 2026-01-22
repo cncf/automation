@@ -10,23 +10,27 @@ import (
 
 // MockGitHubClient implements GitHubClient for testing
 type MockGitHubClient struct {
-	Issues       map[int]*github.Issue
-	Labels       []*github.Label
-	IssueLabels  map[int][]*github.Label
-	CreatedLabels map[string]*github.Label
-	DeletedLabels []string
-	AppliedLabels map[int][]string
-	RemovedLabels map[int][]string
+	Issues         map[int]*github.Issue
+	Labels         []*github.Label
+	IssueLabels    map[int][]*github.Label
+	CreatedLabels  map[string]*github.Label
+	DeletedLabels  []string
+	AppliedLabels  map[int][]string
+	RemovedLabels  map[int][]string
+	Assignees      map[int][]string
+	UnassignedUsers map[int][]string
 }
 
 func NewMockGitHubClient() *MockGitHubClient {
 	return &MockGitHubClient{
-		Issues:        make(map[int]*github.Issue),
-		IssueLabels:   make(map[int][]*github.Label),
-		CreatedLabels: make(map[string]*github.Label),
-		DeletedLabels: []string{},
-		AppliedLabels: make(map[int][]string),
-		RemovedLabels: make(map[int][]string),
+		Issues:          make(map[int]*github.Issue),
+		IssueLabels:     make(map[int][]*github.Label),
+		CreatedLabels:   make(map[string]*github.Label),
+		DeletedLabels:   []string{},
+		AppliedLabels:   make(map[int][]string),
+		RemovedLabels:   make(map[int][]string),
+		Assignees:       make(map[int][]string),
+		UnassignedUsers: make(map[int][]string),
 	}
 }
 
@@ -113,6 +117,22 @@ func (m *MockGitHubClient) GetLabel(ctx context.Context, owner, repo, name strin
 	}
 	// Return error if label doesn't exist
 	return nil, nil, &github.ErrorResponse{Message: "Not Found"}
+}
+
+func (m *MockGitHubClient) AddAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error) {
+	if m.Assignees[number] == nil {
+		m.Assignees[number] = []string{}
+	}
+	m.Assignees[number] = append(m.Assignees[number], assignees...)
+	return nil, nil, nil
+}
+
+func (m *MockGitHubClient) RemoveAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error) {
+	if m.UnassignedUsers[number] == nil {
+		m.UnassignedUsers[number] = []string{}
+	}
+	m.UnassignedUsers[number] = append(m.UnassignedUsers[number], assignees...)
+	return nil, nil, nil
 }
 
 // Helper function to create a test config
@@ -462,4 +482,137 @@ func sliceContains(slice []string, item string) bool {
 		}
 	}
 	return false
+}
+
+
+func TestLabeler_ProcessMatchRule_AssignCommand(t *testing.T) {
+	client := NewMockGitHubClient()
+	config := createTestConfigWithAssignRules()
+	labeler := NewLabeler(client, config)
+
+	req := &LabelRequest{
+		Owner:        "test-owner",
+		Repo:         "test-repo",
+		IssueNumber:  1,
+		CommentBody:  "/assign @testuser",
+		ChangedFiles: []string{},
+	}
+
+	ctx := context.Background()
+	err := labeler.ProcessRequest(ctx, req)
+	if err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+
+	// Check that user was assigned
+	assignees := client.Assignees[1]
+	if !sliceContains(assignees, "testuser") {
+		t.Errorf("Expected 'testuser' to be assigned, got: %v", assignees)
+	}
+}
+
+func TestLabeler_ProcessMatchRule_AssignMultipleUsers(t *testing.T) {
+	client := NewMockGitHubClient()
+	config := createTestConfigWithAssignRules()
+	labeler := NewLabeler(client, config)
+
+	req := &LabelRequest{
+		Owner:        "test-owner",
+		Repo:         "test-repo",
+		IssueNumber:  1,
+		CommentBody:  "/assign @user1 @user2",
+		ChangedFiles: []string{},
+	}
+
+	ctx := context.Background()
+	err := labeler.ProcessRequest(ctx, req)
+	if err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+
+	// Check that both users were assigned
+	assignees := client.Assignees[1]
+	if !sliceContains(assignees, "user1") {
+		t.Errorf("Expected 'user1' to be assigned, got: %v", assignees)
+	}
+	if !sliceContains(assignees, "user2") {
+		t.Errorf("Expected 'user2' to be assigned, got: %v", assignees)
+	}
+}
+
+func TestLabeler_ProcessMatchRule_UnassignCommand(t *testing.T) {
+	client := NewMockGitHubClient()
+	config := createTestConfigWithAssignRules()
+	labeler := NewLabeler(client, config)
+
+	req := &LabelRequest{
+		Owner:        "test-owner",
+		Repo:         "test-repo",
+		IssueNumber:  1,
+		CommentBody:  "/unassign @testuser",
+		ChangedFiles: []string{},
+	}
+
+	ctx := context.Background()
+	err := labeler.ProcessRequest(ctx, req)
+	if err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+
+	// Check that user was unassigned
+	unassigned := client.UnassignedUsers[1]
+	if !sliceContains(unassigned, "testuser") {
+		t.Errorf("Expected 'testuser' to be unassigned, got: %v", unassigned)
+	}
+}
+
+func TestLabeler_ProcessMatchRule_AssignWithoutAtSymbol(t *testing.T) {
+	client := NewMockGitHubClient()
+	config := createTestConfigWithAssignRules()
+	labeler := NewLabeler(client, config)
+
+	req := &LabelRequest{
+		Owner:        "test-owner",
+		Repo:         "test-repo",
+		IssueNumber:  1,
+		CommentBody:  "/assign testuser",
+		ChangedFiles: []string{},
+	}
+
+	ctx := context.Background()
+	err := labeler.ProcessRequest(ctx, req)
+	if err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+
+	// Check that user was assigned (without @ prefix)
+	assignees := client.Assignees[1]
+	if !sliceContains(assignees, "testuser") {
+		t.Errorf("Expected 'testuser' to be assigned, got: %v", assignees)
+	}
+}
+
+func createTestConfigWithAssignRules() *LabelsYAML {
+	config := createTestConfig()
+	config.Ruleset = append(config.Ruleset, Rule{
+		Name: "assign",
+		Kind: "match",
+		Spec: RuleSpec{
+			Command: "/assign",
+		},
+		Actions: []Action{
+			{Kind: "assign"},
+		},
+	})
+	config.Ruleset = append(config.Ruleset, Rule{
+		Name: "unassign",
+		Kind: "match",
+		Spec: RuleSpec{
+			Command: "/unassign",
+		},
+		Actions: []Action{
+			{Kind: "unassign"},
+		},
+	})
+	return config
 }
