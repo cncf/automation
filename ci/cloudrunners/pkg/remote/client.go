@@ -18,10 +18,14 @@ func DialWithRetry(ctx context.Context, network, addr string, sshConfig *ssh.Cli
 
 	log.Info("dialing ssh", "addr", addr)
 
-	// The VM is just booting, so give it some time to start responding to SSH
+	// The VM is just booting, so give it some time to start responding to SSH.
 	attempt := 0
 	maxAttempts := 99
 	for {
+		if err := ctx.Err(); err != nil {
+			return nil, fmt.Errorf("ssh dial canceled for %q: %w", addr, err)
+		}
+
 		attempt++
 
 		sshClient, err := ssh.Dial(network, addr, sshConfig)
@@ -32,8 +36,14 @@ func DialWithRetry(ctx context.Context, network, addr string, sshConfig *ssh.Cli
 			return nil, fmt.Errorf("failed to connect to ssh on %q: %w", addr, err)
 		}
 		log.Info("retrying ssh connection", "attempt", attempt, "error", err)
-		attempt++
-		time.Sleep(2 * time.Second)
+
+		timer := time.NewTimer(2 * time.Second)
+		select {
+		case <-timer.C:
+		case <-ctx.Done():
+			timer.Stop()
+			return nil, fmt.Errorf("ssh dial canceled for %q: %w", addr, ctx.Err())
+		}
 	}
 }
 
@@ -59,35 +69,33 @@ func (s *SSHClient) WriteFile(ctx context.Context, dir string, file string, b []
 	}
 	defer session.Close()
 
-	errors := make(chan error)
-
-	writeFile := func() error {
-		w, err := session.StdinPipe()
-		if err != nil {
-			return fmt.Errorf("getting ssh stdin: %w", err)
-		}
-		defer w.Close()
-		if _, err := fmt.Fprintf(w, "C%s %d %s\n", mode, len(b), file); err != nil {
-			return fmt.Errorf("writing to scp: %w", err)
-		}
-		if _, err := w.Write(b); err != nil {
-			return fmt.Errorf("writing to scp: %w", err)
-		}
-		if _, err := fmt.Fprintf(w, "\x00"); err != nil {
-			return fmt.Errorf("writing to scp: %w", err)
-		}
-		return nil
-	}
-	go func() {
-		err := writeFile()
-		errors <- err
-	}()
-
-	if err := session.Run("/usr/bin/scp -t " + dir); err != nil {
-		return fmt.Errorf("doing scp: %w", err)
+	w, err := session.StdinPipe()
+	if err != nil {
+		return fmt.Errorf("getting ssh stdin: %w", err)
 	}
 
-	if err := <-errors; err != nil {
+	if err := session.Start("/usr/bin/scp -t " + dir); err != nil {
+		_ = w.Close()
+		return fmt.Errorf("starting scp: %w", err)
+	}
+
+	if _, err := fmt.Fprintf(w, "C%s %d %s\n", mode, len(b), file); err != nil {
+		_ = w.Close()
+		return fmt.Errorf("writing to scp: %w", err)
+	}
+	if _, err := w.Write(b); err != nil {
+		_ = w.Close()
+		return fmt.Errorf("writing to scp: %w", err)
+	}
+	if _, err := fmt.Fprintf(w, "\x00"); err != nil {
+		_ = w.Close()
+		return fmt.Errorf("writing to scp: %w", err)
+	}
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("closing scp stdin: %w", err)
+	}
+
+	if err := session.Wait(); err != nil {
 		return fmt.Errorf("doing scp: %w", err)
 	}
 	return nil
