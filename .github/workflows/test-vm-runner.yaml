@@ -46,7 +46,9 @@ jobs:
         run: ${{ github.workspace }}/.github/scripts/test_with_kind_cluster.sh
 
   test-gpu-runner:
-    runs-on: oracle-vm-gpu-a10-1
+    runs-on:
+      labels: oracle-vm-gpu-a10-1
+      group: GPUs
     if: ${{ github.event.inputs.test_gpu == 'yes' }}
     steps:
       - name: checkout gpus
