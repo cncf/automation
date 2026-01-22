@@ -7,6 +7,7 @@ A Go utility that validates CNCF project metadata and maintainer rosters. It che
 - Validates project YAML files against structured schema requirements
 - Detects content drift using SHA256 hashes and cached history
 - Validates maintainer definitions against canonical `.project` repository data
+- **Extension mechanism for third-party tools** (schema version 1.1.0+)
 - Stubbed third-party verification hook for maintainer identity checks
 - Multiple output formats: human-readable text, JSON, YAML
 - Includes GitHub Actions workflow and Makefile helpers
@@ -123,6 +124,42 @@ documentation:
   architecture: { path: "docs/ARCHITECTURE.md" }
   api: { path: "docs/API.md" }
 ```
+
+### Extensions (schema_version >= 1.1.0)
+
+Extensions allow third-party tools to store their configuration within the `.project` file without conflicting with core fields. Each extension is namespaced by tool name.
+
+```yaml
+schema_version: "1.1.0"  # Required for extensions
+# ... other fields ...
+
+extensions:
+  # Tool-specific configuration
+  scorecard:
+    metadata:
+      author: "OSSF"
+      homepage: "https://securityscorecards.dev"
+      repository: "https://github.com/ossf/scorecard"
+      license: "Apache-2.0"
+      version: "4.0.0"
+    config:
+      checks:
+        - Binary-Artifacts
+        - Branch-Protection
+      threshold: 7.0
+
+  clomonitor:
+    metadata:
+      author: "CNCF"
+      homepage: "https://clomonitor.io"
+    config:
+      category: "platform"
+```
+
+**Extension naming rules:**
+- Use alphanumeric characters, hyphens, underscores, and dots
+- Reserved names (core field names) cannot be used
+- Namespacing with organization prefix is recommended (e.g., `my-org.tool-name`)
 
 Each maintainer entry must contain a `project-maintainers` team which cannot be empty. Handles are normalized (trimmed and stripped of leading `@`) before verification.
 
