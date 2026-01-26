@@ -107,7 +107,8 @@ if [ -f "$EMAIL_FILE" ]; then
   fail_count=0
   
   while IFS= read -r email; do
-    if [[ -n "$email" ]]; then # Skip empty lines
+    # Skip empty lines and comment lines (starting with #)
+    if [[ -n "$email" && ! "$email" =~ ^[[:space:]]*# ]]; then
       member_count=$((member_count + 1))
       if add_member "$email"; then
         success_count=$((success_count + 1))
