@@ -8,9 +8,12 @@ The workflow automates the process of adding multiple email addresses to a CNCF 
 
 - Add maintainer emails with default settings (role: none, delivery: email_delivery_single)
 - Optionally add staff emails with owner role
-- Validate email formats before adding
+- Perform basic (syntactic) email format validation before attempting to add addresses
 - Handle space-separated or newline-separated email lists
+- Accept email addresses via GitHub Actions `workflow_dispatch` inputs (these inputs are visible in the GitHub Actions UI to users with access to the repository)
+- Log validation errors, including any email addresses that fail validation, in the workflow run logs
 
+**Privacy note:** Because email addresses are entered via non-secret workflow inputs and may appear in workflow logs when validation fails, avoid using highly sensitive personal email addresses if visibility to repository collaborators is a concern.
 ## Prerequisites
 
 1. **LFX Authentication Token**: You need a valid token from [Open Profile Developer Settings](https://openprofile.dev/developer-settings)
