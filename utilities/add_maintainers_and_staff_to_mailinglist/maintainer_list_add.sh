@@ -34,6 +34,27 @@ COMMON_ROLE="none"
 COMMON_DELIVERY_MODE="email_delivery_single"
 COMMON_MEMBER_TYPE="direct"
 
+# --- Verbose mode (set VERBOSE=1 to log full email addresses) ---
+VERBOSE="${VERBOSE:-0}"
+
+# --- Function to redact email for logging ---
+redact_email() {
+  local email="$1"
+  if [[ "$VERBOSE" == "1" ]]; then
+    echo "$email"
+  else
+    # Extract local and domain parts
+    local local_part="${email%%@*}"
+    local domain="${email##*@}"
+    # Show first 2 chars of local part + *** + @domain
+    if [[ ${#local_part} -le 2 ]]; then
+      echo "***@$domain"
+    else
+      echo "${local_part:0:2}***@$domain"
+    fi
+  fi
+}
+
 # --- Function to add a member ---
 add_member() {
   local email="$1"
@@ -48,7 +69,9 @@ add_member() {
     exit 1
   fi
 
-  echo "Adding member: $email with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
+  local redacted_email
+  redacted_email=$(redact_email "$email")
+  echo "Adding member: $redacted_email with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
 
   local response status body
   response="$(curl -sS -w '\n%{http_code}' -X POST \
