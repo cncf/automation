@@ -8,17 +8,24 @@ if [ ! -f "config.txt" ]; then
     exit 1
 fi
 
-# Source the config.txt file to load variables
-source config.txt
-
-# Check if required variables are set
+# Safely parse config.txt file instead of sourcing it to prevent shell injection
+# Extract TOKEN value
+TOKEN=$(grep -E '^TOKEN=' config.txt | cut -d'=' -f2- | head -n1)
 if [ -z "${TOKEN:-}" ]; then
     echo "Error: TOKEN variable not found in config.txt file"
     exit 1
 fi
 
+# Extract SUBGROUP_ID value and validate it's numeric
+SUBGROUP_ID=$(grep -E '^SUBGROUP_ID=' config.txt | cut -d'=' -f2- | head -n1)
 if [ -z "${SUBGROUP_ID:-}" ]; then
     echo "Error: SUBGROUP_ID variable not found in config.txt file"
+    exit 1
+fi
+
+# Validate that SUBGROUP_ID is numeric to prevent injection attacks
+if ! [[ "$SUBGROUP_ID" =~ ^[0-9]+$ ]]; then
+    echo "Error: SUBGROUP_ID must be numeric only. Got: '$SUBGROUP_ID'"
     exit 1
 fi
 
