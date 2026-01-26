@@ -83,6 +83,8 @@ jobs:
         working-directory: utilities/add_maintainers_and_staff_to_mailinglist
         run: |
           chmod +x maintainer_list_add.sh
+          # Note: The script redacts email addresses in logs by default.
+          # Set VERBOSE=true to log full email addresses (for debugging only).
           EMAIL_FILE="maintainers_emails_temp.txt" ./maintainer_list_add.sh
 
       - name: Add staff members (if enabled)
@@ -92,6 +94,8 @@ jobs:
           if [ -f "staff_emails.txt" ]; then
             echo "Adding staff members from staff_emails.txt"
             chmod +x staff_list_add.sh
+            # Note: The script redacts email addresses in logs by default.
+            # Set VERBOSE=true to log full email addresses (for debugging only).
             ./staff_list_add.sh
           else
             echo "Warning: staff_emails.txt not found, skipping staff addition"
