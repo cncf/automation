@@ -1,0 +1,97 @@
+name: Update Mailing List
+
+on:
+  workflow_dispatch:
+    inputs:
+      mailing_list_id:
+        description: 'Mailing list ID (SUBGROUP_ID)'
+        required: true
+        type: string
+      add_staff:
+        description: 'Add staff members from staff_emails.txt'
+        required: false
+        type: boolean
+        default: false
+      add_emails:
+        description: 'Email addresses to add (one per line or space-separated)'
+        required: true
+        type: string
+
+jobs:
+  update-mailing-list:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Create config.txt
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        env:
+          LFX_TOKEN: ${{ secrets.LFX_TOKEN }}
+          MAILING_LIST_ID: ${{ inputs.mailing_list_id }}
+        run: |
+          if [ -z "$LFX_TOKEN" ]; then
+            echo "Error: secrets.LFX_TOKEN is not set"
+            exit 1
+          fi
+          echo "TOKEN=$LFX_TOKEN" > config.txt
+          echo "SUBGROUP_ID=$MAILING_LIST_ID" >> config.txt
+          chmod 600 config.txt
+          echo "Config file created successfully"
+
+      - name: Validate and create temporary email file
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        env:
+          ADD_EMAILS: ${{ inputs.add_emails }}
+        run: |
+          # Write + normalize: accept space/newline/comma/tab separated values
+          # (Do not echo the full input to logs; keep it on disk only.)
+          printf '%s' "$ADD_EMAILS" | tr ',\t ' '\n' > maintainers_emails_temp.txt
+          # Trim and drop empty lines
+          sed -i 's/^[[:space:]]*//; s/[[:space:]]*$//' maintainers_emails_temp.txt
+          sed -i '/^[[:space:]]*$/d' maintainers_emails_temp.txt
+          # Validate: every line must be a valid email
+          if grep -nEv '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$' maintainers_emails_temp.txt >/tmp/invalid_emails.txt; then
+            echo "Error: Invalid email format detected (showing up to first 20 invalid lines):"
+            head -n 20 /tmp/invalid_emails.txt
+            exit 1
+          fi
+          echo "Email file created successfully."
+          echo "Email count: $(wc -l < maintainers_emails_temp.txt | tr -d ' ')"
+          echo "First few emails:"
+          head -n 5 maintainers_emails_temp.txt
+
+      - name: Add emails using maintainer_list_add.sh
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        run: |
+          chmod +x maintainer_list_add.sh
+          EMAIL_FILE="maintainers_emails_temp.txt" ./maintainer_list_add.sh
+
+      - name: Add staff members (if enabled)
+        if: ${{ inputs.add_staff == true }}
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        run: |
+          if [ -f "staff_emails.txt" ]; then
+            echo "Adding staff members from staff_emails.txt"
+            chmod +x staff_list_add.sh
+            ./staff_list_add.sh
+          else
+            echo "Warning: staff_emails.txt not found, skipping staff addition"
+          fi
+
+      - name: Cleanup temporary files
+        if: always()
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        run: |
+          rm -f config.txt
+          rm -f maintainers_emails_temp.txt
+
+
