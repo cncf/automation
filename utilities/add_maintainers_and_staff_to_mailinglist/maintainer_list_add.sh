@@ -34,6 +34,22 @@ COMMON_ROLE="none"
 COMMON_DELIVERY_MODE="email_delivery_single"
 COMMON_MEMBER_TYPE="direct"
 
+# --- Logging control ---
+# Set VERBOSE=true to log full email addresses (for local debugging)
+# Set VERBOSE=false or leave unset to redact emails in logs (recommended for CI/CD)
+VERBOSE="${VERBOSE:-false}"
+
+# --- Function to redact email for logging ---
+redact_email() {
+  local email="$1"
+  if [[ "$VERBOSE" == "true" ]]; then
+    echo "$email"
+  else
+    # Redact the local part, show only domain: user@example.com -> ***@example.com
+    echo "${email}" | sed -E 's/^[^@]+/***/'
+  fi
+}
+
 # --- Function to add a member ---
 add_member() {
   local email="$1"
@@ -44,11 +60,11 @@ add_member() {
     --arg delivery_mode "$COMMON_DELIVERY_MODE" \
     --arg member_type "$COMMON_MEMBER_TYPE" \
     '{email: $email, mod_status: $mod_status, delivery_mode: $delivery_mode, member_type: $member_type}'); then
-    echo "Error: Failed to construct JSON payload for email '$email'." >&2
+    echo "Error: Failed to construct JSON payload for email '$(redact_email "$email")'." >&2
     exit 1
   fi
 
-  echo "Adding member: $email with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
+  echo "Adding member: $(redact_email "$email") with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
 
   local response status body
   response="$(curl -sS -w '\n%{http_code}' -X POST \
@@ -71,12 +87,23 @@ add_member() {
 echo "Attempting to add members from '$EMAIL_FILE' to subgroup ID $SUBGROUP_ID..."
 
 if [ -f "$EMAIL_FILE" ]; then
+  member_count=0
+  success_count=0
+  fail_count=0
+  
   while IFS= read -r email; do
     if [[ -n "$email" ]]; then # Skip empty lines
-      add_member "$email"
+      member_count=$((member_count + 1))
+      if add_member "$email"; then
+        success_count=$((success_count + 1))
+      else
+        fail_count=$((fail_count + 1))
+      fi
       echo "" # Add a newline for better readability
     fi
   done < "$EMAIL_FILE"
+  
+  echo "Summary: Processed $member_count member(s) - $success_count succeeded, $fail_count failed."
 else
   echo "Error: File '$EMAIL_FILE' not found."
   exit 1

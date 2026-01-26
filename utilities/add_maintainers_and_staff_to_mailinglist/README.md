@@ -102,3 +102,16 @@ The workflow automates the process of adding multiple email addresses to a CNCF 
 - The `staff_emails.txt` file is optional and only used if the `add_staff` option is enabled
 - Staff members are added with `owner` role, while maintainers are added with `none` role
 
+### Privacy and Logging
+
+To protect privacy, email addresses are **redacted in logs by default**:
+- Emails are shown as `***@domain.com` instead of the full address
+- The workflow provides a summary count of processed, succeeded, and failed additions
+- This prevents email addresses from being exposed in GitHub Actions workflow logs
+
+For local debugging only, you can set `VERBOSE=true` to log full email addresses:
+```bash
+VERBOSE=true ./maintainer_list_add.sh
+```
+**Note**: Never enable `VERBOSE=true` in CI/CD environments, as it will expose email addresses in logs.
+
