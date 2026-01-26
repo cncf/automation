@@ -32,6 +32,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq
 
+      - name: Validate mailing list ID
+        env:
+          MAILING_LIST_ID: ${{ inputs.mailing_list_id }}
+        run: |
+          # Validate that mailing_list_id is numeric only to prevent shell injection
+          if ! [[ "$MAILING_LIST_ID" =~ ^[0-9]+$ ]]; then
+            echo "Error: mailing_list_id must be numeric only. Got: '$MAILING_LIST_ID'"
+            exit 1
+          fi
+          echo "Mailing list ID validated: $MAILING_LIST_ID"
+
       - name: Create config.txt
         working-directory: utilities/add_maintainers_and_staff_to_mailinglist
         env:
@@ -42,6 +53,7 @@ jobs:
             echo "Error: secrets.LFX_TOKEN is not set"
             exit 1
           fi
+          # Write config file with validated numeric ID
           echo "TOKEN=$LFX_TOKEN" > config.txt
           echo "SUBGROUP_ID=$MAILING_LIST_ID" >> config.txt
           chmod 600 config.txt
