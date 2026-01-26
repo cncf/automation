@@ -13,21 +13,31 @@ fi
 TOKEN=""
 SUBGROUP_ID=""
 
-while IFS='=' read -r key value; do
+while IFS= read -r line; do
     # Skip empty lines and comments
-    [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
-    # Trim whitespace from key and value
-    key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    # Assign to variables based on key
-    case "$key" in
-        TOKEN)
-            TOKEN="$value"
-            ;;
-        SUBGROUP_ID)
-            SUBGROUP_ID="$value"
-            ;;
-    esac
+    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+    
+    # Split on first '=' only to preserve '=' characters in values
+    if [[ "$line" =~ ^([^=]+)=(.*)$ ]]; then
+        key="${BASH_REMATCH[1]}"
+        value="${BASH_REMATCH[2]}"
+        
+        # Trim whitespace using parameter expansion
+        key="${key#"${key%%[![:space:]]*}"}"
+        key="${key%"${key##*[![:space:]]}"}"
+        value="${value#"${value%%[![:space:]]*}"}"
+        value="${value%"${value##*[![:space:]]}"}"
+        
+        # Assign to variables based on key
+        case "$key" in
+            TOKEN)
+                TOKEN="$value"
+                ;;
+            SUBGROUP_ID)
+                SUBGROUP_ID="$value"
+                ;;
+        esac
+    fi
 done < config.txt
 
 # Check if required variables are set
