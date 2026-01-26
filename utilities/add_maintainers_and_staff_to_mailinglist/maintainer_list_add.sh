@@ -83,11 +83,19 @@ add_member() {
   body="$(printf '%s' "$response" | sed '$d')"
 
   if [[ "$status" -ge 400 ]]; then
-    echo "  API Error (HTTP $status): $body" >&2
+    if [[ "$VERBOSE" == "true" ]]; then
+      echo "  API Error (HTTP $status): $body" >&2
+    else
+      echo "  API Error (HTTP $status). Response body omitted (set VERBOSE=true to see full body)." >&2
+    fi
     return 1
   fi
 
-  echo "  API Response (HTTP $status): $body"
+  if [[ "$VERBOSE" == "true" ]]; then
+    echo "  API Response (HTTP $status): $body"
+  else
+    echo "  API Response (HTTP $status)"
+  fi
 }
 
 # --- Main execution ---
