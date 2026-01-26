@@ -66,7 +66,7 @@ add_member() {
     --arg member_type "$COMMON_MEMBER_TYPE" \
     '{email: $email, mod_status: $mod_status, delivery_mode: $delivery_mode, member_type: $member_type}'); then
     echo "Error: Failed to construct JSON payload for email '$email'." >&2
-    exit 1
+    return 1
   fi
 
   local redacted_email
