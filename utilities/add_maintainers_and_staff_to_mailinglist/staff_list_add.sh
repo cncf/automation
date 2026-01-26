@@ -37,13 +37,16 @@ COMMON_MEMBER_TYPE="direct"
 # --- Function to add a member ---
 add_member() {
   local email="$1"
-  local payload=$(jq -n \
+  local payload
+  if ! payload=$(jq -n \
     --arg email "$email" \
     --arg mod_status "$COMMON_ROLE" \
     --arg delivery_mode "$COMMON_DELIVERY_MODE" \
     --arg member_type "$COMMON_MEMBER_TYPE" \
-    '{email: $email, mod_status: $mod_status, delivery_mode: $delivery_mode, member_type: $member_type}'
-  )
+    '{email: $email, mod_status: $mod_status, delivery_mode: $delivery_mode, member_type: $member_type}'); then
+    echo "Error: failed to generate JSON payload for email '$email'" >&2
+    return 1
+  fi
 
   echo "Adding member: $email with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
 
