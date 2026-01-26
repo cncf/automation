@@ -66,9 +66,7 @@ jobs:
           fi
           echo "Email file created successfully."
           echo "Email count: $(wc -l < maintainers_emails_temp.txt | tr -d ' ')"
-          echo "First few emails:"
-          head -n 5 maintainers_emails_temp.txt
-
+          echo "Note: Email preview suppressed to avoid logging PII."
       - name: Add emails using maintainer_list_add.sh
         working-directory: utilities/add_maintainers_and_staff_to_mailinglist
         run: |
