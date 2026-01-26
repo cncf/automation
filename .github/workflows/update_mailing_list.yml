@@ -70,6 +70,12 @@ jobs:
           # Trim and drop empty lines
           sed -i 's/^[[:space:]]*//; s/[[:space:]]*$//' maintainers_emails_temp.txt
           sed -i '/^[[:space:]]*$/d' maintainers_emails_temp.txt
+          # Ensure there is at least one email after normalization/cleanup
+          if [ ! -s maintainers_emails_temp.txt ]; then
+            echo "Error: No valid email addresses provided after normalization."
+            echo "Hint: Ensure 'add_emails' input contains at least one email address."
+            exit 1
+          fi
           # Validate: every line must be a valid email
           # Capture only line numbers of invalid entries to avoid logging PII
           if grep -nEv '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' maintainers_emails_temp.txt | cut -d: -f1 >/tmp/invalid_emails.txt; then
