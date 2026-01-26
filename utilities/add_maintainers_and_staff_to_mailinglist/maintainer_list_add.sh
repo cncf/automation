@@ -8,16 +8,35 @@ if [ ! -f "config.txt" ]; then
     exit 1
 fi
 
-# Source the config.txt file to load variables
-source config.txt
+# Parse config.txt safely without executing it as shell code
+# This prevents command injection via shell metacharacters in the config values
+TOKEN=""
+SUBGROUP_ID=""
+
+while IFS='=' read -r key value; do
+    # Skip empty lines and comments
+    [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
+    # Trim whitespace from key and value
+    key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    # Assign to variables based on key
+    case "$key" in
+        TOKEN)
+            TOKEN="$value"
+            ;;
+        SUBGROUP_ID)
+            SUBGROUP_ID="$value"
+            ;;
+    esac
+done < config.txt
 
 # Check if required variables are set
-if [ -z "${TOKEN:-}" ]; then
+if [ -z "$TOKEN" ]; then
     echo "Error: TOKEN variable not found in config.txt file"
     exit 1
 fi
 
-if [ -z "${SUBGROUP_ID:-}" ]; then
+if [ -z "$SUBGROUP_ID" ]; then
     echo "Error: SUBGROUP_ID variable not found in config.txt file"
     exit 1
 fi
