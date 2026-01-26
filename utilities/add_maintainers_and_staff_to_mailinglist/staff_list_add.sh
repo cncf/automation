@@ -8,6 +8,16 @@ if [ ! -f "config.txt" ]; then
     exit 1
 fi
 
+# Function to trim leading and trailing whitespace
+trim_whitespace() {
+    local var="$1"
+    # Remove leading whitespace
+    var="${var#"${var%%[![:space:]]*}"}"
+    # Remove trailing whitespace
+    var="${var%"${var##*[![:space:]]}"}"
+    echo "$var"
+}
+
 # Parse config.txt safely without executing it as shell code
 # This prevents command injection via shell metacharacters in the config values
 TOKEN=""
@@ -22,11 +32,9 @@ while IFS= read -r line; do
         key="${BASH_REMATCH[1]}"
         value="${BASH_REMATCH[2]}"
         
-        # Trim whitespace using parameter expansion
-        key="${key#"${key%%[![:space:]]*}"}"
-        key="${key%"${key##*[![:space:]]}"}"
-        value="${value#"${value%%[![:space:]]*}"}"
-        value="${value%"${value##*[![:space:]]}"}"
+        # Trim whitespace
+        key="$(trim_whitespace "$key")"
+        value="$(trim_whitespace "$value")"
         
         # Assign to variables based on key
         case "$key" in
