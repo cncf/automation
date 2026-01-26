@@ -41,24 +41,19 @@ COMMON_ROLE="none"
 COMMON_DELIVERY_MODE="email_delivery_single"
 COMMON_MEMBER_TYPE="direct"
 
-# --- Verbose mode (set VERBOSE=1 to log full email addresses) ---
-VERBOSE="${VERBOSE:-0}"
+# --- Logging control ---
+# Set VERBOSE=true to log full email addresses (for local debugging)
+# Set VERBOSE=false or leave unset to redact emails in logs (recommended for CI/CD)
+VERBOSE="${VERBOSE:-false}"
 
 # --- Function to redact email for logging ---
 redact_email() {
   local email="$1"
-  if [[ "$VERBOSE" == "1" ]]; then
+  if [[ "$VERBOSE" == "true" ]]; then
     echo "$email"
   else
-    # Extract local and domain parts
-    local local_part="${email%%@*}"
-    local domain="${email##*@}"
-    # Show first 2 chars of local part + *** + @domain
-    if [[ ${#local_part} -le 2 ]]; then
-      echo "***@$domain"
-    else
-      echo "${local_part:0:2}***@$domain"
-    fi
+    # Redact the local part, show only domain: user@example.com -> ***@example.com
+    echo "${email}" | sed -E 's/^[^@]+/***/'
   fi
 }
 
@@ -72,13 +67,11 @@ add_member() {
     --arg delivery_mode "$COMMON_DELIVERY_MODE" \
     --arg member_type "$COMMON_MEMBER_TYPE" \
     '{email: $email, mod_status: $mod_status, delivery_mode: $delivery_mode, member_type: $member_type}'); then
-    echo "Error: Failed to construct JSON payload for email '$email'." >&2
+    echo "Error: Failed to construct JSON payload for email '$(redact_email "$email")'." >&2
     exit 1
   fi
 
-  local redacted_email
-  redacted_email=$(redact_email "$email")
-  echo "Adding member: $redacted_email with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
+  echo "Adding member: $(redact_email "$email") with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
 
   local response status body
   response="$(curl -sS -w '\n%{http_code}' -X POST \
@@ -101,12 +94,23 @@ add_member() {
 echo "Attempting to add members from '$EMAIL_FILE' to subgroup ID $SUBGROUP_ID..."
 
 if [ -f "$EMAIL_FILE" ]; then
+  member_count=0
+  success_count=0
+  fail_count=0
+  
   while IFS= read -r email; do
     if [[ -n "$email" ]]; then # Skip empty lines
-      add_member "$email"
+      member_count=$((member_count + 1))
+      if add_member "$email"; then
+        success_count=$((success_count + 1))
+      else
+        fail_count=$((fail_count + 1))
+      fi
       echo "" # Add a newline for better readability
     fi
   done < "$EMAIL_FILE"
+  
+  echo "Summary: Processed $member_count member(s) - $success_count succeeded, $fail_count failed."
 else
   echo "Error: File '$EMAIL_FILE' not found."
   exit 1
