@@ -59,7 +59,7 @@ jobs:
           sed -i 's/^[[:space:]]*//; s/[[:space:]]*$//' maintainers_emails_temp.txt
           sed -i '/^[[:space:]]*$/d' maintainers_emails_temp.txt
           # Validate: every line must be a valid email
-          if grep -nEv '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$' maintainers_emails_temp.txt >/tmp/invalid_emails.txt; then
+          if grep -nEv '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' maintainers_emails_temp.txt >/tmp/invalid_emails.txt; then
             echo "Error: Invalid email format detected (showing up to first 20 invalid lines):"
             head -n 20 /tmp/invalid_emails.txt
             exit 1
