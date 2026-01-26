@@ -8,54 +8,24 @@ if [ ! -f "config.txt" ]; then
     exit 1
 fi
 
-# Function to trim leading and trailing whitespace
-trim_whitespace() {
-    local var="$1"
-    # Remove leading whitespace
-    var="${var#"${var%%[![:space:]]*}"}"
-    # Remove trailing whitespace
-    var="${var%"${var##*[![:space:]]}"}"
-    echo "$var"
-}
-
-# Parse config.txt safely without executing it as shell code
-# This prevents command injection via shell metacharacters in the config values
-TOKEN=""
-SUBGROUP_ID=""
-
-while IFS= read -r line; do
-    # Skip empty lines and comments
-    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-    
-    # Split on first '=' only to preserve '=' characters in values
-    if [[ "$line" =~ ^([^=]+)=(.*)$ ]]; then
-        key="${BASH_REMATCH[1]}"
-        value="${BASH_REMATCH[2]}"
-        
-        # Trim whitespace
-        key="$(trim_whitespace "$key")"
-        value="$(trim_whitespace "$value")"
-        
-        # Assign to variables based on key
-        case "$key" in
-            TOKEN)
-                TOKEN="$value"
-                ;;
-            SUBGROUP_ID)
-                SUBGROUP_ID="$value"
-                ;;
-        esac
-    fi
-done < config.txt
-
-# Check if required variables are set
-if [ -z "$TOKEN" ]; then
+# Safely parse config.txt file instead of sourcing it to prevent shell injection
+# Extract TOKEN value
+TOKEN=$(grep -E '^TOKEN=' config.txt | cut -d'=' -f2- | head -n1)
+if [ -z "${TOKEN:-}" ]; then
     echo "Error: TOKEN variable not found in config.txt file"
     exit 1
 fi
 
-if [ -z "$SUBGROUP_ID" ]; then
+# Extract SUBGROUP_ID value and validate it's numeric
+SUBGROUP_ID=$(grep -E '^SUBGROUP_ID=' config.txt | cut -d'=' -f2- | head -n1)
+if [ -z "${SUBGROUP_ID:-}" ]; then
     echo "Error: SUBGROUP_ID variable not found in config.txt file"
+    exit 1
+fi
+
+# Validate that SUBGROUP_ID is numeric to prevent injection attacks
+if ! [[ "$SUBGROUP_ID" =~ ^[0-9]+$ ]]; then
+    echo "Error: SUBGROUP_ID must be numeric only. Got: '$SUBGROUP_ID'"
     exit 1
 fi
 
@@ -71,6 +41,27 @@ COMMON_ROLE="owner"
 COMMON_DELIVERY_MODE="email_delivery_single"
 COMMON_MEMBER_TYPE="direct"
 
+# --- Verbose mode (set VERBOSE=1 to log full email addresses) ---
+VERBOSE="${VERBOSE:-0}"
+
+# --- Function to redact email for logging ---
+redact_email() {
+  local email="$1"
+  if [[ "$VERBOSE" == "1" ]]; then
+    echo "$email"
+  else
+    # Extract local and domain parts
+    local local_part="${email%%@*}"
+    local domain="${email##*@}"
+    # Show first 2 chars of local part + *** + @domain
+    if [[ ${#local_part} -le 2 ]]; then
+      echo "***@$domain"
+    else
+      echo "${local_part:0:2}***@$domain"
+    fi
+  fi
+}
+
 # --- Function to add a member ---
 add_member() {
   local email="$1"
@@ -85,7 +76,9 @@ add_member() {
     return 1
   fi
 
-  echo "Adding member: $email with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
+  local redacted_email
+  redacted_email=$(redact_email "$email")
+  echo "Adding member: $redacted_email with role: $COMMON_ROLE and delivery: $COMMON_DELIVERY_MODE"
 
   local response status body
   response="$(curl -sS -w '\n%{http_code}' -X POST \
