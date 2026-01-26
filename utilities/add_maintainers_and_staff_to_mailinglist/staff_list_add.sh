@@ -107,15 +107,22 @@ if [ -f "$EMAIL_FILE" ]; then
   fail_count=0
   
   while IFS= read -r email; do
-    if [[ -n "$email" ]]; then # Skip empty lines
-      member_count=$((member_count + 1))
-      if add_member "$email"; then
-        success_count=$((success_count + 1))
-      else
-        fail_count=$((fail_count + 1))
-      fi
-      echo "" # Add a newline for better readability
+    # Trim leading and trailing whitespace from the line
+    trimmed_email="${email#"${email%%[![:space:]]*}"}"
+    trimmed_email="${trimmed_email%"${trimmed_email##*[![:space:]]}"}"
+
+    # Skip empty or whitespace-only lines, and lines starting with '#'
+    if [[ -z "$trimmed_email" || "$trimmed_email" == \#* ]]; then
+      continue
     fi
+
+    member_count=$((member_count + 1))
+    if add_member "$trimmed_email"; then
+      success_count=$((success_count + 1))
+    else
+      fail_count=$((fail_count + 1))
+    fi
+    echo "" # Add a newline for better readability
   done < "$EMAIL_FILE"
   
   echo "Summary: Processed $member_count member(s) - $success_count succeeded, $fail_count failed."
