@@ -18,10 +18,11 @@ import (
 )
 
 const (
-	landscapeURL = "https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml"
-	sandboxOwner = "cncf"
-	sandboxRepo  = "sandbox"
-	gitVoteLabel = "gitvote/passed"
+	landscapeURL               = "https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml"
+	sandboxOwner               = "cncf"
+	sandboxRepo                = "sandbox"
+	gitVoteLabel               = "gitvote/passed"
+	contributionAgreementLabel = "contribution-agreement/signed"
 )
 
 // SandboxIssue represents a project that passed GitVote
@@ -67,17 +68,17 @@ type Landscape struct {
 
 // MissingProject contains info about a project missing from the landscape
 type MissingProject struct {
-	Issue       SandboxIssue
+	Issue          SandboxIssue
 	SuggestedEntry LandscapeProject
 }
 
 func main() {
 	var (
-		outputFile    string
-		jsonOutput    bool
-		generateYAML  bool
-		dryRun        bool
-		verbose       bool
+		outputFile   string
+		jsonOutput   bool
+		generateYAML bool
+		dryRun       bool
+		verbose      bool
 	)
 
 	flag.StringVar(&outputFile, "output", "", "Output file for missing projects report")
@@ -100,13 +101,13 @@ func main() {
 		client = github.NewClient(nil)
 	}
 
-	fmt.Println("🔍 Fetching GitVote passed issues from cncf/sandbox...")
+	fmt.Println("🔍 Fetching issues with gitvote/passed and contribution-agreement/signed labels from cncf/sandbox...")
 	issues, err := fetchGitVotePassedIssues(ctx, client)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error fetching issues: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("   Found %d issues with gitvote/passed label\n", len(issues))
+	fmt.Printf("   Found %d issues with required labels\n", len(issues))
 
 	fmt.Println("📥 Fetching CNCF Landscape YAML...")
 	landscape, err := fetchLandscape()
@@ -148,7 +149,7 @@ func fetchGitVotePassedIssues(ctx context.Context, client *github.Client) ([]San
 	var allIssues []SandboxIssue
 
 	opts := &github.IssueListByRepoOptions{
-		Labels:      []string{gitVoteLabel},
+		Labels:      []string{gitVoteLabel, contributionAgreementLabel},
 		State:       "all",
 		ListOptions: github.ListOptions{PerPage: 100},
 	}
@@ -368,7 +369,7 @@ func outputReport(missing []MissingProject, outputFile string) {
 	fmt.Fprintln(w, "# Missing Projects Report")
 	fmt.Fprintln(w, "")
 	fmt.Fprintf(w, "Generated: %s\n\n", time.Now().Format(time.RFC3339))
-	fmt.Fprintf(w, "Found **%d** projects with `gitvote/passed` label that may be missing from the CNCF Landscape.\n\n", len(missing))
+	fmt.Fprintf(w, "Found **%d** projects with `gitvote/passed` and `contribution-agreement/signed` labels that may be missing from the CNCF Landscape.\n\n", len(missing))
 
 	fmt.Fprintln(w, "| # | Project | Issue | State | Repo URL | Website |")
 	fmt.Fprintln(w, "|---|---------|-------|-------|----------|---------|")
