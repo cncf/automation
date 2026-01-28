@@ -10,9 +10,9 @@ The workflow automates the process of adding multiple email addresses to a CNCF 
 - Optionally add staff emails with owner role
 - Perform email format validation before attempting to add addresses
 - Skip comment lines (starting with #) and empty lines in email files
-- Read email addresses from a committed file path to protect privacy
+- Accept pasted email addresses from the workflow input box
 
-**Privacy and Security**: Email addresses are read from committed files rather than workflow inputs. This prevents email addresses from appearing in GitHub Actions UI or workflow run logs. The workflow validates email format without logging the actual addresses, and the processing scripts redact emails in logs by default.
+**Privacy and Security**: Email addresses are provided via workflow inputs (paste). To reduce exposure, the workflow avoids printing the full list and the scripts redact emails in logs by default.
 ## Prerequisites
 
 1. **LFX Authentication Token**: You need a valid token from [Open Profile Developer Settings](https://openprofile.dev/developer-settings)
@@ -43,23 +43,7 @@ The workflow automates the process of adding multiple email addresses to a CNCF 
 3. The mailing list ID (SUBGROUP_ID) is the number at the end of the URL
 4. Copy this ID
 
-### Step 3: Prepare Email File
-
-1. Create or update a file with maintainer email addresses (one per line)
-2. The default file path is `utilities/add_maintainers_and_staff_to_mailinglist/maintainers_emails.txt`
-3. You can use a different file path if needed
-4. Comment lines (starting with #) and empty lines are ignored
-5. Commit this file to your branch
-
-Example `maintainers_emails.txt`:
-```
-# Maintainer emails for project X
-maintainer1@example.com
-maintainer2@example.com
-# Add more emails below
-```
-
-### Step 4: Run the Workflow
+### Step 3: Run the Workflow
 
 1. Go to your repository's **Actions** tab in GitHub
 2. Select **"Update Mailing List"** from the workflow list
@@ -67,7 +51,7 @@ maintainer2@example.com
 4. Fill in the workflow inputs:
    - **Mailing list ID**: Paste the SUBGROUP_ID you copied from the mailing list URL
    - **Add staff**: Check this box if you want to add staff members from `staff_emails.txt`
-   - **Email file path**: Leave default or specify a custom path to your email file (default: `utilities/add_maintainers_and_staff_to_mailinglist/maintainers_emails.txt`)
+   - **Email addresses to add**: Paste email addresses (one per line, or space/comma/tab separated)
 5. Click **"Run workflow"** to start
 
 ## Workflow Inputs
@@ -76,22 +60,21 @@ maintainer2@example.com
 |-------|-------------|----------|---------|
 | `mailing_list_id` | The mailing list ID (SUBGROUP_ID) from the LFX Project Admin URL | Yes | - |
 | `add_staff` | Whether to add staff members from `staff_emails.txt` | No | `false` |
-| `email_file` | Path to file containing email addresses (one per line) | No | `utilities/add_maintainers_and_staff_to_mailinglist/maintainers_emails.txt` |
+| `add_emails` | Email addresses to add (paste; one per line or space/comma/tab separated) | Yes | - |
 
 ## Files in This Utility
 
 - **`maintainer_list_add.sh`**: Script that adds maintainer emails to the mailing list from a file
 - **`staff_list_add.sh`**: Script that adds staff emails with owner role
-- **`maintainers_emails.txt`**: Template file for maintainer email addresses (one per line, supports comments)
 - **`staff_emails.txt`**: Optional file containing staff email addresses (one per line)
 - **`.github/workflows/update_mailing_list.yml`**: The GitHub Actions workflow file (located in the repository root)
 
 ## How It Works
 
-1. The workflow validates the mailing list ID and checks that the email file exists
-2. It validates the email format for all addresses in the file (skipping comments and empty lines)
+1. The workflow validates the mailing list ID
+2. It validates and normalizes the pasted email input
 3. It creates a temporary `config.txt` file with your token and mailing list ID
-4. It runs `maintainer_list_add.sh` to add the maintainer emails from the specified file
+4. It runs `maintainer_list_add.sh` to add the maintainer emails
 5. If enabled, it runs `staff_list_add.sh` to add staff emails from `staff_emails.txt`
 6. All temporary files are cleaned up after the workflow completes
 
@@ -117,12 +100,8 @@ maintainer2@example.com
 
 ## Notes
 
-- The workflow reads email addresses from a committed file path to protect privacy
-- Email addresses are never exposed in GitHub Actions workflow run logs or UI
-- The email file should contain one email address per line
-- Comment lines starting with # are ignored
-- Empty lines are ignored
-- All temporary files (`config.txt`, etc.) are automatically cleaned up
+- The workflow avoids printing the full pasted email list to logs
+- All temporary files (`config.txt`, `maintainers_emails_temp.txt`, etc.) are automatically cleaned up
 - The `staff_emails.txt` file is optional and only used if the `add_staff` option is enabled
 - Staff members are added with `owner` role, while maintainers are added with `none` role
 
