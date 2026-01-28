@@ -11,13 +11,12 @@
 | cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
-| container2wasm | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | sandbox | sandbox | sandbox | sandbox | - | - |
 | Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Hexa | sandbox | sandbox | - | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| OpenChoreo | sandbox | - | - | - | - | - |
+| OpenChoreo | sandbox | - | - | sandbox | - | - |
 | Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
 | Piraeus-Datastore | sandbox | sandbox | - | sandbox | sandbox | - |
 | Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -30,7 +29,7 @@
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
-| Cedar | forming | sandbox | - | - | - | - |
+| Cedar | forming | sandbox | - | sandbox | - | - |
 | CoHDI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
@@ -204,7 +203,7 @@
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Confidential Containers | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
-| container2wasm | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| container2wasm | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ContainerSSH | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Copa | sandbox | sandbox | sandbox | sandbox | - | - |
 | Cozystack | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -274,7 +273,7 @@
 | OAuth2 Proxy | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Cluster Management | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Policy Registry (OPCR) | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| OpenChoreo | sandbox | - | - | - | - | - |
+| OpenChoreo | sandbox | - | - | sandbox | - | - |
 | OpenEBS | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenFunction | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | openGemini | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -331,7 +330,7 @@
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
-| Cedar | forming | sandbox | - | - | - | - |
+| Cedar | forming | sandbox | - | sandbox | - | - |
 | CoHDI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
