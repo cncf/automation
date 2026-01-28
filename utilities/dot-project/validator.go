@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -322,7 +323,113 @@ func validateProjectStruct(project Project) []string {
 		}
 	}
 
+	// Validate extensions
+	if len(project.Extensions) > 0 {
+		extensionErrors := validateExtensions(project)
+		errors = append(errors, extensionErrors...)
+	}
+
 	return errors
+}
+
+// reservedExtensionNames contains names that cannot be used as extension keys
+// to prevent conflicts with core project fields
+var reservedExtensionNames = map[string]bool{
+	"name": true, "description": true, "maturity_log": true,
+	"repositories": true, "social": true, "artwork": true,
+	"website": true, "mailing_lists": true, "audits": true,
+	"schema_version": true, "type": true, "security": true,
+	"governance": true, "legal": true, "documentation": true,
+	"extensions": true,
+}
+
+// validateExtensions validates the extensions section of a project
+func validateExtensions(project Project) []string {
+	var errors []string
+
+	// Check schema version requirement
+	if project.SchemaVersion == "" || !isVersionAtLeast(project.SchemaVersion, SchemaVersionWithExtensions) {
+		errors = append(errors, fmt.Sprintf("extensions require schema_version >= %s", SchemaVersionWithExtensions))
+		return errors
+	}
+
+	for name, ext := range project.Extensions {
+		// Validate extension name format (alphanumeric, hyphens, underscores, dots)
+		if !isValidExtensionName(name) {
+			errors = append(errors, fmt.Sprintf("extensions.%s: invalid name format (use alphanumeric, hyphens, underscores, dots)", name))
+		}
+
+		// Check for reserved names
+		if reservedExtensionNames[name] {
+			errors = append(errors, fmt.Sprintf("extensions.%s: '%s' is a reserved name", name, name))
+		}
+
+		// Validate metadata URLs if provided
+		if ext.Metadata != nil {
+			if ext.Metadata.Homepage != "" && !isValidURL(ext.Metadata.Homepage) {
+				errors = append(errors, fmt.Sprintf("extensions.%s.metadata.homepage is not a valid URL", name))
+			}
+			if ext.Metadata.Repository != "" && !isValidURL(ext.Metadata.Repository) {
+				errors = append(errors, fmt.Sprintf("extensions.%s.metadata.repository is not a valid URL", name))
+			}
+		}
+	}
+
+	return errors
+}
+
+// isValidExtensionName checks if an extension name follows naming conventions
+func isValidExtensionName(name string) bool {
+	if name == "" {
+		return false
+	}
+	for _, r := range name {
+		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9') || r == '-' || r == '_' || r == '.') {
+			return false
+		}
+	}
+	return true
+}
+
+// isVersionAtLeast compares semantic versions properly. Numeric comparison is required
+// because string comparison fails for cases like "1.10.0" < "1.2.0".
+func isVersionAtLeast(version, minVersion string) bool {
+	vParts, err := parseVersion(version)
+	if err != nil {
+		return false
+	}
+	minParts, err := parseVersion(minVersion)
+	if err != nil {
+		return false
+	}
+
+	for i := 0; i < 3; i++ {
+		if vParts[i] > minParts[i] {
+			return true
+		}
+		if vParts[i] < minParts[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func parseVersion(version string) ([3]int, error) {
+	parts := strings.Split(version, ".")
+	if len(parts) != 3 {
+		return [3]int{}, fmt.Errorf("invalid version format: %s", version)
+	}
+
+	var result [3]int
+	for i, part := range parts {
+		num, err := strconv.Atoi(part)
+		if err != nil {
+			return [3]int{}, fmt.Errorf("invalid version component: %s", part)
+		}
+		result[i] = num
+	}
+	return result, nil
 }
 
 // isValidURL checks if a string is a valid URL
