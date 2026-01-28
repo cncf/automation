@@ -9,13 +9,12 @@
 | cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
-| container2wasm | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | sandbox | sandbox | sandbox | sandbox | - | - |
 | Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Hexa | sandbox | sandbox | - | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| OpenChoreo | sandbox | - | - | - | - | - |
+| OpenChoreo | sandbox | - | - | sandbox | - | - |
 | Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
 | Piraeus-Datastore | sandbox | sandbox | - | sandbox | sandbox | - |
 | Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -28,7 +27,7 @@
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
-| Cedar | forming | sandbox | - | - | - | - |
+| Cedar | forming | sandbox | - | sandbox | - | - |
 | CoHDI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
