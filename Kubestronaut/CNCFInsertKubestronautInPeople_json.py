@@ -174,41 +174,45 @@ with open('../../people/people.json', "r+") as jsonfile:
     data = json.load(jsonfile)
 
 
-for lineToBeInserted in range(firstLineToBeInserted, lastLineToBeInserted+1, 1):
+# Import CSV that needs to be treated
+with open('Kubestronaut.tsv') as csv_file:
+    lineCount = 1
+    csv_reader = csv.reader(csv_file, delimiter='\t')
+    
+    for row in csv_reader:
+        # Check if the current line is within the requested range
+        if firstLineToBeInserted <= lineCount <= lastLineToBeInserted:
+            if row[1]:
+                print(f'\tProcessing line {lineCount}: {row[1]}')
+                newPeople = People(name=row[1], bio=row[2], company=row[3], pronouns=row[4], location=row[5], linkedin=row[6], twitter=row[7], github=row[8], wechat=row[9], website=row[10], youtube=row[11], certdirectory=row[17], slack_id=row[13], image=row[14])
+                
+                print(newPeople.toJSON())
 
-    # Import CSV that needs to be treated
-    with open('Kubestronaut.tsv') as csv_file:
-        lineCount = 1
-        csv_reader = csv.reader(csv_file, delimiter='\t')
-        peopleFound=False
-        for row in csv_reader:
-            if lineCount == lineToBeInserted:
-                if row[1]:
-                    print(f'\t{row[1]}')
-                    newPeople = People(name=row[1], bio=row[2], company=row[3], pronouns=row[4], location=row[5], linkedin=row[6], twitter=row[7], github=row[8], wechat=row[9], website=row[10], youtube=row[11], certdirectory=row[17], slack_id=row[13], image=row[14])
-                    peopleFound=True
-                break
-            else:
-                lineCount += 1
-        if (peopleFound == False):
-            print("File has an empty line "+str(lineToBeInserted))
-            continue
+                # Check if person already exists
+                name_exists = False
+                for people in data:
+                    if people["name"].lower() == newPeople.name.lower():
+                        print(f"⚠️  {newPeople.name} already in people.json, skipping...")
+                        name_exists = True
+                        break
+                
+                if name_exists:
+                    lineCount += 1
+                    continue
 
-    if (peopleFound == True) :
-        print(newPeople.toJSON())
+                # If we reach here, name doesn't exist, so add it
+                print('Adding '+newPeople.name)
+                data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
+                # Move the downloaded image to the final destination
+                final_image_path = "../../people/images/"+newPeople.image
+                if os.path.exists("imageTemp.jpg"):
+                    if os.path.exists(final_image_path):
+                         os.remove(final_image_path)
+                    os.rename("imageTemp.jpg", final_image_path)
+                    
+                ack_kubestronaut(row[12])
 
-        # Check if person already exists
-        name_exists = False
-        for people in data:
-            if people["name"].lower() == newPeople.name.lower():
-                print(f"{newPeople.name} already in people.json, abort !")
-                exit(2)
-
-        # If we reach here, name doesn't exist, so add it
-        print('Adding '+newPeople.name)
-        data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
-        os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
-        ack_kubestronaut(row[12])
+        lineCount += 1
 
 # Sort the data before writing to maintain alphabetical order
 sorted_people = sorted(data, key=lambda x: x['name'])
