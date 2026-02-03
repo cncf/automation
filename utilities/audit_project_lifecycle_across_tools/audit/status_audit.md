@@ -7,7 +7,7 @@
 | metal3-io | incubating | - | incubating | incubating | - | - |
 | Cadence | sandbox | sandbox | sandbox | - | sandbox | sandbox |
 | cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
-| CoHDI | sandbox | - | sandbox | sandbox | - | - |
+| CoHDI | sandbox | sandbox | sandbox | sandbox | - | - |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Copa | sandbox | sandbox | sandbox | sandbox | - | - |
@@ -15,7 +15,7 @@
 | Hexa | sandbox | sandbox | - | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| OpenChoreo | sandbox | - | sandbox | sandbox | - | sandbox |
+| OpenChoreo | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
 | Piraeus-Datastore | sandbox | sandbox | - | sandbox | sandbox | - |
 | Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -39,7 +39,7 @@
 | KAI Scheduler | forming | - | - | - | - | - |
 | Kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | forming | - | - | - | - | - |
-| KubeElasti | forming | - | - | - | - | - |
+| KubeElasti | forming | sandbox | - | - | - | - |
 | NMstate | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - | - | - | - |
 | Schema Driven Configuration | forming | - | - | - | - | - |
