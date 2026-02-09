@@ -125,6 +125,53 @@ The `landscape-updater` tool automates the process of updating the CNCF Landscap
 | `--create-pr` | `false` | Create a Pull Request with the changes |
 | `--dry-run` | `false` | Print diff and PR details without executing |
 
+### Bootstrap
+
+The `bootstrap` tool auto-generates `project.yaml` and `maintainers.yaml` scaffolds by fetching data from CLOMonitor, GitHub, and the CNCF landscape. It discovers maintainer handles from CODEOWNERS, OWNERS, and MAINTAINERS files.
+
+```bash
+# Dry run: preview generated YAML on stdout
+./bin/bootstrap -name "My Project" -github-org my-org -dry-run
+
+# Generate scaffold files in current directory
+./bin/bootstrap -name "My Project" -github-org my-org -github-repo my-repo
+
+# Generate into a specific directory
+./bin/bootstrap -name "Envoy" -github-org envoyproxy -github-repo envoy -output-dir ./envoy/.project
+
+# Skip external API lookups (GitHub-only)
+./bin/bootstrap -github-org my-org -skip-clomonitor
+
+# Use a GitHub token for higher rate limits
+GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
+```
+
+#### Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-name` | | Project display name to search for |
+| `-github-org` | | GitHub organization |
+| `-github-repo` | | Primary repository name (defaults to org name) |
+| `-github-token` | | GitHub token (or set `GITHUB_TOKEN` env) |
+| `-output-dir` | `.` | Directory to write scaffold output |
+| `-skip-clomonitor` | `false` | Skip CLOMonitor API lookup |
+| `-skip-github` | `false` | Skip GitHub API lookup |
+| `-dry-run` | `false` | Print generated YAML without writing files |
+
+#### Data Sources and Priority
+
+The bootstrap tool fetches data from multiple sources and merges them with this priority order:
+
+1. **CNCF Landscape** (highest priority) - project name, description, website, repos, maturity
+2. **CLOMonitor** - project metadata, scores, repository list
+3. **GitHub API** (fallback) - repo description, org info, community health profile
+
+Maintainer discovery checks these files (in the repo root, `.github/`, and org `.github` repo):
+- `CODEOWNERS` - extracts `@handle` references
+- `OWNERS` - parses Kubernetes-style YAML (approvers/reviewers)
+- `MAINTAINERS` / `MAINTAINERS.md` - heuristic extraction of handles, tables, GitHub URLs
+
 ### Staleness Checker
 
 Checks if maintainer data hasn't been updated within a threshold.
