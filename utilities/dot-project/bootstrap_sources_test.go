@@ -292,6 +292,214 @@ func TestFetchFromGitHub(t *testing.T) {
 	})
 }
 
+func TestFetchFromLandscape(t *testing.T) {
+	t.Run("finds project by name", func(t *testing.T) {
+		landscapeYAML := `landscape:
+  - category:
+    name: Orchestration & Management
+    subcategories:
+      - subcategory:
+        name: Scheduling & Orchestration
+        items:
+          - item:
+            name: Kubernetes
+            description: Production-Grade Container Orchestration
+            homepage_url: https://kubernetes.io
+            repo_url: https://github.com/kubernetes/kubernetes
+            logo: kubernetes.svg
+            twitter: https://twitter.com/kuabornetesio
+            project: graduated
+`
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/plain")
+			w.Write([]byte(landscapeYAML))
+		}))
+		defer server.Close()
+
+		result, err := fetchFromLandscape("Kubernetes", &http.Client{}, server.URL)
+		if err != nil {
+			t.Fatalf("fetchFromLandscape() error = %v", err)
+		}
+		if result == nil {
+			t.Fatal("fetchFromLandscape() returned nil")
+		}
+		if result.Name != "Kubernetes" {
+			t.Errorf("Name = %q, want %q", result.Name, "Kubernetes")
+		}
+		if result.Description != "Production-Grade Container Orchestration" {
+			t.Errorf("Description = %q, want %q", result.Description, "Production-Grade Container Orchestration")
+		}
+		if result.HomepageURL != "https://kubernetes.io" {
+			t.Errorf("HomepageURL = %q, want %q", result.HomepageURL, "https://kubernetes.io")
+		}
+		if result.RepoURL != "https://github.com/kubernetes/kubernetes" {
+			t.Errorf("RepoURL = %q, want %q", result.RepoURL, "https://github.com/kubernetes/kubernetes")
+		}
+		if result.Twitter != "https://twitter.com/kuabornetesio" {
+			t.Errorf("Twitter = %q, want %q", result.Twitter, "https://twitter.com/kuabornetesio")
+		}
+		if result.Maturity != "graduated" {
+			t.Errorf("Maturity = %q, want %q", result.Maturity, "graduated")
+		}
+		if result.Category != "Orchestration & Management" {
+			t.Errorf("Category = %q, want %q", result.Category, "Orchestration & Management")
+		}
+		if result.Subcategory != "Scheduling & Orchestration" {
+			t.Errorf("Subcategory = %q, want %q", result.Subcategory, "Scheduling & Orchestration")
+		}
+	})
+
+	t.Run("case insensitive fuzzy match", func(t *testing.T) {
+		landscapeYAML := `landscape:
+  - category:
+    name: Provisioning
+    subcategories:
+      - subcategory:
+        name: Container Registry
+        items:
+          - item:
+            name: Harbor
+            homepage_url: https://goharbor.io
+            project: graduated
+          - item:
+            name: Dragonfly
+            homepage_url: https://d7y.io
+            project: graduated
+`
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(landscapeYAML))
+		}))
+		defer server.Close()
+
+		result, err := fetchFromLandscape("harbor", &http.Client{}, server.URL)
+		if err != nil {
+			t.Fatalf("fetchFromLandscape() error = %v", err)
+		}
+		if result == nil {
+			t.Fatal("expected match for 'harbor'")
+		}
+		if result.Name != "Harbor" {
+			t.Errorf("Name = %q, want %q", result.Name, "Harbor")
+		}
+	})
+
+	t.Run("no match returns nil", func(t *testing.T) {
+		landscapeYAML := `landscape:
+  - category:
+    name: Provisioning
+    subcategories:
+      - subcategory:
+        name: Container Registry
+        items:
+          - item:
+            name: Harbor
+            homepage_url: https://goharbor.io
+`
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(landscapeYAML))
+		}))
+		defer server.Close()
+
+		result, err := fetchFromLandscape("nonexistent-project-xyz", &http.Client{}, server.URL)
+		if err != nil {
+			t.Fatalf("fetchFromLandscape() error = %v", err)
+		}
+		if result != nil {
+			t.Errorf("expected nil, got %+v", result)
+		}
+	})
+
+	t.Run("server error returns error", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer server.Close()
+
+		_, err := fetchFromLandscape("test", &http.Client{}, server.URL)
+		if err == nil {
+			t.Fatal("expected error for server error")
+		}
+	})
+
+	t.Run("only matches CNCF projects with project field", func(t *testing.T) {
+		landscapeYAML := `landscape:
+  - category:
+    name: Provisioning
+    subcategories:
+      - subcategory:
+        name: Automation & Configuration
+        items:
+          - item:
+            name: Terraform
+            homepage_url: https://www.terraform.io/
+            repo_url: https://github.com/hashicorp/terraform
+          - item:
+            name: OpenTofu
+            description: Open source Terraform fork
+            homepage_url: https://opentofu.org/
+            repo_url: https://github.com/opentofu/opentofu
+            project: sandbox
+`
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(landscapeYAML))
+		}))
+		defer server.Close()
+
+		// Terraform has no "project" field, so it's not a CNCF project
+		result, err := fetchFromLandscape("Terraform", &http.Client{}, server.URL)
+		if err != nil {
+			t.Fatalf("fetchFromLandscape() error = %v", err)
+		}
+		if result != nil {
+			t.Errorf("expected nil for non-CNCF project Terraform, got %+v", result)
+		}
+
+		// OpenTofu has project: sandbox, so it IS a CNCF project
+		result, err = fetchFromLandscape("OpenTofu", &http.Client{}, server.URL)
+		if err != nil {
+			t.Fatalf("fetchFromLandscape() error = %v", err)
+		}
+		if result == nil {
+			t.Fatal("expected match for CNCF project OpenTofu")
+		}
+		if result.Maturity != "sandbox" {
+			t.Errorf("Maturity = %q, want %q", result.Maturity, "sandbox")
+		}
+	})
+
+	t.Run("builds logo URL from SVG filename", func(t *testing.T) {
+		landscapeYAML := `landscape:
+  - category:
+    name: Observability
+    subcategories:
+      - subcategory:
+        name: Monitoring
+        items:
+          - item:
+            name: Prometheus
+            homepage_url: https://prometheus.io
+            logo: prometheus.svg
+            project: graduated
+`
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(landscapeYAML))
+		}))
+		defer server.Close()
+
+		result, err := fetchFromLandscape("Prometheus", &http.Client{}, server.URL)
+		if err != nil {
+			t.Fatalf("fetchFromLandscape() error = %v", err)
+		}
+		if result == nil {
+			t.Fatal("expected match")
+		}
+		expected := "https://landscape.cncf.io/logos/prometheus.svg"
+		if result.LogoURL != expected {
+			t.Errorf("LogoURL = %q, want %q", result.LogoURL, expected)
+		}
+	})
+}
+
 func TestFuzzyMatch(t *testing.T) {
 	tests := []struct {
 		name       string
