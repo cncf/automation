@@ -51,12 +51,12 @@ install:
 # Run the validator with default settings
 run: build
 	@echo "Running validator..."
-	REPO_ROOT=$(REPO_ROOT) ./bin/validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --verify-maintainers
+	REPO_ROOT=$(REPO_ROOT) ./bin/validator --config testdata/projectlist.yaml --maintainers testdata/maintainers.yaml --verify-maintainers
 
 # Run the validator and show changes only
 run-changes: build
 	@echo "Running validator and filtering for changes..."
-	REPO_ROOT=$(REPO_ROOT) ./bin/validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --verify-maintainers | grep -E "(CHANGED|INVALID|Summary)"
+	REPO_ROOT=$(REPO_ROOT) ./bin/validator --config testdata/projectlist.yaml --maintainers testdata/maintainers.yaml --verify-maintainers | grep -E "(CHANGED|INVALID|Summary)"
 
 # Validate and format Go code
 fmt:
@@ -76,14 +76,14 @@ security:
 # Create a test project list with local files
 test-setup:
 	@echo "Setting up test environment..."
-	@echo "projects:" > yaml/test-projectlist.yaml
-	@echo "  - url: \"file://$(PWD)/yaml/test-project.yaml\"" >> yaml/test-projectlist.yaml
-	@echo "    id: \"test-project\"" >> yaml/test-projectlist.yaml
-	@echo "Test project list created: yaml/test-projectlist.yaml"
+	@echo "projects:" > testdata/test-projectlist.yaml
+	@echo "  - url: \"file://$(PWD)/testdata/test-project.yaml\"" >> testdata/test-projectlist.yaml
+	@echo "    id: \"test-project\"" >> testdata/test-projectlist.yaml
+	@echo "Test project list created: testdata/test-projectlist.yaml"
 
 # Run validator with test setup
 test-run: test-setup build
-	REPO_ROOT=$(REPO_ROOT) ./bin/validator --config yaml/test-projectlist.yaml
+	REPO_ROOT=$(REPO_ROOT) ./bin/validator --config testdata/test-projectlist.yaml
 
 # Show help
 help:

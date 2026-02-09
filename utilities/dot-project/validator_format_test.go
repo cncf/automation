@@ -239,7 +239,7 @@ func TestLoadConfig(t *testing.T) {
 		dir := t.TempDir()
 		cfgPath := filepath.Join(dir, "config.yaml")
 		writeFile(t, cfgPath, `
-project_list_url: "yaml/projectlist.yaml"
+project_list_url: "testdata/projectlist.yaml"
 cache_dir: "/tmp/my-cache"
 output_format: "yaml"
 `)
@@ -247,7 +247,7 @@ output_format: "yaml"
 		if err != nil {
 			t.Fatalf("loadConfig: %v", err)
 		}
-		if cfg.ProjectListURL != "yaml/projectlist.yaml" {
+		if cfg.ProjectListURL != "testdata/projectlist.yaml" {
 			t.Errorf("unexpected ProjectListURL: %q", cfg.ProjectListURL)
 		}
 		if cfg.CacheDir != "/tmp/my-cache" {
