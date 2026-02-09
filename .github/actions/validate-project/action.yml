@@ -1,0 +1,57 @@
+name: 'Validate Project'
+description: 'Validate a project.yaml file against the CNCF .project schema'
+inputs:
+  project_file:
+    description: 'Path to the project.yaml file to validate'
+    required: true
+  output_format:
+    description: 'Output format: text, json, yaml'
+    required: false
+    default: 'text'
+  go_version:
+    description: 'Go version to use'
+    required: false
+    default: '1.24'
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go_version }}
+
+    - name: Checkout automation tools
+      uses: actions/checkout@v4
+      with:
+        repository: cncf/automation
+        path: _cncf-automation
+        sparse-checkout: utilities/dot-project
+
+    - name: Build validator
+      shell: bash
+      run: |
+        cd _cncf-automation/utilities/dot-project
+        go build -o ${{ github.workspace }}/_cncf-validator ./cmd/validator
+
+    - name: Create project list
+      shell: bash
+      run: |
+        cat > _project-list.yaml << 'PROJEOF'
+        projects:
+          - url: "file://${{ github.workspace }}/${{ inputs.project_file }}"
+            id: "project"
+        PROJEOF
+
+    - name: Validate project
+      shell: bash
+      run: |
+        ${{ github.workspace }}/_cncf-validator \
+          -config _project-list.yaml \
+          -maintainers "" \
+          -output ${{ inputs.output_format }}
+
+    - name: Cleanup
+      shell: bash
+      if: always()
+      run: |
+        rm -rf _cncf-automation _cncf-validator _project-list.yaml

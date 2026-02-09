@@ -1,0 +1,41 @@
+# Example CI workflow for validating .project metadata
+# Copy this to your project's .github/workflows/ directory
+#
+# Documentation: https://github.com/cncf/automation/tree/main/utilities/dot-project
+
+name: Validate Project Metadata
+
+on:
+  pull_request:
+    paths:
+      - 'project.yaml'
+      - 'maintainers.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'project.yaml'
+      - 'maintainers.yaml'
+
+jobs:
+  validate-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cncf/automation/.github/actions/validate-project@main
+        with:
+          project_file: 'project.yaml'
+
+  validate-maintainers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: cncf/automation/.github/actions/validate-maintainers@main
+        with:
+          maintainers_file: 'maintainers.yaml'
+          verify_maintainers: 'true'
+        env:
+          LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
