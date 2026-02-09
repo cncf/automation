@@ -1,52 +1,56 @@
 name: 'Validate Maintainers'
-description: 'Validates the maintainers file against schema and optional external verification'
+description: 'Validate a maintainers.yaml file against the CNCF .project schema'
 inputs:
   maintainers_file:
-    description: 'Path to the maintainers YAML file'
+    description: 'Path to the maintainers.yaml file to validate'
     required: true
   base_maintainers_file:
-    description: 'Path to a base maintainers file to exclude handles from'
+    description: 'Path to the base maintainers file for diff validation (optional)'
     required: false
+    default: ''
   verify_maintainers:
-    description: 'Enable external verification of maintainer handles'
+    description: 'Verify maintainer handles against LFX (requires LFX_AUTH_TOKEN secret)'
     required: false
     default: 'false'
+  go_version:
+    description: 'Go version to use'
+    required: false
+    default: '1.24'
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: Checkout Automation Repo
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go_version }}
+
+    - name: Checkout automation tools
       uses: actions/checkout@v4
       with:
         repository: cncf/automation
-        path: .cncf-automation-tool
-        ref: main
+        path: _cncf-automation
+        sparse-checkout: utilities/dot-project
 
-    - name: Setup Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
-
-    - name: Build Validator
+    - name: Build validator
       shell: bash
       run: |
-        cd .cncf-automation-tool/utilities/dot-project
-        go build -o ../../../.cncf-validator ./cmd/validator
+        cd _cncf-automation/utilities/dot-project
+        go build -o ${{ github.workspace }}/_cncf-validator ./cmd/validator
 
-    - name: Run Validator
+    - name: Validate maintainers
       shell: bash
       run: |
-        VERIFY_FLAG=""
-        if [ "${{ inputs.verify_maintainers }}" == "true" ]; then
-          VERIFY_FLAG="-verify-maintainers"
-        fi
-        
-        BASE_FLAG=""
+        ARGS="-config /dev/null -maintainers ${{ inputs.maintainers_file }}"
         if [ -n "${{ inputs.base_maintainers_file }}" ]; then
-          BASE_FLAG="-base-maintainers ${{ inputs.base_maintainers_file }}"
+          ARGS="$ARGS -base-maintainers ${{ inputs.base_maintainers_file }}"
         fi
+        if [ "${{ inputs.verify_maintainers }}" = "true" ]; then
+          ARGS="$ARGS -verify-maintainers"
+        fi
+        ${{ github.workspace }}/_cncf-validator $ARGS
 
-        ./.cncf-validator \
-          -maintainers "${{ inputs.maintainers_file }}" \
-          $BASE_FLAG \
-          $VERIFY_FLAG \
-          -config ""
+    - name: Cleanup
+      shell: bash
+      if: always()
+      run: |
+        rm -rf _cncf-automation _cncf-validator

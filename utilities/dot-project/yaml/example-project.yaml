@@ -1,7 +1,10 @@
 name: "Kubernetes"
 description: "Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications."
 schema_version: "1.0.0"
+slug: "kubernetes"
 type: "platform"
+project_lead: "thockin"
+cncf_slack_channel: "#kubernetes-dev"
 maturity_log:
   - phase: "sandbox"
     date: 2016-03-10T00:00:00Z
@@ -46,6 +49,7 @@ security:
   threat_model:
     path: "https://github.com/kubernetes/community/blob/master/sig-security/threat-model.md"
   contact: security@kubernetes.io
+governance:
   contributing:
     path: "https://github.com/kubernetes/community/blob/master/CONTRIBUTING.md"
   codeowners:
@@ -64,3 +68,6 @@ documentation:
     path: "https://github.com/kubernetes/community/blob/master/architecture/README.md"
   api:
     path: "https://kubernetes.io/docs/reference/"
+landscape:
+  category: "Orchestration & Management"
+  subcategory: "Scheduling & Orchestration"

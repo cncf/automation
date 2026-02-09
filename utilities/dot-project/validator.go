@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/mail"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -95,7 +96,9 @@ func (pv *ProjectValidator) validateProject(url string) (ValidationResult, error
 
 	// Parse and validate YAML
 	var project Project
-	if err := yaml.Unmarshal([]byte(content), &project); err != nil {
+	decoder := yaml.NewDecoder(strings.NewReader(content))
+	decoder.KnownFields(true)
+	if err := decoder.Decode(&project); err != nil {
 		result.Errors = append(result.Errors, fmt.Sprintf("YAML parsing error: %v", err))
 		result.Valid = false
 	} else {
@@ -119,17 +122,6 @@ func (pv *ProjectValidator) validateProject(url string) (ValidationResult, error
 	}
 
 	return result, nil
-}
-
-// ProjectListEntry represents a single entry in the project list
-type ProjectListEntry struct {
-	URL string `yaml:"url"`
-	ID  string `yaml:"id,omitempty"`
-}
-
-// ProjectListConfig represents the structure of the project list file
-type ProjectListConfig struct {
-	Projects []ProjectListEntry `yaml:"projects"`
 }
 
 // loadProjectList loads the list of project URLs
@@ -204,6 +196,22 @@ func (pv *ProjectValidator) fetchContent(url string) (string, error) {
 	return string(content), nil
 }
 
+// ValidMaturityPhases lists the allowed maturity phase values
+var ValidMaturityPhases = map[string]bool{
+	"sandbox":    true,
+	"incubating": true,
+	"graduated":  true,
+	"archived":   true,
+}
+
+// SupportedSchemaVersions lists the schema versions this validator supports
+var SupportedSchemaVersions = []string{"1.0.0"}
+
+// ValidateProjectStruct is the exported wrapper for project structure validation
+func ValidateProjectStruct(project Project) []string {
+	return validateProjectStruct(project)
+}
+
 // validateProjectStruct validates the project structure
 func validateProjectStruct(project Project) []string {
 	var errors []string
@@ -216,6 +224,45 @@ func validateProjectStruct(project Project) []string {
 		errors = append(errors, "description is required")
 	}
 
+	// Validate slug
+	if project.Slug == "" {
+		errors = append(errors, "slug is required")
+	} else if !isValidSlug(project.Slug) {
+		errors = append(errors, fmt.Sprintf("slug must be lowercase alphanumeric with hyphens, got: %s", project.Slug))
+	}
+
+	// Validate project_lead (optional but must be non-empty if present)
+	if project.ProjectLead != "" {
+		lead := strings.TrimSpace(project.ProjectLead)
+		lead = strings.TrimPrefix(lead, "@")
+		if lead == "" {
+			errors = append(errors, "project_lead cannot be empty or just '@'")
+		}
+	}
+
+	// Validate cncf_slack_channel (optional but must start with # if present)
+	if project.CNCFSlackChannel != "" {
+		if !strings.HasPrefix(project.CNCFSlackChannel, "#") {
+			errors = append(errors, fmt.Sprintf("cncf_slack_channel must start with '#', got: %s", project.CNCFSlackChannel))
+		}
+	}
+
+	// Validate schema version
+	if project.SchemaVersion == "" {
+		errors = append(errors, "schema_version is required")
+	} else {
+		supported := false
+		for _, v := range SupportedSchemaVersions {
+			if project.SchemaVersion == v {
+				supported = true
+				break
+			}
+		}
+		if !supported {
+			errors = append(errors, fmt.Sprintf("unsupported schema_version: %s (supported: %v)", project.SchemaVersion, SupportedSchemaVersions))
+		}
+	}
+
 	// Validate maturity log
 	if len(project.MaturityLog) == 0 {
 		errors = append(errors, "maturity_log is required and cannot be empty")
@@ -224,11 +271,25 @@ func validateProjectStruct(project Project) []string {
 			if entry.Phase == "" {
 				errors = append(errors, fmt.Sprintf("maturity_log[%d].phase is required", i))
 			}
+			if entry.Phase != "" && !ValidMaturityPhases[entry.Phase] {
+				errors = append(errors, fmt.Sprintf("maturity_log[%d].phase has invalid value %q (allowed: sandbox, incubating, graduated, archived)", i, entry.Phase))
+			}
 			if entry.Date.IsZero() {
 				errors = append(errors, fmt.Sprintf("maturity_log[%d].date is required", i))
 			}
 			if entry.Issue == "" {
 				errors = append(errors, fmt.Sprintf("maturity_log[%d].issue is required", i))
+			}
+		}
+
+		// Check chronological ordering
+		for i := 1; i < len(project.MaturityLog); i++ {
+			if !project.MaturityLog[i-1].Date.IsZero() && !project.MaturityLog[i].Date.IsZero() {
+				if project.MaturityLog[i].Date.Before(project.MaturityLog[i-1].Date) {
+					errors = append(errors, fmt.Sprintf("maturity_log[%d].date (%s) is before maturity_log[%d].date (%s); entries must be in chronological order",
+						i, project.MaturityLog[i].Date.Format("2006-01-02"),
+						i-1, project.MaturityLog[i-1].Date.Format("2006-01-02")))
+				}
 			}
 		}
 	}
@@ -307,6 +368,16 @@ func validateProjectStruct(project Project) []string {
 		}
 	}
 
+	// Validate landscape
+	if project.Landscape != nil {
+		if project.Landscape.Category == "" {
+			errors = append(errors, "landscape.category is required when landscape section is present")
+		}
+		if project.Landscape.Subcategory == "" {
+			errors = append(errors, "landscape.subcategory is required when landscape section is present")
+		}
+	}
+
 	if project.Documentation != nil {
 		if project.Documentation.Readme != nil && project.Documentation.Readme.Path == "" {
 			errors = append(errors, "documentation.readme.path is required")
@@ -325,16 +396,42 @@ func validateProjectStruct(project Project) []string {
 	return errors
 }
 
-// isValidURL checks if a string is a valid URL
+// isValidSlug checks if a string is a valid project slug (lowercase alphanumeric + hyphens)
+func isValidSlug(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, c := range s {
+		if !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-') {
+			return false
+		}
+	}
+	// Must not start or end with hyphen
+	if s[0] == '-' || s[len(s)-1] == '-' {
+		return false
+	}
+	return true
+}
+
+// isValidURL checks if a string is a valid HTTP(S) URL
 func isValidURL(str string) bool {
-	if !strings.HasPrefix(str, "http://") && !strings.HasPrefix(str, "https://") {
+	u, err := url.Parse(str)
+	if err != nil {
 		return false
 	}
-	// Check that there's something after the protocol
-	if strings.HasPrefix(str, "https://") && len(str) <= 8 {
+	if u.Scheme != "http" && u.Scheme != "https" {
 		return false
 	}
-	if strings.HasPrefix(str, "http://") && len(str) <= 7 {
+	if u.Host == "" {
+		return false
+	}
+	// Host must contain at least one dot (basic domain validation)
+	// and must have non-empty labels (reject hosts like "." or ".com")
+	if !strings.Contains(u.Host, ".") {
+		return false
+	}
+	parts := strings.SplitN(u.Host, ".", 2)
+	if parts[0] == "" || parts[1] == "" {
 		return false
 	}
 	return true
