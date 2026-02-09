@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-type ProjectList []string
-
 type Project struct {
 	Name         string            `json:"name" yaml:"name"`
 	Description  string            `json:"description" yaml:"description"`
@@ -18,13 +16,29 @@ type Project struct {
 	MailingLists []string          `json:"mailing_lists" yaml:"mailing_lists"` // Mailing lists for project
 	Audits       []Audit           `json:"audits" yaml:"audits"`               // Security audits for project
 
-	// New fields merged from project.toml
-	SchemaVersion string               `json:"schema_version,omitempty" yaml:"schema_version,omitempty"`
-	Type          string               `json:"type,omitempty" yaml:"type,omitempty"`
-	Security      *SecurityConfig      `json:"security" yaml:"security"`
+	// Schema and identification
+	SchemaVersion string `json:"schema_version" yaml:"schema_version"`
+	Type          string `json:"type,omitempty" yaml:"type,omitempty"`
+	Slug          string `json:"slug" yaml:"slug"` // Unique project identifier (lowercase, alphanumeric + hyphens)
+
+	// Contacts and channels
+	ProjectLead      string `json:"project_lead,omitempty" yaml:"project_lead,omitempty"`             // GitHub handle of primary contact
+	CNCFSlackChannel string `json:"cncf_slack_channel,omitempty" yaml:"cncf_slack_channel,omitempty"` // CNCF Slack channel (e.g., "#kubernetes")
+
+	// Governance, security, legal, documentation
+	Security      *SecurityConfig      `json:"security,omitempty" yaml:"security,omitempty"`
 	Governance    *GovernanceConfig    `json:"governance,omitempty" yaml:"governance,omitempty"`
 	Legal         *LegalConfig         `json:"legal,omitempty" yaml:"legal,omitempty"`
 	Documentation *DocumentationConfig `json:"documentation,omitempty" yaml:"documentation,omitempty"`
+
+	// CNCF Landscape integration
+	Landscape *LandscapeConfig `json:"landscape,omitempty" yaml:"landscape,omitempty"`
+}
+
+// LandscapeConfig maps the project to its CNCF Landscape location
+type LandscapeConfig struct {
+	Category    string `json:"category" yaml:"category"`
+	Subcategory string `json:"subcategory" yaml:"subcategory"`
 }
 
 type PathRef struct {
@@ -69,20 +83,20 @@ type Audit struct {
 
 // MaintainersConfig represents the maintainers configuration file
 type MaintainersConfig struct {
-	Maintainers []MaintainerEntry `yaml:"maintainers"`
+	Maintainers []MaintainerEntry `json:"maintainers" yaml:"maintainers"`
 }
 
 // MaintainerEntry represents maintainers for a single project
 type MaintainerEntry struct {
-	ProjectID string `yaml:"project_id"`
-	Org       string `yaml:"org,omitempty"`
-	Teams     []Team `yaml:"teams"`
+	ProjectID string `json:"project_id" yaml:"project_id"`
+	Org       string `json:"org,omitempty" yaml:"org,omitempty"`
+	Teams     []Team `json:"teams" yaml:"teams"`
 }
 
 // Team represents a GitHub team and its members
 type Team struct {
-	Name    string   `yaml:"name"`
-	Members []string `yaml:"members"`
+	Name    string   `json:"name" yaml:"name"`
+	Members []string `json:"members" yaml:"members"`
 }
 
 // MaintainerValidationResult captures validation results for maintainers
@@ -134,4 +148,15 @@ type ProjectValidator struct {
 	config *Config
 	cache  *Cache
 	client *http.Client
+}
+
+// ProjectListEntry represents a single entry in the project list
+type ProjectListEntry struct {
+	URL string `json:"url" yaml:"url"`
+	ID  string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// ProjectListConfig represents the structure of the project list file
+type ProjectListConfig struct {
+	Projects []ProjectListEntry `json:"projects" yaml:"projects"`
 }
