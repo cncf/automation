@@ -28,7 +28,7 @@ utilities/dot-project/
 ├── types.go                    # Core type definitions (Project, Maintainer, Config, etc.)
 ├── bootstrap_types.go          # Bootstrap intermediate types (BootstrapResult, API data structs)
 ├── bootstrap_parsers.go        # CODEOWNERS, OWNERS, MAINTAINERS file parsers
-├── bootstrap_sources.go        # CLOMonitor/GitHub API clients, fuzzy matching, data merge
+├── bootstrap_sources.go        # Landscape/CLOMonitor/GitHub API clients, fuzzy matching, data merge
 ├── bootstrap_scaffold.go       # Scaffold generator (project.yaml, maintainers.yaml templates)
 ├── validator.go                # Project validation logic
 ├── maintainers.go              # Maintainer validation logic with LFX integration
@@ -37,7 +37,7 @@ utilities/dot-project/
 ├── audit.go                    # URL accessibility audit
 ├── validator_test.go           # Core validation tests
 ├── bootstrap_parsers_test.go   # CODEOWNERS/OWNERS/MAINTAINERS parser tests
-├── bootstrap_sources_test.go   # CLOMonitor/GitHub client, fuzzy match, merge tests
+├── bootstrap_sources_test.go   # Landscape/CLOMonitor/GitHub client, fuzzy match, merge tests
 ├── bootstrap_scaffold_test.go  # Scaffold generation and WriteScaffold tests
 ├── security_test.go            # Security contact email validation tests
 ├── social_test.go              # Social links URL validation tests
@@ -158,7 +158,10 @@ Auto-generates `project.yaml` and `maintainers.yaml` scaffolds by fetching data 
 # Generate into a specific directory
 ./bin/bootstrap -name "Envoy" -github-org envoyproxy -github-repo envoy -output-dir /tmp/envoy
 
-# Skip CLOMonitor (GitHub-only)
+# Skip landscape fetch (CLOMonitor + GitHub only)
+./bin/bootstrap -name "My Project" -github-org my-org -skip-landscape
+
+# Skip CLOMonitor (landscape + GitHub only)
 ./bin/bootstrap -github-org my-org -skip-clomonitor
 
 # With GitHub token for higher rate limits
@@ -171,6 +174,7 @@ GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
 - `-github-repo` - Primary repository name (defaults to org name)
 - `-github-token` - GitHub token (or set `GITHUB_TOKEN` env)
 - `-output-dir` - Directory for scaffold output (default: `.`)
+- `-skip-landscape` - Skip CNCF landscape YAML lookup (default: false)
 - `-skip-clomonitor` - Skip CLOMonitor API lookup (default: false)
 - `-skip-github` - Skip GitHub API lookup (default: false)
 - `-dry-run` - Print generated YAML without writing files (default: false)
@@ -368,7 +372,7 @@ The Dockerfile uses a multi-stage build:
 1. `golang:1.24-alpine` builder stage (builds only the `validator` binary)
 2. `alpine:3.20` runtime with `git` and `ca-certificates`
 
-Note: The Docker image only includes the `validator` binary. The other CLI tools are not built in the Dockerfile.
+Note: The Docker image includes `validator` and `landscape-updater` binaries. The other CLI tools (bootstrap, staleness-checker, audit-checker, etc.) are not built in the Dockerfile.
 
 ## Configuration Files
 

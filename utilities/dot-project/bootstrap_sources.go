@@ -6,12 +6,16 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 const (
-	cloMonitorSearchPath = "/api/projects/search"
-	defaultCLOMonitorURL = "https://clomonitor.io"
-	defaultGitHubAPIURL  = "https://api.github.com"
+	cloMonitorSearchPath    = "/api/projects/search"
+	defaultCLOMonitorURL    = "https://clomonitor.io"
+	defaultGitHubAPIURL     = "https://api.github.com"
+	defaultLandscapeYAMLURL = "https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml"
+	landscapeLogoBaseURL    = "https://landscape.cncf.io/logos/"
 )
 
 // fetchFromCLOMonitor queries the CLOMonitor API for a CNCF project by display name.
@@ -74,6 +78,126 @@ func fetchFromCLOMonitor(name string, client *http.Client, baseURL string) (*CLO
 	}
 
 	return nil, nil
+}
+
+// landscapeYAMLRoot is the top-level structure of the CNCF landscape.yml file.
+type landscapeYAMLRoot struct {
+	Landscape []landscapeYAMLCategory `yaml:"landscape"`
+}
+
+// landscapeYAMLCategory represents a category in the landscape.yml.
+type landscapeYAMLCategory struct {
+	Name          string                     `yaml:"name"`
+	Subcategories []landscapeYAMLSubcategory `yaml:"subcategories"`
+}
+
+// landscapeYAMLSubcategory represents a subcategory in the landscape.yml.
+type landscapeYAMLSubcategory struct {
+	Name  string              `yaml:"name"`
+	Items []landscapeYAMLItem `yaml:"items"`
+}
+
+// landscapeYAMLItem represents an individual project/product item in the landscape.yml.
+type landscapeYAMLItem struct {
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+	HomepageURL string `yaml:"homepage_url"`
+	RepoURL     string `yaml:"repo_url"`
+	Logo        string `yaml:"logo"`
+	Twitter     string `yaml:"twitter"`
+	Project     string `yaml:"project"` // maturity: sandbox, incubating, graduated, archived
+}
+
+// fetchFromLandscape fetches the CNCF landscape.yml from GitHub and searches for
+// a CNCF project by name. Only items with a "project" field (indicating CNCF membership)
+// are considered. baseURL overrides the landscape YAML URL (use "" for default).
+// Returns nil if no match is found.
+func fetchFromLandscape(name string, client *http.Client, baseURL string) (*LandscapeData, error) {
+	if baseURL == "" {
+		baseURL = defaultLandscapeYAMLURL
+	}
+
+	resp, err := client.Get(baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("landscape YAML request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("landscape YAML returned HTTP %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading landscape YAML: %w", err)
+	}
+
+	var root landscapeYAMLRoot
+	if err := yaml.Unmarshal(body, &root); err != nil {
+		return nil, fmt.Errorf("parsing landscape YAML: %w", err)
+	}
+
+	// Collect all CNCF project items (those with a "project" field set)
+	type itemWithContext struct {
+		item        landscapeYAMLItem
+		category    string
+		subcategory string
+	}
+	var cncfItems []itemWithContext
+	var names []string
+
+	for _, cat := range root.Landscape {
+		for _, subcat := range cat.Subcategories {
+			for _, item := range subcat.Items {
+				if item.Project != "" {
+					cncfItems = append(cncfItems, itemWithContext{
+						item:        item,
+						category:    cat.Name,
+						subcategory: subcat.Name,
+					})
+					names = append(names, item.Name)
+				}
+			}
+		}
+	}
+
+	if len(cncfItems) == 0 {
+		return nil, nil
+	}
+
+	// Fuzzy match by name
+	best, score := fuzzyMatch(name, names)
+	if score == 0 {
+		return nil, nil
+	}
+
+	// Find the matching item
+	for _, iwc := range cncfItems {
+		if iwc.item.Name == best {
+			logoURL := ""
+			if iwc.item.Logo != "" {
+				logoURL = landscapeLogoBaseURL + iwc.item.Logo
+			}
+			return &LandscapeData{
+				Name:        iwc.item.Name,
+				Description: iwc.item.Description,
+				HomepageURL: iwc.item.HomepageURL,
+				RepoURL:     iwc.item.RepoURL,
+				LogoURL:     logoURL,
+				Twitter:     iwc.item.Twitter,
+				Maturity:    iwc.item.Project,
+				Category:    iwc.category,
+				Subcategory: iwc.subcategory,
+			}, nil
+		}
+	}
+
+	return nil, nil
+}
+
+// FetchFromLandscape is the exported wrapper for fetchFromLandscape.
+func FetchFromLandscape(name string, client *http.Client, baseURL string) (*LandscapeData, error) {
+	return fetchFromLandscape(name, client, baseURL)
 }
 
 // GitHubData holds all data fetched from the GitHub API for a single repo.

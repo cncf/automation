@@ -14,14 +14,15 @@ import (
 
 func main() {
 	var (
-		name        = flag.String("name", "", "Project display name to search for (e.g., 'Kubernetes')")
-		githubOrg   = flag.String("github-org", "", "GitHub organization (e.g., 'kubernetes')")
-		githubRepo  = flag.String("github-repo", "", "Primary GitHub repository name (e.g., 'kubernetes')")
-		githubToken = flag.String("github-token", "", "GitHub personal access token (or set GITHUB_TOKEN env)")
-		outputDir   = flag.String("output-dir", ".", "Directory to write scaffold output")
-		skipCLO     = flag.Bool("skip-clomonitor", false, "Skip CLOMonitor API lookup")
-		skipGH      = flag.Bool("skip-github", false, "Skip GitHub API lookup")
-		dryRun      = flag.Bool("dry-run", false, "Print generated YAML to stdout without writing files")
+		name          = flag.String("name", "", "Project display name to search for (e.g., 'Kubernetes')")
+		githubOrg     = flag.String("github-org", "", "GitHub organization (e.g., 'kubernetes')")
+		githubRepo    = flag.String("github-repo", "", "Primary GitHub repository name (e.g., 'kubernetes')")
+		githubToken   = flag.String("github-token", "", "GitHub personal access token (or set GITHUB_TOKEN env)")
+		outputDir     = flag.String("output-dir", ".", "Directory to write scaffold output")
+		skipLandscape = flag.Bool("skip-landscape", false, "Skip CNCF landscape YAML lookup")
+		skipCLO       = flag.Bool("skip-clomonitor", false, "Skip CLOMonitor API lookup")
+		skipGH        = flag.Bool("skip-github", false, "Skip GitHub API lookup")
+		dryRun        = flag.Bool("dry-run", false, "Print generated YAML to stdout without writing files")
 	)
 	flag.Parse()
 
@@ -69,7 +70,23 @@ func main() {
 
 	fmt.Fprintf(os.Stderr, "Bootstrapping project: %s (slug: %s)\n", projectName, slug)
 
-	// Phase 1: Fetch from CLOMonitor
+	// Phase 1: Fetch from CNCF Landscape
+	var landscapeData *projects.LandscapeData
+	if !*skipLandscape {
+		fmt.Fprintf(os.Stderr, "  Fetching from CNCF landscape...\n")
+		var err error
+		landscapeData, err = projects.FetchFromLandscape(projectName, client, "")
+		if err != nil {
+			log.Printf("  Warning: Landscape fetch failed: %v", err)
+		} else if landscapeData != nil {
+			fmt.Fprintf(os.Stderr, "  Found in landscape: %s (maturity: %s, category: %s / %s)\n",
+				landscapeData.Name, landscapeData.Maturity, landscapeData.Category, landscapeData.Subcategory)
+		} else {
+			fmt.Fprintf(os.Stderr, "  Not found in landscape\n")
+		}
+	}
+
+	// Phase 2: Fetch from CLOMonitor
 	var cloProject *projects.CLOMonitorProject
 	if !*skipCLO {
 		fmt.Fprintf(os.Stderr, "  Fetching from CLOMonitor...\n")
@@ -85,7 +102,7 @@ func main() {
 		}
 	}
 
-	// Phase 2: Fetch from GitHub
+	// Phase 3: Fetch from GitHub
 	var ghData *projects.GitHubData
 	if !*skipGH && org != "" {
 		fmt.Fprintf(os.Stderr, "  Fetching from GitHub: %s/%s...\n", org, repo)
@@ -101,11 +118,11 @@ func main() {
 		}
 	}
 
-	// Phase 3: Merge data
+	// Phase 4: Merge data
 	fmt.Fprintf(os.Stderr, "  Merging data sources...\n")
-	result := projects.MergeBootstrapData(slug, nil, cloProject, ghData)
+	result := projects.MergeBootstrapData(slug, landscapeData, cloProject, ghData)
 
-	// Phase 4: Generate output
+	// Phase 5: Generate output
 	if *dryRun {
 		fmt.Fprintln(os.Stderr, "\n--- project.yaml ---")
 		projectYAML, err := projects.GenerateProjectYAML(result)

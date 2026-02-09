@@ -155,6 +155,7 @@ GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
 | `-github-repo` | | Primary repository name (defaults to org name) |
 | `-github-token` | | GitHub token (or set `GITHUB_TOKEN` env) |
 | `-output-dir` | `.` | Directory to write scaffold output |
+| `-skip-landscape` | `false` | Skip CNCF landscape YAML lookup |
 | `-skip-clomonitor` | `false` | Skip CLOMonitor API lookup |
 | `-skip-github` | `false` | Skip GitHub API lookup |
 | `-dry-run` | `false` | Print generated YAML without writing files |
@@ -163,7 +164,7 @@ GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
 
 The bootstrap tool fetches data from multiple sources and merges them with this priority order:
 
-1. **CNCF Landscape** (highest priority) - project name, description, website, repos, maturity
+1. **CNCF Landscape** (highest priority) - fetches `landscape.yml` from `cncf/landscape` repo for project name, description, website, repo URL, logo, twitter, maturity, category/subcategory
 2. **CLOMonitor** - project metadata, scores, repository list
 3. **GitHub API** (fallback) - repo description, org info, community health profile
 
