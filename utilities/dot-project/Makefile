@@ -14,6 +14,8 @@ build:
 	go build -o bin/validator ./cmd/validator
 	@echo "Building landscape updater..."
 	go build -o bin/landscape-updater ./cmd/landscape-updater
+	@echo "Building bootstrap tool..."
+	go build -o bin/bootstrap ./cmd/bootstrap
 
 # Build docker image
 docker-build:
@@ -88,7 +90,7 @@ test-run: test-setup build
 # Show help
 help:
 	@echo "Available targets:"
-	@echo "  build         - Build the validator and landscape-updater binaries"
+	@echo "  build         - Build the validator, landscape-updater, and bootstrap binaries"
 	@echo "  docker-build  - Build docker image"
 	@echo "  test          - Run tests"
 	@echo "  test-coverage - Run tests with coverage report"
