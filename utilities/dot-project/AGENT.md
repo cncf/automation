@@ -17,7 +17,11 @@ utilities/dot-project/
 │   ├── project.yaml
 │   ├── maintainers.yaml
 │   └── .github/workflows/validate.yaml
-├── yaml/                       # Sample configuration files and test fixtures
+├── example/                    # Realistic filled-in example (Kubernetes-like)
+│   ├── project.yaml
+│   ├── maintainers.yaml
+│   └── .github/workflows/validate.yaml
+├── testdata/                   # Test fixtures and sample configs
 ├── bin/                        # Build output (gitignored)
 ├── .cache/                     # Validation cache directory (gitignored)
 ├── types.go                    # Core type definitions (Project, Maintainer, Config, etc.)
@@ -100,10 +104,10 @@ go build -o bin/audit-checker ./cmd/audit-checker
 make run
 
 # Or directly:
-./bin/validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml
+./bin/validator --config testdata/projectlist.yaml --maintainers testdata/maintainers.yaml
 
 # Skip maintainer validation
-./bin/validator --config yaml/projectlist.yaml --maintainers ""
+./bin/validator --config testdata/projectlist.yaml --maintainers ""
 
 # With external verification enabled
 ./bin/validator --verify-maintainers
@@ -112,7 +116,7 @@ make run
 ./bin/validator --maintainers maintainers.yaml --base-maintainers previous-maintainers.yaml
 
 # Output formats: text (default), json, yaml
-./bin/validator --config yaml/projectlist.yaml --output json
+./bin/validator --config testdata/projectlist.yaml --output json
 ```
 
 ### Running the Landscape Updater
@@ -191,7 +195,7 @@ go tool cover -html=coverage.out -o coverage.html
 - `landscape_test.go` - Landscape entry conversion and diff comparison tests
 - `staleness_test.go` - Staleness detection threshold tests
 - `audit_test.go` - URL accessibility audit tests
-- `integration_test.go` - YAML fixture integration tests (loads files from `yaml/` directory)
+- `integration_test.go` - YAML fixture integration tests (loads files from `testdata/` and `example/`)
 - `test_helpers_test.go` - Shared test helpers (`validBaseProject()` factory function)
 
 ### Test Patterns
@@ -279,9 +283,9 @@ Additional types in domain-specific files:
 ### CLI Flags
 
 **validator** (`cmd/validator/main.go`):
-- `--config` - Path to project list configuration file (default: `yaml/projectlist.yaml`)
+- `--config` - Path to project list configuration file (default: `testdata/projectlist.yaml`)
 - `--cache` - Directory to store cached validation results (default: `.cache`)
-- `--maintainers` - Path to maintainers file, set empty to skip (default: `yaml/maintainers.yaml`)
+- `--maintainers` - Path to maintainers file, set empty to skip (default: `testdata/maintainers.yaml`)
 - `--base-maintainers` - Path to base maintainers file for diff validation
 - `--verify-maintainers` - Verify maintainer handles via external service (default: false)
 - `--output` - Output format: text, json, yaml (default: `text`)
@@ -315,7 +319,7 @@ docker build -t dot-project-validator .
 
 ```bash
 # Run validator
-docker run --rm -v $(pwd)/yaml:/app/yaml dot-project-validator --config /app/yaml/projectlist.yaml
+docker run --rm -v $(pwd)/testdata:/app/testdata dot-project-validator --config /app/testdata/projectlist.yaml
 ```
 
 The Dockerfile uses a multi-stage build:
@@ -326,7 +330,7 @@ Note: The Docker image only includes the `validator` binary. The other CLI tools
 
 ## Configuration Files
 
-### Project List (`yaml/projectlist.yaml`)
+### Project List (`testdata/projectlist.yaml`)
 
 ```yaml
 projects:
@@ -336,7 +340,7 @@ projects:
     id: "local-project"
 ```
 
-### Maintainers (`yaml/maintainers.yaml`)
+### Maintainers (`testdata/maintainers.yaml`)
 
 ```yaml
 maintainers:

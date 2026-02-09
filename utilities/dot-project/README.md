@@ -64,7 +64,7 @@ repositories:
 
 ### Example: Full `project.yaml`
 
-See `yaml/example-project.yaml` or `template/project.yaml` for a complete example with all fields.
+See `example/project.yaml` for a complete filled-in example, or `template/project.yaml` for a blank starter.
 
 ## Tools
 
@@ -80,7 +80,7 @@ make build
 ./bin/validator
 
 # Validate specific files
-./bin/validator -config yaml/projectlist.yaml -maintainers yaml/maintainers.yaml
+./bin/validator -config testdata/projectlist.yaml -maintainers testdata/maintainers.yaml
 
 # Output as JSON
 ./bin/validator -output json
@@ -96,8 +96,8 @@ make build
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-config` | `yaml/projectlist.yaml` | Path to project list configuration |
-| `-maintainers` | `yaml/maintainers.yaml` | Path to maintainers file (empty to skip) |
+| `-config` | `testdata/projectlist.yaml` | Path to project list configuration |
+| `-maintainers` | `testdata/maintainers.yaml` | Path to maintainers file (empty to skip) |
 | `-base-maintainers` | | Base maintainers file for diff validation |
 | `-cache` | `.cache` | Cache directory |
 | `-output` | `text` | Output format: `text`, `json`, `yaml` |
@@ -231,7 +231,7 @@ make clean          # Clean build artifacts
 docker build -t dot-project-validator .
 
 # Run validator
-docker run --rm -v $(pwd)/yaml:/app/yaml dot-project-validator -config /app/yaml/projectlist.yaml
+docker run --rm -v $(pwd)/testdata:/app/testdata dot-project-validator -config /app/testdata/projectlist.yaml
 
 # Run landscape-updater
 docker run --rm --entrypoint landscape-updater dot-project-validator --help
@@ -286,4 +286,4 @@ New schema versions will be added as the format evolves. The validator supports 
 
 For questions or issues with the validation tools:
 - Open an issue in [cncf/automation](https://github.com/cncf/automation)
-- Check existing examples in `utilities/dot-project/yaml/`
+- Check existing examples in `utilities/dot-project/example/`

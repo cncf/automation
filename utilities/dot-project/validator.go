@@ -131,7 +131,7 @@ func (pv *ProjectValidator) loadProjectList() ([]string, error) {
 	if pv.config.ProjectListURL != "" {
 		projectListURL = pv.config.ProjectListURL
 	} else {
-		projectListURL = "yaml/projectlist.yaml" // Default to local file
+		projectListURL = "testdata/projectlist.yaml" // Default to local file
 	}
 
 	var content string
@@ -543,7 +543,7 @@ func (pv *ProjectValidator) GenerateDiff(results []ValidationResult) string {
 // NewValidator creates a new validator instance - compatibility alias
 func NewValidator(cacheDir string) *ProjectValidator {
 	config := &Config{
-		ProjectListURL: "yaml/projectlist.yaml",
+		ProjectListURL: "testdata/projectlist.yaml",
 		CacheDir:       cacheDir,
 		OutputFormat:   "text",
 	}
