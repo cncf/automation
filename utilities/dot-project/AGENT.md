@@ -12,7 +12,8 @@ utilities/dot-project/
 │   ├── validator/              # Main CLI validator tool
 │   ├── landscape-updater/      # Tool to convert project.yaml to landscape format
 │   ├── staleness-checker/      # Tool to check maintainer data freshness
-│   └── audit-checker/          # Tool to verify referenced URLs are accessible
+│   ├── audit-checker/          # Tool to verify referenced URLs are accessible
+│   └── bootstrap/              # Tool to auto-generate project scaffolds from external data
 ├── template/                   # Template files for new .project repositories
 │   ├── project.yaml
 │   ├── maintainers.yaml
@@ -25,12 +26,19 @@ utilities/dot-project/
 ├── bin/                        # Build output (gitignored)
 ├── .cache/                     # Validation cache directory (gitignored)
 ├── types.go                    # Core type definitions (Project, Maintainer, Config, etc.)
+├── bootstrap_types.go          # Bootstrap intermediate types (BootstrapResult, API data structs)
+├── bootstrap_parsers.go        # CODEOWNERS, OWNERS, MAINTAINERS file parsers
+├── bootstrap_sources.go        # CLOMonitor/GitHub API clients, fuzzy matching, data merge
+├── bootstrap_scaffold.go       # Scaffold generator (project.yaml, maintainers.yaml templates)
 ├── validator.go                # Project validation logic
 ├── maintainers.go              # Maintainer validation logic with LFX integration
 ├── landscape.go                # Landscape entry conversion and comparison
 ├── staleness.go                # Maintainer staleness detection
 ├── audit.go                    # URL accessibility audit
 ├── validator_test.go           # Core validation tests
+├── bootstrap_parsers_test.go   # CODEOWNERS/OWNERS/MAINTAINERS parser tests
+├── bootstrap_sources_test.go   # CLOMonitor/GitHub client, fuzzy match, merge tests
+├── bootstrap_scaffold_test.go  # Scaffold generation and WriteScaffold tests
 ├── security_test.go            # Security contact email validation tests
 ├── social_test.go              # Social links URL validation tests
 ├── landscape_test.go           # Landscape conversion and diff tests
@@ -89,7 +97,7 @@ docker build -t dot-project-validator .
 make clean
 ```
 
-Note: The Makefile `build` target only builds the `validator` binary. The other CLI tools (`landscape-updater`, `staleness-checker`, `audit-checker`) must be built manually:
+Note: The Makefile `build` target builds the `validator`, `landscape-updater`, and `bootstrap` binaries. The other CLI tools (`staleness-checker`, `audit-checker`) must be built manually:
 
 ```bash
 go build -o bin/landscape-updater ./cmd/landscape-updater
@@ -135,6 +143,37 @@ Converts a `project.yaml` to CNCF landscape entry format. Validates the project 
 # Dry run is on by default
 ./bin/landscape-updater --project project.yaml --dry-run=false
 ```
+
+### Running the Bootstrap Tool
+
+Auto-generates `project.yaml` and `maintainers.yaml` scaffolds by fetching data from CLOMonitor, GitHub API, and the CNCF landscape. Discovers maintainer handles from CODEOWNERS, OWNERS, and MAINTAINERS files.
+
+```bash
+# Dry run: preview generated YAML
+./bin/bootstrap -name "My Project" -github-org my-org -dry-run
+
+# Generate scaffold in current directory
+./bin/bootstrap -name "My Project" -github-org my-org -github-repo my-repo
+
+# Generate into a specific directory
+./bin/bootstrap -name "Envoy" -github-org envoyproxy -github-repo envoy -output-dir /tmp/envoy
+
+# Skip CLOMonitor (GitHub-only)
+./bin/bootstrap -github-org my-org -skip-clomonitor
+
+# With GitHub token for higher rate limits
+GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
+```
+
+**bootstrap** (`cmd/bootstrap/main.go`):
+- `-name` - Project display name to search for
+- `-github-org` - GitHub organization
+- `-github-repo` - Primary repository name (defaults to org name)
+- `-github-token` - GitHub token (or set `GITHUB_TOKEN` env)
+- `-output-dir` - Directory for scaffold output (default: `.`)
+- `-skip-clomonitor` - Skip CLOMonitor API lookup (default: false)
+- `-skip-github` - Skip GitHub API lookup (default: false)
+- `-dry-run` - Print generated YAML without writing files (default: false)
 
 ### Running the Staleness Checker
 
@@ -259,6 +298,9 @@ Additional types in domain-specific files:
 - `LandscapeEntry`, `LandscapeDiff`, `LandscapeChange` - in `landscape.go`
 - `StalenessResult` - in `staleness.go`
 - `AuditResult`, `AuditCheck` - in `audit.go`
+- `BootstrapConfig`, `BootstrapResult`, `CLOMonitorProject`, `CLOMonitorRepo`, `CLOMonitorReport`, `CLOMonitorScore` - in `bootstrap_types.go`
+- `GitHubRepoData`, `GitHubOrgData`, `GitHubCommunityProfile`, `GitHubContentEntry` - in `bootstrap_types.go`
+- `GitHubData`, `LandscapeData` - in `bootstrap_sources.go`
 
 ### Validation Logic
 
