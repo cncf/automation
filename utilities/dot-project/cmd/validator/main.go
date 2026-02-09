@@ -16,6 +16,7 @@ func main() {
 		maintainersFile     = flag.String("maintainers", "yaml/maintainers.yaml", "Path to maintainers file (set empty to skip)")
 		baseMaintainersFile = flag.String("base-maintainers", "", "Path to base maintainers file for diff validation")
 		verifyMaintainers   = flag.Bool("verify-maintainers", false, "Verify maintainer handles via external service (stubbed)")
+		outputFormat        = flag.String("output", "text", "Output format: text, json, yaml")
 	)
 	flag.Parse()
 
@@ -57,14 +58,14 @@ func main() {
 		maintainerResults = results
 	}
 
-	output, err := validator.FormatResults(projectResults, "text")
+	output, err := validator.FormatResults(projectResults, *outputFormat)
 	if err != nil {
 		log.Fatalf("failed to format project results: %v", err)
 	}
 	fmt.Print(output)
 	if maintainersEnabled {
 		fmt.Println()
-		maintainersOutput, err := validator.FormatMaintainersResults(maintainerResults, "text")
+		maintainersOutput, err := validator.FormatMaintainersResults(maintainerResults, *outputFormat)
 		if err != nil {
 			log.Fatalf("failed to format maintainer results: %v", err)
 		}

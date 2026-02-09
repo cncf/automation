@@ -1,0 +1,61 @@
+# .project metadata for [YOUR PROJECT NAME]
+# Documentation: https://github.com/cncf/automation/tree/main/utilities/dot-project
+#
+# Instructions:
+#   1. Replace all [PLACEHOLDER] values with your project's information
+#   2. Remove any optional sections you don't need
+#   3. Ensure your project validates: see the CI workflow in .github/workflows/
+
+schema_version: "1.0.0"
+slug: "my-project"              # REQUIRED: lowercase identifier (a-z, 0-9, hyphens)
+name: "My Project"              # REQUIRED: display name
+description: ""                 # REQUIRED: one-line project description
+type: "project"                 # Optional: project, platform, specification, etc.
+project_lead: "github-handle"   # Optional: GitHub handle of primary contact
+cncf_slack_channel: "#my-project" # Optional: CNCF Slack channel
+
+maturity_log:                   # REQUIRED: at least one entry
+  - phase: "sandbox"            # sandbox, incubating, graduated, archived
+    date: "2024-01-15T00:00:00Z"
+    issue: "https://github.com/cncf/toc/issues/XXX"
+
+repositories:                   # REQUIRED: at least one repository URL
+  - "https://github.com/my-org/my-project"
+
+website: "https://my-project.io"
+artwork: "https://github.com/cncf/artwork/tree/master/projects/my-project"
+
+social:                         # Optional
+  twitter: "https://twitter.com/myproject"
+  slack: "https://myproject.slack.com"
+
+mailing_lists:                  # Optional
+  - "my-project-dev@lists.cncf.io"
+
+audits:                         # Optional (recommended for incubating+)
+  - date: "2024-01-01T00:00:00Z"
+    type: "security"
+    url: "https://example.com/audit-report.pdf"
+
+security:                       # Optional
+  policy:
+    path: "SECURITY.md"
+  contact: "security@my-project.io"
+
+governance:                     # Optional
+  contributing:
+    path: "CONTRIBUTING.md"
+  codeowners:
+    path: "CODEOWNERS"
+
+legal:                          # Optional
+  license:
+    path: "LICENSE"
+
+documentation:                  # Optional
+  readme:
+    path: "README.md"
+
+# landscape:                    # Optional: CNCF Landscape location
+#   category: "App Definition and Development"
+#   subcategory: "Database"
