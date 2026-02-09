@@ -7,7 +7,6 @@
 | Open Policy Agent | graduated | graduated | graduated | graduated | - | - |
 | LitmusChaos | incubating | incubating | incubating | incubating | incubating | - |
 | metal3-io | incubating | - | incubating | incubating | - | - |
-| Cadence | sandbox | sandbox | sandbox | - | sandbox | sandbox |
 | cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | CoHDI | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -26,10 +25,12 @@
 | TrestleGRC | sandbox | sandbox | - | - | sandbox | - |
 | VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | - |
 | WasmEdge Runtime | sandbox | sandbox | - | sandbox | sandbox | sandbox |
+| <QHTTPX> | forming | - | - | - | - | - |
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
 | Cedar | forming | sandbox | - | sandbox | - | - |
+| Conveyor CI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
 | Curvine | forming | - | - | - | - | - |
@@ -42,11 +43,14 @@
 | ksctl | forming | - | - | - | - | - |
 | KubeElasti | forming | sandbox | - | - | sandbox | - |
 | NMstate | forming | - | - | - | - | - |
+| OpenEverest | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - | - | - | - |
 | Schema Driven Configuration | forming | - | - | - | - | - |
+| SemaMesh | forming | - | - | - | - | - |
 | Sermant | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ServiceRadar | forming | - | - | - | - | - |
 | Terrascan | forming | - | - | - | - | - |
+| Velero | forming | - | - | - | - | - |
 | Brigade | archived | archived | - | - | - | archived |
 | Cluster API Provider for CloudStack(CAPC) | archived | - | - | - | - | - |
 | CNCF Standards & Specifications | archived | - | - | - | - | - |
@@ -189,7 +193,7 @@
 | BFE | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | bootc | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | bpfman | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Cadence | sandbox | sandbox | sandbox | - | sandbox | sandbox |
+| Cadence | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Capsule | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Carina | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Cartography | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -327,10 +331,12 @@
 
 | Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
 |---|---|---|---|---|---|---|
+| <QHTTPX> | forming | - | - | - | - | - |
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
 | Cedar | forming | sandbox | - | sandbox | - | - |
+| Conveyor CI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
 | Curvine | forming | - | - | - | - | - |
@@ -343,11 +349,14 @@
 | ksctl | forming | - | - | - | - | - |
 | KubeElasti | forming | sandbox | - | - | sandbox | - |
 | NMstate | forming | - | - | - | - | - |
+| OpenEverest | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - | - | - | - |
 | Schema Driven Configuration | forming | - | - | - | - | - |
+| SemaMesh | forming | - | - | - | - | - |
 | Sermant | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ServiceRadar | forming | - | - | - | - | - |
 | Terrascan | forming | - | - | - | - | - |
+| Velero | forming | - | - | - | - | - |
 
 ## Archived
 
