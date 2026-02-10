@@ -298,7 +298,9 @@ jobs:
           echo "::endgroup::"
           echo "generated_files=$GENERATED_FILES" >> $GITHUB_OUTPUT
 
-      - name: Commit SBOMs
+      - name: Commit and push SBOMs with retry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -312,14 +314,33 @@ jobs:
             exit 0
           fi
           
-          git commit -m "chore(sbom): update SBOM for ${{ matrix.owner }}/${{ matrix.repo }}" || true
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-        continue-on-error: true
+          git commit -m "chore(sbom): update SBOM for ${{ matrix.owner }}/${{ matrix.repo }}"
+          
+          # Retry push with rebase up to 5 times to handle parallel job conflicts
+          MAX_RETRIES=5
+          RETRY_DELAY=5
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Push attempt $i of $MAX_RETRIES..."
+            
+            # Pull latest changes with rebase before pushing
+            if git pull --rebase origin ${{ github.ref_name }}; then
+              if git push origin HEAD:${{ github.ref_name }}; then
+                echo "Successfully pushed changes on attempt $i"
+                exit 0
+              fi
+            fi
+            
+            if [ $i -lt $MAX_RETRIES ]; then
+              echo "Push failed, retrying in ${RETRY_DELAY}s..."
+              sleep $RETRY_DELAY
+              # Increase delay for next retry (exponential backoff)
+              RETRY_DELAY=$((RETRY_DELAY * 2))
+            fi
+          done
+          
+          echo "Failed to push after $MAX_RETRIES attempts"
+          exit 1
 
   # Aggregate job to handle merge conflicts from parallel commits
   aggregate-sboms:
