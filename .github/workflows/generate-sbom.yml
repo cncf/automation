@@ -1,0 +1,270 @@
+name: Generate SBOM for CNCF Projects
+
+on:
+  schedule:
+    # Run weekly on Sunday at 02:00 UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      project_filter:
+        description: 'Filter by owner/repo (e.g., "kubernetes/kubernetes"), leave empty for all'
+        required: false
+        default: ''
+      force_regenerate:
+        description: 'Force regenerate existing SBOMs'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Generate repository matrix
+        id: set-matrix
+        run: |
+          FILTER="${{ github.event.inputs.project_filter }}"
+          
+          if [ -n "$FILTER" ]; then
+            # Filter for specific project
+            OWNER=$(echo "$FILTER" | cut -d'/' -f1)
+            REPO=$(echo "$FILTER" | cut -d'/' -f2)
+            MATRIX=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'")) | {"include": .}' supply-chain/util/data/repositories.yaml)
+          else
+            # All projects
+            MATRIX=$(yq -o=json '{"include": .repositories}' supply-chain/util/data/repositories.yaml)
+          fi
+          
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Generated matrix with $(echo $MATRIX | jq '.include | length') repositories"
+
+  generate-sbom:
+    needs: prepare-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: false
+
+      - name: Install bom tool
+        run: |
+          # Install kubernetes-sigs/bom
+          go install sigs.k8s.io/bom/cmd/bom@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Get stable releases and generate SBOMs
+        id: generate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate }}
+        run: |
+          set -e
+          
+          OWNER="${{ matrix.owner }}"
+          REPO="${{ matrix.repo }}"
+          PROJECT_NAME="${{ matrix.name }}"
+          # Use project name (sanitized) for directory structure: projectname/reponame/version/
+          SANITIZED_PROJECT=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+          SBOM_BASE_DIR="supply-chain/sbom/${SANITIZED_PROJECT}/${REPO}"
+          GENERATED_FILES=""
+          PROCESSED=0
+          MAX_RELEASES=3
+          
+          echo "::group::Processing $PROJECT_NAME ($OWNER/$REPO)"
+          
+          # Function to generate SBOM for a specific tag
+          generate_sbom() {
+            local TAG="$1"
+            local VERSION=$(echo "$TAG" | sed 's/^v//')
+            local SBOM_DIR="${SBOM_BASE_DIR}/${VERSION}"
+            local SBOM_FILE="${SBOM_DIR}/${REPO}.json"
+            
+            # Check if SBOM already exists
+            if [ -f "$SBOM_FILE" ] && [ "$FORCE_REGENERATE" != "true" ]; then
+              echo "SBOM already exists: $SBOM_FILE, skipping..."
+              return 1
+            fi
+            
+            echo "Generating SBOM for $OWNER/$REPO@$TAG..."
+            
+            # Clone the repository at specific tag
+            local TEMP_DIR=$(mktemp -d)
+            if ! git clone --depth 1 --branch "$TAG" "https://github.com/${OWNER}/${REPO}.git" "$TEMP_DIR" 2>/dev/null; then
+              echo "Failed to clone $OWNER/$REPO@$TAG, skipping..."
+              rm -rf "$TEMP_DIR"
+              return 1
+            fi
+            
+            # Create output directory
+            mkdir -p "$SBOM_DIR"
+            
+            # Generate SBOM with bom tool
+            if bom generate --format json --output "$SBOM_FILE" "$TEMP_DIR" 2>/dev/null; then
+              echo "Successfully generated SBOM: $SBOM_FILE"
+              GENERATED_FILES="$GENERATED_FILES $SBOM_FILE"
+              rm -rf "$TEMP_DIR"
+              return 0
+            else
+              echo "Failed to generate SBOM for $OWNER/$REPO@$TAG"
+              rm -rf "$TEMP_DIR"
+              return 1
+            fi
+          }
+          
+          # Get releases from GitHub API (last 50)
+          RELEASES=$(gh api repos/${OWNER}/${REPO}/releases --paginate -q '.[0:50]' 2>/dev/null || echo "[]")
+          
+          if [ "$RELEASES" == "[]" ] || [ -z "$RELEASES" ]; then
+            echo "No releases found for $OWNER/$REPO, trying tags..."
+            TAGS=$(gh api repos/${OWNER}/${REPO}/tags --paginate -q '.[0:20] | .[].name' 2>/dev/null || echo "")
+            
+            if [ -z "$TAGS" ]; then
+              echo "No tags found for $OWNER/$REPO, skipping..."
+              echo "::endgroup::"
+              exit 0
+            fi
+            
+            # Process tags as releases
+            for TAG in $TAGS; do
+              # Filter out pre-releases (alpha, beta, rc, pre, dev, snapshot, nightly)
+              if echo "$TAG" | grep -qiE '[-\.](alpha|beta|rc|pre|dev|snapshot|nightly|canary|test|draft|wip)[0-9]*'; then
+                echo "Skipping pre-release tag: $TAG"
+                continue
+              fi
+              
+              # Only process semver-like tags
+              if ! echo "$TAG" | grep -qE '^v?[0-9]+\.[0-9]+'; then
+                echo "Skipping non-semver tag: $TAG"
+                continue
+              fi
+              
+              if generate_sbom "$TAG"; then
+                PROCESSED=$((PROCESSED + 1))
+              fi
+              
+              # Only process latest stable releases per repo
+              if [ "$PROCESSED" -ge "$MAX_RELEASES" ]; then
+                echo "Processed $MAX_RELEASES releases, stopping..."
+                break
+              fi
+            done
+          else
+            # Process releases - read into array to avoid subshell issues
+            readarray -t RELEASE_TAGS < <(echo "$RELEASES" | jq -r '.[] | select(.draft == false and .prerelease == false) | .tag_name')
+            
+            for TAG in "${RELEASE_TAGS[@]}"; do
+              # Additional filter for pre-release patterns in tag name
+              if echo "$TAG" | grep -qiE '[-\.](alpha|beta|rc|pre|dev|snapshot|nightly|canary|test|draft|wip)[0-9]*'; then
+                echo "Skipping pre-release tag: $TAG"
+                continue
+              fi
+              
+              if generate_sbom "$TAG"; then
+                PROCESSED=$((PROCESSED + 1))
+              fi
+              
+              # Only process latest stable releases per repo
+              if [ "$PROCESSED" -ge "$MAX_RELEASES" ]; then
+                echo "Processed $MAX_RELEASES releases, stopping..."
+                break
+              fi
+            done
+          fi
+          
+          echo "::endgroup::"
+          echo "generated_files=$GENERATED_FILES" >> $GITHUB_OUTPUT
+
+      - name: Commit SBOMs
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Check for changes
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No new SBOMs generated for ${{ matrix.owner }}/${{ matrix.repo }}"
+            exit 0
+          fi
+          
+          git add supply-chain/sbom/
+          git commit -m "chore(sbom): update SBOM for ${{ matrix.owner }}/${{ matrix.repo }}" || true
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+        continue-on-error: true
+
+  # Aggregate job to handle merge conflicts from parallel commits
+  aggregate-sboms:
+    needs: generate-sbom
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest changes
+        run: |
+          git pull --rebase origin ${{ github.ref_name }} || git pull origin ${{ github.ref_name }}
+
+      - name: Generate SBOM index
+        run: |
+          INDEX_FILE="supply-chain/sbom/index.json"
+          
+          # Check if there are any SBOMs
+          SBOM_COUNT=$(find supply-chain/sbom -name "*.json" -type f ! -name "index.json" 2>/dev/null | wc -l)
+          if [ "$SBOM_COUNT" -eq 0 ]; then
+            echo "No SBOMs found, creating empty index..."
+            echo '{"generated_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "sboms": []}' > "$INDEX_FILE"
+            exit 0
+          fi
+          
+          # Generate index of all SBOMs using jq to properly build JSON array
+          find supply-chain/sbom -name "*.json" -type f ! -name "index.json" | sort | while read -r SBOM; do
+            REL_PATH="${SBOM#supply-chain/sbom/}"
+            PROJECT=$(echo "$REL_PATH" | cut -d'/' -f1)
+            REPO=$(echo "$REL_PATH" | cut -d'/' -f2)
+            VERSION=$(echo "$REL_PATH" | cut -d'/' -f3)
+            echo "{\"project\": \"$PROJECT\", \"repo\": \"$REPO\", \"version\": \"$VERSION\", \"path\": \"$REL_PATH\"}"
+          done | jq -s '{"generated_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "sboms": .}' > "$INDEX_FILE"
+
+      - name: Commit index
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          if ! git diff --quiet supply-chain/sbom/index.json 2>/dev/null; then
+            git add supply-chain/sbom/index.json
+            git commit -m "chore(sbom): update SBOM index" || true
+            git push origin ${{ github.ref_name }} || true
+          fi
