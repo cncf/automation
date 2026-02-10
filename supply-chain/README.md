@@ -64,32 +64,32 @@ The workflow (`.github/workflows/generate-sbom.yml`) runs:
 
 ```bash
 # Process all projects
-./supply-chain/sbom/generate-sbom-local.sh
+./supply-chain/util/generate-sbom-local.sh
 
 # Process specific repo
-./supply-chain/sbom/generate-sbom-local.sh kubernetes/kubernetes
+./supply-chain/util/generate-sbom-local.sh kubernetes/kubernetes
 
 # Force regenerate
-./supply-chain/sbom/generate-sbom-local.sh --force coredns/coredns
+./supply-chain/util/generate-sbom-local.sh --force coredns/coredns
 
 # Set max releases per repo (default: 3)
-MAX_RELEASES=5 ./supply-chain/sbom/generate-sbom-local.sh
+MAX_RELEASES=5 ./supply-chain/util/generate-sbom-local.sh
 ```
 
 ### PowerShell Script (Windows)
 
 ```powershell
 # Process all projects
-.\supply-chain\sbom\generate-sbom-local.ps1
+.\supply-chain\util\generate-sbom-local.ps1
 
 # Process specific repo
-.\supply-chain\sbom\generate-sbom-local.ps1 -ProjectFilter "kubernetes/kubernetes"
+.\supply-chain\util\generate-sbom-local.ps1 -ProjectFilter "kubernetes/kubernetes"
 
 # Force regenerate
-.\supply-chain\sbom\generate-sbom-local.ps1 -Force -ProjectFilter "coredns/coredns"
+.\supply-chain\util\generate-sbom-local.ps1 -Force -ProjectFilter "coredns/coredns"
 
 # Set max releases per repo
-.\supply-chain\sbom\generate-sbom-local.ps1 -MaxReleases 5
+.\supply-chain\util\generate-sbom-local.ps1 -MaxReleases 5
 ```
 
 ### Environment Variables
