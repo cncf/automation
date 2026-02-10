@@ -241,6 +241,9 @@ jobs:
         run: |
           INDEX_FILE="supply-chain/sbom/index.json"
           
+          # Ensure directory exists
+          mkdir -p supply-chain/sbom
+          
           # Check if there are any SBOMs
           SBOM_COUNT=$(find supply-chain/sbom -name "*.json" -type f ! -name "index.json" 2>/dev/null | wc -l)
           if [ "$SBOM_COUNT" -eq 0 ]; then
