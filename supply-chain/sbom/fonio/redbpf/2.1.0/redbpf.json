@@ -1,0 +1,3877 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "Fonio - redbpf v2.1.0",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-10T21:09:05Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator",
+      "Tool: go-licenses"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM generated for CNCF project: Fonio (foniod/redbpf@v2.1.0). Repository: https://github.com/foniod/redbpf. CNCF Projects: https://www.cncf.io/projects/. License detection performed using go-licenses."
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/foniod/redbpf/releases/tag/v2.1.0",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.g7KYE9o3zu"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-bpfC95iter.h",
+      "fileName": "redbpf-probes/include/bpf_iter.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f73e17830fd8951443176437a2ae99246e711674"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5bec424f7eebdf3b2bdc9fdeb59264ec8a543f68a96dff8aa0b1c4bd513ba6fb"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fcc8bc1e04f256e2160e9010e9786dfac5d0932b9ebbb1062c0c0bbdac1b6eb1b8ad16c846bd39de229d09428033d98337412bd7015fe34d6a733dbb9fb471b0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-typeC95gen.rs",
+      "fileName": "bpf-sys/src/type_gen.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6492dd6d56b8174762a651b3c42a6ad8903a9bff"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "11ecb961329094c9277c57fdd81a24e9361ec8b3a4c15957d338309d366926f8"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1d67679569a9251b929d3ee45302e11c7e3ec4f8dc4bd272b1fc9fa72bd2c2216755fbb9619e8bbfa7cc20fdbb6b37d08e2582445d11da0446a8e2ffed85f9e8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-Cargo.toml",
+      "fileName": "examples/example-probes/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d95b1bfe9b71d3ce7d2b5f43c649f7f772215b8c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "177293a6890201ba4e7998bbe715a6dd90793229e289091fae7b9bea54d49382"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "06566d597d5550795fc26f6024d1e0aa4cb3116cbad0893a201176b87aa268bc0151a50296a85b0fa28dff040b4337f9672a9a7f04c897efa647b3c9e07450e8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-LICENSE-MIT",
+      "fileName": "LICENSE-MIT",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "MIT"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ecf1c93639384a3ceea77a84cb29d4f0ac3d2634"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7f25defaccb8ac70ec1f154950beaa303b4764faa04f4df219de417d4159f4ce"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f9e79bc18220caab674226786927ec69d9a52c5ea1c02176a30b0e5c3cca56918caeeb5a3742bc68a7011d9e4291a4b552122f47bff861e02f929df14964ed7d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-mallocstacks.rs",
+      "fileName": "examples/example-userspace/examples/mallocstacks.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bc7df4937946a589eeca5d68e5df34a0c6d7060d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3d65a4f299cbdb966bbb17c8848a54a8f02acda62c48cb89d65053c6fc6b5cc4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f10ed1105415a44a8f08af54cc7c9bd0cb210f3f4ecbd9a58371ab052eeeb4526cb58f461673dca41a1b61a9565e88a90f9d650abdbbd817a51ad3eb87360959"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-lib.rs",
+      "fileName": "bpf-sys/src/lib.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b0026985e50960962d31bf65b85d063ccfcaeb18"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e9ee0247afb407af07cec9674ee6c7a4e27c8c4a595da64fa624c971433db47e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "18e8f1e076685f81f9a02fc3dd2c0ae0b029f096fa9324414aa432c7bfce47c288bfda2c0950d80ae1fd649d25f923e7ccae0dcd768f482a2cd426d5956c3796"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-lib.rs",
+      "fileName": "redbpf/src/lib.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "83453cc66f269ac49a55a51113a9f84ae0f646e0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8c23166b1984c31cf554e406ae282dd48175edfc50477a4d57c72f9470fe14ed"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e8632b9f36c4c253c9d21cf446357b7be2f3d03a246bba7fe99c88117b595502e1b3b07d7e64d1bbb350820d81e3e9a9f5b622e13525c7da31eb396131cd6a2c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-vfsreadlat-mod.rs",
+      "fileName": "examples/example-probes/src/vfsreadlat/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "cd558e58124def59d1be6cb0a8b08f9caa037e66"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "64a02f4f532726fcc1787d3064e91e8a04048480bac8efce13a5dfa6d54a8e9b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "93192c0bcdab782623c44d7e20c468112f367994e7c91a7d252a5f4d2f9e5566596ce5f4dddbc935b319b0247b6b4a46e0ad732593bc3ed11eae85e89a0c3e93"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bpfC95iter-context.rs",
+      "fileName": "redbpf-probes/src/bpf_iter/context.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "cb1dd51a4baf1987298e1d39ea9c19b6de606c4d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3e0a32927310033bd0303c7d1147bb125c77df80e67462088e83eebc406f8e76"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ddab5e743aa1a946b692a568255b386f4466149b3a538e186f6262ffe7a92b4fc729df8bdb72a82d563b56fb70e2935005bdd5db15aad56e206c98f749fe9393"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-main.rs",
+      "fileName": "cargo-bpf/src/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "53677aadb342416afa78393e952bfe4e36c518326749a939d33de44c9e7954f9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c20f90e60074ffc91105a17f8bcd6bde880ea173c438b456e3d1b19e0d5281cbf4061d7686c64802bf86089381b903bb179069c808ae7c40f354a3e5d52a86d2"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c745c429c72b7731f6ba6c1aa70ef07003830c4f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-.gitmodules",
+      "fileName": ".gitmodules",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "200bba89346fb3ea5fae49cdcf03716843353e9e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "966d147614dd67ba4303fe91b5ab944f491c924584ed828232cc170ffe8631f7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1af368e9d494c7a20f20d529eb97cf7e94756949baca8f220e450b2ffa224db344d6f1c7cc7aa9a672f30e614e197f5e2c2de45ee05a3cde402ac9928a06fa09"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-newC95program.rs",
+      "fileName": "cargo-bpf/src/new_program.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "95bab21cd0235b1dd21479d62740b356b4f5a4a2e2278c8be40836db7dd1c336"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0b016d1fb958f935eb5d6a5caef38fad872b2e99e282a44d3ef87758f0987076f80f4c5985f8a3083d93edaae9d32e10e43f6c02caeab0c50fa060365cf25dd1"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "14ff7d24c86fbc000ead8b2db5256d18b3506455"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-src-mem.rs",
+      "fileName": "redbpf-macros/src/mem.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a05c4de8a1d990fa7056571d73b7f1425a169380"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "375502381666bbc2b54c21978786dc579167b034e0e066dc86144781c2f966c3"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "804dbe509ced4e52e243c0a0292c5e95af49179f8f3de54fe75f819c9970a1e05575c170c62ad63ce86308cecdd06642e5132881ee6a98af113aa070004abf88"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-uname.rs",
+      "fileName": "bpf-sys/src/uname.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c4f351d18021fb45ba1d39208e99bdb9a85a0bac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "bdb78088881cefa264b3c45ea8729bce420af0a9040bb75a2ee784af944ef7ce"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4bf9273a25bb152bd95c3200dcc9f2e466a071b9b03d13e03f8a006e19b5368ee51c633a88d3c9c5d6d167e14b8584b37230f6bc1dd1f77c3557a8e39c147228"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-vfsreadlat.rs",
+      "fileName": "examples/example-userspace/examples/vfsreadlat.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2153873018a8ed83dfb10dee33b98c68b270b665"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8aef9ccb3d62f0feed3bffb495ecace4a97e734d9f08f00f0b6647b8914b72ab"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e4ccfe1d1fa2c1f641abda50020d2a2d415a7f7e8afbeba599b11cdb23213b17931d7008af72ff73b3ebb95366ad9ca9d0e57db27ebbda7631400352ded9ae86"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-bindgen.rs",
+      "fileName": "cargo-bpf/src/bindgen.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0d9c66a97b67f9c2e3f487b8a43eca220d357f6d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9c8e1729742c2efe1609b87108f290e4f918d7f9052617562b71856fc375f490"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e07d87d735babd142352c3dac66ccd98207078c7448d0f2efe464bdc8efa8f94af883ba6601dc323a43e69049d536934c10f7818a7760c15e6da583136da52f7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-bindings.rs",
+      "fileName": "redbpf-tools/probes/src/bindings.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b2ca1c75eac2ad024423e3aa6155ab6ff52340cd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c55a35795101f033b8cb2213761177c8d6712c24b67acebb526b0156c8a5c5e2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4a71f22538fc5f5127b03ce68f7a73218a18c30197b3ad998716774c4800e8b3c6e37ccc32cd0329a246e583fc29a863933300768fafac605db40d34f5584772"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-mapC95io.rs",
+      "fileName": "redbpf/src/load/map_io.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fea1688dec5abcc3419c173cbd9002315876bb55"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "21787be5071000b92c71d304dfb2f064629f6de5af6494dff09b898fb72c28c4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "62b76a66c09a50aa794895ee26644bb0a8a0f31eaa880c47c5840939fb47e4ae8aed2db4af96f05539e41986bebc6fbf63b3669536cb15ed4a38330d85e99bfa"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-scripts-build-test.sh",
+      "fileName": "scripts/build-test.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5300771755f5cf6695a559574ffc31698df32492c2d23dad0e2c0c37011c4947dfd9307e8b218026231eee2ff1d56fe10824a21877215b736e3dc3274b41ce14"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2cb44d98a0215aeeadbf622e114185d5ba79580a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d64cc6eff0276321aac5ef83303c424004b7783662cfe4c2ab580115d7ce57da"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-perfC95reader.rs",
+      "fileName": "bpf-sys/src/perf_reader.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d0b50d1f91c6399b5b1da931c3e5d6927ce8f5a2175fa55ef759846cffafa4bca90555cbc9389e1b5c9665766f2fbde978bd1f127a6be5cc7d4b433cda0689da"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f1439fab06409394d2f316feee1779cd04b34703"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ed64a2fdd99492822baed83c86fb6d8f694ebe85c5981d04dff778b0d5fa40bb"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-build.rs",
+      "fileName": "bpf-sys/build.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "dd375842c711805bfc491dcdc3615d3614f2a734a2bbe236d53b1d2c930c5ce3"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "918e597a0064eeeff53b3a9e1fe821780c86078aa07ba483221ccf406720acb933675e4d9f5c577decd1ee75edb06d559dc371632425388cc4b08f6ce281050c"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "db8642433156689b54239140c95561b7bf89f64c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-helpers.rs",
+      "fileName": "redbpf-probes/src/helpers.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "dcd32485bbe421b019a0c88986c22bc59f7137aa"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c9f1505269d5164b598dd1acd569d33e5fd53b34aa2baeacfe4aa2cf365ae986"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "416a4112caf61f58c2b0e91dda60a7b5f162369f692430005a5e842e0fcefc4fcb12131ef51ea99035f4ac3fef4d5ef1c6a27f4646e52b9b3aeebf64c2ae61ae"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-llvm.rs",
+      "fileName": "cargo-bpf/src/llvm.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b0578a318b97c833cbdb422d3635206c0ab18a33"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c3f1ee6630a16e61c257277eeb0d056b7ef9bf6f12acc8178a6335cbb33a6477"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e63dd6344c31be2e1e7282c2b6a510795c426d79da01944ed9ef4f56a064e3c97266283c927567967a4a824ae57f8f2111cacc3f3dec28ed23dc1aa7901fed91"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-libbpfC95xdp.h",
+      "fileName": "bpf-sys/libbpf_xdp.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6b54fec376399cc880547dda302fa4b1c212f21b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b92d5320169dcc3be40e2bab7ff5e7f77cc77216033759204a929e4dd2a222f9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "609fe03175a84a3a68fd15c02d1e7425093e2c127e127cb54497b0118223fd039790d74d3c1721e7e0a1192edd84429d33ef31ca29d4261dbc52cccf6040a393"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcC95mapC95share-main.rs",
+      "fileName": "examples/example-probes/src/tc_map_share/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ba862503d41a973f6ea107074d1da365682567ad"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ef2587d0da45144d0ecd866f74fe000078961d6903886505e45d74f89d94dc5e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "aaa3a6677260b29fad64390b8e137acb76567e22b36f7d9c26176d770a09d1d9b2879f57fb7f72c9d6bc803e02e62c670919139ffdd9dde39236261012d424d1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-cpus.rs",
+      "fileName": "redbpf/src/cpus.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "eafa987b2d2bd519bf61abea9931107b318e3987"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b5a2cc6719f4372ca698eb0694d0ea42d153c6726412c1697d98efda8e1316f0"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6602ef6a0896ebbba95fa0572e7507a625b557d246d14b2ca356ce3cebf2f7b4648c995b1e03dbef06b1a2da3f6b660b2f6af27fad6948b9bec8ad4a150999e7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-bindings.rs",
+      "fileName": "examples/example-probes/src/bindings.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4a71f22538fc5f5127b03ce68f7a73218a18c30197b3ad998716774c4800e8b3c6e37ccc32cd0329a246e583fc29a863933300768fafac605db40d34f5584772"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b2ca1c75eac2ad024423e3aa6155ab6ff52340cd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c55a35795101f033b8cb2213761177c8d6712c24b67acebb526b0156c8a5c5e2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-Cargo.toml",
+      "fileName": "cargo-bpf/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "913a57b92e739622cfbe2f50e9d031b9b3471712"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "33f09d16cd3c8f3c4f86ac70076999d529223faae7355a08eb79c974d9f229d6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9ac961e232580ddc6e21c3baf49d25f96f7ed7f3dc7f2ce9088418312fad3765e0b09fce4b48894b2dc79ebe623f171aa95cdd7164c4af52e80ed5af0ddc2338"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-build.rs",
+      "fileName": "cargo-bpf/src/build.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "14936b5891f53d17a9324b5e810810fb21cfe5a073273039ea1e5acc9d636cda"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2a35563e4ea4b352f33e0adcc9fc6792f277604601f1ed81aa95a68ce554ac04beda17cc576bc7755be59032f5020d6071d3e57edde3428b7c538755ab07bdbb"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a9ea33fd77c35757a39f8af06f7f6f9d1f81006b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-redbpfC95helpers.h",
+      "fileName": "redbpf-probes/include/redbpf_helpers.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8e945c36190aa69887181e4b3d5d679548c0bf9231e33ef362f03561db1877348d60a60a76b9cdf5fe443f961b971c8e1cfc852e7d8d02ab0c9a73036a3c06f9"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "61aa9dd0b4fcea4d7206bfe69fffb9a3df8800f4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f360eea91df8b3d991f48cc90d5f77bdc44a16e0fcd1da18b9c97b1ccb4b3160"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-.github-workflows-build-test.yml",
+      "fileName": ".github/workflows/build-test.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2fdd9401e9b5f3359e12ffbf093e07c827a12ea15b6fea1f6526d4de04e51cf5d98bccf61808fa47c4b88cf2281f2d194c2e122cb36323b99f9ff1664b6d74e1"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c2fbb570afa1dc5561bc516b5e125f086d35a7ef"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0e7e1fd7995a79048ab7d194b90575d5ceb5a39c743850bc7c72cecd04ce8432"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-Cargo.toml",
+      "fileName": "redbpf-tools/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fa63738d5170802a69520f873e54ac25f3d8ce99"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a0f71e9967025a72a20ebaefbe4079b605dde4cda7ae11f0f773abc00be402cd"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f6750ea298c4172920fa5ffa65dd2864e0d3a67e03d4174dcee99bab40b95fab3af5ad20f88faf0af720712c511ae54da82b0edf8f805a8284d660b7e3b31a54"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-sharemap1.rs",
+      "fileName": "examples/example-userspace/examples/sharemap1.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ff4296dac71eb59c0f0934c6d44f5ce29bc7a164"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ac6bf969f4d2c10847f58a68ff77eeedaa672dc75d315f3a382154d3ecee3951"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3acb61512c7d702f733a734eecef291ca8cd5063b20e381d530cf167fc03b786bfb261d592bcd618d86818194a1f3a915e08556e59351a1cfb072eefaa5b3a88"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "105a24b44aac57d55e95c9ba586c303c52d58176"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "97111d0048e25fabcaacd88a68829b650c2b999ac485642584f0f315c0d0739c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b867ccd1197fc38c0376190b78bbd2fa8b9e41c5229da0b6a27610982e2df223ee2ad3d058f928c1e48d525ebaecf78a540fff66b9cb894ce3d8037964f19e17"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-uprobe-prelude.rs",
+      "fileName": "redbpf-probes/src/uprobe/prelude.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6c71828508124bd10ce6f9282f990a56849113a3"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e16ab153625cd855bebab34fda7600e05b97c5143c300e4d0f108f4c9ead768b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b746fb1397ac6a26b6b7ed2005b846a62d136fba6fcadc68a4370ee1aa0c94c3883f85951ad50b3d7320a5848d967b207358a918847506c252b2c3efb7d6b7e5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-build.rs",
+      "fileName": "redbpf-probes/build.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7afd1f87366697941e8194263f8419aed88c48e63c2da0e470ab6412c34502caccecc4f8631b79c0805b882ae820f8440607f84693b25af1c61eb186737eaef3"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "61f11c6c5976f87893b43ff7ca515d27ea82ff36"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2bf9792e6ba73e79086206d106db861e7f22d839cacb0b85fbd7b7a918406811"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-perf.rs",
+      "fileName": "redbpf/src/perf.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "06cdf88034ec6af392532d938e12ecc2303d9fd0694c15b94642e64ac1ccf5a005b253b8b2841a9b2738d1d3204de174090b0e48a71bee191b204aa7a1acaf0b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e44f7296ef1996fe40988eabc6a5afd2b319da14"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7affa6b7419ba6dea08ed9369ff272a0b2816bd05ef7cff8b83189652ab5c7fa"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-Cargo.toml",
+      "fileName": "redbpf-tools/probes/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7a5ff97db804dd82fc892b67630cbd23c043b4a6b1184b2a126ea25f606bea7365ed73521d57cc469f20c1e526cc829fea13cbb09d586e2a477b4eb235d4eb76"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b8372bc33a4746fde4de5c1b4d4d022b2184060d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7cc6c6df5d63677a211a9817d37b7f79c006fa7e45d5b094eef4ac04543ff36c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tc-map-share.rs",
+      "fileName": "examples/example-userspace/examples/tc-map-share.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "aafb0cf80ff2b2e08d25cd6c8ee7cf2794c1a9d6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c1ddfce9a97a931cef1b87f2554a1468b496cc7749e4ff9fd909b084345054e7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "bc2dc2c2e61d47392d8b94c113ccc8dac6b02493afb3c1600e09e0105bd0b28fa4075d5ca464d4a6b98c9f5e0436311dc0ff5e7d518931ed6a1f7dc1e0c2354d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-TUTORIAL.md",
+      "fileName": "TUTORIAL.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "521bb5ae4f032d0aa5826bf24a0cd560fddb14f112c38f8800adcd6e0aaae0cb0e2ae02f9332f4adaf5c7e62ae9135a3ed6d96cd9b1f83aa380b4d54863850a3"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d17aaa093497ed56f830814c3134fc8eacd419fc"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ed821e8c6e8dbcf8fc74e6951a4c6b86ccf6a2acec46de34496b721033f0f690"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socketC95filter-prelude.rs",
+      "fileName": "redbpf-probes/src/socket_filter/prelude.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9aa2abedeea968376b0e42aa3698b9c4d416b797218d2d2366edbf69f93f6292"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b94a01332a540f20e4085ab72674d685c28012b17bda41cd43bb03365283659ec810971c6dbdbe343e9cd54f495633b3bc61b142d0ebab9573d23f26f7a7b844"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "294ad2d53f30004bf56aec02220a73ee93a63a36"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-build.rs",
+      "fileName": "examples/example-probes/build.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "44c874c48eb9ca6a49cac67182f5a0547b694aeb37f410d3d3f5d790796dd8cbbbc023b7db3e35713cb8c90f4f6eb31ad1a2abbe7bcd36516d0743ce8d0ca847"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b87f776f47e1919a26deca5e4538dd7a5d000813"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0a76a2fb16bfca766a78a8da305c538782b1e5cd23ea37679de2be57a4e35974"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-iotop-mod.rs",
+      "fileName": "redbpf-tools/probes/src/iotop/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "576b5f03632a150addfd221c463f508940283ee0eed3d3e49bcf32560ddaa071c161b7d7ad13a77bc16558fc2a60ea681f241d3027e786cda1a9c8b4b572d916"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5792969e27aae4edc384c6eb6f6bd3c7fcf13001"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "bacdeeb62a54b772e340584e906127f0a5f5fa520013b8b5538606b89d3f581b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-lib.rs",
+      "fileName": "redbpf-probes/src/lib.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0f9f293cd3b47effcdd9373929c7476e8a5fb84c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3ae80b14e259b740fa8cc52660cc7eb0de38e7ceebee44cd6191c4737643e531"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4230c0eae2cf000d692895b170cc0f437eb01c15cbd54214af5791fcd34b03f863af252c868685a36d76d6bf13669489fe8ea4b48967363244e70ed501d98f10"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-build.rs",
+      "fileName": "redbpf-tools/build.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9631b7b5f7a1dcee2418325511fb04fea8803319"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2ded3bc58ba098343c23520b798d66ba1f362c98c3e25b0b09bfeb3c5a300c47"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6a9efd13c3af3d2b6e8d188b4b05193ef5972411e9c666d0188c3d268665b45b6cc6c96e9330b959e335471c20c2e2c6abe54767877618f06e5d4993c31f8df4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-registers.rs",
+      "fileName": "redbpf-probes/src/registers.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1d78345f3404b8dd67a762561fbf33091dcabc12"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "54daf822517274ee744cb880afc1a81a88372f8a21ac311504b1e5c4a7e28430"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4b94e2cbec64275b484e69007d19c152eb8b8fd033fd520efa6725add06d1d38c63a91f85ed9ec727d2fc5a732032ce86a1b073892182c7d448f397db709b370"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-sys-perf.rs",
+      "fileName": "redbpf/src/sys/perf.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "53db2352bfdf7939b236f29ae1e966ab9a2a5220"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "01651a0bb2a89e9a137753e3a184d246afbb43523842925e7bd19f44204804c2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f9428dbc82dd69a101755dacd3c39caa35a46d7ade53ec154653a9113443b2dfe425eb625c0f6129642e4b8ff2e028621986100234e8110c9c3d5773a3370f82"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-sharemap2-main.rs",
+      "fileName": "examples/example-probes/src/sharemap2/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1fce74a61e026f0a43da3e7c0b81eacecb2f0993"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9d341df558448f91741fe2041002f997db2cf63a7cb7c388bd07aae55fc70dd7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "706c9251078791ec4bc3a665d8930f56e1126658530fb36254a57ee237fca20c07ebf247be37f71c7a2341c6dbfd95e64c847ad315aa2e75d486a8d36d594221"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-xdp-prelude.rs",
+      "fileName": "redbpf-probes/src/xdp/prelude.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "789745aaf0537401a7ca720c6bf6edf392abcd0d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1c1848d39e2fba6eeebea537f8596bd5149029b66d87b28edf9a986dadaf261c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "55b7b08a16ba1b2bfea165c0fcee922688a766f73cadf079ad03ac04526155b85202fa595c784ee5b13457bcde6591cfbcfc082bf9dd9ec005623c5ee5a55f1c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-xdp.rs",
+      "fileName": "redbpf/src/xdp.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fa4e977c157cf2ee604b2ee4332b29d18fb2915e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fcdd96cad80fda854148756c47c45d7693449ffb1777565c053c7188ab56aa2f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7b5fc8b980ab6b78dc56f0890250715751841b1c8d8c2ff3bef35a5841945a23812ac3dff190294a7e1357f93245067ee3b36c5094e3e5ef8541ef04d8ee771c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tasks-mod.rs",
+      "fileName": "examples/example-probes/src/tasks/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "be688838ca8686e5c90689bf2ab585cef1137c999b48c70b92f67a5c34dc15697b5d11c982ed6d71be1e1e7f7b4e0733884aa97c3f7a339a8ed03577cf74be09"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "adc83b19e793491b1c6ea0fd8b46cd9f32e592fc"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-biolatpcts.rs",
+      "fileName": "examples/example-userspace/examples/biolatpcts.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "befbe0752f2bad228995567b37d061db33508e47"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fde0b03c1c03d19d9e274964dbcd6c541d2b584914e1da9f05b7c2c16f96fa75"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "db1a7c6d5173d5a483f8444727dd85edbdff18241c04c3718d9b6f11905ed8d2ba0bc74d898af06b74c1bfe93af40359fe8d7325fc4386739efbeffd6ba59571"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-LICENSE-APACHE",
+      "fileName": "LICENSE-APACHE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "28d99eca290a4ff5fd152a270becac9d039baafd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "36af1512d12deef21e5be4e7a3c2a2dc04299cf9bb8ea0deb9b3351b863a458e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "defcf92eab6c4dba51efc97d10e025aecfcd617d1a547c15f7fecc103bfce27d209e13d6082beb4f12bac6bcff42dd6317826deb04c37356f1b9de25585db718"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-headers.rs",
+      "fileName": "bpf-sys/src/headers.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4a64e7a6709e7f891048bca5dd84ed2f9403a8bf"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cd74ecd88156adb725fca95efbf56157ea4af06644ba38f3cfbcfebc73ca88b1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4fe211655c07396537436ed172a26481e30f6a2da3c6faf75300474303a1ddde9648bdadafeabda913dbd54ec713e837b312764ff17906f5b5374c8f78feaadf"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-build.rs",
+      "fileName": "examples/example-userspace/build.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5391a7f6b63334f387efd03943200c4cdf3eabee"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "15c87e0e22bc9c4996d5c8cfaa6e1fdbd7eab99e4ffa00f619d4ab40888f4e58"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b75ccb6bc06cfef3271625809e51135b2a93f4ac1e17d61f3f540c4095ffdce39438005ac646c3ae3087745cbd55047b82561dca93bbcbdb6eec9de91308ece3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tcp-lifetime.rs",
+      "fileName": "examples/example-userspace/examples/tcp-lifetime.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "557623e29062c85257b76db8495476ccdc0fed5f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2b0889c13f988ee812aa0e9439505ecfebcef5c4ca90a503ab3edac6194dc98f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5c96b15751991f6b8281d04900e8047f0ff8855ec21acd0aa300807df0f3452cb773579d0cbf6806037519d34a39fb875a1964b1c66049214dd57946bdf70391"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-vfsreadlat-main.rs",
+      "fileName": "examples/example-probes/src/vfsreadlat/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9862352e1030169521347b63dddc3ba0c129fed8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cf7b4fd300b7f05a60801a9a56a493864923e016a5ca280e9d38e12d9ff06f59"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "caf06421d4bdb7c3a472e805953bf2ac38f79aae0bbaaeb88c0359a03aa81b8441c6728bfbd3bf9a97ea7409f2cb54cb26fdbfa0cf89bdaac0be8de0bc7ac0ac"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-knock-main.rs",
+      "fileName": "redbpf-tools/probes/src/knock/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "88a13638bd145730204fed69241c00dc060c5c1e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6396fa9edfbefc77bb552cc1741dc6887aab0d4355e83f3cec10b7b24ee335e1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e7c6d002231bf798c236fc3768193064be28c9d9b0f559dce6c22ecdf8b626db30ddf8d7bd7952bb0b586b5fda5d2aeefee7d8d449c24c7b672eabe9a01d1b5f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-tc-maps.rs",
+      "fileName": "redbpf-probes/src/tc/maps.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c622f2bd01cfb5484c771fb66e9b3df90efce38c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5e836340fe36d49324845611451774ac7613b2d3f9fb5358294a035064ecdd0c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "13fafe1f2cb4ca4179041a730441c961a8cc1601335d1d2bd8b55ede21d07392b6f0fdfced23318e4b4986bf2554b9ea11bd49893459e5f4c989fc35425786d4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcpC95lifetime-mod.rs",
+      "fileName": "examples/example-probes/src/tcp_lifetime/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d7937b4b7697bfdeccb096f4f2524b5decdb81eb"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c263711994a037529f9c5a624b4b4f950fdf53fec4cb168145fb657913fc6ba5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "10d644bb53d80636ea4996842b48e965525f217b66b7560d03d4888a5630e0c217e578d50cafb0aed509fa6098d2a3db1401b383020e4fdac09c0c6a74260263"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socket.rs",
+      "fileName": "redbpf-probes/src/socket.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "23357b98c2fe68e4fd2f5b21efa286dd39ef59cf78a8ce7c23ccb7f744c89d9e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "81fbecf88494487d158a9499f5bbe7ba86d1053e106995be753285ca63f3dc00fce6f4bb571caf5621eb9c7511754ffe61625eb8d0c733d949d0a8d5f49db934"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "97fdf6027274400e59dc05b2dbd58a3c6e997d62"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-include-bindings.h",
+      "fileName": "examples/example-probes/include/bindings.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a29289a3dc96213ec82877dad53d95d46e4327411c24b36e11b3964fadcbcb9f55671c8030e9c057ea73a734cfa5170c8a835ab035ba1f37ed3c09a7eb8b1f24"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6799597cc65352724bca1a66493b91bbd778495d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f81afa97e9e417ad3479753ba92fd71eec0acfb7cf2ceef4f37f00d0e454163a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-mallocstacks-main.rs",
+      "fileName": "examples/example-probes/src/mallocstacks/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7325953f42ebcd510e94e745fe7659d57f4acc2a062035ea2bda3c9c4851e66a715e4430670173f6ba4adc34a83c907f46d985a10ede5f244063ad13fb86c916"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c637deeee80d8c7f9e22586b305f8dc3d8598786"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1118282bce9ef219f61d597e6c56ad08d0915d0c2181d50e2c5ba6dc04a2d9bf"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-Cargo.toml",
+      "fileName": "examples/example-userspace/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8b86250ea17613b419139fd14bb96378c7914377"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7d420f0f58bf9334acb03e9a2061371b751d57d6eb230a9d5a7aa68dd5dd6dad"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d3067d63f10558b7e0be1371f8a015585d82ae43ca8b6fe51abf37cc7d6fee66286888d510de3042daa3c5214e0fa56a8f1ac31047f6d122418c466b1899bb4a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-sockmap-prelude.rs",
+      "fileName": "redbpf-probes/src/sockmap/prelude.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f77da90e6bd91cd990130f5cf16d8ba0884ee65c04f57ca232952965eb436f815a1ad4f1c075758a0b9001aa37e3bf95c2671da760f20ded554b40ca37137cc7"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3de897c586f090a755906c82c2d5f4396561b5d5"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "db71f3341958fe1077f61c60ee70f890d628ffc859e35afabd63a970b87d7bb1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-sharemap1-main.rs",
+      "fileName": "examples/example-probes/src/sharemap1/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4d52aa71519b9fe0c1e90bbdf2a26aa6cf6c4ed6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6fd5ab846be0d81e2a911ca15bda249a07e9e7c75dead83a2a616e17d8c0656c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "47b9b8f5e4c00fc4f10aa83e57ef70b871f7bc9a4a37ad68046f16e847bd7e3f459da7b79bb914f1ed1336e35feea1e804acb5f204fe1bb6d8427413bb8b2880"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-scripts-bump-version.sh",
+      "fileName": "scripts/bump-version.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1f26db2aa80a8fa38fa76c0ca82637c1ef414860339e02564062923a4987c579e122d92a0690f81151eca30d7382e1b808caecb2a6b71bf0f99e229eed7ea386"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "abaaa71d3221cb1a2b7fad820ea58cc84df4d5f9"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "75ccecd9b886ba16731c2c65692877d4ce4f5dc6b4359c43e4cb1a5ae6468815"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-xdp-mod.rs",
+      "fileName": "redbpf-probes/src/xdp/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6ee6dc31eefb03601d6513ca4d3b5d2005b91be0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ef3cd1ccf70a37038b3e77050f044b889ad2e09321b59c258c13d4526c9911d9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "eb21d6ab6bb1e79da3f6d93ec3e522d370e161f623414b9cd13b1bc68bbdd99a5ff703aa8c676dc7be91d0ac81e9c9d0510ec5d8a8b4e6da5357236821dafaeb"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bindings.rs",
+      "fileName": "redbpf-probes/src/bindings.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3b0ba50440dff2c5839e9b374436d4256154ab83"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1847e363ef4c5e955d142eb3ae5fe2c1c3e2c21f0064b893383d7b31f88539d6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ee71e51c24f0d64d3d9435c5dc847db17bda5d49b227a86bfeba3335daf83d19bd6f798d9325038f2d7ed25c6da9b2310a13f0cc4c7aaeef45422f25c4f06f04"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-bpfsys-musl.h",
+      "fileName": "bpf-sys/bpfsys-musl.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a411a9b7781a94d22f4ba95011b2e7bf5de294b6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a8ccc9d4499d95c06d6e64725e131137827c97fb3cc04452df4af2c736f1380d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7ed0b35227d3f4efb0cf893a4b2470f3d2bbd9990ce64735252ed5f155664355614dd11763d30625f59372f72858bfd357150762911683c2cf61aa0a94ab04ee"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-include-bindings.h",
+      "fileName": "redbpf-tools/probes/include/bindings.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8a1d6f6beb1f52459923bdaff57ecb3e227e6751"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1f5a95f91ed8723eedbe63edbc9b4a7029fa5d419fbc02ff1d732d18e3f77a4c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc528a795451e8b59abad411e197abf43954d7fe70d291561fd04b5154ce7f04e2074f474b03e22a112b460239c01d054a6bc9dc33edf11f55e5ccee67121f9b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-lib.rs",
+      "fileName": "redbpf-tools/probes/src/lib.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "751d24167b256a045add18ebbb7c1e3b490f773d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ff63b9fd7f9c1bedce3cf567af67f989e87f8cc0e15969ad1289cc7304f7ed55"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ec24532492911e3551ff11430633cc7c3cbf947e24bffedbe0d9f591c326a00e8c97ccd5f1698c6fc8df8bfaca98750dadf47fb9fd6554a02204826cf0fc544d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-tc-mod.rs",
+      "fileName": "redbpf-probes/src/tc/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "eafe5128da02ad53fa820211647171e5e1b899e4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d4e7f3c47833d98f40e7a060873579571b1d9577453782241b701dbf3675cc0c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a3a402e0af943669d7aa73b7e4ed2a24463870d6efc1c18bf5e518adf43360b3d07bf7e3b6bb3b455d50b30bd114c603f9e4810dc4ed05d3e7ddfbe28f90d076"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-echo-main.rs",
+      "fileName": "examples/example-probes/src/echo/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "211f783830ec0cfb4c1e380a726ec0b2341ace12efee1ab85401c7649531b5c6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "bca92ed5c6284507d7397ae846d2ae4adcd7b6c5e7e4285eeeed736c626663d0e823b04e41aef1d7cc3e674627ec8c87405ff4a77576345f85a97a73307b592b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0aa84c03193bd13ecf304f3400f38f9a41fc2d8e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-xdp.h",
+      "fileName": "redbpf-probes/include/xdp.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a5f02ef1ebc8b1f7827c14e8c50bc3aaa0800170815cb4639627058f2f00ec33"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "05ddd9b14680954c285b1ecdcd9f97933258665a769d080e78b8401270a4e7c518b2c32c1c44f351ff5e9a8ce9a4c6037157579d196fdcbcaa649e5bed9716c1"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c7efefa8ddd0c4ef91c57cd9fe6f8f65d4f8deab"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socketC95filter-mod.rs",
+      "fileName": "redbpf-probes/src/socket_filter/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6ce772e84ca53a31446318a03c506dd877974d48"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e7e076310eb358c7863fb8968d15c12f3e970e280c5aae8453e890b6aa54ee6b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "110a00a771f0c44c7fee15c87a70e50325ac5ab8d1d33dc66c5d8c64bdc12ab45b34a90dafece9b72a06f90ab69428599edbbb6c21fcc7b222cb3a593f037fdf"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-sys-mod.rs",
+      "fileName": "redbpf/src/sys/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "16fb9901d8629b9601712d3b5b7d375c35ef931a2557d407eb8f32df13d2eb7f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "54485385d8223f04ae9ed290309080af0d510b197a06a112abde8cc6160ce09c6aa1d6713c34053ea95d8063d38429154f210044de87adfe94572a9b0ebc5ffe"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "702f8979af90fb5767ee99b9f18db016069076e8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-Cargo.toml",
+      "fileName": "Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "09829e4850420c313f5147ef7591b924388f7fad"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fe89215edb397d6a13a6c32a1ae3a92f4f68ae52bd5f2ed8fffd483c460d2c34"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "926b12c136e8e8f0536d0b76a9f6ff732d80bea387519526c02fcb647aafe55ec934625d12993d625878f24f97a4e2da4421b3d1e5a7d88c2164d9accda7a10c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-sockmap-mod.rs",
+      "fileName": "redbpf-probes/src/sockmap/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2ee240755c8ab9189cfec23818edb7a0e26775c1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f5c67e47e037b6435b227c55ef4eefec75b3bed15b8bdb1862826b99afd4c37a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2a9dc540bc67b54290aaed65ec86cf1bee62a70ae9ef095a8878005aa9fd3f75f596fbf583ef79bfab6e168c5ce517341ac27447a2db2ff87b615a672b769e42"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-src-bin-redbpf-tcp-knock.rs",
+      "fileName": "redbpf-tools/src/bin/redbpf-tcp-knock.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2549d0257bb5a5334bbd3a558fd9e2e8f002f461302931b71fb70a1870eddc75817517d50d494ded3899a2dfbfbe62a31794df5eb68a1de16720407d1baebcf4"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2c250641c92485d8beca51826c354ba11f44e337"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "aa051b042466b74c36b8fac548232e1fb297b8715375de4e9312b3dcd4334ce9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-mod.rs",
+      "fileName": "redbpf/src/load/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9979bd459aa7900a0462eb78e80e3e1339aaccf7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e86adde62d7cc1380b9efd4cd157218ebca062b5e5bed07659777d0c6830751b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0dbef34cb364fd97194006be5d5e7d7cb534f407b80d79f67c385256ca77a4721b29d998dceca70059cd2734b052ef9144f71b63b3fee1e89adef230915b8405"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-.gitignore",
+      "fileName": ".gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "423f996194772501f1a9c2bb7f63642b71b6e831"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d9080105ec0e07a31e02a6c0ce52f2ff9d6d496954a1e36a5e516794a380400a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f6dfd884e4d7e305826888db50adce6eedad28dde1358234ca7361ccdea57a5d46fa40748a33a6b6dfbbb4a081ff8de7aaf2cd016f515ce2706512527cc5f05c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-kprobe-mod.rs",
+      "fileName": "redbpf-probes/src/kprobe/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "244a8d291b987b55352ca7a74a9af20a3679dc8a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8e22bf3759a5328acd4f8256ecf2bad48520d38c0fc5cd60cfae5c4476d59586"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d104d3745fab26d76eb7542c58aba6bcf37da76ebc09bdaf025daa114d0eacbcfa39f3052c572e3e5ab15093a98b9f265994b1bc47c7785d4dbba4b3ed40fba0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tasks-main.rs",
+      "fileName": "examples/example-probes/src/tasks/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "92d1ca2fee16168e3758d0946fdbd673523dcbdf"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "87b2d3c6073c2a82db12d85842b680dcc1a00bac295c8d86c69de0f2977d99c9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "241ddc7ccf051217e6ee30dddf1a8393af4847bdc1cdc30b18707f3ed582443189c65a0c030246954264225c7531cbd1017497dfd4a0c9132d4e99616f982bc4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-new.rs",
+      "fileName": "cargo-bpf/src/new.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "12835c47197c72d2c055a31983717ebf389ac97d201e6e788c1f3f89c12df9f9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e47b7970b0ac6c94fb3cda990198fcd9a8c9fe39e370be24298be9c5c7b4954f2888cbcb1c8312b59b15b3739deef6f316ec22214b64b65ca2776e4cffc3a86d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f9f6b4a4a8ed3761e9d2522b86e3a9c28742ae5c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-loader.rs",
+      "fileName": "redbpf/src/load/loader.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "420146f8c89779b4bbcd5ee4078a886653f67babdb4cecbbd2a326b9d4cb4eb54073b5c4ad9e58a5c33f23dc162d1e3b55155e8d8140624385754129e8ff44fa"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "424b2fcd08a51613ffa170b4adb883318d99052a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e0b332b56e0b4460dc5728ac6068c310c6b1ed8ba82bb99f8921a1ff6d269239"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-lib.rs",
+      "fileName": "cargo-bpf/src/lib.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "450e3c3b48550f91f1a9db9c5c42e3e98ee98460"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "aa0a75bdeae9c8f1456b1e98f4196ed8e49db06c706107cc511facab3ded49e7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1a3db4ca4c4145c4be90ef431fa3cbf9022114dec02075993620b0e68297fb412b97df2654c8fa2373be73dc58828f4c2534d385f75684fa0d02a79c1eb25831"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-echo.rs",
+      "fileName": "examples/example-userspace/examples/echo.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0c912545b4db9dea1edf7a9e32bbb703d595ae23b3db3569b0db31a317fd937d8e975fd881c82379716615af79d145cd4fe4a835197022bb690a9c5b1d4c58e2"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1862e8b7550fc844090823ee5b5bc081c9066768"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c44aa1481976918f25846f62771dc3b72bcc21610e683054652e36fa4e6cfec8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-symbols.rs",
+      "fileName": "redbpf/src/symbols.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "125f54507207e76c1bf414485cb29d9dd81ee9af1f896435d557a40f5bd9321bec37543be7c02dcaec1a3f56ac386e365dc55dfb017c50b27996c26bf02d4151"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d3443d6ab22c960eeb85095860c5ba5a51a25898"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "52eced12af55130febe78490bdde8a10f06980d28a272f382c5eeaf9d62f90a8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-load.rs",
+      "fileName": "cargo-bpf/src/load.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e0e9febd191cea6ac283948777f66fa3ada4f4ae5d565342b4e7dc54895a1dcc464064b6a67a236e683f52b4e6d814daa0cb74c2733e7679b405f4a4ad40ce8e"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "23a81c7e8c9ee1c83845d50feea83d2cc08b0138"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "69e0251caaf55e47b9cfa5c6514f247e09fdf38be511e9c4e50bd40d47afc3b7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-build.rs",
+      "fileName": "redbpf-macros/build.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2bc7cf4b9b2e2af3ddd79d40a009a47208af7e51"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f0c6537f24c4c5cb0838a7943ba222327bd76349c4efdc60c345b8501d55d88b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "512352f159140b7b316297970cd44ac2473809b6b84862e80ec49c9752915a16f8409e4c6b9c9b664baaddc4e2082a14a3877b6aeec9d66e22068b7c98ab326f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-maps.rs",
+      "fileName": "redbpf-probes/src/maps.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a44eea3a765d956e02d75674d22188561df75459f5f4b1db0fd82a3080b66f4b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4cadbc1def13608be5348b84259ba70e8b24dbedeb357a2cfcd4051e29dfbf27679dd0797ba5bec1c9232b36f5bafd3a88b55dec11f6093605cc5cac8fbb3e24"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "60aeb10d35723a9e4c54dd3dcadc5de5e129984a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-PREAMBLE",
+      "fileName": "PREAMBLE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b0949c1ddf20c863feff6317b661874fca7451c5"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "40c4e0f91d33086e3971ac1fb6c23a687229ef1a7a4da4117074292f6a550b49"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1575efa652426ea37237852e19bb9eeddf3aa06b295f9e9ce95dad997b8020441ad5745d7b1559542c18f5477598d8af7a4f0d1b1f3cda83bfc363fb4e2d37fd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-iotop-main.rs",
+      "fileName": "redbpf-tools/probes/src/iotop/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b9c27c9d5b3dcee7fb046638228dae35bdf3f76e4cf1af5ac401d50ceb263541"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6f4cd400c146304636076b3106969bd47acb9aff58a3ce6fa1f4b19a5b5f3501017930936ec6706e3e83a87566464fca53072f524420b8a1ae4a440dcde6034b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4fb7619808ac7cb86726c4b6b9dae558a1f5d801"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-build.rs",
+      "fileName": "redbpf-tools/probes/build.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8c8252c1fbafa7f0d280ca2ab0aba0a7365b9657"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ed6080a9b233745fe29d1b665b4a8571ee249d1bd593bff9d7986dcd0bd56ff2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cc7425cca98b66b9bd58c53933feba81b13bbc09f81b605826263e884246c9615cf97e2d130469e1b6aa6046feba85f2261fc3f15101111bf6a5edeb33f58f69"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-Cargo.toml",
+      "fileName": "bpf-sys/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "11ac4f800d94c795063022888a1db8d87ce3a339"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "285c9db30521b8bd18588c2b74f2d607325c23c611c78a2a587fce3addb6c5c7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cb0fa79a82d38cf507758e107a2a2e4569ce6deac0a4450f6d208bdf1f5883f0df8fdf59ba10104b23d4a40f3a58c735c84075a31447c2bd1b1dd18c613f3f23"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-buildC95constants.rs",
+      "fileName": "cargo-bpf/src/build_constants.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7160688ffe6e4d6c4a08a83dee75cf15751f0509"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9802465f902ee415ece56a3bf52268c6232fdaccaeef9af866b8f08bafa46c62"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3555649f7ab5d22d68d5c8554ee9586b9b9c5a52d82341962a177ebc8e2972901d283ad85c72be04c7b67f77c3f2ada3ce291b77e530c4a0a34b492bb06e3894"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcpC95lifetime-main.rs",
+      "fileName": "examples/example-probes/src/tcp_lifetime/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e8982c0cfaf38f1d5dc38dca65052ea1201a377e0ab8ad584f71813d593e2e16"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8b3e7c259f0c4b540a2585e24589e646ee49106b21e7f3ea56ae84bba7833c6f02cd39116a7b98323d0ad405b55a47922bb50409b38472d796f395c6635a7822"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3c9328891749b461fe6f58d0b2083e3dbb57bec4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-vmlinuxC95supplement.h",
+      "fileName": "redbpf-probes/include/vmlinux_supplement.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1d10f8ade22c26c719b63f568bef037370c9f821"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "728b5d30d0d9f2d58365ae193694e4c2843936537d3fc7173af9a71d82df0917"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cb1f098c3f4eac84d82c9f5c38d45a4310a3e9bdd62ddda8b0c7ce5d0eb3035504ea58b819483667fd65fa8c8b62ce00aeec0f583e2fe3cf43fd8c0d0103f0cb"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-net.rs",
+      "fileName": "redbpf-probes/src/net.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a165051d9778f5603e7c42875af02df746c15974accef6fc72cef7845f93125e6a39beb08e622df7b11081b81e807640e33c957f85cb1f466a58d24c74fd457a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2df09eef127df86ee64af2ec707de9c003663859"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7f445c4c6f492345412b58803fbbec2f8c186fa2ff2648bcb373d7520dcc97e5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-Cargo.toml",
+      "fileName": "redbpf/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "eccec9439d412786b0dd2dedfde527a6d71931f1e7f5f78b31394e84020647d5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "614a5eb0f8b245a3a6fd364d143852e836404f8cbde865052e0b0722c09cd9fc8007a3f4520601359bcd7c71f4ee92bc2ac9dd7e1777601091562b47c0648047"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "932b2640cfb2c73ea589e061970a4abfa6f1128f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-knock-mod.rs",
+      "fileName": "redbpf-tools/probes/src/knock/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0cda076754f993deb0100e04e50c3dd61af0979e304b215fb6674101fed420b8eb00618cae248f81008f05e736785967282173f564f731966157e72060af72dc"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9b08a58c055e45fafd42e1f948a6c4ee75a42c06"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c64c9645c64f703d6606c30747222efd2d784b47c6d126c37b2492779faa3a81"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-Cargo.toml",
+      "fileName": "redbpf-macros/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "00144565042f1c1756084d3fe9be230b4db5bbe77b30208b614e5360701fd2dc32561ab946a92de6fc1ff7b26640ef6bf8fa1d8d28e5b1807f009dd8a5a36790"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "054e6e51a493dc57bc5639ccd6c0afac1027b7aa"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f061fddeb078fa564234bb768f98b94552b6594a6ab920e38bf5c4d9705282f1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-accessors.rs",
+      "fileName": "cargo-bpf/src/accessors.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4759b0359d5d3baf7b99cfbac547f3424d0fd40f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "10568d173a19dde3dc389061119b1f1912a2be72366b896385d533e3c7827178"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "270b9dd5a10d97a1905052ed779654cdd3c06d2ef2911b62061e7c8290a46bde4656365d12d1db89db4ec5f8a1fdc0af1e067f59fc57ef688f90c210d06f43a9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-biolatpcts-main.rs",
+      "fileName": "examples/example-probes/src/biolatpcts/main.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9dba0d7e72e2e3032b070a5272ab2045c47507194e5ba9ab9ef8df81da071272"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "699987bfaa3d3ecbc35623c3fdd087d6374726596dbb1bf95829d48a61e347d95fa83a1c408943e53fca53ff9243cb0e2e37dcb7fe8781487eb801eaf2b5dfb4"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "338181319c4b5355b86318a8c4a350381110f423"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-buildC95c.rs",
+      "fileName": "cargo-bpf/src/build_c.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "36f60fa397fe56ea6b8bb6936ca7fccafe20cfd9024e81f7b83f5b9ab5137d89aa108d7f536a92357ffce0654ab05bc0aee5f0e1faa7d6d43ceeefd7af75eec8"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1b6e14eeb0020f96b46e404e4398751bc2882085"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a829255ab545ba938bc324759271bdd7dfd5803b7839fe1728a18a0b306bd674"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-error.rs",
+      "fileName": "redbpf/src/error.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "16f3f2e52628f4d8908a094ef366fbaeb9301fd0e1a271a03e54e2c1543b9901"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "91413c38824f1c4faa829f6442ee3d41b05d09a579d390d4b82b0f88b2f1eb61af4920623e1c47a7303bc299126bfccda4c36ad70aba25ad355151cd8b3a8487"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6d1279091bc811b737b3c8294427f8c10406209f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bpfC95iter-mod.rs",
+      "fileName": "redbpf-probes/src/bpf_iter/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c7b1c8db289ddfe5ac2605a70a7725cfd60cfe8e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "200f2923ca105dbc7f6359e79ffe2c92219482f1519e816a65c0731db9c5d686"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4557f1a40f82b02d473abde14489720ec1e863d4c768a717dd74b02f806a121b45d42607697ce566688287694dc7f44609203564a72cf2ff2f9e27d3ff999178"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-echo-mod.rs",
+      "fileName": "examples/example-probes/src/echo/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9edb3a513be56dbe731e5eb306877da0b637664d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "aa6bc1ffc3d1b8db6bdd51639f9211a6502bd916e3fd839efe057f7cd7578303"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9b813eb5c8d123f667a109a0fdb12e2753b61661ab72d2340e499a1b1b4eb23f7a84a93ff9915b573d66bfddb7f8b0c9e44fc85cab8763067c68e3412ffa3338"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-Cargo.toml",
+      "fileName": "redbpf-probes/Cargo.toml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "41cbb4cd4cec7133415e9d7886db9dfe28783d0c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c49eefce175445b6095dbdcd9a170748ba1d119c75c26545ec2a05283c3d6aaa"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5fb60b4dd9eccecbaa1ee76f003ae7d4f76594be919faaa3e8f3dd1248bbf357e4a65f1e81295d9457d94cdd821d891eac40712ccc6b2ac1d04c1d484b6ecbf5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-btf.rs",
+      "fileName": "redbpf/src/btf.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f9d5e2c66f18b10f7b5f18401f5b01afbe394225"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "206935b4706760cfee01c48fc7cf84c245170c364f26f541c4b114592cba1b41"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fe28c24a3f0f4cd4faab3e916ee964244786ccd361c618d2912960e5748727b845fdb0ed931001e0536e77b7fed0c75d3c0008d1e8a6515de9e8e6a2ee488f74"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-uprobe-mod.rs",
+      "fileName": "redbpf-probes/src/uprobe/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7ff36bf78e4a71b906688d4d090ef582e6accd3a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "74dcd25a7f27083f5fb7bf73178d8ba2c08125698ba0b8188ae3aa4f0d80e70e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a0c1b242b9c18b691e8878b132234767489ddc1de1ec3f1f1654f47aa6897bfab286aa708c8366711bb4d6c53240d93a701870961ab1fcd3e334055393b66e3b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-src-lib.rs",
+      "fileName": "redbpf-macros/src/lib.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c5ef851dd958ef08d7ee5e34dae7ed4e30280e9c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8d7f15800dbc4e172f021db2652a96582b4fbbf8fb4580cda783fa2b47b8c9b9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "16bc5231fb81e5c42102e99cdd99edb4d9d171144742f7116b03ed6ed437409412d849107bb12554470a114d529882c15f05a0a6d063a7f4535aaafe2da6b1c4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-mallocstacks-mod.rs",
+      "fileName": "examples/example-probes/src/mallocstacks/mod.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6d1247c2513ab04142e12546f5a8fbe6942ff52d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f3e48e194861d55598c2e7f966d0dd5f7cba996e16583f75ea850ca310b5f02a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c6a38c4d5afa52d5c1dba8a31f26687f9324d85d6a0f9329393c4018e8ec803044a641ba7716f766489344ff71925902f2ac9540bd3242e8c4d95e9ab86cdcd6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tasks.rs",
+      "fileName": "examples/example-userspace/examples/tasks.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "193dc774a06a59768a0829c2af008987768fb4876bf4398da3fc71216569595c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0df96b33e4ef8f0ea53f8aae3e7ded80f364b8afc9c9a001bc419c6444161dd0bd7175e09873e659fbb97e9d3150220cc5cec86ea59b87dcf36cff93e798268d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fcfff74dd7eae42516b44f24bcd016df6fefe823"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-src-bin-redbpf-iotop.rs",
+      "fileName": "redbpf-tools/src/bin/redbpf-iotop.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4785ff10573e956882f726a58da19f2ae77ab03ee07c7423286e4e3d8c76bd14"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e47917a47f12b5dab076e5b78559374c4fee00c4ab3f36c6322f7a6fda74dded104093d2dba6cd0b2bec2837429b7f7a61729af914783f50e6698b2a9262de39"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7237112f66586d3f41ef18c6a93eb38f6b31e730"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-lib.rs",
+      "fileName": "examples/example-probes/src/lib.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "55078609c0ef47b9ea8b05a9901c2faccb0b25b245a2bf7fab967ab6b133b22c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "10315fafb506fb001e086bfdb82822495c754fcd57abf499beb53647acd559c3d51f2092109833f3fcca842a96295f5073879b7b4c765d753e37928479dc94e6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "69389283b29bc329f28a9ce3326a48ef80910e95"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-kprobe-prelude.rs",
+      "fileName": "redbpf-probes/src/kprobe/prelude.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4f349c538be8d77310161ab6db4eb20de5faab2d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "41d653997b2d9f3c329f4fe229493d57b14bb092e13023b338796d39647bad2b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "eb21cb3e71e1dfd6294d10f26964ec7c94d7482df1058e557d4b59a1cd9cd1f3a44e1d4739cc58bc7d5ba1d7cc6cc3021188c53839acb34feb32dcc17acb8acc"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-sharemap2.rs",
+      "fileName": "examples/example-userspace/examples/sharemap2.rs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "MIT",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bca5dd8fdf88b047ebc627e153e66880a186944f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1538c87f43e4a44af5896d1f13f367a59f6b741bffce5694a5e6cdd08ec6e46e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d6399ef55aea478afdbe428c3b9e147fa9987d2d07b5a99454f58587bda5c3202b6c3fca3716fd0c8f5899773472f5e3d8ac2d5171f0dd05703f95d6561c4dad"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "name": "tmp.g7KYE9o3zu",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "MIT",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.g7KYE9o3zu-.gitmodules",
+        "SPDXRef-File-tmp.g7KYE9o3zu-.gitignore",
+        "SPDXRef-File-tmp.g7KYE9o3zu-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-PREAMBLE",
+        "SPDXRef-File-tmp.g7KYE9o3zu-LICENSE-MIT",
+        "SPDXRef-File-tmp.g7KYE9o3zu-README.md",
+        "SPDXRef-File-tmp.g7KYE9o3zu-LICENSE-APACHE",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-build.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-TUTORIAL.md",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-libbpfC95xdp.h",
+        "SPDXRef-File-tmp.g7KYE9o3zu-.github-workflows-build-test.yml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-lib.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-headers.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-perfC95reader.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-typeC95gen.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-uname.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-bpfsys-musl.h",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-accessors.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-build.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-buildC95constants.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-buildC95c.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-lib.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-load.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-llvm.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-new.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-newC95program.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-include-bindings.h",
+        "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-bindgen.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-bindings.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-biolatpcts-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-echo-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-echo-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-lib.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-mallocstacks-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-mallocstacks-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-sharemap1-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-sharemap2-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tasks-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tasks-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-build.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcC95mapC95share-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcpC95lifetime-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-vfsreadlat-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-vfsreadlat-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-build.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-biolatpcts.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-echo.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-mallocstacks.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-sharemap2.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tasks.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-sharemap1.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcpC95lifetime-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tcp-lifetime.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-vfsreadlat.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-error.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-btf.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-cpus.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-mapC95io.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-loader.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-lib.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tc-map-share.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-symbols.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-sys-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-perf.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-xdp.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-sys-perf.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-src-mem.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-build.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-bpfC95iter.h",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-src-lib.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-redbpfC95helpers.h",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-xdp.h",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-vmlinuxC95supplement.h",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-build.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bpfC95iter-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bpfC95iter-context.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-helpers.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-kprobe-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-kprobe-prelude.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-lib.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-maps.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-registers.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-net.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bindings.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socketC95filter-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socketC95filter-prelude.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-sockmap-prelude.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-sockmap-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-tc-maps.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-tc-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-uprobe-prelude.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-uprobe-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-xdp-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-xdp-prelude.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-build.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socket.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-bindings.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-include-bindings.h",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-build.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-iotop-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-knock-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-knock-main.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-Cargo.toml",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-src-bin-redbpf-iotop.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-src-bin-redbpf-tcp-knock.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-iotop-mod.rs",
+        "SPDXRef-File-tmp.g7KYE9o3zu-scripts-build-test.sh",
+        "SPDXRef-File-tmp.g7KYE9o3zu-scripts-bump-version.sh",
+        "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-lib.rs"
+      ],
+      "licenseInfoFromFiles": [
+        "MIT",
+        "Apache-2.0"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "4e67d9fdd6328ab2151bddbb30152bf061cf6a90"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-.gitmodules"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-PREAMBLE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-LICENSE-MIT"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-LICENSE-APACHE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-build.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-TUTORIAL.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-libbpfC95xdp.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-.github-workflows-build-test.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-lib.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-headers.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-perfC95reader.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-typeC95gen.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-src-uname.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-bpf-sys-bpfsys-musl.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-accessors.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-build.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-buildC95constants.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-buildC95c.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-lib.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-load.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-llvm.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-new.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-newC95program.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-include-bindings.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-cargo-bpf-src-bindgen.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-bindings.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-biolatpcts-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-echo-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-echo-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-lib.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-mallocstacks-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-mallocstacks-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-sharemap1-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-sharemap2-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tasks-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tasks-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-build.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcC95mapC95share-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcpC95lifetime-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-vfsreadlat-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-vfsreadlat-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-build.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-biolatpcts.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-echo.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-mallocstacks.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-sharemap2.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tasks.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-sharemap1.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-probes-src-tcpC95lifetime-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tcp-lifetime.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-vfsreadlat.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-error.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-btf.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-cpus.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-mapC95io.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-loader.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-lib.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-examples-example-userspace-examples-tc-map-share.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-symbols.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-sys-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-perf.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-xdp.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-load-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-src-sys-perf.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-src-mem.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-build.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-bpfC95iter.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-src-lib.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-redbpfC95helpers.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-xdp.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-include-vmlinuxC95supplement.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-macros-build.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bpfC95iter-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bpfC95iter-context.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-helpers.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-kprobe-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-kprobe-prelude.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-lib.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-maps.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-registers.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-net.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-bindings.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socketC95filter-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socketC95filter-prelude.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-sockmap-prelude.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-sockmap-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-tc-maps.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-tc-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-uprobe-prelude.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-uprobe-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-xdp-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-xdp-prelude.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-build.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-probes-src-socket.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-bindings.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-include-bindings.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-build.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-iotop-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-knock-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-knock-main.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-Cargo.toml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-src-bin-redbpf-iotop.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-src-bin-redbpf-tcp-knock.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-iotop-mod.rs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-scripts-build-test.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-scripts-bump-version.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.g7KYE9o3zu",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.g7KYE9o3zu-redbpf-tools-probes-src-lib.rs"
+    }
+  ],
+  "externalDocumentRefs": [
+    {
+      "externalDocumentId": "DocumentRef-cncf-project",
+      "spdxDocument": "https://www.cncf.io/projects/",
+      "checksum": {
+        "algorithm": "SHA1",
+        "checksumValue": "0000000000000000000000000000000000000000"
+      }
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-10T21:09:05Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "CNCF Project: Fonio\nOwner: foniod\nRepository: redbpf\nVersion: v2.1.0\nGitHub: https://github.com/foniod/redbpf\nRelease: https://github.com/foniod/redbpf/releases/tag/v2.1.0"
+    }
+  ],
+  "hasExtractedLicensingInfo": []
+}
