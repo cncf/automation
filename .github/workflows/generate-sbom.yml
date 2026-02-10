@@ -42,14 +42,14 @@ jobs:
             # Filter for specific project
             OWNER=$(echo "$FILTER" | cut -d'/' -f1)
             REPO=$(echo "$FILTER" | cut -d'/' -f2)
-            MATRIX=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'")) | {"include": .}' supply-chain/util/data/repositories.yaml)
+            MATRIX=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'")) | {"include": .}' supply-chain/util/data/repositories.yaml | jq -c .)
           else
             # All projects
-            MATRIX=$(yq -o=json '{"include": .repositories}' supply-chain/util/data/repositories.yaml)
+            MATRIX=$(yq -o=json '{"include": .repositories}' supply-chain/util/data/repositories.yaml | jq -c .)
           fi
           
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-          echo "Generated matrix with $(echo $MATRIX | jq '.include | length') repositories"
+          echo "Generated matrix with $(echo "$MATRIX" | jq '.include | length') repositories"
 
   generate-sbom:
     needs: prepare-matrix
