@@ -25,11 +25,7 @@ spec:
               key: ".env.local"
           imagePullSecret: ""
           ingress:
-            create: true
-            host: services.cncf.io
-            certIssuer:
-              kind: ClusterIssuer
-              name: letsencrypt-prod
+            create: false
           extraVolumeMounts:
           - name: user-kubeconfig-ca
             mountPath: /app/_config/user-kubeconfig
