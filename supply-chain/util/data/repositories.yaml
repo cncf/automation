@@ -1,0 +1,467 @@
+repositories:
+  # ============================================
+  # GRADUATED PROJECTS
+  # ============================================
+  - owner: kubernetes
+    repo: kubernetes
+    name: Kubernetes
+    category: orchestration
+  - owner: prometheus
+    repo: prometheus
+    name: Prometheus
+    category: monitoring
+  - owner: envoyproxy
+    repo: envoy
+    name: Envoy
+    category: service-mesh
+  - owner: coredns
+    repo: coredns
+    name: CoreDNS
+    category: networking
+  - owner: containerd
+    repo: containerd
+    name: containerd
+    category: container-runtime
+  - owner: etcd-io
+    repo: etcd
+    name: etcd
+    category: storage
+  - owner: fluxcd
+    repo: flux2
+    name: Flux
+    category: gitops
+  - owner: argoproj
+    repo: argo-cd
+    name: Argo CD
+    category: gitops
+  - owner: helm
+    repo: helm
+    name: Helm
+    category: package-management
+  - owner: open-telemetry
+    repo: opentelemetry-collector
+    name: OpenTelemetry Collector
+    category: observability
+  - owner: goharbor
+    repo: harbor
+    name: Harbor
+    category: registry
+  - owner: tikv
+    repo: tikv
+    name: TiKV
+    category: storage
+  - owner: vitessio
+    repo: vitess
+    name: Vitess
+    category: database
+  - owner: jaegertracing
+    repo: jaeger
+    name: Jaeger
+    category: tracing
+  - owner: linkerd
+    repo: linkerd2
+    name: Linkerd
+    category: service-mesh
+  - owner: fluent
+    repo: fluentd
+    name: Fluentd
+    category: logging
+  - owner: fluent
+    repo: fluent-bit
+    name: Fluent Bit
+    category: logging
+  - owner: cri-o
+    repo: cri-o
+    name: CRI-O
+    category: container-runtime
+  - owner: rook
+    repo: rook
+    name: Rook
+    category: storage
+  - owner: spiffe
+    repo: spire
+    name: SPIRE
+    category: security
+  - owner: open-policy-agent
+    repo: opa
+    name: Open Policy Agent
+    category: policy
+  - owner: cloudevents
+    repo: spec
+    name: CloudEvents
+    category: messaging
+
+  # ============================================
+  # INCUBATING PROJECTS
+  # ============================================
+  - owner: grafana
+    repo: loki
+    name: Loki
+    category: logging
+  - owner: grafana
+    repo: tempo
+    name: Tempo
+    category: tracing
+  - owner: cilium
+    repo: cilium
+    name: Cilium
+    category: networking
+  - owner: crossplane
+    repo: crossplane
+    name: Crossplane
+    category: infrastructure
+  - owner: dapr
+    repo: dapr
+    name: Dapr
+    category: runtime
+  - owner: kedacore
+    repo: keda
+    name: KEDA
+    category: autoscaling
+  - owner: kubevirt
+    repo: kubevirt
+    name: KubeVirt
+    category: virtualization
+  - owner: longhorn
+    repo: longhorn
+    name: Longhorn
+    category: storage
+  - owner: cert-manager
+    repo: cert-manager
+    name: cert-manager
+    category: security
+  - owner: external-secrets
+    repo: external-secrets
+    name: External Secrets Operator
+    category: security
+  - owner: kyverno
+    repo: kyverno
+    name: Kyverno
+    category: policy
+  - owner: falcosecurity
+    repo: falco
+    name: Falco
+    category: security
+  - owner: buildpacks
+    repo: pack
+    name: Cloud Native Buildpacks
+    category: build
+  - owner: knative
+    repo: serving
+    name: Knative Serving
+    category: serverless
+  - owner: knative
+    repo: eventing
+    name: Knative Eventing
+    category: serverless
+  - owner: operator-framework
+    repo: operator-sdk
+    name: Operator SDK
+    category: operators
+  - owner: thanos-io
+    repo: thanos
+    name: Thanos
+    category: monitoring
+  - owner: istio
+    repo: istio
+    name: Istio
+    category: service-mesh
+  - owner: nats-io
+    repo: nats-server
+    name: NATS
+    category: messaging
+  - owner: strimzi
+    repo: strimzi-kafka-operator
+    name: Strimzi
+    category: messaging
+  - owner: backstage
+    repo: backstage
+    name: Backstage
+    category: developer-portal
+  - owner: karmada-io
+    repo: karmada
+    name: Karmada
+    category: multi-cluster
+  - owner: kubeedge
+    repo: kubeedge
+    name: KubeEdge
+    category: edge
+  - owner: volcano-sh
+    repo: volcano
+    name: Volcano
+    category: batch
+  - owner: in-toto
+    repo: in-toto
+    name: in-toto
+    category: security
+  - owner: cubeFS
+    repo: cubefs
+    name: CubeFS
+    category: storage
+  - owner: openkruise
+    repo: kruise
+    name: OpenKruise
+    category: orchestration
+
+  # ============================================
+  # SANDBOX PROJECTS
+  # ============================================
+  # API & Service Management
+  - owner: kubernetes-sigs
+    repo: gateway-api
+    name: Gateway API
+    category: networking
+  - owner: telepresenceio
+    repo: telepresence
+    name: Telepresence
+    category: development
+  - owner: devfile
+    repo: api
+    name: Devfile
+    category: development
+
+  # Observability
+  - owner: pixie-io
+    repo: pixie
+    name: Pixie
+    category: observability
+  - owner: opencost
+    repo: opencost
+    name: OpenCost
+    category: cost-management
+  - owner: sustainable-computing-io
+    repo: kepler
+    name: Kepler
+    category: observability
+  - owner: foniod
+    repo: redbpf
+    name: Fonio
+    category: observability
+  - owner: inspektor-gadget
+    repo: inspektor-gadget
+    name: Inspektor Gadget
+    category: observability
+  - owner: openobserve
+    repo: openobserve
+    name: OpenObserve
+    category: observability
+  - owner: trickstercache
+    repo: trickster
+    name: Trickster
+    category: caching
+
+  # Security
+  - owner: kubescape
+    repo: kubescape
+    name: Kubescape
+    category: security
+  - owner: kube-vip
+    repo: kube-vip
+    name: kube-vip
+    category: networking
+  - owner: kubernetes-sigs
+    repo: secrets-store-csi-driver
+    name: Secrets Store CSI Driver
+    category: security
+  - owner: sigstore
+    repo: cosign
+    name: Cosign
+    category: security
+  - owner: sigstore
+    repo: rekor
+    name: Rekor
+    category: security
+  - owner: notaryproject
+    repo: notary
+    name: Notary
+    category: security
+  - owner: aquasecurity
+    repo: trivy
+    name: Trivy
+    category: security
+  - owner: paralus
+    repo: paralus
+    name: Paralus
+    category: security
+  - owner: confidential-containers
+    repo: operator
+    name: Confidential Containers
+    category: security
+
+  # Networking
+  - owner: k8gb-io
+    repo: k8gb
+    name: K8GB
+    category: networking
+  - owner: loxilb-io
+    repo: loxilb
+    name: LoxiLB
+    category: networking
+  - owner: clusternet
+    repo: clusternet
+    name: Clusternet
+    category: multi-cluster
+
+  # Storage
+  - owner: openebs
+    repo: openebs
+    name: OpenEBS
+    category: storage
+  - owner: kubernetes-csi
+    repo: external-snapshotter
+    name: CSI Snapshotter
+    category: storage
+
+  # CI/CD & GitOps
+  - owner: tektoncd
+    repo: pipeline
+    name: Tekton Pipelines
+    category: ci-cd
+  - owner: keptn
+    repo: lifecycle-toolkit
+    name: Keptn
+    category: ci-cd
+  - owner: devstream-io
+    repo: devstream
+    name: DevStream
+    category: ci-cd
+  - owner: kubevela
+    repo: kubevela
+    name: KubeVela
+    category: delivery
+
+  # Service Mesh & API
+  - owner: kumahq
+    repo: kuma
+    name: Kuma
+    category: service-mesh
+  - owner: meshery
+    repo: meshery
+    name: Meshery
+    category: service-mesh
+  - owner: servicemeshinterface
+    repo: smi-spec
+    name: Service Mesh Interface
+    category: service-mesh
+
+  # Chaos Engineering
+  - owner: chaos-mesh
+    repo: chaos-mesh
+    name: Chaos Mesh
+    category: chaos-engineering
+  - owner: litmuschaos
+    repo: litmus
+    name: Litmus
+    category: chaos-engineering
+  - owner: chaosblade-io
+    repo: chaosblade
+    name: ChaosBlade
+    category: chaos-engineering
+
+  # Kubernetes Tools
+  - owner: kubernetes-sigs
+    repo: kustomize
+    name: Kustomize
+    category: configuration
+  - owner: kubernetes-sigs
+    repo: cluster-api
+    name: Cluster API
+    category: cluster-management
+  - owner: kubernetes-sigs
+    repo: kind
+    name: kind
+    category: development
+  - owner: derailed
+    repo: k9s
+    name: k9s
+    category: cli-tools
+  - owner: ahmetb
+    repo: kubectx
+    name: kubectx
+    category: cli-tools
+  - owner: vmware-tanzu
+    repo: velero
+    name: Velero
+    category: backup
+  - owner: kubernetes-sigs
+    repo: descheduler
+    name: Descheduler
+    category: scheduling
+
+  # Serverless
+  - owner: openfaas
+    repo: faas
+    name: OpenFaaS
+    category: serverless
+  - owner: nuclio
+    repo: nuclio
+    name: Nuclio
+    category: serverless
+
+  # Image & Registry
+  - owner: dexidp
+    repo: dex
+    name: Dex
+    category: identity
+  - owner: distribution
+    repo: distribution
+    name: Distribution
+    category: registry
+  - owner: containers
+    repo: skopeo
+    name: Skopeo
+    category: container-tools
+  - owner: google
+    repo: ko
+    name: ko
+    category: build
+  - owner: containers
+    repo: podman
+    name: Podman
+    category: container-runtime
+  - owner: containers
+    repo: buildah
+    name: Buildah
+    category: build
+
+  # AI/ML
+  - owner: kubeflow
+    repo: kubeflow
+    name: Kubeflow
+    category: ml-platform
+  - owner: kserve
+    repo: kserve
+    name: KServe
+    category: ml-serving
+
+  # Edge & IoT
+  - owner: project-akri
+    repo: akri
+    name: Akri
+    category: edge
+  - owner: k3s-io
+    repo: k3s
+    name: K3s
+    category: edge
+  - owner: openyurtio
+    repo: openyurt
+    name: OpenYurt
+    category: edge
+  - owner: superedge
+    repo: superedge
+    name: SuperEdge
+    category: edge
+
+  # Databases
+  - owner: crate
+    repo: crate
+    name: CrateDB
+    category: database
+  - owner: cockroachdb
+    repo: cockroach
+    name: CockroachDB
+    category: database
+  - owner: scylladb
+    repo: scylla-operator
+    name: ScyllaDB Operator
+    category: database
