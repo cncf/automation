@@ -12,18 +12,17 @@
 | Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Copa | sandbox | sandbox | sandbox | sandbox | - | - |
 | Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Hexa | sandbox | sandbox | - | sandbox | - | sandbox |
+| Hexa | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
-| Piraeus-Datastore | sandbox | sandbox | - | sandbox | sandbox | - |
+| Piraeus-Datastore | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Runme Notebooks | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | sandbox | archived | - | - | - | archived |
 | Spin | sandbox | - | sandbox | sandbox | sandbox | sandbox |
 | TrestleGRC | sandbox | sandbox | - | - | sandbox | - |
 | VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | - |
-| WasmEdge Runtime | sandbox | sandbox | - | sandbox | sandbox | sandbox |
 | <QHTTPX> | forming | - | - | - | - | - |
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
@@ -221,7 +220,7 @@
 | External Secrets Operator | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | HAMi | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Headlamp | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Hexa | sandbox | sandbox | - | sandbox | - | sandbox |
+| Hexa | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | HolmesGPT | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | HwameiStor | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Hyperlight | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -289,7 +288,7 @@
 | PARSEC | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Perses | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | PipeCD | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Piraeus-Datastore | sandbox | sandbox | - | sandbox | sandbox | - |
+| Piraeus-Datastore | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Pixie | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Podman Desktop | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -320,7 +319,7 @@
 | Vineyard | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Virtual Kubelet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | - |
-| WasmEdge Runtime | sandbox | sandbox | - | sandbox | sandbox | sandbox |
+| WasmEdge Runtime | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | werf | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | xRegistry | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Youki | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
