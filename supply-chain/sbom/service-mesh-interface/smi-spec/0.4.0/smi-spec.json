@@ -1,0 +1,2366 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "Service Mesh Interface - smi-spec v0.4.0",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-10T21:32:48Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator",
+      "Tool: go-licenses"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM generated for CNCF project: Service Mesh Interface (servicemeshinterface/smi-spec@v0.4.0). Repository: https://github.com/servicemeshinterface/smi-spec. CNCF Projects: https://www.cncf.io/projects/. License detection performed using go-licenses."
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/servicemeshinterface/smi-spec/releases/tag/v0.4.0",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.rRVtRlXftE"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-horizontal.png",
+      "fileName": "images/logo/avatars/logo-horizontal.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c914f1240cc90dd4c3609be2557b1e3a45bb6484"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "592a289a7e4604bb00082ee7fd18249e09005ecca7b4ad80d578f3cec5ebf915"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5f2518a7a7e117e1437ec1778f4efd2e024c4b3e1f54f7ba63388b2aee53bb2345cc0ce1ef0c73c6df6f5489a3c1342ff315a92c7576530e977a76f99e6addcd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo.svg",
+      "fileName": "images/logo/logo.svg",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d6e23b7eb66d26a78a95aaed6f5450b87b4938ef24e59431f49eb361409686f842726c27c4d1e644d3d0670a2b653260bd1dcc9edef35928a034b86171dec7e7"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b5087664dce8a49a8170c4ecc13f35afa53bebd1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2fc6b55da841db8c4ec8c559890d50dcf766e25812d6f579f2f975afade3f16d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha1-traffic-split.md",
+      "fileName": "apis/traffic-split/v1alpha1/traffic-split.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6628aa7ec28a02cc8482c7251113b970d7f61f89"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2e63a74d1a87afbd53d1442f7dff68541cc383c7079d19b4e6be43decf1ebec0"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0d5a91cc66d73a1822e23841eceb5e5e7f4260a4d33f4ab1f87dc899d5d582ff48ac101375a2f14090ded58346f1471cd58ddd2ccddfb89f5352f4a04fd80acf"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-strapline.svg",
+      "fileName": "images/logo/logo-strapline.svg",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ad4ee88d1ada39bb3acd7acf3cb0282f34aa3fdce2fe1aa95a29e22c457e239f3d9755685f986ec72cc79b0d2e09d7e8cba02afd95b0d63634a62befae1ae89a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "72dd163dc916780d5b96e64af5bdfa2124d28cdd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0b6ff0f91007cd714572ad29854bff9dcc65c8e14b6d248c470f581bc5849ba4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-post-update.sample",
+      "fileName": ".git/hooks/post-update.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "473ad124642571656276bf83b9ff63ab1804d3c23a5bdae52391c6f70a894849ac60c10c9d31deff3938922ce83b68b1e60c11592bbf7ea503f4acd39968cefa"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b614c2f63da7dca9f1db2e7ade61ef30448fc96c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha2-traffic-split.md",
+      "fileName": "apis/traffic-split/v1alpha2/traffic-split.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6ddf6cae058ac5918cea7c5cd1ba81fa52fa22eb"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "56817fb11b97be7a5143597fa36d385cfd45dbe640832374da33a1807828493d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "53ade04dc394d82c31b6951a75ca9a58b05ac12f4f7beabb0eaf7892e80926d271fb3786e650cf6068750aee2b845dbf78d27c8de2c2a92797e7575e29af4113"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-smi-github.png",
+      "fileName": "images/logo/avatars/smi-github.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e3d20b0db3f11020ad7bf0a8ab766823432d90cf"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ff622b97a2fd24d1f9ec940896ec8ac73e953db369a2cff75e3776b6f55c1a43"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f23e4755902d996053b44b628c7a41b5702abfe813033096aa6e30a07938e44c873461577235c5da740338bff67690706d609f64923b75080fff08e5c89e542a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-receive.sample",
+      "fileName": ".git/hooks/pre-receive.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "705a17d259e7896f0082fe2e9f2c0c3b127be5ac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ee08c11fab7e896b2e09c241954ba7640338b12c75cd8040daf053c31b2f22236d7a0deac736f89d305236312fdb4f560a38d4d8debdcc9dcdd23b2d975907d5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha3-traffic-split.md",
+      "fileName": "apis/traffic-split/v1alpha3/traffic-split.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "920d371145f3eb78e7b1534f5993893d14d7f02958f91f3bb6dbfc30ad772b90"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c5635aa4fa7e7fb3f1bb96e90ac0e600b74688f037f20fab30718cf28ecb8242cf4853e9a7bbcc0d2c403f7f33ea807042dfe26d0448a80f2633d3479ef89b4d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b43c3d3eea67aa5705c63dcbf16a18bc346f0a29"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.github-workflows-main.yml",
+      "fileName": ".github/workflows/main.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2e31b2e4a9833d26ed6dcb92549ca1abc06707749ee3b34c19842786d375749b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "070d52add099115eddf8ae82cbfdf5c9fe17fbc79e28fdb619936a2649400cb7998f994393ac5c9cb59e467635a2685336904e7e3f83faff328ad6811dfe305c"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d6333d859ba0a6d6e186c1ecca09e13ceabd945d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-community-summer-of-code-README.md",
+      "fileName": "community/summer-of-code/README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "920190fe1ce62614037806b9dc98e4a3b5852ad2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ecc6b2d16c17c9351388cef0f548eee90d3bfbf31697199d24c9d17641763fb4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3a38040d6aa404956f5b5ce845e9ac4ac6d469ee136c9643253c5f8cfe418e60ef40bd32ef1ac99d9874a6d1d6a7cd6b1823a6d6d56ed2265e2a205e2a6e7532"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-metrics.png",
+      "fileName": "community/traffic-metrics-sample/metrics.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3ca5a3a556016a1be5d730c868f72e9786ca1490"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c519c38fe7e902335bc4f5d282e6165d1d370d2190db34697042b04901484cbc"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "21938226dce4affb6e942d9d1fa2018643b5f9d71d880c2f2433f530897b8cf34220181fc26558c3a8a9c97a190160754e2315aad6ee8e2a6c51fb9bb57c9bec"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-full.png",
+      "fileName": "images/logo/avatars/logo-full.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fa1722aa333ab95f208518c4bc70bb623f868ad10bca986e124acddf9477a7d77fd5ccfdf1393493f4c4ac21f698828ef2679b88bf8f74c0fa2964b083ba0066"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e4e3a4787c273df1ad92e4bc370b4a1d4af30fa9"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cffc4362b9400833a7756161ff092a66c287900643208edb6cc14418af44c701"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-traffic-specs-WD.md",
+      "fileName": "apis/traffic-specs/traffic-specs-WD.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6e35df07f58f1263bdcfce2a347c85a4755901143fd9fb3bd10fdf24aa82dcf7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6beda3c851b4e72f68f364c3e4924e0bea25659357248f320c80896aafb76ca5e29cf12b8f75d1dbce21b62be13d6acf57d2d18c5310497635d41dbc2f83c972"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0c027474db106422aab6f592014822ae348c0d57"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-smi-banner.png",
+      "fileName": "images/smi-banner.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c1cbef0aa933f1f800d63b3d007e62c0809165e0c4161860140485c40ca3507aa20c396292da68fbc3a6a3f0cb5f54ba87ef1a0a6772387a4e02ed36745e81da"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "602f852f171d7b8d83329129a14dda341de6916c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8cea135fde05d80501238fbb2d6b16f3ab19d5abac890e070aaf99e8bc8d8a28"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-CONTRIBUTING.md",
+      "fileName": "CONTRIBUTING.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5519e5f95324a1e05feadb7a6de7770549ec48c4d64404a56cf69dc5ae0a8bc9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0ad5f2fe01173549c19daae4f1f08f82e47310902dd572c83e5c5f70ecd6e0bff07155d4f59a02b4c86978f5ff1cd7b0168fb9f8b8a2d7245109cccdc0dd3a86"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fe07f275b70f95cef2248b80cab73d3649cb5ceb"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.github-ISSUEC95TEMPLATE-question.md",
+      "fileName": ".github/ISSUE_TEMPLATE/question.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "92eff21a91c2d2388f73e805ccbd4a45c60f869777b7d8f04345571d7b75191e20b94f080c7ac78b55b7cc450768ba50cd8af54fac0b1ed08174e1af3ef9d097"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6c5946d06325c3d3c02600cae819f56909ab9a26"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6c2d160f0d375b8d26a2c240d5b1ed6001876fac81df0dcc249eec719c8c1234"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.github-ISSUEC95TEMPLATE-proposal.md",
+      "fileName": ".github/ISSUE_TEMPLATE/proposal.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3a6025d04d6c2ecc3e660c9f87f4ec3710217b1a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fdd04162eafe00eb03840adc2664b83cd63801bed092ba172aae00d5d7c6a811"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3fb1b23ff1459f01ecc98c4eb3ed7285908331224516a75a46aa5b232bd09bc7e0af186109d28651bf43cd38903177647fd3d2c08aee8fe5f7c343626cc530b9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-metrics.png",
+      "fileName": "images/traffic-metrics-sample/metrics.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3ca5a3a556016a1be5d730c868f72e9786ca1490"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c519c38fe7e902335bc4f5d282e6165d1d370d2190db34697042b04901484cbc"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "21938226dce4affb6e942d9d1fa2018643b5f9d71d880c2f2433f530897b8cf34220181fc26558c3a8a9c97a190160754e2315aad6ee8e2a6c51fb9bb57c9bec"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-commit.sample",
+      "fileName": ".git/hooks/pre-commit.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4fed684b7e262fc847610ca646074fca45c3c677c40d8fb6c7ae522b9c8a9be7327b41a59b4550ceadd41edf57ec5ed07e575e02dbc6c003951e1822ac3ddd5b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8093d68e142db52dcab2215e770ba0bbe4cfbf24"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-traffic-split-WD.md",
+      "fileName": "apis/traffic-split/traffic-split-WD.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9e2c0e0039e04573886a4dd22633bbb9a1cca911"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f1fd7eb17a26c99a0b4ecf50a1801169db82af588dc0d7c01a465de810ed85d1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "816f817f001c7c3bcd6eb1bb31110d62b9a7aad441661f887d65b08279365eee8e806a1c211bbf7e80ded7fbc1446fff52b595683ab9bbb2f318bff68846c10c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-mesh.png",
+      "fileName": "community/traffic-metrics-sample/mesh.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ec6c682e0baa1c9a83c29ab5afe6887a1d3ef6b7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5c9e6024f4910e1ba816d633ecf9eca3420f4a274336fa1f54f69ac2dff42b07"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6f51fe7534406b25b3f7c79e8f704ce855ea869c8c92c8684029198c120cbaf55b4b82f846676dfcc99775eb87ac005d6646008d2f11196707e3ddbf08052ec9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-config",
+      "fileName": ".git/config",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c3c1c1f9dbd626005a84e5ce7bd9ffe3429f06f8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6adf53857f93bdc1090ea680ed406a0e69010a41ae25ea872b1fe756fea8fe9c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "24e54405150102e731d101e4cc4c707dd74fcbd3a0ff0ea163a3005b42859e7e184e9d98877acd1549fa38b46eba8195a211f16542e0130fe4207dbacd15d3b1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-index",
+      "fileName": ".git/index",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "dace87b8ec88abeb8fe59b981b2e98d5c347e161"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d9db89fc8edf226b899fa177604eeaadb69340329b0da443eac54243370265d1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7ed579b15ce85c2f39b843f25df2cda7368284563ca2f6f5a45b69a1650dcdecc5b9ee801128a122e953ecb423db120464dab15c96a057b5a4869630e28e3b90"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-HEAD",
+      "fileName": ".git/HEAD",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c37779eaafcbc9df79058b248d307d3714d627f8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "abeb1e97590aaf23c3509c2b04910b07fbf11615894a9e6cd2fb058b62054e73"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1113356a31fd353ea3da7ad0658b3203487824cc84069b2f726543258ef038420bd50bb5d55d2e21bb90dba4c4b878fa01de958cd4c952865e9b48904735fd53"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-logs-HEAD",
+      "fileName": ".git/logs/HEAD",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "176407d3c23cf9c9b7c8d23c004a9130ebe184dc"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1ae40ae9aa092c18bc3c394eae7720b6359115c6dfdcd19aeaf4c52449e36d01"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c08c28e22fb462539d30a77f93b0cc15c9e1d4d61b114975e82761a889dd6803290593ff0d1ca88bcca114755bee4c9f5e1d805e1e0862c4003daf4e7357a6d1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-applypatch.sample",
+      "fileName": ".git/hooks/pre-applypatch.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cb78aa7e9b9c146e5db65d86dd83f04e2b6942a06fab50c704a0fd900683f3b6ad1164e74afe2f267f6da91cdff0b9ab07713e12cefc6f8d741b5df194f4fda6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f208287c1a92525de9f5462e905a9d31de1e2d75"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-smi-logo-final.sketch",
+      "fileName": "images/logo/smi-logo-final.sketch",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "271ba6b077b8f0c66c0cb0d4ef69d10b91bcab23"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "37653778eaadc7dca9466375c6515297c71cb82fa8198f8ca228785b80fd9e8c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8a2d45833f301a2267501e450f77730117bceec74af2d600527a2d7c13e632f240e887d0c98a9f3327047689bcbd07f58837d04805a3f9e6a45df3d9333a0def"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-metrics-v1alpha1-traffic-metrics.md",
+      "fileName": "apis/traffic-metrics/v1alpha1/traffic-metrics.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1ca236a4f9e574b33194e5ad35002f09ff46f0db"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a37251c929c38e19d5ee7533f9a3dd0b2be732d3ca2a3930990630c3c50d2f62"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9649b1868efba31807edc61dd3e61a546521465583fcd131172e70c497d3182c9a58f58e0209810dcd94fb54d1c7070a30a8b2c64dfcc59949e94fcceee49028"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.pack",
+      "fileName": ".git/objects/pack/pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.pack",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7fcc4af8e2d7e850657bc3d6702b46f2ab0dfe3dd1d66d90ad95fc9577bde217"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "261af651c6938bcebe5d45afc422db548c8871e065e0a123f80bd74493e0ce8fa8a130b92edea84b825e554266763dd19351225700f03fbecc8e6e9edd86f617"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "009ee6a8e4311bacb8fb8ba0a3fd6aec2e3c156e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-v1alpha2-traffic-specs.md",
+      "fileName": "apis/traffic-specs/v1alpha2/traffic-specs.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "cbf98c8a9c5f55536eaf668d5d0757f017bbb7e0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a99ac45845b6ab6aff6ce18c576b745d0ccc8baa9fb8e77cc29ac0c369995916"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "366241913ad0c3642c394e5998557ac5a04a288a92a8937df339fd1f6decddb95e761ddef6bdd754b70267c14e16f0d9c824d0b6f4340c72b89ed4da7130587e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-SPECC95WORKINGC95DRAFT.md",
+      "fileName": "SPEC_WORKING_DRAFT.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a6999643da1f6389a5c658c4dcaa6f564572f3c2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "35f841ca1d98276691c9f3aa46351eabb64f19f3241c8d941ce1b6ce8208c804"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cac29677d707ea69da137b203b6aadf74b988a19a22076c6d2ffc8e9c07c3cdf026f89a0a95cadfad85bc6afce69eac2c0b5ec11837cf1ddda744682699016cd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-smi-logo-avatar.png",
+      "fileName": "images/logo/avatars/smi-logo-avatar.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0e056598c479a64ce6af15401dbe425f9d58ba33"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "19a98eb5e1ad9aa0f549f988dd234646f17648d842b57cf3c251b0d0c493ff0c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "482376fd6b6f5e1a3ff6db73d10e64ff554541d339a18c68bb3f15991dbcba9cfa74f4da5a59362d2559cc24c5336ae3c995f224d8427c8a5e49eff200eec6f3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-commit-msg.sample",
+      "fileName": ".git/hooks/commit-msg.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d6bb7fa747f4625adf1877f546565cbe812ca7dd4168f7e9068e6732555d8737eba549546cf5946649e3f38de82d173aaf9c160a4c9f9445655258b4c5f955eb"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ee1ed5aad98a435f2020b6de35c173b75d9affac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-packed-refs",
+      "fileName": ".git/packed-refs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3169698eb4f71fa9c229643ef7d7ce9e461c37ac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "24f0a985aade1b5c4cc356097427bd917bed4e333f7a83d2227bf49798e31797"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2753f4172bdb2e9cd8fda5bfc4502b77c90a1af39569a6ecd9aca61cd4cd89a67bd277d6f368278924f1ef16ed5eeafcd26f9c2a5f27d0acb7af7c0d47e003c1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-stack.svg",
+      "fileName": "images/logo/logo-stack.svg",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3f5a563ed2cdeabd34b474dd45a2eb472a7fdd5c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "420f360420818661b9384a584d51ab7f83b403b5a3bb2ab6e1513d218c2e93ab"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "108bf3b76932532fc2919b180ba7e6ed47b2f83a5b928ea1ab4c06e4425bf3c428a83eaad359fccdf4d6c3dfd3e743232a76894c88446a9bd58399452fa4cbfa"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-v1alpha1-traffic-specs.md",
+      "fileName": "apis/traffic-specs/v1alpha1/traffic-specs.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a070a245f53731c62456d445d70362738a504e5f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c08057e57dcc322a703a60c03cb9dd56fc6969b7ada649836b51f42f0b245ac7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e203b5e7d9d37a6af16bbb333a7544144245a085bfd03b614e64c75616c77c045463b21dece201487ece7d5b24668f4643b07e91d4720f29a657420f30f6c812"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-merge-commit.sample",
+      "fileName": ".git/hooks/pre-merge-commit.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e4dc204494f5062efa3032b00c64707a4f38978040482501b3e085f071e3ee5a9737d537e6a52002ceb4ebe2bfe09e555c5d969581e80b3eba2a922015c67960"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "04c64e58bc25c149482ed45dbd79e40effb89eb7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-LICENSE",
+      "fileName": "LICENSE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f27defdddaf4fb9932f5f2d565aa45f0bcd826e7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "48bcb03fd3f8d548aa7f42334a00cb41b26c87bba25d76c828a8bd7e1e161b8b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b4153e0f581e82fee14c4736ce4f54dcc4bca34008e683f06b436136ee93f84f7626a0827644e2ddfc0969e1a318d8701e727838707abfce21e4f042ede2acbc"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-push-to-checkout.sample",
+      "fileName": ".git/hooks/push-to-checkout.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "508240328c8b55f8157c93c43bf5e291e5d2fbcb"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "586efb6a206f73d8a94561266153a624e2753830bc431a283bed998c46ac00a9df4995ddfd0aa852b1a22b4672c80f2c33cee3fe2e3321e392ff4cef26dbf75e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-smi.png",
+      "fileName": "images/logo/avatars/logo-smi.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2617b5a51a085ca666b7bebc04c6cde5098de7f9ce7690323aac666a40036cae3a9fc2c6a770f4352aa9b70dc289d2b3fa2f9ccab462b375d322f271d1d71126"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "32841cb3276c69512ee04b14fd8319149ec61da1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3f2b77d71611b5439dca56d5a31cbbbc53dd105e40032fc1b4d3818fe174c006"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-GOVERNANCE.md",
+      "fileName": "GOVERNANCE.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b2b70e2b53e26e12f08af59260424c0e7a936b30"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c23175a8ec3947c4c6824fc0e34e046c42d394d3d01c891dc4ec72b47dc6f538"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c123a652d8f44ef21ccde102f59e09a7e29d67f17cf94531d394ee629efcca968a0535df25aed0365b1a0b9b34dc5e7c08dd8bfe6f44af88bb32986e612ecf01"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-access-traffic-access-WD.md",
+      "fileName": "apis/traffic-access/traffic-access-WD.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b17f3aeeb1493483d64fed3093e33350d6642230"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "143afec45e6ce68cd43b32280c6af2703c5c9bca66179c3d65892608ac618415"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9e329cabc7f481c3d9f581a6a048b543449eb3f4e18006179a9a9b168dce27e05a78d6ba8015acfadf5d0f9493e3b76fd287bcdf0ffe85378ff2d06a369eb9b7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-description",
+      "fileName": ".git/description",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f7e152f75b124c3e1c5d12f00427729d9eec4e2c1bf70d7606440a6600d003367eb178331e75ab976a61496e79c2c822020849d28ffd170946397b934611b471"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9635f1b7e12c045212819dd934d809ef07efa2f4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-Makefile",
+      "fileName": "Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f5699032814dae7986fe925f468599c8a5c415e2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "dee38c48d14a9cd01196dc0f65c94c436866106540c95e4b29fcebd41271d945"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e2e05e42937bb9b495938bfaa9b3d79ff27abc68ded9888ec6b0e1c1578107e1ef24a49e2d1227f3b5ff2a66f8ffc0f59f75d37e061db6ca51a408b574af2543"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-mesh.png",
+      "fileName": "images/traffic-metrics-sample/mesh.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5c9e6024f4910e1ba816d633ecf9eca3420f4a274336fa1f54f69ac2dff42b07"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6f51fe7534406b25b3f7c79e8f704ce855ea869c8c92c8684029198c120cbaf55b4b82f846676dfcc99775eb87ac005d6646008d2f11196707e3ddbf08052ec9"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ec6c682e0baa1c9a83c29ab5afe6887a1d3ef6b7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-community-integration-service-mesh-hub.md",
+      "fileName": "community/integration-service-mesh-hub.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "616c66f85687292bcb38a24715c853ff53c28ad6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5b7eeec51d336df4dd4d02f4f8e8f4207a2bacef5a9f1bcddbd17fa6f41cf592"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b4258d3be1d2ad089485154985bc609c94889034435d253532bb8aa0c0004972e58337634bd8b9ea090629a12f0c94dd44b4e49f58dd21b3082565b22e0ac75c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-shallow",
+      "fileName": ".git/shallow",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c37779eaafcbc9df79058b248d307d3714d627f8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "abeb1e97590aaf23c3509c2b04910b07fbf11615894a9e6cd2fb058b62054e73"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1113356a31fd353ea3da7ad0658b3203487824cc84069b2f726543258ef038420bd50bb5d55d2e21bb90dba4c4b878fa01de958cd4c952865e9b48904735fd53"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-fsmonitor-watchman.sample",
+      "fileName": ".git/hooks/fsmonitor-watchman.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0ec0ec9ac11111433d17ea79e0ae8cec650dcfa4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5168643c1768ec83554a9066754507a781b6d14251a46a469222d462efc6ca87a72c90679154e8a723349c91e7772b32ac9b08dfe313cded0ee0a6f17885079e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-update.sample",
+      "fileName": ".git/hooks/update.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "730e6bd5225478bab6147b7a62a6e2ae21d40507"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "be3780974589d06eddba6fa0aa15a3e3dfe390e2827a1a6ae5cb83d6ac47e79ef9b1bbb53f067372f8dc70db0350d3770e78537fd3cfe734200ff824eca4cada"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-prepare-commit-msg.sample",
+      "fileName": ".git/hooks/prepare-commit-msg.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2584806ba147152ae005cb675aa4f01d5d068456"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "50ec8a0dd98427e80a82a8d8ce44462a845876e1594c9d0e89483ce9a8aaad616edea0e5c45c1bb69d8fe7f520c6f2260d6fa350d77b400899c3ae375e965bfb"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-avatar.png",
+      "fileName": "images/logo/avatars/avatar.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "482376fd6b6f5e1a3ff6db73d10e64ff554541d339a18c68bb3f15991dbcba9cfa74f4da5a59362d2559cc24c5336ae3c995f224d8427c8a5e49eff200eec6f3"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0e056598c479a64ce6af15401dbe425f9d58ba33"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "19a98eb5e1ad9aa0f549f988dd234646f17648d842b57cf3c251b0d0c493ff0c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-mesh.dot",
+      "fileName": "images/traffic-metrics-sample/mesh.dot",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bdcdc90044a4cd04b048edab916bd5da943ee1db"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9eecdc39eb41b85aabf95827cc0438e583bb71519773fe3077dce99c70b23ac2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "39d799378f53d18052c27c41dead8b3cceb6d4e61f3b86b11daf81d00b57cd973b9c0596d13aefcfd9206c356836d4ba6ebf4f3aeb2ad5956fbf8e34dc76fcb8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-applypatch-msg.sample",
+      "fileName": ".git/hooks/applypatch-msg.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4de88eb95a5e93fd27e78b5fb3b5231a8d8917dd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "536cce804d84e25813993efdd240537b52d00ce9cdcecf1982f85096d56a521290104c825c00b370b2752201952a9616a3f4e28c5d27a5b4e4842101a2ff9bee"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-rebase.sample",
+      "fileName": ".git/hooks/pre-rebase.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "00d21d5d72386c3d9b5a1c36ba85201f730556a8295d4353af54af7892ab81010d42aff209ec1fda61c54e4dda3737cea5fda64f09d40ce5004ae28239565025"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "288efdc0027db4cfd8b7c47c4aeddba09b6ded12"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.idx",
+      "fileName": ".git/objects/pack/pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.idx",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "679ee164035fbd6ff7aa6d4dbeacd67a555d4bd9388ba87da5d29fcc51d48f0c07d89810c78c714cee48adcf35ed04993e488114f506e2bbaeeb9bcc98dc85e3"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "826b459e475655cc549a73be5d9dad0a4e81a425"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5f35852ffd5bd56145af073e85f310858b1b46c20400cd531854886c0c8dc9a0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-initials.svg",
+      "fileName": "images/logo/logo-initials.svg",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8b9483701200ef0d7662a3e540305f3dd18502a1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "19d0bfc39f78bc7788a6990e8bf03b0e243c133d1cb3ef5ef3f30f058328fcb8"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d12821cb58de7cdca00eb63dca924adb55df7246aaf8d3f0f272ddac86658258838e370f35a7ab8c13571922248a08a1d01f824a5d1e6913552dcfb0d8f7c62d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.rev",
+      "fileName": ".git/objects/pack/pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.rev",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8db134d51afec522ce26df7ceb3010dd7236ee0a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "54d0e2118a8ac0686c6c709f5e2ba6afe434798ff6574369c0bc8de9bcfb5a99"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "139ebc6691fd90535bd04717d3b562df7da1a484c6dd3d0ada9e20dcffd4b460017155dde07fa6be8490443489042cb938f6fedda2aa6c315d21c8b7735b3a33"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-CODEOWNERS",
+      "fileName": "CODEOWNERS",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ee61d6a0c5c042cb69ee8faadf1d92802e42ae047c7652f3ac05f7004f83dd3edc2a9c4a93105876130d45cb66c1e0b794137c08f5f4ab54635444d80b3f8ef2"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "667f26887f19c565920d1452e70069057c80dbd1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f8959cfe25d63548a7e74172663e0140e3bf2f402902475f2a8c8af25b44f36d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "360122487d5e65b59d8632c1def8e726519be4441bd4bf4d7983133acd39280bf706f13878fd7e3d3c4735a9b231d248a482a879eb12e17059f51d181b73ccc4"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c083579297075d808bb3f2e5a8cdc8d1e88af3b8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2fc52433abb09d64df6d5dd26befacb42034d5937beea8f370905de35f92137d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-metrics.dot",
+      "fileName": "community/traffic-metrics-sample/metrics.dot",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f0b942f3cef116590c2f7aaeeae80794393779e7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "89ca9a8c3bb87c0cab90b133fcf55517e9751cffd12f838c7893d8d9290a45a9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4533054d706102be9c8378c1cc28be11735b4592a05e6e48f18b9643df9527b5b4c9414a28b1524fe85c22d7765e0724a40ad300ae5464dde9dd16786e7d5bb7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-metrics-traffic-metrics-WD.md",
+      "fileName": "apis/traffic-metrics/traffic-metrics-WD.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "53f6ebb2343e9f82c897197985291eda2f6e42bc1a00e8045190b9a005b9eefe"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "96dce46bd39f81dd660864ba66b939bda25bf09dd174235519a1b36c51a4db327f4ad4992341248f2ac5e1ced1cbb8279bd6e803f1195997367da2607f282775"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3422bd2946c476d5a33dbcdc73647404a89a8dae"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-push.sample",
+      "fileName": ".git/hooks/pre-push.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cc98bbe0e3865e2023af04416e10689e3aecd3f3928cf90c2acc0d3d7306388886779025c8967c8ea198af1f4fe29d16c65d4e1d546c7a8fa513f5ba7df16850"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a599b773b930ca83dbc3a5c7c13059ac4a6eaedc"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-sendemail-validate.sample",
+      "fileName": ".git/hooks/sendemail-validate.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "74cf1d5415a5c03c110240f749491297d65c4c98"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a19dbbc2ef6c367aadbfb900ae58c377d88ac9b6c0ac6de49c962d44d993418875f64143defda56bae8d0697dcd15be2928d32aa77508d3958769f18a4a53154"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-mesh.dot",
+      "fileName": "community/traffic-metrics-sample/mesh.dot",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "39d799378f53d18052c27c41dead8b3cceb6d4e61f3b86b11daf81d00b57cd973b9c0596d13aefcfd9206c356836d4ba6ebf4f3aeb2ad5956fbf8e34dc76fcb8"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bdcdc90044a4cd04b048edab916bd5da943ee1db"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9eecdc39eb41b85aabf95827cc0438e583bb71519773fe3077dce99c70b23ac2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-SPECC95LATESTC95STABLE.md",
+      "fileName": "SPEC_LATEST_STABLE.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0cf19bf1ba921f05597704950610620330c61393538dbf45468f92fdcee8522089291a245911db7daffb0947e37bab5ef329f5853bb5d891758c04ebfa5f4320"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2c503742bda1effa889be692059c6bd210ba0db4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "829e939796f0c0ae6ccb37659047cea9c2a85c5e8e4fbd8fe6af39c4c2b3ba24"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-metrics.dot",
+      "fileName": "images/traffic-metrics-sample/metrics.dot",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f0b942f3cef116590c2f7aaeeae80794393779e7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "89ca9a8c3bb87c0cab90b133fcf55517e9751cffd12f838c7893d8d9290a45a9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4533054d706102be9c8378c1cc28be11735b4592a05e6e48f18b9643df9527b5b4c9414a28b1524fe85c22d7765e0724a40ad300ae5464dde9dd16786e7d5bb7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.markdownlint.yaml",
+      "fileName": ".markdownlint.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "38b554ff1e5a2e7be96c61216e6c181b0f09542e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7baa73b3fa1e7960e9e2a5ef7650d196e9b20db17e29ae2e3fd036cd4b4b95d3"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e991457d95206bfed660096216d914eefc5849c952919428b45233b101f01760374d09bf6a409f12bb4fc55b353a51890bbb3f74cd464205951c6499557ef10b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-.git-info-exclude",
+      "fileName": ".git/info/exclude",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c879df015d97615050afa7b9641e3352a1e701ac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9828c6ecdf91bf117416e17f4ee9caee2e1e37b6fb00b9ff04035ace17a3089b9d0a25c6baa1046c0e1c62d3da88838e8fca74ea82973d6b975905fde58f3072"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-icon.svg",
+      "fileName": "images/logo/icon.svg",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "df392c0cb025ea216a962fbb3cc9ee170fcf8fde"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a11fd50d31a85f54a674b16a2983e134dcd9d9cb2fdfa2c657f022207052e7d2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7953392d514ab99e568138c0d720290f4a61687f56766f1505726d2517d673995b81c5875a0114588981bc20cb8b833525ab047da92e197c89018d597fce231f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-access-v1alpha1-traffic-access.md",
+      "fileName": "apis/traffic-access/v1alpha1/traffic-access.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9e8bbd03682b750ed60255db02485236645651c3"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "940e4ffb118f3d109a68fdde7dc31617b5ebd5f41fad643bdd6a36a9f836cc6f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1f2f2fe54140df27513ebea7dda4dd3754227d3e033f412b20822d41041915548d8d94e0aa349e1d05e7e0beb92cd4ddf22e265a837e5323e17bdd2adb9d5676"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "name": "tmp.rRVtRlXftE",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-HEAD",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-config",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-description",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-fsmonitor-watchman.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-post-update.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-applypatch.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-applypatch-msg.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-merge-commit.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-commit.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-commit-msg.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-rebase.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-receive.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-prepare-commit-msg.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-push-to-checkout.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-push.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-index",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-update.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-info-exclude",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-logs-HEAD",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.idx",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-packed-refs",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.rev",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-sendemail-validate.sample",
+        "SPDXRef-File-tmp.rRVtRlXftE-.github-ISSUEC95TEMPLATE-question.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-.github-workflows-main.yml",
+        "SPDXRef-File-tmp.rRVtRlXftE-.github-ISSUEC95TEMPLATE-proposal.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-CODEOWNERS",
+        "SPDXRef-File-tmp.rRVtRlXftE-.markdownlint.yaml",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-shallow",
+        "SPDXRef-File-tmp.rRVtRlXftE-GOVERNANCE.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-Makefile",
+        "SPDXRef-File-tmp.rRVtRlXftE-LICENSE",
+        "SPDXRef-File-tmp.rRVtRlXftE-README.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-CONTRIBUTING.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-SPECC95LATESTC95STABLE.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-SPECC95WORKINGC95DRAFT.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-access-v1alpha1-traffic-access.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-access-traffic-access-WD.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-v1alpha1-traffic-specs.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-traffic-specs-WD.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-metrics-traffic-metrics-WD.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-v1alpha2-traffic-specs.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-metrics-v1alpha1-traffic-metrics.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-traffic-split-WD.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha1-traffic-split.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-community-integration-service-mesh-hub.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha3-traffic-split.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-community-summer-of-code-README.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-mesh.dot",
+        "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-metrics.dot",
+        "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha2-traffic-split.md",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-avatar.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-full.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-mesh.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-smi-github.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-metrics.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-smi.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-initials.svg",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-smi-logo-avatar.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-stack.svg",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-strapline.svg",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-horizontal.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo.svg",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-icon.svg",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-mesh.dot",
+        "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.pack",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-metrics.dot",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-smi-banner.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-mesh.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-metrics.png",
+        "SPDXRef-File-tmp.rRVtRlXftE-images-logo-smi-logo-final.sketch"
+      ],
+      "licenseInfoFromFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "b4df8222ea5fc0f63de69b6b8b826faae14d022c"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-HEAD"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-config"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-description"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-fsmonitor-watchman.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-post-update.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-applypatch.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-applypatch-msg.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-merge-commit.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-commit.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-commit-msg.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-rebase.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-receive.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-prepare-commit-msg.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-push-to-checkout.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-pre-push.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-index"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-update.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-info-exclude"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-logs-HEAD"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.idx"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-packed-refs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.rev"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-hooks-sendemail-validate.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.github-ISSUEC95TEMPLATE-question.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.github-workflows-main.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.github-ISSUEC95TEMPLATE-proposal.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-CODEOWNERS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.markdownlint.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-shallow"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-GOVERNANCE.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-LICENSE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-CONTRIBUTING.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-SPECC95LATESTC95STABLE.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-SPECC95WORKINGC95DRAFT.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-access-v1alpha1-traffic-access.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-access-traffic-access-WD.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-v1alpha1-traffic-specs.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-traffic-specs-WD.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-metrics-traffic-metrics-WD.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-specs-v1alpha2-traffic-specs.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-metrics-v1alpha1-traffic-metrics.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-traffic-split-WD.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha1-traffic-split.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-community-integration-service-mesh-hub.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha3-traffic-split.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-community-summer-of-code-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-mesh.dot"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-metrics.dot"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-apis-traffic-split-v1alpha2-traffic-split.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-avatar.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-full.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-mesh.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-smi-github.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-community-traffic-metrics-sample-metrics.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-smi.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-initials.svg"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-smi-logo-avatar.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-stack.svg"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo-strapline.svg"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-avatars-logo-horizontal.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-logo.svg"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-icon.svg"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-mesh.dot"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-.git-objects-pack-pack-6f660a10dfcf75502dbb7b74be2ebb42b4407f3f.pack"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-metrics.dot"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-smi-banner.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-mesh.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-traffic-metrics-sample-metrics.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.rRVtRlXftE",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.rRVtRlXftE-images-logo-smi-logo-final.sketch"
+    }
+  ],
+  "externalDocumentRefs": [
+    {
+      "externalDocumentId": "DocumentRef-cncf-project",
+      "spdxDocument": "https://www.cncf.io/projects/",
+      "checksum": {
+        "algorithm": "SHA1",
+        "checksumValue": "0000000000000000000000000000000000000000"
+      }
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-10T21:32:48Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "CNCF Project: Service Mesh Interface\nOwner: servicemeshinterface\nRepository: smi-spec\nVersion: v0.4.0\nGitHub: https://github.com/servicemeshinterface/smi-spec\nRelease: https://github.com/servicemeshinterface/smi-spec/releases/tag/v0.4.0"
+    }
+  ],
+  "hasExtractedLicensingInfo": []
+}
