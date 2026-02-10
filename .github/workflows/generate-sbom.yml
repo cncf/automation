@@ -15,6 +15,25 @@ on:
         required: false
         default: false
         type: boolean
+      releases_mode:
+        description: 'Which releases to process'
+        required: false
+        default: 'recent'
+        type: choice
+        options:
+          - recent    # Only releases from the past week
+          - latest    # Latest N releases regardless of date
+      max_releases:
+        description: 'Maximum number of releases to process per repo (only used with "latest" mode)'
+        required: false
+        default: '3'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
 
 permissions:
   contents: write
@@ -85,6 +104,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate }}
+          RELEASES_MODE: ${{ github.event.inputs.releases_mode || 'recent' }}
+          MAX_RELEASES: ${{ github.event.inputs.max_releases || '3' }}
         run: |
           set -e
           
@@ -96,9 +117,17 @@ jobs:
           SBOM_BASE_DIR="supply-chain/sbom/${SANITIZED_PROJECT}/${REPO}"
           GENERATED_FILES=""
           PROCESSED=0
-          MAX_RELEASES=3
+          
+          # Calculate date threshold for 'recent' mode (7 days ago)
+          ONE_WEEK_AGO=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -v-7d +%Y-%m-%dT%H:%M:%SZ)
           
           echo "::group::Processing $PROJECT_NAME ($OWNER/$REPO)"
+          echo "Releases mode: $RELEASES_MODE"
+          if [ "$RELEASES_MODE" == "latest" ]; then
+            echo "Max releases: $MAX_RELEASES"
+          else
+            echo "Processing releases from the past week (since $ONE_WEEK_AGO)"
+          fi
           
           # Function to extract licenses using go-licenses (for Go projects)
           extract_go_licenses() {
@@ -248,6 +277,16 @@ jobs:
               exit 0
             fi
             
+            # Note: Tags don't have date info, so we can only limit by count in 'latest' mode
+            # For 'recent' mode with tags, we skip as we can't determine date
+            if [ "$RELEASES_MODE" == "recent" ]; then
+              echo "Warning: 'recent' mode requires releases with publish dates. Tags don't have date info."
+              echo "Falling back to processing up to 3 latest tags..."
+              EFFECTIVE_MAX=3
+            else
+              EFFECTIVE_MAX=$MAX_RELEASES
+            fi
+            
             # Process tags as releases
             for TAG in $TAGS; do
               # Filter out pre-releases (alpha, beta, rc, pre, dev, snapshot, nightly)
@@ -266,29 +305,48 @@ jobs:
                 PROCESSED=$((PROCESSED + 1))
               fi
               
-              # Only process latest stable releases per repo
-              if [ "$PROCESSED" -ge "$MAX_RELEASES" ]; then
-                echo "Processed $MAX_RELEASES releases, stopping..."
+              # Only process limited releases per repo
+              if [ "$PROCESSED" -ge "$EFFECTIVE_MAX" ]; then
+                echo "Processed $EFFECTIVE_MAX releases, stopping..."
                 break
               fi
             done
           else
             # Process releases - read into array to avoid subshell issues
-            readarray -t RELEASE_TAGS < <(echo "$RELEASES" | jq -r '.[] | select(.draft == false and .prerelease == false) | .tag_name')
+            # Filter by date for 'recent' mode, or just get stable releases for 'latest' mode
+            if [ "$RELEASES_MODE" == "recent" ]; then
+              echo "Filtering releases published after $ONE_WEEK_AGO..."
+              readarray -t RELEASE_DATA < <(echo "$RELEASES" | jq -r --arg since "$ONE_WEEK_AGO" '.[] | select(.draft == false and .prerelease == false and .published_at >= $since) | "\(.tag_name)|\(.published_at)"')
+            else
+              readarray -t RELEASE_DATA < <(echo "$RELEASES" | jq -r '.[] | select(.draft == false and .prerelease == false) | "\(.tag_name)|\(.published_at)"')
+            fi
             
-            for TAG in "${RELEASE_TAGS[@]}"; do
+            if [ ${#RELEASE_DATA[@]} -eq 0 ]; then
+              echo "No matching releases found for the selected mode"
+              echo "::endgroup::"
+              exit 0
+            fi
+            
+            echo "Found ${#RELEASE_DATA[@]} releases matching criteria"
+            
+            for RELEASE_INFO in "${RELEASE_DATA[@]}"; do
+              TAG=$(echo "$RELEASE_INFO" | cut -d'|' -f1)
+              PUBLISHED_AT=$(echo "$RELEASE_INFO" | cut -d'|' -f2)
+              
               # Additional filter for pre-release patterns in tag name
               if echo "$TAG" | grep -qiE '[-\.](alpha|beta|rc|pre|dev|snapshot|nightly|canary|test|draft|wip)[0-9]*'; then
                 echo "Skipping pre-release tag: $TAG"
                 continue
               fi
               
+              echo "Processing release: $TAG (published: $PUBLISHED_AT)"
+              
               if generate_sbom "$TAG"; then
                 PROCESSED=$((PROCESSED + 1))
               fi
               
-              # Only process latest stable releases per repo
-              if [ "$PROCESSED" -ge "$MAX_RELEASES" ]; then
+              # In 'latest' mode, limit by MAX_RELEASES; in 'recent' mode, process all recent releases
+              if [ "$RELEASES_MODE" == "latest" ] && [ "$PROCESSED" -ge "$MAX_RELEASES" ]; then
                 echo "Processed $MAX_RELEASES releases, stopping..."
                 break
               fi
