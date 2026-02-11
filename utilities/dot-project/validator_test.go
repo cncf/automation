@@ -644,13 +644,14 @@ func TestIdentityTypeValidation(t *testing.T) {
 		expectError   bool
 		errorContains string
 	}{
-		{"valid dco", &IdentityType{Type: "dco"}, false, ""},
-		{"valid cla", &IdentityType{Type: "cla"}, false, ""},
-		{"valid none", &IdentityType{Type: "none"}, false, ""},
-		{"invalid value", &IdentityType{Type: "other"}, true, "invalid value"},
-		{"empty type", &IdentityType{Type: ""}, true, "legal.identity_type.type is required"},
-		{"valid dco with url", &IdentityType{Type: "dco", URL: &PathRef{Path: "https://developercertificate.org/"}}, false, ""},
-		{"empty url path", &IdentityType{Type: "dco", URL: &PathRef{Path: ""}}, true, "legal.identity_type.url.path is required"},
+		{"dco only", &IdentityType{HasDCO: true}, false, ""},
+		{"dco plus cla", &IdentityType{HasDCO: true, HasCLA: true}, false, ""},
+		{"neither", &IdentityType{HasDCO: false, HasCLA: false}, false, ""},
+		{"cla without dco", &IdentityType{HasDCO: false, HasCLA: true}, true, "has_cla requires has_dco"},
+		{"dco with url", &IdentityType{HasDCO: true, DCOURL: &PathRef{Path: "https://developercertificate.org/"}}, false, ""},
+		{"dco with empty url", &IdentityType{HasDCO: true, DCOURL: &PathRef{Path: ""}}, true, "dco_url.path is required"},
+		{"dco+cla with urls", &IdentityType{HasDCO: true, HasCLA: true, DCOURL: &PathRef{Path: "https://developercertificate.org/"}, CLAURL: &PathRef{Path: "https://example.com/cla"}}, false, ""},
+		{"cla with empty url", &IdentityType{HasDCO: true, HasCLA: true, CLAURL: &PathRef{Path: ""}}, true, "cla_url.path is required"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

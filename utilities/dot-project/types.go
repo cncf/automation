@@ -80,17 +80,13 @@ type LegalConfig struct {
 	IdentityType *IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
 }
 
-// IdentityType represents a project's contributor identity agreement (DCO, CLA, or none)
+// IdentityType represents a project's contributor identity agreements.
+// DCO can be used alone, or DCO + CLA together. CLA alone is not valid (DCO is the baseline).
 type IdentityType struct {
-	Type string   `json:"type" yaml:"type"`                   // Required: "dco", "cla", or "none"
-	URL  *PathRef `json:"url,omitempty" yaml:"url,omitempty"` // Optional link to the DCO/CLA document
-}
-
-// ValidIdentityTypes lists the allowed identity type values
-var ValidIdentityTypes = map[string]bool{
-	"dco":  true,
-	"cla":  true,
-	"none": true,
+	HasDCO bool     `json:"has_dco" yaml:"has_dco"`                     // Whether the project uses DCO
+	HasCLA bool     `json:"has_cla" yaml:"has_cla"`                     // Whether the project uses CLA (requires DCO)
+	DCOURL *PathRef `json:"dco_url,omitempty" yaml:"dco_url,omitempty"` // Optional link to DCO document
+	CLAURL *PathRef `json:"cla_url,omitempty" yaml:"cla_url,omitempty"` // Optional link to CLA document
 }
 
 type DocumentationConfig struct {

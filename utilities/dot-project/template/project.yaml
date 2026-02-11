@@ -90,10 +90,13 @@ governance:                     # Optional
 legal:                          # Optional
   license:
     path: "LICENSE"
-  # identity_type:               # Optional: contributor identity agreement
-  #   type: "dco"                # dco, cla, or none
-  #   url:
+  # identity_type:               # Optional: contributor identity agreements
+  #   has_dco: true              # DCO can be used alone
+  #   has_cla: false             # CLA requires DCO
+  #   dco_url:
   #     path: "https://developercertificate.org/"
+  #   cla_url:
+  #     path: "https://example.com/cla"
 
 documentation:                  # Optional
   readme:

@@ -73,9 +73,10 @@ governance:
 legal:
   license:
     path: "LICENSE"{{ end }}
-  # TODO: Set contributor identity agreement type
+  # TODO: Set contributor identity agreements
   # identity_type:
-  #   type: "dco"  # dco, cla, or none
+  #   has_dco: true   # DCO can be used alone
+  #   has_cla: false  # CLA requires DCO
 {{ if .HasReadme }}
 documentation:
   readme:

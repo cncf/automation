@@ -96,10 +96,14 @@ This document defines the schema for CNCF `.project` repository metadata files.
 
 ### IdentityType
 
+DCO can be used alone, or DCO + CLA together. CLA alone is not valid (DCO is the baseline requirement).
+
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| `type` | string | Yes | Identity agreement type | One of: `dco`, `cla`, `none` |
-| `url` | PathRef | No | Link to DCO/CLA document | Path must be non-empty if present |
+| `has_dco` | boolean | No | Whether the project uses DCO | Defaults to false |
+| `has_cla` | boolean | No | Whether the project uses CLA | Requires `has_dco` to be true |
+| `dco_url` | PathRef | No | Link to DCO document | Path must be non-empty if present |
+| `cla_url` | PathRef | No | Link to CLA document | Path must be non-empty if present |
 
 ### DocumentationConfig
 
