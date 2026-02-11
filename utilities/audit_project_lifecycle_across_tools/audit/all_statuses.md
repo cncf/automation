@@ -4,25 +4,21 @@
 
 | Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
 |---|---|---|---|---|---|---|
-| Open Policy Agent | graduated | graduated | graduated | graduated | - | - |
-| metal3-io | incubating | - | incubating | incubating | - | - |
+| Open Policy Agent | graduated | graduated | graduated | graduated | - | graduated |
+| metal3-io | incubating | - | incubating | incubating | - | incubating |
 | cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | CoHDI | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Copa | sandbox | sandbox | sandbox | sandbox | - | - |
-| Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Hexa | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
-| Piraeus-Datastore | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Runme Notebooks | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | sandbox | archived | - | - | - | archived |
 | Spin | sandbox | - | sandbox | sandbox | sandbox | sandbox |
 | TrestleGRC | sandbox | sandbox | - | - | sandbox | - |
-| VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | - |
+| VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | sandbox |
 | <QHTTPX> | forming | - | - | - | - | - |
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
@@ -126,7 +122,7 @@
 | KubeEdge | graduated | graduated | graduated | graduated | graduated | graduated |
 | Kubernetes | graduated | graduated | graduated | graduated | graduated | graduated |
 | Linkerd | graduated | graduated | graduated | graduated | graduated | graduated |
-| Open Policy Agent | graduated | graduated | graduated | graduated | - | - |
+| Open Policy Agent | graduated | graduated | graduated | graduated | - | graduated |
 | Prometheus | graduated | graduated | graduated | graduated | graduated | graduated |
 | Rook | graduated | graduated | graduated | graduated | graduated | graduated |
 | SPIFFE | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -162,7 +158,7 @@
 | Lima | incubating | incubating | incubating | incubating | incubating | incubating |
 | LitmusChaos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Longhorn | incubating | incubating | incubating | incubating | incubating | incubating |
-| metal3-io | incubating | - | incubating | incubating | - | - |
+| metal3-io | incubating | - | incubating | incubating | - | incubating |
 | NATS | incubating | incubating | incubating | incubating | incubating | incubating |
 | Notary | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenCost | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -213,7 +209,7 @@
 | Devfile | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | DevSpace | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Dex | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Drasi | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | easegress | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Eraser | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -288,14 +284,14 @@
 | PARSEC | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Perses | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | PipeCD | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Piraeus-Datastore | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Piraeus-Datastore | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Pixie | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Podman Desktop | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Porter | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Radius | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Ratify | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Runme Notebooks | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Runme Notebooks | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | SchemaHero | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Score | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Serverless Devs | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -318,7 +314,7 @@
 | urunc | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Vineyard | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Virtual Kubelet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | - |
+| VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | sandbox |
 | WasmEdge Runtime | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | werf | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | xRegistry | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
