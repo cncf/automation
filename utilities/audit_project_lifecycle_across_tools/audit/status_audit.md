@@ -45,7 +45,6 @@
 | Terrascan | forming | - | - | - | - | - |
 | Velero | forming | - | - | - | - | - |
 | Brigade | archived | archived | - | - | - | archived |
-| CNCF Toolbox | archived | - | - | - | - | - |
 | CNI-Genie | archived | archived | - | - | - | - |
 | Curiefense | archived | archived | - | - | - | archived |
 | Curve | archived | archived | - | - | - | archived |
@@ -70,3 +69,4 @@
 | SuperEdge | archived | archived | - | - | - | archived |
 | Teller | archived | archived | - | - | - | archived |
 | Xline | archived | archived | - | - | - | archived |
+| CNCF Toolbox | prospect | - | - | - | - | - |
