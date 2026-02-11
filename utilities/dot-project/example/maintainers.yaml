@@ -1,0 +1,20 @@
+# Example maintainer roster for Kubernetes
+# This is a realistic, filled-in example. For a blank starter, see ../template/
+#
+# Documentation: https://github.com/cncf/automation/tree/main/utilities/dot-project
+
+maintainers:
+  - project_id: "kubernetes"     # Must match slug in project.yaml
+    org: "kubernetes"            # GitHub organization
+    teams:
+      - name: "project-maintainers"
+        members:
+          - thockin
+          - liggitt
+          - derekwaynecarr
+          - dims
+      - name: "sig-release-leads"
+        members:
+          - justaugustus
+          - cpanato
+          - saschagrunert

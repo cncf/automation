@@ -1,0 +1,56 @@
+name: 'Validate Maintainers'
+description: 'Validate a maintainers.yaml file against the CNCF .project schema'
+inputs:
+  maintainers_file:
+    description: 'Path to the maintainers.yaml file to validate'
+    required: true
+  base_maintainers_file:
+    description: 'Path to the base maintainers file for diff validation (optional)'
+    required: false
+    default: ''
+  verify_maintainers:
+    description: 'Verify maintainer handles against LFX (requires LFX_AUTH_TOKEN secret)'
+    required: false
+    default: 'false'
+  go_version:
+    description: 'Go version to use'
+    required: false
+    default: '1.24'
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go_version }}
+
+    - name: Checkout automation tools
+      uses: actions/checkout@v4
+      with:
+        repository: cncf/automation
+        path: _cncf-automation
+        sparse-checkout: utilities/dot-project
+
+    - name: Build validator
+      shell: bash
+      run: |
+        cd _cncf-automation/utilities/dot-project
+        go build -o ${{ github.workspace }}/_cncf-validator ./cmd/validator
+
+    - name: Validate maintainers
+      shell: bash
+      run: |
+        ARGS="-config /dev/null -maintainers ${{ inputs.maintainers_file }}"
+        if [ -n "${{ inputs.base_maintainers_file }}" ]; then
+          ARGS="$ARGS -base-maintainers ${{ inputs.base_maintainers_file }}"
+        fi
+        if [ "${{ inputs.verify_maintainers }}" = "true" ]; then
+          ARGS="$ARGS -verify-maintainers"
+        fi
+        ${{ github.workspace }}/_cncf-validator $ARGS
+
+    - name: Cleanup
+      shell: bash
+      if: always()
+      run: |
+        rm -rf _cncf-automation _cncf-validator

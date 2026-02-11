@@ -1,207 +1,339 @@
-# Project Validator
+# .project - CNCF Project Metadata
 
-A Go utility that validates CNCF project metadata and maintainer rosters. It checks project YAML manifests, reconciles maintainer lists against canonical sources, and surfaces changes via cached diffs.
+Every CNCF project maintains a `.project` repository in their GitHub organization containing standardized metadata about the project. This enables maintainers to own their own data while CNCF automation can act on it for landscape updates, governance audits, staleness checks, and more.
 
-## Features
+## Quick Start
 
-- Validates project YAML files against structured schema requirements
-- Detects content drift using SHA256 hashes and cached history
-- Validates maintainer definitions against canonical `.project` repository data
-- Stubbed third-party verification hook for maintainer identity checks
-- Multiple output formats: human-readable text, JSON, YAML
-- Includes GitHub Actions workflow and Makefile helpers
+For CNCF projects adopting `.project`:
 
-## Installation
+1. Copy the `template/` directory contents into your `.project` repo
+2. Fill in your project details in `project.yaml` and `maintainers.yaml`
+3. The included GitHub Actions workflow will validate on every PR
 
-```bash
-cd utilities/dot-project/
-go build ./cmd/validator
-```
+## Schema (v1.0.0)
 
-## Usage
+### Required Fields
 
-```bash
-./validator [flags]
-```
+| Field | Type | Description |
+|-------|------|-------------|
+| `schema_version` | string | Must be `"1.0.0"` |
+| `slug` | string | Unique project identifier (lowercase, alphanumeric + hyphens) |
+| `name` | string | Display name |
+| `description` | string | One-line description |
+| `maturity_log` | array | At least one entry with phase, date, issue URL |
+| `repositories` | array | At least one valid HTTP(S) URL |
 
-### Flags
+### Optional Fields
 
-- `-config string`: Path to project list configuration file (default `yaml/projectlist.yaml`)
-- `-maintainers string`: Path to maintainer roster file (default `yaml/maintainers.yaml`, set empty to skip)
-- `-cache string`: Directory for cached validation results (default `.cache`)
-- `-verify-maintainers`: Toggle stubbed external maintainer verification (default `false`)
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | Project type (e.g., "project", "platform", "specification") |
+| `project_lead` | string | GitHub handle of primary contact |
+| `cncf_slack_channel` | string | CNCF Slack channel (must start with `#`) |
+| `website` | string | Project website URL |
+| `adopters` | PathRef | Link to ADOPTERS.md or adopters list |
+| `artwork` | string | Artwork/logo URL |
+| `social` | map | Platform-name to URL mapping |
+| `mailing_lists` | array | Email addresses |
+| `audits` | array | Security/performance audit entries |
+| `package_managers` | map | Registry-name to identifier mapping |
+| `security` | object | Security policy, threat model, contact email |
+| `governance` | object | Contributing, codeowners, governance doc, governance DD items, maintainer lifecycle paths |
+| `legal` | object | License path, identity type (DCO/CLA) |
+| `documentation` | object | Readme, support, architecture, API doc paths |
+| `landscape` | object | CNCF Landscape category and subcategory |
 
-### Examples
+### Maturity Phases
 
-```bash
-# Validate projects and maintainers with default configuration
-./validator
+Valid values for `maturity_log[].phase`: `sandbox`, `incubating`, `graduated`, `archived`
 
-# Validate only projects
-./validator -maintainers "" 
+Entries must be in chronological order.
 
-# Validate projects and maintainers from custom paths with verification enabled
-./validator -config configs/projectlist.yaml \
-            -maintainers configs/maintainers.yaml \
-            -verify-maintainers
-```
-
-## Configuration
-
-### Project List (`yaml/projectlist.yaml`)
-
-> **Note:** Sample configuration files rely on the `REPO_ROOT` environment variable. Set it to the repository root before running commands (e.g., `export REPO_ROOT="$(pwd)"`).
-
-```yaml
-projects:
-  - url: "https://raw.githubusercontent.com/my-org/service/main/project.yaml"
-    id: "service"
-  - url: "file:///path/to/local/project.yaml"
-    id: "local-project"
-```
-
-### Maintainers (`yaml/maintainers.yaml`)
+### Example: Minimal `project.yaml`
 
 ```yaml
-maintainers:
-  - project_id: "service"
-    org: "my-org"              # Optional if canonical_url provided
-    teams:
-      - name: "project-maintainers"
-        members:
-          - alice
-          - bob
-      - name: "other-team"
-        members:
-          - carol
-
-### Project YAML Format
-```
-
-### Project YAML Format
-
-Each project YAML file should follow this structure:
-
-```yaml
-name: "Project Name"
-description: "Project description"
-type: "software" # Optional
-schema_version: "0.1" # Optional
+schema_version: "1.0.0"
+slug: "my-project"
+name: "My Project"
+description: "A brief description of my project"
 maturity_log:
-  - phase: "incubating"
+  - phase: "sandbox"
     date: "2024-01-15T00:00:00Z"
-    issue: "https://github.com/cncf/toc/issues/123"
+    issue: "https://github.com/cncf/toc/issues/XXX"
 repositories:
-  - "https://github.com/project/main-repo"
-social:
-  twitter: "@project"
-artwork: "https://github.com/project/artwork"
-website: "https://project.io"
-mailing_lists:
-  - "project-dev@lists.cncf.io"
-audits:
-  - date: "2023-12-01T00:00:00Z"
-    type: "security"
-    url: "https://github.com/project/audits/security-2023.pdf"
-
-# New optional sections
-security:
-  policy: { path: "SECURITY.md" }
-  threat_model: { path: "docs/THREAT_MODEL.md" }
-
-governance:
-  contributing: { path: "CONTRIBUTING.md" }
-  codeowners: { path: ".github/CODEOWNERS" }
-  governance_doc: { path: "GOVERNANCE.md" }
-
-legal:
-  license: { path: "LICENSE" }
-
-documentation:
-  readme: { path: "README.md" }
-  support: { path: "SUPPORT.md" }
-  architecture: { path: "docs/ARCHITECTURE.md" }
-  api: { path: "docs/API.md" }
+  - "https://github.com/my-org/my-project"
 ```
 
-Each maintainer entry must contain a `project-maintainers` team which cannot be empty. Handles are normalized (trimmed and stripped of leading `@`) before verification.
+### Example: Full `project.yaml`
 
-## Maintainer Verification Stub
+See `example/project.yaml` for a complete filled-in example, or `template/project.yaml` for a blank starter.
 
-When `-verify-maintainers` is enabled, the validator logs stubbed calls to an external identity provider. Provide credentials and endpoint via environment variables:
+## Tools
 
-- `MAINTAINER_API_ENDPOINT`: URL for the external verification service
-- `MAINTAINER_API_TOKEN`: Token or credential (unused in stub but reserved)
-- `MAINTAINER_API_STUB`: Set to `fail` to simulate verification failure during testing
+### Validator
 
-If `MAINTAINER_API_ENDPOINT` is unset, verification is skipped with an informational log message. No network requests are sent while the stub is in place.
-
-## Output Formats
-
-### Text
-
-```
-Project Validation Report
-========================
-
-CHANGED: Service (https://example.com/project.yaml)
-  Previous Hash: abc123
-  Current Hash:  def456
-
-INVALID: Local Project (file:///path/to/project.yaml)
-  - repositories is required and cannot be empty
-
-Summary: 2 projects validated, 1 changed, 1 with errors
-
-Maintainers Validation Report
-============================
-
-INVALID: service
-  - team 'project-maintainers' is required
-
-Summary: 1 maintainer entries validated, 1 with issues
-```
-
-### JSON
-
-```json
-{
-  "projects": [ ... ],
-  "maintainers": [ ... ]
-}
-```
-
-### YAML
-
-```yaml
-projects:
-  - url: "..."
-    valid: true
-maintainers:
-  - project_id: service
-    valid: false
-    errors:
-      - "team 'project-maintainers' is required"
-```
-
-## Makefile Targets
+Validates `project.yaml` and `maintainers.yaml` files.
 
 ```bash
-make help
+# Build
 make build
-make test
-make run
-make run-json
+
+# Validate with defaults
+./bin/validator
+
+# Validate specific files
+./bin/validator -config testdata/projectlist.yaml -maintainers testdata/maintainers.yaml
+
+# Output as JSON
+./bin/validator -output json
+
+# Skip maintainer validation
+./bin/validator -maintainers ""
+
+# Enable LFX handle verification
+./bin/validator -verify-maintainers
+```
+
+#### Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-config` | `testdata/projectlist.yaml` | Path to project list configuration |
+| `-maintainers` | `testdata/maintainers.yaml` | Path to maintainers file (empty to skip) |
+| `-base-maintainers` | | Base maintainers file for diff validation |
+| `-cache` | `.cache` | Cache directory |
+| `-output` | `text` | Output format: `text`, `json`, `yaml` |
+| `-verify-maintainers` | `false` | Verify handles via LFX API |
+
+### Landscape Updater
+
+The `landscape-updater` tool automates the process of updating the CNCF Landscape YAML based on changes in project metadata.
+
+```bash
+# Dry run to see what would change
+./bin/landscape-updater --project ./project.yaml --landscape ./landscape.yml --dry-run
+
+# Apply changes and create a PR
+./bin/landscape-updater --project ./project.yaml --landscape ./landscape.yml --create-pr
+```
+
+#### Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--project` | | Path to the project's `project.yaml` file (required) |
+| `--landscape` | | Path to the `landscape.yml` file (required) |
+| `--landscape-repo` | `cncf/landscape` | Target repository for the PR |
+| `--create-pr` | `false` | Create a Pull Request with the changes |
+| `--dry-run` | `false` | Print diff and PR details without executing |
+
+### Bootstrap
+
+The `bootstrap` tool auto-generates `project.yaml` and `maintainers.yaml` scaffolds by fetching data from CLOMonitor, GitHub, and the CNCF landscape. It discovers maintainer handles from CODEOWNERS, OWNERS, and MAINTAINERS files.
+
+```bash
+# Dry run: preview generated YAML on stdout
+./bin/bootstrap -name "My Project" -github-org my-org -dry-run
+
+# Generate scaffold files in current directory
+./bin/bootstrap -name "My Project" -github-org my-org -github-repo my-repo
+
+# Generate into a specific directory
+./bin/bootstrap -name "Envoy" -github-org envoyproxy -github-repo envoy -output-dir ./envoy/.project
+
+# Skip external API lookups (GitHub-only)
+./bin/bootstrap -github-org my-org -skip-clomonitor
+
+# Use a GitHub token for higher rate limits
+GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
+```
+
+#### Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-name` | | Project display name to search for |
+| `-github-org` | | GitHub organization |
+| `-github-repo` | | Primary repository name (defaults to org name) |
+| `-github-token` | | GitHub token (or set `GITHUB_TOKEN` env) |
+| `-output-dir` | `.` | Directory to write scaffold output |
+| `-skip-landscape` | `false` | Skip CNCF landscape YAML lookup |
+| `-skip-clomonitor` | `false` | Skip CLOMonitor API lookup |
+| `-skip-github` | `false` | Skip GitHub API lookup |
+| `-dry-run` | `false` | Print generated YAML without writing files |
+
+#### Data Sources and Priority
+
+The bootstrap tool fetches data from multiple sources and merges them with this priority order:
+
+1. **CNCF Landscape** (highest priority) - fetches `landscape.yml` from `cncf/landscape` repo for project name, description, website, repo URL, logo, twitter, maturity, category/subcategory
+2. **CLOMonitor** - project metadata, scores, repository list
+3. **GitHub API** (fallback) - repo description, org info, community health profile
+
+Maintainer discovery checks these files (in the repo root, `.github/`, and org `.github` repo):
+- `CODEOWNERS` - extracts `@handle` references
+- `OWNERS` - parses Kubernetes-style YAML (approvers/reviewers)
+- `MAINTAINERS` / `MAINTAINERS.md` - heuristic extraction of handles, tables, GitHub URLs
+
+### Staleness Checker
+
+Checks if maintainer data hasn't been updated within a threshold.
+
+```bash
+./bin/staleness-checker -project project.yaml -threshold 180
+```
+
+### Audit Checker
+
+Verifies all URLs referenced in a project are accessible.
+
+```bash
+./bin/audit-checker -project project.yaml
 ```
 
 ## GitHub Actions
 
-`.github/workflows/project-validator.yml` schedules daily runs, executes tests, builds the CLI, validates projects and maintainers, and uploads reports. Maintainer verification is stubbed and ready for integration with a third-party service via environment variables.
+### Using the Validate Project Action
 
-## Testing
-
-```bash
-make test
+```yaml
+- uses: cncf/automation/.github/actions/validate-project@main
+  with:
+    project_file: 'project.yaml'
 ```
 
-Tests cover project schema validation, URL validation, hash calculation, maintainer normalization, roster reconciliation, and verification stubs.
+### Using the Validate Maintainers Action
+
+```yaml
+- uses: cncf/automation/.github/actions/validate-maintainers@main
+  with:
+    maintainers_file: 'maintainers.yaml'
+    verify_maintainers: 'true'
+  env:
+    LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
+```
+
+### Reusable Workflow
+
+```yaml
+jobs:
+  validate:
+    uses: cncf/automation/.github/workflows/reusable-validate-maintainers.yaml@main
+    with:
+      maintainers-file: 'maintainers.yaml'
+    secrets:
+      LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
+```
+
+### Landscape Update Action
+
+```yaml
+name: Update Landscape
+on:
+  push:
+    paths:
+      - 'project.yaml'
+    branches:
+      - main
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update Landscape
+        uses: cncf/automation/.github/actions/landscape-update@main
+        with:
+          project_file: './project.yaml'
+          token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}
+```
+
+## Maintainer Verification
+
+When `-verify-maintainers` is enabled, handles are verified against the Linux Foundation's LFX platform. Set `LFX_AUTH_TOKEN` for production use.
+
+Environment variables:
+
+| Variable | Description |
+|----------|-------------|
+| `LFX_AUTH_TOKEN` | Bearer token for LFX API |
+| `MAINTAINER_API_ENDPOINT` | Alternative verification endpoint |
+| `MAINTAINER_API_STUB` | Set to `fail` to simulate verification failure |
+| `REPO_ROOT` | Repository root for resolving relative config paths |
+
+## Development
+
+```bash
+make build          # Build all binaries to bin/
+make docker-build   # Build Docker image
+make test           # Run tests
+make test-coverage  # Run tests with coverage report
+make fmt            # Format code
+make lint           # Run linter (requires golangci-lint)
+make security       # Run security checks (requires gosec)
+make clean          # Clean build artifacts
+```
+
+### Docker
+
+```bash
+docker build -t dot-project-validator .
+
+# Run validator
+docker run --rm -v $(pwd)/testdata:/app/testdata dot-project-validator -config /app/testdata/projectlist.yaml
+
+# Run landscape-updater
+docker run --rm --entrypoint landscape-updater dot-project-validator --help
+```
+
+## Implementation Guide for CNCF Projects
+
+### Quick Start for Projects
+
+1. **Create a `project.yaml` file** in your repository root with your project metadata (see Schema section above).
+
+2. **Create a `MAINTAINERS.yaml` file** (optional but recommended):
+
+```yaml
+maintainers:
+  - project_id: "your-project"
+    teams:
+      - name: "project-maintainers"
+        members:
+          - githubuser1
+          - githubuser2
+```
+
+Each maintainer entry must contain a `project-maintainers` team which cannot be empty. Handles are normalized (trimmed and stripped of leading `@`) before verification.
+
+3. **Add GitHub Actions** to automatically validate changes (see GitHub Actions section above).
+
+### Benefits for Projects
+
+- **Automated validation**: Catch metadata errors before they propagate
+- **Landscape sync**: Automatically update CNCF Landscape when your metadata changes
+- **Maintainer verification**: Optional validation of maintainer GitHub handles
+- **Change detection**: SHA256-based caching detects only meaningful changes
+
+### Required Files
+
+| File | Required | Purpose |
+|------|----------|---------|
+| `project.yaml` | Yes | Core project metadata and references |
+| `MAINTAINERS.yaml` | Recommended | Maintainer roster for verification |
+| `SECURITY.md` | Recommended | Security policy (referenced in project.yaml) |
+| `CONTRIBUTING.md` | Recommended | Contribution guidelines |
+| `GOVERNANCE.md` | Recommended | Project governance document |
+
+## Schema Versioning
+
+The `schema_version` field is required and validated. Currently supported: `1.0.0`.
+
+New schema versions will be added as the format evolves. The validator supports multiple versions simultaneously to allow gradual migration.
+
+## Support
+
+For questions or issues with the validation tools:
+- Open an issue in [cncf/automation](https://github.com/cncf/automation)
+- Check existing examples in `utilities/dot-project/example/`
