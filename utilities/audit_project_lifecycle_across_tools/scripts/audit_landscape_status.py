@@ -266,7 +266,7 @@ def normalize_status(value: str) -> str:
         return "sandbox"
     if v in ("archived", "archive", "archieve", "retired"):
         return "archived"
-    if v in ("formation - exploratory", "forming", "form", "exploratory"):
+    if v in ("formation - exploratory", "formation - engaged", "forming", "form", "exploratory"):
         return "forming"
     return v
 
@@ -517,6 +517,13 @@ def collect_pcc_expected_statuses(pcc_data: Dict[str, Any]) -> List[Tuple[str, s
     for item in pcc_data.get("archived_projects") or []:
         name = item.get("name") or ""
         if not name:
+            continue
+        # PCC includes some entries that are not CNCF projects; exclude them from the audit output.
+        raw_status = (item.get("status") or "").strip()
+        if raw_status == "Formation - Disengaged":
+            continue
+        if raw_status == "Formation - Engaged":
+            pairs.append((name, "forming"))
             continue
         pairs.append((name, "archived"))
     # Forming projects
