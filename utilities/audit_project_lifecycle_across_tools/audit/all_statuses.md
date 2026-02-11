@@ -24,6 +24,7 @@
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
 | Cedar | forming | sandbox | - | sandbox | - | - |
+| CNCF Standards & Specifications | forming | - | - | - | - | - |
 | Conveyor CI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
@@ -46,51 +47,31 @@
 | Terrascan | forming | - | - | - | - | - |
 | Velero | forming | - | - | - | - | - |
 | Brigade | archived | archived | - | - | - | archived |
-| Cluster API Provider for CloudStack(CAPC) | archived | - | - | - | - | - |
-| CNCF Standards & Specifications | archived | - | - | - | - | - |
+| CNCF Toolbox | archived | - | - | - | - | - |
 | CNI-Genie | archived | archived | - | - | - | - |
 | Curiefense | archived | archived | - | - | - | archived |
 | Curve | archived | archived | - | - | - | archived |
-| deploy-sh | archived | - | - | - | - | - |
 | Devstream | archived | archived | - | - | - | archived |
-| EGo | archived | - | - | - | - | - |
 | FabEdge | archived | archived | - | - | - | archived |
 | Fonio | archived | archived | - | - | - | archived |
-| IO Flow | archived | - | - | - | - | - |
-| joylive-agent | archived | - | - | - | - | - |
-| Kepimetheus | archived | - | - | - | - | - |
 | Keptn | archived | archived | - | - | - | archived |
-| Ketch | archived | - | - | - | - | - |
-| KLTS | archived | - | - | - | - | - |
 | Krator | archived | archived | - | - | - | archived |
 | Krustlet | archived | archived | - | - | - | archived |
-| KSail | archived | - | - | - | - | - |
 | KubeDL | archived | archived | - | - | - | archived |
-| Lagoon | archived | - | - | - | - | - |
-| MarbleRun | archived | - | - | - | - | - |
-| Matos | archived | - | - | - | - | - |
 | Merbridge | archived | archived | - | - | - | archived |
 | Nocalhost | archived | archived | - | - | - | archived |
 | Open Service Mesh | archived | archived | - | - | - | archived |
 | OpenELB | archived | archived | - | - | - | archived |
 | OpenMetrics | archived | archived | - | - | - | archived |
 | OpenTracing | archived | archived | - | - | - | archived |
-| pallet | archived | - | - | - | - | - |
 | Pravega | archived | archived | - | - | - | archived |
-| rainforest | archived | - | - | - | - | - |
 | RKT | archived | archived | - | - | - | archived |
 | sealer | archived | archived | - | archived | - | archived |
 | Service Mesh Interface | archived | archived | - | - | - | archived |
-| Silver Surfer | archived | - | - | - | - | - |
 | skooner | archived | archived | - | - | - | archived |
 | SuperEdge | archived | archived | - | - | - | archived |
-| Tarian | archived | - | - | - | - | - |
 | Teller | archived | archived | - | - | - | archived |
-| test | archived | - | - | - | - | - |
-| Turnbuckle | archived | - | - | - | - | - |
-| Wasm Mock Server | archived | - | - | - | - | - |
 | Xline | archived | archived | - | - | - | archived |
-| Yoke | archived | - | - | - | - | - |
 
 ## Graduated
 
@@ -330,6 +311,7 @@
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
 | Cedar | forming | sandbox | - | sandbox | - | - |
+| CNCF Standards & Specifications | forming | - | - | - | - | - |
 | Conveyor CI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
@@ -357,49 +339,29 @@
 | Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
 |---|---|---|---|---|---|---|
 | Brigade | archived | archived | - | - | - | archived |
-| Cluster API Provider for CloudStack(CAPC) | archived | - | - | - | - | - |
-| CNCF Standards & Specifications | archived | - | - | - | - | - |
+| CNCF Toolbox | archived | - | - | - | - | - |
 | CNI-Genie | archived | archived | - | - | - | - |
 | Curiefense | archived | archived | - | - | - | archived |
 | Curve | archived | archived | - | - | - | archived |
-| deploy-sh | archived | - | - | - | - | - |
 | Devstream | archived | archived | - | - | - | archived |
-| EGo | archived | - | - | - | - | - |
 | FabEdge | archived | archived | - | - | - | archived |
 | Fonio | archived | archived | - | - | - | archived |
-| IO Flow | archived | - | - | - | - | - |
-| joylive-agent | archived | - | - | - | - | - |
-| Kepimetheus | archived | - | - | - | - | - |
 | Keptn | archived | archived | - | - | - | archived |
-| Ketch | archived | - | - | - | - | - |
-| KLTS | archived | - | - | - | - | - |
 | Krator | archived | archived | - | - | - | archived |
 | Krustlet | archived | archived | - | - | - | archived |
-| KSail | archived | - | - | - | - | - |
 | KubeDL | archived | archived | - | - | - | archived |
-| Lagoon | archived | - | - | - | - | - |
-| MarbleRun | archived | - | - | - | - | - |
-| Matos | archived | - | - | - | - | - |
 | Merbridge | archived | archived | - | - | - | archived |
 | Nocalhost | archived | archived | - | - | - | archived |
 | Open Service Mesh | archived | archived | - | - | - | archived |
 | OpenELB | archived | archived | - | - | - | archived |
 | OpenMetrics | archived | archived | - | - | - | archived |
 | OpenTracing | archived | archived | - | - | - | archived |
-| pallet | archived | - | - | - | - | - |
 | Pravega | archived | archived | - | - | - | archived |
-| rainforest | archived | - | - | - | - | - |
 | RKT | archived | archived | - | - | - | archived |
 | sealer | archived | archived | - | archived | - | archived |
 | Service Mesh Interface | archived | archived | - | - | - | archived |
-| Silver Surfer | archived | - | - | - | - | - |
 | skooner | archived | archived | - | - | - | archived |
 | SuperEdge | archived | archived | - | - | - | archived |
-| Tarian | archived | - | - | - | - | - |
 | Teller | archived | archived | - | - | - | archived |
-| test | archived | - | - | - | - | - |
-| Turnbuckle | archived | - | - | - | - | - |
-| Wasm Mock Server | archived | - | - | - | - | - |
 | Xline | archived | archived | - | - | - | archived |
-| Yoke | archived | - | - | - | - | - |
 
