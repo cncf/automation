@@ -7,11 +7,11 @@ on:
   push:
     paths:
       - 'utilities/dot-project/**'
-      - 'utilities/dot-project/yaml/**'
+      - 'utilities/dot-project/example/**'
   pull_request:
     paths:
       - 'utilities/dot-project/**'
-      - 'utilities/dot-project/yaml/**'
+      - 'utilities/dot-project/example/**'
   workflow_dispatch:
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.21'
+        go-version: '1.24'
 
     - name: Cache dependencies
       uses: actions/cache@v4
@@ -49,9 +49,15 @@ jobs:
       working-directory: utilities/dot-project/
       run: go mod download
 
+    - name: Vet
+      working-directory: utilities/dot-project/
+      run: go vet ./...
+
     - name: Run tests
       working-directory: utilities/dot-project/
-      run: go test -v
+      run: |
+        go test -v -coverprofile=coverage.out
+        go tool cover -func=coverage.out
 
     - name: Build validator
       working-directory: utilities/dot-project/
@@ -61,7 +67,7 @@ jobs:
       working-directory: utilities/dot-project/
       run: |
         # Re-run validator to get exit code
-        ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --verify-maintainers
+        ./validator --config example/projectlist.yaml --maintainers example/maintainers.yaml --verify-maintainers
       env:
         REPO_ROOT: ${{ github.workspace }}
         MAINTAINER_API_ENDPOINT: https://api-gw.platform.linuxfoundation.org/

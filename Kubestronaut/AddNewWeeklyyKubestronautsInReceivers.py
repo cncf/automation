@@ -152,8 +152,16 @@ for idx, raw_email_cell in enumerate(emails_to_check):
 print("\nCompleted processing emails!")
 print("Go to https://docs.google.com/spreadsheets/d/" + KUBESTRONAUTS_WELCOME)
 
-cmd = "echo 'Welcome to the Kubestronaut Program – Next Steps, Jacket Info & More!' | pbcopy"
-os.system(cmd)
+import sys
+import subprocess
+
+msg = "Welcome to the Kubestronaut Program – Next Steps, Jacket Info & More!"
+if sys.platform == "win32":
+    subprocess.run("clip", input=msg.encode('utf-16'), check=True) # Windows use utf-16 for clip
+elif sys.platform == "darwin":
+    subprocess.run("pbcopy", input=msg.encode('utf-8'), check=True)
+else:
+    print(f"Clipboard copy not supported automatically on {sys.platform}. Please copy the text manually.")
 
 print('And use the mail merger with the draft name "Welcome to the Kubestronaut Program – Next Steps, Jacket Info & More!"')
 

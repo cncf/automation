@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cncf/automation/utilities/dot-project/schema/v1.0.0/project.json",
+  "title": "CNCF Project Metadata",
+  "description": "Schema for CNCF .project repository project.yaml files",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "slug",
+    "name",
+    "description",
+    "maturity_log",
+    "repositories"
+  ],
+  "properties": {
+    "adopters": {
+      "$ref": "#/$defs/PathRef",
+      "description": "Link to ADOPTERS.md or adopters list"
+    },
+    "artwork": {
+      "type": "string",
+      "description": "Artwork/logo URL",
+      "format": "uri"
+    },
+    "audits": {
+      "type": "array",
+      "description": "Security/performance audits",
+      "items": {
+        "$ref": "#/$defs/Audit"
+      }
+    },
+    "cncf_slack_channel": {
+      "type": "string",
+      "description": "CNCF Slack channel",
+      "pattern": "^#"
+    },
+    "description": {
+      "type": "string",
+      "description": "One-line project description"
+    },
+    "documentation": {
+      "description": "Documentation configuration",
+      "$ref": "#/$defs/DocumentationConfig"
+    },
+    "governance": {
+      "description": "Governance configuration",
+      "$ref": "#/$defs/GovernanceConfig"
+    },
+    "landscape": {
+      "description": "CNCF Landscape location",
+      "$ref": "#/$defs/LandscapeConfig"
+    },
+    "legal": {
+      "description": "Legal configuration",
+      "$ref": "#/$defs/LegalConfig"
+    },
+    "mailing_lists": {
+      "type": "array",
+      "description": "Mailing list addresses",
+      "items": {
+        "type": "string"
+      }
+    },
+    "package_managers": {
+      "type": "object",
+      "description": "Registry identifiers (e.g., npm package name, Docker Hub image)",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "maturity_log": {
+      "type": "array",
+      "description": "Maturity phase transition history (chronological order)",
+      "items": {
+        "$ref": "#/$defs/MaturityEntry"
+      }
+    },
+    "name": {
+      "type": "string",
+      "description": "Project display name"
+    },
+    "project_lead": {
+      "type": "string",
+      "description": "GitHub handle of primary contact"
+    },
+    "repositories": {
+      "type": "array",
+      "description": "Repository URLs",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version",
+      "enum": [
+        "1.0.0"
+      ]
+    },
+    "security": {
+      "description": "Security configuration",
+      "$ref": "#/$defs/SecurityConfig"
+    },
+    "slug": {
+      "type": "string",
+      "description": "Unique project identifier",
+      "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$"
+    },
+    "social": {
+      "type": "object",
+      "description": "Social platform URLs",
+      "additionalProperties": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "type": {
+      "type": "string",
+      "description": "Project type (e.g., project, platform, specification)"
+    },
+    "website": {
+      "type": "string",
+      "description": "Project website URL",
+      "format": "uri"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "Audit": {
+      "type": "object",
+      "required": [
+        "date",
+        "type",
+        "url"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "type": {
+          "type": "string",
+          "description": "Audit type (e.g., security, performance)"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "DocumentationConfig": {
+      "type": "object",
+      "properties": {
+        "api": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "architecture": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "readme": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "support": {
+          "$ref": "#/$defs/PathRef"
+        }
+      }
+    },
+    "GovernanceConfig": {
+      "type": "object",
+      "properties": {
+        "codeowners": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "contributing": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "gitvote_config": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "governance_doc": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "vendor_neutrality_statement": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Vendor neutrality statement"
+        },
+        "decision_making_process": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Decision-making process documentation"
+        },
+        "roles_and_teams": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Roles and teams documentation"
+        },
+        "code_of_conduct": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Code of conduct"
+        },
+        "sub_project_list": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Subproject listing"
+        },
+        "sub_project_docs": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Subproject documentation"
+        },
+        "contributor_ladder": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Contributor ladder documentation"
+        },
+        "change_process": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Change process documentation"
+        },
+        "comms_channels": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Communication channels listing"
+        },
+        "community_calendar": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Community calendar"
+        },
+        "contributor_guide": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Contributor guide"
+        },
+        "maintainer_lifecycle": {
+          "$ref": "#/$defs/MaintainerLifecycle",
+          "description": "Maintainer lifecycle documentation"
+        }
+      }
+    },
+    "IdentityType": {
+      "type": "object",
+      "description": "Contributor identity agreement type and optional link",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Identity agreement type",
+          "enum": ["dco", "cla", "none"]
+        },
+        "url": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Link to DCO/CLA document"
+        }
+      }
+    },
+    "LandscapeConfig": {
+      "type": "object",
+      "required": [
+        "category",
+        "subcategory"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "description": "CNCF Landscape category"
+        },
+        "subcategory": {
+          "type": "string",
+          "description": "CNCF Landscape subcategory"
+        }
+      }
+    },
+    "LegalConfig": {
+      "type": "object",
+      "properties": {
+        "identity_type": {
+          "$ref": "#/$defs/IdentityType",
+          "description": "Contributor identity agreement (DCO, CLA, or none)"
+        },
+        "license": {
+          "$ref": "#/$defs/PathRef"
+        }
+      }
+    },
+    "MaturityEntry": {
+      "type": "object",
+      "required": [
+        "phase",
+        "date",
+        "issue"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "issue": {
+          "type": "string",
+          "description": "TOC issue URL"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "sandbox",
+            "incubating",
+            "graduated",
+            "archived"
+          ]
+        }
+      }
+    },
+    "PathRef": {
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path or URL"
+        }
+      }
+    },
+    "SecurityConfig": {
+      "type": "object",
+      "properties": {
+        "contact": {
+          "type": "string",
+          "description": "Security contact email",
+          "format": "email"
+        },
+        "policy": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "threat_model": {
+          "$ref": "#/$defs/PathRef"
+        }
+      }
+    },
+    "MaintainerLifecycle": {
+      "type": "object",
+      "description": "Maintainer lifecycle documentation",
+      "properties": {
+        "onboarding_doc": {
+          "$ref": "#/$defs/PathRef",
+          "description": "URL to maintainer onboarding documentation"
+        },
+        "progression_ladder": {
+          "$ref": "#/$defs/PathRef",
+          "description": "URL to maintainer advancement path documentation (committer → maintainer → lead)"
+        },
+        "mentoring_program": {
+          "type": "array",
+          "description": "URLs to mentoring and onboarding support program documentation",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "offboarding_policy": {
+          "$ref": "#/$defs/PathRef",
+          "description": "URL to emeritus/offboarding policy documentation"
+        }
+      }
+    }
+  }
+}
