@@ -625,7 +625,7 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	result.TODOs = append(result.TODOs, "Add maturity_log entry with TOC issue URL")
 	result.TODOs = append(result.TODOs, "Set project_lead GitHub handle")
 	result.TODOs = append(result.TODOs, "Set cncf_slack_channel")
-	result.TODOs = append(result.TODOs, "Set identity_type under legal (dco, cla, or none)")
+	result.TODOs = append(result.TODOs, "Set identity_type under legal (has_dco, has_cla)")
 	if !result.HasAdopters {
 		result.TODOs = append(result.TODOs, "Add adopters list (ADOPTERS.md)")
 	}

@@ -233,17 +233,23 @@
     },
     "IdentityType": {
       "type": "object",
-      "description": "Contributor identity agreement type and optional link",
-      "required": ["type"],
+      "description": "Contributor identity agreements. DCO can be used alone or with CLA. CLA requires DCO.",
       "properties": {
-        "type": {
-          "type": "string",
-          "description": "Identity agreement type",
-          "enum": ["dco", "cla", "none"]
+        "has_dco": {
+          "type": "boolean",
+          "description": "Whether the project uses DCO"
         },
-        "url": {
+        "has_cla": {
+          "type": "boolean",
+          "description": "Whether the project uses CLA (requires DCO)"
+        },
+        "dco_url": {
           "$ref": "#/$defs/PathRef",
-          "description": "Link to DCO/CLA document"
+          "description": "Link to DCO document"
+        },
+        "cla_url": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Link to CLA document"
         }
       }
     },

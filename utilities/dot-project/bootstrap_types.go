@@ -52,7 +52,7 @@ type BootstrapResult struct {
 	HasSecurityPolicy  bool   `json:"has_security_policy,omitempty" yaml:"has_security_policy,omitempty"`
 	SecurityContactURL string `json:"security_contact_url,omitempty" yaml:"security_contact_url,omitempty"`
 	HasAdopters        bool   `json:"has_adopters,omitempty" yaml:"has_adopters,omitempty"`
-	IdentityTypeHint   string `json:"identity_type_hint,omitempty" yaml:"identity_type_hint,omitempty"` // "dco", "cla", or ""
+	IdentityTypeHint   string `json:"identity_type_hint,omitempty" yaml:"identity_type_hint,omitempty"` // "dco", "dco+cla", or ""
 
 	// Source tracking: which fields came from which source
 	Sources map[string]string `json:"sources,omitempty" yaml:"sources,omitempty"`

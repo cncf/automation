@@ -424,13 +424,14 @@ func validateProjectStruct(project Project) []string {
 			errors = append(errors, "legal.license.path is required")
 		}
 		if project.Legal.IdentityType != nil {
-			if project.Legal.IdentityType.Type == "" {
-				errors = append(errors, "legal.identity_type.type is required")
-			} else if !ValidIdentityTypes[project.Legal.IdentityType.Type] {
-				errors = append(errors, fmt.Sprintf("legal.identity_type.type has invalid value %q (allowed: dco, cla, none)", project.Legal.IdentityType.Type))
+			if project.Legal.IdentityType.HasCLA && !project.Legal.IdentityType.HasDCO {
+				errors = append(errors, "legal.identity_type: has_cla requires has_dco (CLA cannot be used without DCO)")
 			}
-			if project.Legal.IdentityType.URL != nil && project.Legal.IdentityType.URL.Path == "" {
-				errors = append(errors, "legal.identity_type.url.path is required")
+			if project.Legal.IdentityType.DCOURL != nil && project.Legal.IdentityType.DCOURL.Path == "" {
+				errors = append(errors, "legal.identity_type.dco_url.path is required")
+			}
+			if project.Legal.IdentityType.CLAURL != nil && project.Legal.IdentityType.CLAURL.Path == "" {
+				errors = append(errors, "legal.identity_type.cla_url.path is required")
 			}
 		}
 	}
