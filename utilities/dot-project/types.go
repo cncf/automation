@@ -52,10 +52,22 @@ type SecurityConfig struct {
 }
 
 type GovernanceConfig struct {
-	Contributing  *PathRef `json:"contributing,omitempty" yaml:"contributing,omitempty"`
-	Codeowners    *PathRef `json:"codeowners,omitempty" yaml:"codeowners,omitempty"`
-	GovernanceDoc *PathRef `json:"governance_doc,omitempty" yaml:"governance_doc,omitempty"`
-	GitVoteConfig *PathRef `json:"gitvote_config,omitempty" yaml:"gitvote_config,omitempty"`
+	Contributing  				*PathRef `json:"contributing,omitempty" yaml:"contributing,omitempty"`
+	Codeowners    				*PathRef `json:"codeowners,omitempty" yaml:"codeowners,omitempty"`
+	GovernanceDoc 				*PathRef `json:"governance_doc,omitempty" yaml:"governance_doc,omitempty"`
+	GitVoteConfig 				*PathRef `json:"gitvote_config,omitempty" yaml:"gitvote_config,omitempty"`
+    // Governance DD items - link to relevant documentation for each item.
+	VendorNeutralityStatement	*PathRef `json:"vendor_neutrality_statement,omitempty" yaml:"vendor_neutrality_statement,omitempty"` // Accuracy and Clarity - Incubating: Suggested | Graduated: Required
+	DecisionMakingProcess 		*PathRef `json:"decision_making_process,omitempty" yaml:"decision_making_process,omitempty"` // Decisions and Role Assignments - Incubating: Suggested | Graduated: Required
+	RolesAndTeams 				*PathRef `json:"roles_and_teams,omitempty" yaml:"roles_and_teams,omitempty"` // Decisions and Role Assignments - Incubating: Suggested | Graduated: Required
+	CodeOfConduct 				*PathRef `json:"code_of_conduct,omitempty" yaml:"code_of_conduct,omitempty"` // Code of Conduct - Incubating: Required | Graduated: Required
+	SubProjectList				*PathRef `json:"sub_project_list,omitempty" yaml:"sub_project_list,omitempty"` // (If used) Subprojects - Incubating: Required | Graduated: Required
+	SubProjectDocs				*PathRef `json:"sub_project_docs,omitempty" yaml:"sub_project_docs,omitempty"` // (If used) Subprojects - Incubating: Suggested | Graduated: Required
+	ContributorLadder 			*PathRef `json:"contributor_ladder,omitempty" yaml:"contributor_ladder,omitempty"` // Contributors and Community - Incubating: Suggested | Graduated: Suggested
+	ChangeProcess 				*PathRef `json:"change_process,omitempty" yaml:"change_process,omitempty"` // Contributors and Community - Incubating: Required | Graduated: Required
+	CommsChannels 				*PathRef `json:"comms_channels,omitempty" yaml:"comms_channels,omitempty"` // Contributors and Community - Incubating: Required | Graduated: Required
+	CommunityCalendar 			*PathRef `json:"community_calendar,omitempty" yaml:"community_calendar,omitempty"` // Contributors and Community - Incubating: Required | Graduated: Required
+	ContributorGuide 			*PathRef `json:"contributor_guide,omitempty" yaml:"contributor_guide,omitempty"` // Contributors and Community - Incubating: Required | Graduated: Required
 }
 
 type LegalConfig struct {
