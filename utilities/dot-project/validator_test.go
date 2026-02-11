@@ -597,3 +597,112 @@ func TestMaturityPhaseValues(t *testing.T) {
 		})
 	}
 }
+
+func TestAdoptersValidation(t *testing.T) {
+	t.Run("empty path", func(t *testing.T) {
+		project := validBaseProject()
+		project.Adopters = &PathRef{Path: ""}
+		errs := validateProjectStruct(project)
+		found := false
+		for _, e := range errs {
+			if e == "adopters.path is required" {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("expected 'adopters.path is required' error, got: %v", errs)
+		}
+	})
+
+	t.Run("valid path", func(t *testing.T) {
+		project := validBaseProject()
+		project.Adopters = &PathRef{Path: "ADOPTERS.md"}
+		errs := validateProjectStruct(project)
+		for _, e := range errs {
+			if strings.Contains(e, "adopters") {
+				t.Errorf("unexpected adopters error: %s", e)
+			}
+		}
+	})
+
+	t.Run("nil adopters", func(t *testing.T) {
+		project := validBaseProject()
+		errs := validateProjectStruct(project)
+		for _, e := range errs {
+			if strings.Contains(e, "adopters") {
+				t.Errorf("unexpected adopters error: %s", e)
+			}
+		}
+	})
+}
+
+func TestIdentityTypeValidation(t *testing.T) {
+	tests := []struct {
+		name          string
+		identityType  *IdentityType
+		expectError   bool
+		errorContains string
+	}{
+		{"valid dco", &IdentityType{Type: "dco"}, false, ""},
+		{"valid cla", &IdentityType{Type: "cla"}, false, ""},
+		{"valid none", &IdentityType{Type: "none"}, false, ""},
+		{"invalid value", &IdentityType{Type: "other"}, true, "invalid value"},
+		{"empty type", &IdentityType{Type: ""}, true, "legal.identity_type.type is required"},
+		{"valid dco with url", &IdentityType{Type: "dco", URL: &PathRef{Path: "https://developercertificate.org/"}}, false, ""},
+		{"empty url path", &IdentityType{Type: "dco", URL: &PathRef{Path: ""}}, true, "legal.identity_type.url.path is required"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			project := validBaseProject()
+			project.Legal = &LegalConfig{
+				IdentityType: tt.identityType,
+			}
+			errs := validateProjectStruct(project)
+			if tt.expectError {
+				found := false
+				for _, e := range errs {
+					if strings.Contains(e, tt.errorContains) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected error containing %q, got: %v", tt.errorContains, errs)
+				}
+			} else {
+				for _, e := range errs {
+					if strings.Contains(e, "identity_type") {
+						t.Errorf("unexpected identity_type error: %s", e)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestPackageManagersValidation(t *testing.T) {
+	t.Run("valid entries", func(t *testing.T) {
+		project := validBaseProject()
+		project.PackageManagers = map[string]string{
+			"docker": "kubernetes/kubectl",
+			"npm":    "@kubernetes/client-node",
+		}
+		errs := validateProjectStruct(project)
+		for _, e := range errs {
+			if strings.Contains(e, "package_managers") {
+				t.Errorf("unexpected package_managers error: %s", e)
+			}
+		}
+	})
+
+	t.Run("nil package_managers", func(t *testing.T) {
+		project := validBaseProject()
+		errs := validateProjectStruct(project)
+		for _, e := range errs {
+			if strings.Contains(e, "package_managers") {
+				t.Errorf("unexpected package_managers error: %s", e)
+			}
+		}
+	})
+}

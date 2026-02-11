@@ -32,6 +32,14 @@ repositories:
 website: "https://kubernetes.io"
 artwork: "https://github.com/cncf/artwork/tree/master/projects/kubernetes"
 
+adopters:
+  path: "https://github.com/kubernetes/community/blob/master/ADOPTERS.md"
+
+package_managers:
+  docker: "registry.k8s.io/kube-apiserver"
+  homebrew: "kubernetes-cli"
+  chocolatey: "kubernetes-cli"
+
 social:
   twitter: "https://twitter.com/kubernetesio"
   slack: "https://kubernetes.slack.com"
@@ -70,10 +78,45 @@ governance:
     path: "https://github.com/kubernetes/kubernetes/blob/master/CODEOWNERS"
   governance_doc:
     path: "https://github.com/kubernetes/community/blob/master/governance.md"
+  vendor_neutrality_statement:
+    path: "https://github.com/kubernetes/community/blob/master/governance.md#vendor-neutrality"
+  decision_making_process:
+    path: "https://github.com/kubernetes/community/blob/master/governance.md#decision-making"
+  roles_and_teams:
+    path: "https://github.com/kubernetes/community/blob/master/community-membership.md"
+  code_of_conduct:
+    path: "https://github.com/kubernetes/community/blob/master/code-of-conduct.md"
+  sub_project_list:
+    path: "https://github.com/kubernetes/community/blob/master/sig-list.md"
+  sub_project_docs:
+    path: "https://github.com/kubernetes/community/blob/master/governance.md#subprojects"
+  contributor_ladder:
+    path: "https://github.com/kubernetes/community/blob/master/community-membership.md"
+  change_process:
+    path: "https://github.com/kubernetes/community/blob/master/contributors/guide/pull-requests.md"
+  comms_channels:
+    path: "https://github.com/kubernetes/community/blob/master/communication/README.md"
+  community_calendar:
+    path: "https://github.com/kubernetes/community/blob/master/events/community-meeting.md"
+  contributor_guide:
+    path: "https://github.com/kubernetes/community/blob/master/contributors/guide/README.md"
+  maintainer_lifecycle:
+    onboarding_doc:
+      path: "https://github.com/kubernetes/community/blob/master/community-membership.md"
+    progression_ladder:
+      path: "https://github.com/kubernetes/community/blob/master/community-membership.md#member"
+    mentoring_program:
+      - "https://github.com/kubernetes/community/blob/master/mentoring/README.md"
+    offboarding_policy:
+      path: "https://github.com/kubernetes/community/blob/master/community-membership.md#emeritus"
 
 legal:
   license:
     path: "https://github.com/kubernetes/kubernetes/blob/master/LICENSE"
+  identity_type:
+    type: "dco"
+    url:
+      path: "https://developercertificate.org/"
 
 documentation:
   readme:
