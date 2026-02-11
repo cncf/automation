@@ -11,10 +11,14 @@ type Project struct {
 	MaturityLog  []MaturityEntry   `json:"maturity_log" yaml:"maturity_log"`
 	Repositories []string          `json:"repositories" yaml:"repositories"`
 	Social       map[string]string `json:"social" yaml:"social"`
-	Artwork      string            `json:"artwork" yaml:"artwork"`             // Artwork URL
-	Website      string            `json:"website" yaml:"website"`             // Project website URL
-	MailingLists []string          `json:"mailing_lists" yaml:"mailing_lists"` // Mailing lists for project
-	Audits       []Audit           `json:"audits" yaml:"audits"`               // Security audits for project
+	Artwork      string            `json:"artwork" yaml:"artwork"`                       // Artwork URL
+	Website      string            `json:"website" yaml:"website"`                       // Project website URL
+	MailingLists []string          `json:"mailing_lists" yaml:"mailing_lists"`           // Mailing lists for project
+	Audits       []Audit           `json:"audits" yaml:"audits"`                         // Security audits for project
+	Adopters     *PathRef          `json:"adopters,omitempty" yaml:"adopters,omitempty"` // Link to ADOPTERS.md or similar
+
+	// Distribution
+	PackageManagers map[string]string `json:"package_managers,omitempty" yaml:"package_managers,omitempty"` // Registry identifiers (e.g., npm, pypi, docker)
 
 	// Schema and identification
 	SchemaVersion string `json:"schema_version" yaml:"schema_version"`
@@ -52,26 +56,41 @@ type SecurityConfig struct {
 }
 
 type GovernanceConfig struct {
-	Contributing  				*PathRef `json:"contributing,omitempty" yaml:"contributing,omitempty"`
-	Codeowners    				*PathRef `json:"codeowners,omitempty" yaml:"codeowners,omitempty"`
-	GovernanceDoc 				*PathRef `json:"governance_doc,omitempty" yaml:"governance_doc,omitempty"`
-	GitVoteConfig 				*PathRef `json:"gitvote_config,omitempty" yaml:"gitvote_config,omitempty"`
-    // Governance DD items - link to relevant documentation for each item.
-	VendorNeutralityStatement	*PathRef `json:"vendor_neutrality_statement,omitempty" yaml:"vendor_neutrality_statement,omitempty"` // Accuracy and Clarity - Incubating: Suggested | Graduated: Required
-	DecisionMakingProcess 		*PathRef `json:"decision_making_process,omitempty" yaml:"decision_making_process,omitempty"` // Decisions and Role Assignments - Incubating: Suggested | Graduated: Required
-	RolesAndTeams 				*PathRef `json:"roles_and_teams,omitempty" yaml:"roles_and_teams,omitempty"` // Decisions and Role Assignments - Incubating: Suggested | Graduated: Required
-	CodeOfConduct 				*PathRef `json:"code_of_conduct,omitempty" yaml:"code_of_conduct,omitempty"` // Code of Conduct - Incubating: Required | Graduated: Required
-	SubProjectList				*PathRef `json:"sub_project_list,omitempty" yaml:"sub_project_list,omitempty"` // (If used) Subprojects - Incubating: Required | Graduated: Required
-	SubProjectDocs				*PathRef `json:"sub_project_docs,omitempty" yaml:"sub_project_docs,omitempty"` // (If used) Subprojects - Incubating: Suggested | Graduated: Required
-	ContributorLadder 			*PathRef `json:"contributor_ladder,omitempty" yaml:"contributor_ladder,omitempty"` // Contributors and Community - Incubating: Suggested | Graduated: Suggested
-	ChangeProcess 				*PathRef `json:"change_process,omitempty" yaml:"change_process,omitempty"` // Contributors and Community - Incubating: Required | Graduated: Required
-	CommsChannels 				*PathRef `json:"comms_channels,omitempty" yaml:"comms_channels,omitempty"` // Contributors and Community - Incubating: Required | Graduated: Required
-	CommunityCalendar 			*PathRef `json:"community_calendar,omitempty" yaml:"community_calendar,omitempty"` // Contributors and Community - Incubating: Required | Graduated: Required
-	ContributorGuide 			*PathRef `json:"contributor_guide,omitempty" yaml:"contributor_guide,omitempty"` // Contributors and Community - Incubating: Required | Graduated: Required
+	Contributing  *PathRef `json:"contributing,omitempty" yaml:"contributing,omitempty"`
+	Codeowners    *PathRef `json:"codeowners,omitempty" yaml:"codeowners,omitempty"`
+	GovernanceDoc *PathRef `json:"governance_doc,omitempty" yaml:"governance_doc,omitempty"`
+	GitVoteConfig *PathRef `json:"gitvote_config,omitempty" yaml:"gitvote_config,omitempty"`
+	// Governance DD items - link to relevant documentation for each item.
+	VendorNeutralityStatement *PathRef            `json:"vendor_neutrality_statement,omitempty" yaml:"vendor_neutrality_statement,omitempty"` // Accuracy and Clarity - Incubating: Suggested | Graduated: Required
+	DecisionMakingProcess     *PathRef            `json:"decision_making_process,omitempty" yaml:"decision_making_process,omitempty"`         // Decisions and Role Assignments - Incubating: Suggested | Graduated: Required
+	RolesAndTeams             *PathRef            `json:"roles_and_teams,omitempty" yaml:"roles_and_teams,omitempty"`                         // Decisions and Role Assignments - Incubating: Suggested | Graduated: Required
+	CodeOfConduct             *PathRef            `json:"code_of_conduct,omitempty" yaml:"code_of_conduct,omitempty"`                         // Code of Conduct - Incubating: Required | Graduated: Required
+	SubProjectList            *PathRef            `json:"sub_project_list,omitempty" yaml:"sub_project_list,omitempty"`                       // (If used) Subprojects - Incubating: Required | Graduated: Required
+	SubProjectDocs            *PathRef            `json:"sub_project_docs,omitempty" yaml:"sub_project_docs,omitempty"`                       // (If used) Subprojects - Incubating: Suggested | Graduated: Required
+	ContributorLadder         *PathRef            `json:"contributor_ladder,omitempty" yaml:"contributor_ladder,omitempty"`                   // Contributors and Community - Incubating: Suggested | Graduated: Suggested
+	ChangeProcess             *PathRef            `json:"change_process,omitempty" yaml:"change_process,omitempty"`                           // Contributors and Community - Incubating: Required | Graduated: Required
+	CommsChannels             *PathRef            `json:"comms_channels,omitempty" yaml:"comms_channels,omitempty"`                           // Contributors and Community - Incubating: Required | Graduated: Required
+	CommunityCalendar         *PathRef            `json:"community_calendar,omitempty" yaml:"community_calendar,omitempty"`                   // Contributors and Community - Incubating: Required | Graduated: Required
+	ContributorGuide          *PathRef            `json:"contributor_guide,omitempty" yaml:"contributor_guide,omitempty"`                     // Contributors and Community - Incubating: Required | Graduated: Required
+	MaintainerLifecycle       MaintainerLifecycle `json:"maintainer_lifecycle,omitempty" yaml:"maintainer_lifecycle,omitempty"`
 }
 
 type LegalConfig struct {
-	License *PathRef `json:"license,omitempty" yaml:"license,omitempty"`
+	License      *PathRef      `json:"license,omitempty" yaml:"license,omitempty"`
+	IdentityType *IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
+}
+
+// IdentityType represents a project's contributor identity agreement (DCO, CLA, or none)
+type IdentityType struct {
+	Type string   `json:"type" yaml:"type"`                   // Required: "dco", "cla", or "none"
+	URL  *PathRef `json:"url,omitempty" yaml:"url,omitempty"` // Optional link to the DCO/CLA document
+}
+
+// ValidIdentityTypes lists the allowed identity type values
+var ValidIdentityTypes = map[string]bool{
+	"dco":  true,
+	"cla":  true,
+	"none": true,
 }
 
 type DocumentationConfig struct {
@@ -109,6 +128,14 @@ type MaintainerEntry struct {
 type Team struct {
 	Name    string   `json:"name" yaml:"name"`
 	Members []string `json:"members" yaml:"members"`
+}
+
+// MaintainerLifecycle represents maintainer lifecycle documentation
+type MaintainerLifecycle struct {
+	OnboardingDoc     *PathRef `json:"onboarding_doc,omitempty" yaml:"onboarding_doc,omitempty"`
+	ProgressionLadder *PathRef `json:"progression_ladder,omitempty" yaml:"progression_ladder,omitempty"`
+	MentoringProgram  []string `json:"mentoring_program,omitempty" yaml:"mentoring_program,omitempty"` // Array of URLs
+	OffboardingPolicy *PathRef `json:"offboarding_policy,omitempty" yaml:"offboarding_policy,omitempty"`
 }
 
 // MaintainerValidationResult captures validation results for maintainers

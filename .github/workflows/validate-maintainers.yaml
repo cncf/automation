@@ -3,7 +3,7 @@ name: Validate Maintainers
 on:
   pull_request:
     paths:
-      - 'utilities/dot-project/yaml/maintainers.yaml'
+      - 'utilities/dot-project/example/maintainers.yaml'
   workflow_dispatch:
 
 jobs:
@@ -28,15 +28,15 @@ jobs:
       - name: Get Base Maintainers File
         if: github.event_name == 'pull_request'
         run: |
-          git show origin/${{ github.base_ref }}:utilities/dot-project/yaml/maintainers.yaml > utilities/dot-project/yaml/maintainers-base.yaml || echo "No base file found"
+          git show origin/${{ github.base_ref }}:utilities/dot-project/example/maintainers.yaml > utilities/dot-project/example/maintainers-base.yaml || echo "No base file found"
 
       - name: Validate Maintainers
         env:
           LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
         run: |
           cd utilities/dot-project
-          if [ -f yaml/maintainers-base.yaml ]; then
-            ./validator -config yaml/projectlist.yaml -maintainers yaml/maintainers.yaml -base-maintainers yaml/maintainers-base.yaml -verify-maintainers
+          if [ -f example/maintainers-base.yaml ]; then
+            ./validator -config example/projectlist.yaml -maintainers example/maintainers.yaml -base-maintainers example/maintainers-base.yaml -verify-maintainers
           else
-            ./validator -config yaml/projectlist.yaml -maintainers yaml/maintainers.yaml -verify-maintainers
+            ./validator -config example/projectlist.yaml -maintainers example/maintainers.yaml -verify-maintainers
           fi
