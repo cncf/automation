@@ -47,6 +47,12 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # DCO requires a "Signed-off-by" line on every commit. This enables `git commit --signoff`
+          # inside the action so PRs created by automation pass the DCO check.
+          signoff: true
+          # Ensure the commit author matches the sign-off identity to satisfy strict DCO checkers.
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
           commit-message: "Update CNCF project status audit outputs"
           title: "Update CNCF project status audit outputs"
           body: |
