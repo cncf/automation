@@ -118,6 +118,13 @@ spec:
     - path:
         type: PathPrefix
         value: /
+  - backendRefs:
+    - name: kdp-ai-agent
+      port: 80
+    matches:
+    - path:
+        type: PathPrefix
+        value: /ai-agent(/|$)(.*)
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute

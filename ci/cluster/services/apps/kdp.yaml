@@ -13,11 +13,13 @@ spec:
   source:
     repoURL: quay.io/kubermatic/helm-charts
     chart: developer-platform
-    targetRevision: 0.9.0
+    targetRevision: 0.9.0-g481b20d76b1fb76ba7123df2d2f27cbbcee72964
     helm:
       releaseName: kdp
       values: |
         kdp:
+          image:
+            tag: "481b20d76b1fb76ba7123df2d2f27cbbcee72964"
           frontProxy:
             internalDomain: api.services.cncf.io
             url: https://api.services.cncf.io:8443
