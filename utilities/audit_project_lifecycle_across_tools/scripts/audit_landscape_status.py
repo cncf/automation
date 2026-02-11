@@ -268,6 +268,8 @@ def normalize_status(value: str) -> str:
         return "archived"
     if v in ("formation - exploratory", "formation - engaged", "forming", "form", "exploratory"):
         return "forming"
+    if v in ("prospect",):
+        return "prospect"
     return v
 
 
@@ -525,6 +527,9 @@ def collect_pcc_expected_statuses(pcc_data: Dict[str, Any]) -> List[Tuple[str, s
         if raw_status == "Formation - Engaged":
             pairs.append((name, "forming"))
             continue
+        if raw_status == "Prospect":
+            pairs.append((name, "prospect"))
+            continue
         pairs.append((name, "archived"))
     # Forming projects
     for item in pcc_data.get("forming_projects") or []:
@@ -547,8 +552,8 @@ def write_audit_markdown(
         # Column headers hyperlinked to their respective sources for quick reference
         lines.append("| Project | [PCC status](./pcc_projects.yaml) | [Landscape status](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor status](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers CSV status](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats status](https://devstats.cncf.io/) | [Artwork status](https://github.com/cncf/artwork/blob/main/README.md) |")
         lines.append("|---|---|---|---|---|---|---|")
-        # Sort by PCC status: graduated, incubating, sandbox, forming, archived; then by project name
-        status_order = {"graduated": 0, "incubating": 1, "sandbox": 2, "forming": 3, "archived": 4}
+        # Sort by PCC status: graduated, incubating, sandbox, forming, archived, prospect; then by project name
+        status_order = {"graduated": 0, "incubating": 1, "sandbox": 2, "forming": 3, "archived": 4, "prospect": 5}
         def sort_key(row: Tuple[str, str, str, str, str, str, str]) -> Tuple[int, str]:
             name, pcc_status, *_ = row
             return (status_order.get(pcc_status, 99), name.lower())
@@ -602,7 +607,7 @@ def write_full_status_markdown(
         return out
 
     # Sort helpers (match anomalies table order)
-    status_order = {"graduated": 0, "incubating": 1, "sandbox": 2, "forming": 3, "archived": 4}
+    status_order = {"graduated": 0, "incubating": 1, "sandbox": 2, "forming": 3, "archived": 4, "prospect": 5}
     def status_then_name(row: Tuple[str, str, str, str, str, str, str]) -> Tuple[int, str]:
         name, pcc_status, *_ = row
         return (status_order.get(normalize_status(pcc_status), 99), name.lower())
@@ -610,13 +615,14 @@ def write_full_status_markdown(
     # Sort anomalies by PCC status then name
     anomalies_sorted = sorted(anomalies, key=status_then_name)
 
-    # Group all by PCC category (include forming and archived too)
+    # Group all by PCC category (include forming, archived, and prospect too)
     by_cat: Dict[str, List[Tuple[str, str, str, str, str, str, str]]] = {
         "graduated": [],
         "incubating": [],
         "sandbox": [],
         "forming": [],
         "archived": [],
+        "prospect": [],
     }
     for row in all_rows:
         _, pcc_status, *_ = row
@@ -638,6 +644,7 @@ def write_full_status_markdown(
     lines.extend(section("Sandbox", by_cat["sandbox"]))
     lines.extend(section("Forming", by_cat["forming"]))
     lines.extend(section("Archived", by_cat["archived"]))
+    lines.extend(section("Prospect", by_cat["prospect"]))
 
     with open(ALL_AUDIT_OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
