@@ -47,7 +47,6 @@
 | Terrascan | forming | - | - | - | - | - |
 | Velero | forming | - | - | - | - | - |
 | Brigade | archived | archived | - | - | - | archived |
-| CNCF Toolbox | archived | - | - | - | - | - |
 | CNI-Genie | archived | archived | - | - | - | - |
 | Curiefense | archived | archived | - | - | - | archived |
 | Curve | archived | archived | - | - | - | archived |
@@ -72,6 +71,7 @@
 | SuperEdge | archived | archived | - | - | - | archived |
 | Teller | archived | archived | - | - | - | archived |
 | Xline | archived | archived | - | - | - | archived |
+| CNCF Toolbox | prospect | - | - | - | - | - |
 
 ## Graduated
 
@@ -339,7 +339,6 @@
 | Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
 |---|---|---|---|---|---|---|
 | Brigade | archived | archived | - | - | - | archived |
-| CNCF Toolbox | archived | - | - | - | - | - |
 | CNI-Genie | archived | archived | - | - | - | - |
 | Curiefense | archived | archived | - | - | - | archived |
 | Curve | archived | archived | - | - | - | archived |
@@ -364,4 +363,10 @@
 | SuperEdge | archived | archived | - | - | - | archived |
 | Teller | archived | archived | - | - | - | archived |
 | Xline | archived | archived | - | - | - | archived |
+
+## Prospect
+
+| Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
+|---|---|---|---|---|---|---|
+| CNCF Toolbox | prospect | - | - | - | - | - |
 
