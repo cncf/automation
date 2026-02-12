@@ -89,7 +89,9 @@ ArgoCD will deploy all components in sync-wave order.
 
 ### Adding a New Runner Size
 
-1. Create a new directory under `runners/` or `vm-runners/` with the naming convention `{cpus}cpu-{memory}gb/`
+1. Create a new directory:
+   - Under `runners/`, use the naming convention `{cpus}cpu-{memory}gb/` (for example, `4cpu-16gb/`)
+   - Under `vm-runners/`, follow the existing patterns, such as `{cpus}cpu-{memory}gb-x86-64/` for amd64, `*-arm64/` for ARM64 VMs, or `gpu-*` (for example, `gpu-a10-1/`) for GPU runners
 2. Copy an existing `install.yaml` and modify the resource requests/limits and runner name
 3. For container runners, also create an `argo.yaml` ArgoCD Application
 4. Commit and push — ArgoCD will auto-sync the new runner
