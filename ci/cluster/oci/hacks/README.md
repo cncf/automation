@@ -12,7 +12,7 @@ This directory contains DaemonSets and CronJobs that address platform-level issu
 |------|-------------|
 | `cgroups-v2-enabler-ds.yaml` | DaemonSet that ensures cgroups v2 is enabled on all nodes |
 | `ephemeralrunner-cleanup-cj.yaml` | CronJob that cleans up failed EphemeralRunner resources every 10 minutes |
-| `vm-cleaner..yaml` | CronJob that terminates stale OCI VM-based runners older than 2 days |
+| `vm-cleaner.yaml` | CronJob that terminates stale OCI VM-based runners older than 2 days |
 
 ## cgroups v2 Enabler
 
