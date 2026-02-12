@@ -104,5 +104,5 @@ Each `AutoscalingRunnerSet` exports the same comprehensive listener metrics as c
 - Deployed at sync-wave `3` via [`../argo-automation.yaml`](../argo-automation.yaml)
 - Managed by the ARC controller in [`../arc/`](../arc/)
 - Controller pods scheduled on nodes provisioned by [`../karpenter/`](../karpenter/)
-- Stale VMs cleaned up by [`../hacks/vm-cleaner..yaml`](../hacks/vm-cleaner..yaml)
+- Stale VMs cleaned up by [`../hacks/vm-cleaner.yaml`](../hacks/vm-cleaner.yaml)
 - Metrics scraped by [`../monitoring/`](../monitoring/)
