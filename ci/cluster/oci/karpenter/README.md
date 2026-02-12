@@ -11,7 +11,7 @@ Karpenter is deployed via ArgoCD to provide just-in-time node provisioning for G
 | File | Description |
 |------|-------------|
 | `nodepool.yaml` | `NodePool` resource defining node provisioning constraints and limits |
-| `ocinodeclasss.yaml` | `OciNodeClass` resource defining OCI-specific node configuration (image, boot volume, networking) |
+| `ocinodeclass.yaml` | `OciNodeClass` resource defining OCI-specific node configuration (image, boot volume, networking) |
 
 ## NodePool Configuration
 
