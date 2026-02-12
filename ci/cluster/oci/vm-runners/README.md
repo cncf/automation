@@ -57,10 +57,10 @@ Instead of running jobs directly in Kubernetes pods, VM runners use a lightweigh
 │                                                          │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │ gha-cloudrunner                                   │    │
-│  │  --arch=amd64                                     │    │
-│  │  --shape=VM.Standard.E6.Flex                      │    │
-│  │  --shape-ocpus=2.0                                │    │
-│  │  --shape-memory-in-gbs=8.0                        │    │
+│  │  --arch=<amd64|arm64>                             │    │
+│  │  --shape=<VM.Standard.E6.Flex|VM.Standard.A1.Flex>│    │
+│  │  --shape-ocpus=<2.0-32.0>                         │    │
+│  │  --shape-memory-in-gbs=<8.0-128.0>                │    │
 │  │  --availability-domain=<availability-domain>      │    │
 │  │  --compartment-id=<compartment-ocid>               │    │
 │  │  --subnet-id=<subnet-ocid>                        │    │
