@@ -3,7 +3,7 @@
 | Project | [PCC status](./pcc_projects.yaml) | [Landscape status](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor status](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers CSV status](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats status](https://devstats.cncf.io/) | [Artwork status](https://github.com/cncf/artwork/blob/main/README.md) |
 |---|---|---|---|---|---|---|
 | Open Policy Agent | graduated | graduated | graduated | graduated | - | graduated |
-| metal3-io | incubating | - | incubating | incubating | - | incubating |
+| metal3-io | incubating | incubating | incubating | incubating | - | incubating |
 | cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | CoHDI | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -14,7 +14,6 @@
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
 | Service Mesh Performance | sandbox | archived | - | - | - | archived |
-| Spin | sandbox | - | sandbox | sandbox | sandbox | sandbox |
 | TrestleGRC | sandbox | sandbox | - | - | sandbox | - |
 | <QHTTPX> | forming | - | - | - | - | - |
 | Agones | forming | - | - | - | - | - |
