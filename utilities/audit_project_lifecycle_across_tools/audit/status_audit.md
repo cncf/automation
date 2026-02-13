@@ -16,7 +16,6 @@
 | Service Mesh Performance | sandbox | archived | - | - | - | archived |
 | Spin | sandbox | - | sandbox | sandbox | sandbox | sandbox |
 | TrestleGRC | sandbox | sandbox | - | - | sandbox | - |
-| VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | sandbox |
 | <QHTTPX> | forming | - | - | - | - | - |
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
@@ -63,7 +62,7 @@
 | OpenTracing | archived | archived | - | - | - | archived |
 | Pravega | archived | archived | - | - | - | archived |
 | RKT | archived | archived | - | - | - | archived |
-| sealer | archived | archived | - | archived | - | archived |
+| sealer | archived | archived | - | - | - | archived |
 | Service Mesh Interface | archived | archived | - | - | - | archived |
 | skooner | archived | archived | - | - | - | archived |
 | SuperEdge | archived | archived | - | - | - | archived |
