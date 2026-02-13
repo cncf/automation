@@ -57,14 +57,22 @@ jobs:
         run: |
           FILTER="${{ github.event.inputs.project_filter }}"
           
+          # Use cncf-projects.yaml which is auto-synced from CNCF landscape
+          PROJECTS_FILE="supply-chain/util/data/cncf-projects.yaml"
+          
+          if [ ! -f "$PROJECTS_FILE" ]; then
+            echo "Error: $PROJECTS_FILE not found. Run the sync-cncf-projects workflow first."
+            exit 1
+          fi
+          
           if [ -n "$FILTER" ]; then
             # Filter for specific project
             OWNER=$(echo "$FILTER" | cut -d'/' -f1)
             REPO=$(echo "$FILTER" | cut -d'/' -f2)
-            MATRIX=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'")) | {"include": .}' supply-chain/util/data/repositories.yaml | jq -c .)
+            MATRIX=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'")) | {"include": .}' "$PROJECTS_FILE" | jq -c .)
           else
             # All projects
-            MATRIX=$(yq -o=json '{"include": .repositories}' supply-chain/util/data/repositories.yaml | jq -c .)
+            MATRIX=$(yq -o=json '{"include": .repositories}' "$PROJECTS_FILE" | jq -c .)
           fi
           
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
@@ -99,8 +107,31 @@ jobs:
           go install github.com/google/go-licenses@latest
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
+      - name: Check if repository is a Go project
+        id: check-go
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OWNER="${{ matrix.owner }}"
+          REPO="${{ matrix.repo }}"
+          
+          echo "Checking if $OWNER/$REPO is a Go project..."
+          
+          # Check for go.mod or go.sum in the default branch
+          HAS_GO_MOD=$(gh api repos/${OWNER}/${REPO}/contents/go.mod --jq '.name' 2>/dev/null || echo "")
+          HAS_GO_SUM=$(gh api repos/${OWNER}/${REPO}/contents/go.sum --jq '.name' 2>/dev/null || echo "")
+          
+          if [ -n "$HAS_GO_MOD" ] || [ -n "$HAS_GO_SUM" ]; then
+            echo "Found Go project files (go.mod: ${HAS_GO_MOD:-not found}, go.sum: ${HAS_GO_SUM:-not found})"
+            echo "is_go_project=true" >> $GITHUB_OUTPUT
+          else
+            echo "No go.mod or go.sum found - skipping SBOM generation for non-Go project"
+            echo "is_go_project=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Get stable releases and generate SBOMs
         id: generate
+        if: steps.check-go.outputs.is_go_project == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate }}
@@ -357,6 +388,7 @@ jobs:
           echo "generated_files=$GENERATED_FILES" >> $GITHUB_OUTPUT
 
       - name: Commit and push SBOMs with retry
+        if: steps.check-go.outputs.is_go_project == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

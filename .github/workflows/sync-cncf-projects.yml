@@ -1,0 +1,46 @@
+name: Sync CNCF Projects from Landscape
+
+on:
+  schedule:
+    # Run daily at 03:00 UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-projects:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Build and run extract-projects tool
+        run: |
+          cd supply-chain/util/extract-projects
+          go run . ../data/cncf-projects.yaml
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          git add supply-chain/util/data/cncf-projects.yaml
+          
+          # Check for changes
+          if git diff --cached --quiet; then
+            echo "No changes to CNCF projects"
+            exit 0
+          fi
+          
+          git commit -m "chore: sync CNCF projects from landscape"
+          git push origin ${{ github.ref_name }}
