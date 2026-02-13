@@ -44,8 +44,11 @@ supply-chain/
 │               └── <repo>.json         # SPDX SBOM file
 └── util/
     ├── data/
-    │   └── cncf-projects.yaml          # Auto-synced CNCF project list (DO NOT EDIT)
+    │   ├── cncf-projects.yaml          # Auto-synced CNCF project list (DO NOT EDIT)
+    │   └── discovered-repos.yaml       # Additional repos found in CNCF orgs (DO NOT EDIT)
     ├── extract-projects/               # Go tool to sync projects from CNCF landscape
+    ├── discover-repos/                 # Go tool to find additional repos in CNCF orgs
+    ├── cleanup-sbom/                   # Go tool to remove orphaned SBOM folders
     ├── generate-sbom-local.sh          # Local testing script (Linux/macOS)
     └── generate-sbom-local.ps1         # Local testing script (Windows)
 ```
@@ -60,7 +63,21 @@ Automatically syncs the list of CNCF projects from the official landscape.
 - **Manual trigger**: Via workflow_dispatch
 - **Output**: `util/data/cncf-projects.yaml`
 
-### 2. Generate SBOMs (`.github/workflows/generate-sbom.yml`)
+### 2. Discover Additional Repos (`.github/workflows/discover-cncf-repos.yml`)
+
+Scans GitHub organizations of CNCF projects to find additional repositories with releases.
+
+- **Scheduled**: Weekly on Monday at 04:00 UTC
+- **Manual trigger**: Via workflow_dispatch
+- **Output**: `util/data/discovered-repos.yaml`
+
+This workflow finds repositories that:
+- Belong to the same GitHub org/user as a CNCF project
+- Have at least one release
+- Contain a `go.mod` file (Go-based project)
+- Are not forks, archived, or disabled
+
+### 3. Generate SBOMs (`.github/workflows/generate-sbom.yml`)
 
 Generates SBOMs for CNCF projects.
 
@@ -91,6 +108,21 @@ Go tool that downloads the CNCF landscape and extracts all projects with status 
 cd supply-chain/util/extract-projects
 go run . ../data/cncf-projects.yaml
 ```
+
+### discover-repos
+
+Go tool that scans GitHub organizations of CNCF projects to find additional repositories with releases.
+
+```bash
+cd supply-chain/util/discover-repos
+go run . /path/to/cncf-automation
+```
+
+The tool will:
+- Read the list of CNCF projects from `cncf-projects.yaml`
+- Scan each unique GitHub organization/user
+- Find repos that have releases and contain `go.mod`
+- Output results to `discovered-repos.yaml`
 
 ### cleanup-sbom
 

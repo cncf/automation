@@ -1,0 +1,49 @@
+name: Discover Additional CNCF Org Repos
+
+on:
+  schedule:
+    # Run weekly on Monday at 04:00 UTC (after the daily project sync)
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  discover-repos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Run discover-repos tool
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd supply-chain/util/discover-repos
+          go run . "${{ github.workspace }}"
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          git add supply-chain/util/data/discovered-repos.yaml
+          
+          # Check for changes
+          if git diff --cached --quiet; then
+            echo "No new repositories discovered"
+            exit 0
+          fi
+          
+          git commit -m "chore: update discovered CNCF org repositories"
+          git push origin ${{ github.ref_name }}
+

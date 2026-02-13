@@ -59,6 +59,7 @@ jobs:
           
           # Use cncf-projects.yaml which is auto-synced from CNCF landscape
           PROJECTS_FILE="supply-chain/util/data/cncf-projects.yaml"
+          DISCOVERED_FILE="supply-chain/util/data/discovered-repos.yaml"
           
           if [ ! -f "$PROJECTS_FILE" ]; then
             echo "Error: $PROJECTS_FILE not found. Run the sync-cncf-projects workflow first."
@@ -66,13 +67,35 @@ jobs:
           fi
           
           if [ -n "$FILTER" ]; then
-            # Filter for specific project
+            # Filter for specific project from both files
             OWNER=$(echo "$FILTER" | cut -d'/' -f1)
             REPO=$(echo "$FILTER" | cut -d'/' -f2)
-            MATRIX=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'")) | {"include": .}' "$PROJECTS_FILE" | jq -c .)
+            
+            # Get from main projects file
+            MAIN_REPOS=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'"))' "$PROJECTS_FILE")
+            
+            # Get from discovered repos file if it exists
+            if [ -f "$DISCOVERED_FILE" ]; then
+              DISCOVERED_REPOS=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'"))' "$DISCOVERED_FILE")
+            else
+              DISCOVERED_REPOS="[]"
+            fi
+            
+            # Merge both lists
+            MATRIX=$(echo "$MAIN_REPOS" "$DISCOVERED_REPOS" | jq -s 'add | {"include": .}' | jq -c .)
           else
-            # All projects
-            MATRIX=$(yq -o=json '{"include": .repositories}' "$PROJECTS_FILE" | jq -c .)
+            # All projects from both files
+            MAIN_REPOS=$(yq -o=json '.repositories' "$PROJECTS_FILE")
+            
+            # Get from discovered repos file if it exists
+            if [ -f "$DISCOVERED_FILE" ]; then
+              DISCOVERED_REPOS=$(yq -o=json '.repositories // []' "$DISCOVERED_FILE")
+            else
+              DISCOVERED_REPOS="[]"
+            fi
+            
+            # Merge both lists
+            MATRIX=$(echo "$MAIN_REPOS" "$DISCOVERED_REPOS" | jq -s 'add | {"include": .}' | jq -c .)
           fi
           
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
