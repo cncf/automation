@@ -4,6 +4,7 @@ metadata:
   name: oracle-4cpu-16gb-x86-64
   namespace: argocd
   annotations:
+    argocd.argoproj.io/manifest-generate-paths: .
     notifications.argoproj.io/subscribe.slack: internal-gha-argo
   labels:
     cluster: oci-gha-amd64-runners
