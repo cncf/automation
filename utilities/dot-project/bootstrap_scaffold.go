@@ -44,6 +44,17 @@ website: "{{ .Website }}"{{ else }}
 # website: "https://{{ .Slug }}.io"{{ end }}
 {{ if .Artwork }}
 artwork: "{{ .Artwork }}"{{ end }}
+{{ if .HasAdopters }}
+adopters:
+  path: "ADOPTERS.md"{{ else }}
+# TODO: Add ADOPTERS.md if your project tracks adopters
+# adopters:
+#   path: "ADOPTERS.md"{{ end }}
+
+# TODO: Add package manager identifiers if your project is distributed via registries
+# package_managers:
+#   docker: "org/image"
+#   npm: "package-name"
 {{ if .Social }}
 social:{{ range $platform, $url := .Social }}
   {{ $platform }}: "{{ $url }}"{{ end }}{{ end }}
@@ -62,6 +73,10 @@ governance:
 legal:
   license:
     path: "LICENSE"{{ end }}
+  # TODO: Set contributor identity agreements
+  # identity_type:
+  #   has_dco: true   # DCO can be used alone
+  #   has_cla: false  # CLA requires DCO
 {{ if .HasReadme }}
 documentation:
   readme:

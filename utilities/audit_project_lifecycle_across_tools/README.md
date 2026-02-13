@@ -78,6 +78,9 @@ Outputs:
 - PCC is the source of truth; we compare maturity/status labels from external sources to PCC categories:
   - Graduated, Incubating, Sandbox, Archived, Forming (Formation - Exploratory)
 - TAGs are intentionally excluded from the PCC categories section.
+- PCC entries with `status: Formation - Disengaged` are intentionally excluded from the audit outputs
+  (`audit/status_audit.md` and `audit/all_statuses.md`).
+- PCC entries with `status: Formation - Engaged` are treated as `Forming` in the audit outputs.
 - The workflow snapshots audited sources into `datasources/**` and includes them in the PR for reproducibility.
 - Landscape matching improvements to reduce name variance issues:
   - Aliases from parentheses/acronyms (e.g., “Open Policy Agent (OPA)”, “KAITO”, “ORAS”)

@@ -31,13 +31,15 @@ For CNCF projects adopting `.project`:
 | `project_lead` | string | GitHub handle of primary contact |
 | `cncf_slack_channel` | string | CNCF Slack channel (must start with `#`) |
 | `website` | string | Project website URL |
+| `adopters` | PathRef | Link to ADOPTERS.md or adopters list |
 | `artwork` | string | Artwork/logo URL |
 | `social` | map | Platform-name to URL mapping |
 | `mailing_lists` | array | Email addresses |
 | `audits` | array | Security/performance audit entries |
+| `package_managers` | map | Registry-name to identifier mapping |
 | `security` | object | Security policy, threat model, contact email |
-| `governance` | object | Contributing, codeowners, governance doc paths |
-| `legal` | object | License path |
+| `governance` | object | Contributing, codeowners, governance doc, governance DD items, maintainer lifecycle paths |
+| `legal` | object | License path, identity type (DCO/CLA) |
 | `documentation` | object | Readme, support, architecture, API doc paths |
 | `landscape` | object | CNCF Landscape category and subcategory |
 

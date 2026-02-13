@@ -53,13 +53,24 @@ jobs:
           # Ensure the commit author matches the sign-off identity to satisfy strict DCO checkers.
           author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
           committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
-          commit-message: "chore: update pcc_projects.yaml"
-          title: "chore: update pcc_projects.yaml"
+          commit-message: "Update CNCF project status audit outputs"
+          title: "Update CNCF project status audit outputs"
           body: |
-            Automated update of `pcc_projects.yaml` from LFX PCC API.
+            Automated update of CNCF project status audit outputs.
 
-            - Source: project-service/v1/projects
-            - Foundation: CNCF (a0941000002wBz4AAE)
+            This PR includes:
+            - **PCC projects** (`pcc_projects.yaml`): Source of truth from LFX PCC API
+            - **Status audit** (`audit/status_audit.md`): Anomalies and mismatches across sources
+            - **Full status report** (`audit/all_statuses.md`): Complete project status comparison
+            - **Data source snapshots** (`datasources/**`): Reproducible snapshots of external sources
+
+            Sources audited:
+            - LFX PCC API (project-service/v1/projects, Foundation: CNCF a0941000002wBz4AAE)
+            - CNCF Landscape
+            - CLOMonitor
+            - Foundation Maintainers CSV
+            - DevStats
+            - Artwork README
           branch: automation/update-pcc-projects
           add-paths: |
             utilities/audit_project_lifecycle_across_tools/datasources/pcc_projects.yaml

@@ -335,6 +335,11 @@ func validateProjectStruct(project Project) []string {
 		}
 	}
 
+	// Validate adopters
+	if project.Adopters != nil && project.Adopters.Path == "" {
+		errors = append(errors, "adopters.path is required")
+	}
+
 	// Validate new fields
 	if project.Security != nil {
 		if project.Security.Policy != nil && project.Security.Policy.Path == "" {
@@ -360,11 +365,74 @@ func validateProjectStruct(project Project) []string {
 		if project.Governance.GovernanceDoc != nil && project.Governance.GovernanceDoc.Path == "" {
 			errors = append(errors, "governance.governance_doc.path is required")
 		}
+
+		// Validate governance DD PathRef fields
+		if project.Governance.VendorNeutralityStatement != nil && project.Governance.VendorNeutralityStatement.Path == "" {
+			errors = append(errors, "governance.vendor_neutrality_statement.path is required")
+		}
+		if project.Governance.DecisionMakingProcess != nil && project.Governance.DecisionMakingProcess.Path == "" {
+			errors = append(errors, "governance.decision_making_process.path is required")
+		}
+		if project.Governance.RolesAndTeams != nil && project.Governance.RolesAndTeams.Path == "" {
+			errors = append(errors, "governance.roles_and_teams.path is required")
+		}
+		if project.Governance.CodeOfConduct != nil && project.Governance.CodeOfConduct.Path == "" {
+			errors = append(errors, "governance.code_of_conduct.path is required")
+		}
+		if project.Governance.SubProjectList != nil && project.Governance.SubProjectList.Path == "" {
+			errors = append(errors, "governance.sub_project_list.path is required")
+		}
+		if project.Governance.SubProjectDocs != nil && project.Governance.SubProjectDocs.Path == "" {
+			errors = append(errors, "governance.sub_project_docs.path is required")
+		}
+		if project.Governance.ContributorLadder != nil && project.Governance.ContributorLadder.Path == "" {
+			errors = append(errors, "governance.contributor_ladder.path is required")
+		}
+		if project.Governance.ChangeProcess != nil && project.Governance.ChangeProcess.Path == "" {
+			errors = append(errors, "governance.change_process.path is required")
+		}
+		if project.Governance.CommsChannels != nil && project.Governance.CommsChannels.Path == "" {
+			errors = append(errors, "governance.comms_channels.path is required")
+		}
+		if project.Governance.CommunityCalendar != nil && project.Governance.CommunityCalendar.Path == "" {
+			errors = append(errors, "governance.community_calendar.path is required")
+		}
+		if project.Governance.ContributorGuide != nil && project.Governance.ContributorGuide.Path == "" {
+			errors = append(errors, "governance.contributor_guide.path is required")
+		}
+
+		// Validate maintainer_lifecycle
+		ml := project.Governance.MaintainerLifecycle
+		if ml.OnboardingDoc != nil && ml.OnboardingDoc.Path == "" {
+			errors = append(errors, "governance.maintainer_lifecycle.onboarding_doc.path is required")
+		}
+		if ml.ProgressionLadder != nil && ml.ProgressionLadder.Path == "" {
+			errors = append(errors, "governance.maintainer_lifecycle.progression_ladder.path is required")
+		}
+		if ml.OffboardingPolicy != nil && ml.OffboardingPolicy.Path == "" {
+			errors = append(errors, "governance.maintainer_lifecycle.offboarding_policy.path is required")
+		}
+		for i, u := range ml.MentoringProgram {
+			if !isValidURL(u) {
+				errors = append(errors, fmt.Sprintf("governance.maintainer_lifecycle.mentoring_program[%d] is not a valid URL: %s", i, u))
+			}
+		}
 	}
 
 	if project.Legal != nil {
 		if project.Legal.License != nil && project.Legal.License.Path == "" {
 			errors = append(errors, "legal.license.path is required")
+		}
+		if project.Legal.IdentityType != nil {
+			if project.Legal.IdentityType.HasCLA && !project.Legal.IdentityType.HasDCO {
+				errors = append(errors, "legal.identity_type: has_cla requires has_dco (CLA cannot be used without DCO)")
+			}
+			if project.Legal.IdentityType.DCOURL != nil && project.Legal.IdentityType.DCOURL.Path == "" {
+				errors = append(errors, "legal.identity_type.dco_url.path is required")
+			}
+			if project.Legal.IdentityType.CLAURL != nil && project.Legal.IdentityType.CLAURL.Path == "" {
+				errors = append(errors, "legal.identity_type.cla_url.path is required")
+			}
 		}
 	}
 
