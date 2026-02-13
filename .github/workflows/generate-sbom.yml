@@ -91,14 +91,28 @@ jobs:
           echo "Generated CNCF matrix with $REPO_COUNT repositories"
 
   # ===========================================
-  # Prepare matrix for discovered repos
+  # Prepare matrix for discovered repos (split into batches due to 256 limit)
   # ===========================================
   prepare-discovered-matrix:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.source != 'cncf' }}
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      has_repos: ${{ steps.set-matrix.outputs.has_repos }}
+      matrix1: ${{ steps.set-matrix.outputs.matrix1 }}
+      matrix2: ${{ steps.set-matrix.outputs.matrix2 }}
+      matrix3: ${{ steps.set-matrix.outputs.matrix3 }}
+      matrix4: ${{ steps.set-matrix.outputs.matrix4 }}
+      matrix5: ${{ steps.set-matrix.outputs.matrix5 }}
+      matrix6: ${{ steps.set-matrix.outputs.matrix6 }}
+      matrix7: ${{ steps.set-matrix.outputs.matrix7 }}
+      matrix8: ${{ steps.set-matrix.outputs.matrix8 }}
+      has_repos1: ${{ steps.set-matrix.outputs.has_repos1 }}
+      has_repos2: ${{ steps.set-matrix.outputs.has_repos2 }}
+      has_repos3: ${{ steps.set-matrix.outputs.has_repos3 }}
+      has_repos4: ${{ steps.set-matrix.outputs.has_repos4 }}
+      has_repos5: ${{ steps.set-matrix.outputs.has_repos5 }}
+      has_repos6: ${{ steps.set-matrix.outputs.has_repos6 }}
+      has_repos7: ${{ steps.set-matrix.outputs.has_repos7 }}
+      has_repos8: ${{ steps.set-matrix.outputs.has_repos8 }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -108,31 +122,48 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
 
-      - name: Generate discovered repos matrix
+      - name: Generate discovered repos matrix (batched)
         id: set-matrix
         run: |
           FILTER="${{ github.event.inputs.project_filter }}"
           DISCOVERED_FILE="supply-chain/util/data/discovered-repos.yaml"
+          BATCH_SIZE=250
+          MAX_BATCHES=8
           
           if [ ! -f "$DISCOVERED_FILE" ]; then
             echo "No discovered-repos.yaml found, skipping discovered repos"
-            echo 'matrix={"include":[]}' >> $GITHUB_OUTPUT
-            echo "has_repos=false" >> $GITHUB_OUTPUT
+            for i in $(seq 1 $MAX_BATCHES); do
+              echo "matrix${i}={\"include\":[]}" >> $GITHUB_OUTPUT
+              echo "has_repos${i}=false" >> $GITHUB_OUTPUT
+            done
             exit 0
           fi
           
           if [ -n "$FILTER" ]; then
             OWNER=$(echo "$FILTER" | cut -d'/' -f1)
             REPO=$(echo "$FILTER" | cut -d'/' -f2)
-            MATRIX=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'")) | {"include": .}' "$DISCOVERED_FILE" | jq -c .)
+            ALL_REPOS=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'"))' "$DISCOVERED_FILE")
           else
-            MATRIX=$(yq -o=json '{"include": .repositories}' "$DISCOVERED_FILE" | jq -c .)
+            ALL_REPOS=$(yq -o=json '.repositories' "$DISCOVERED_FILE")
           fi
           
-          REPO_COUNT=$(echo "$MATRIX" | jq '.include | length')
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-          echo "has_repos=$( [ "$REPO_COUNT" -gt 0 ] && echo 'true' || echo 'false' )" >> $GITHUB_OUTPUT
-          echo "Generated discovered repos matrix with $REPO_COUNT repositories"
+          TOTAL=$(echo "$ALL_REPOS" | jq 'length')
+          echo "Total discovered repos: $TOTAL"
+          
+          MAX_SUPPORTED=$((BATCH_SIZE * MAX_BATCHES))
+          if [ "$TOTAL" -gt "$MAX_SUPPORTED" ]; then
+            echo "::warning::Found $TOTAL repos but only $MAX_SUPPORTED can be processed (max $MAX_BATCHES batches of $BATCH_SIZE). Consider increasing MAX_BATCHES."
+          fi
+          
+          # Split into batches
+          for i in $(seq 1 $MAX_BATCHES); do
+            START=$(( (i-1) * BATCH_SIZE ))
+            BATCH=$(echo "$ALL_REPOS" | jq --argjson start $START --argjson size $BATCH_SIZE '.[$start:$start+$size] | {"include": .}' | jq -c .)
+            COUNT=$(echo "$BATCH" | jq '.include | length')
+            echo "matrix${i}=$BATCH" >> $GITHUB_OUTPUT
+            echo "has_repos${i}=$( [ "$COUNT" -gt 0 ] && echo 'true' || echo 'false' )" >> $GITHUB_OUTPUT
+            echo "Batch $i: $COUNT repositories"
+          done
 
   # ===========================================
   # Generate SBOMs for official CNCF projects
@@ -391,223 +422,138 @@ jobs:
           exit 1
 
   # ===========================================
-  # Generate SBOMs for discovered repos
+  # Generate SBOMs for subproject repos (Batch 1)
   # ===========================================
-  generate-sbom-discovered:
+  generate-sbom-subprojects-1:
     needs: prepare-discovered-matrix
-    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      max-parallel: 5
-      matrix: ${{ fromJson(needs.prepare-discovered-matrix.outputs.matrix) }}
+    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos1 == 'true' }}
+    uses: ./.github/workflows/reusable-generate-sbom.yml
+    with:
+      matrix: ${{ needs.prepare-discovered-matrix.outputs.matrix1 }}
+      job_name: "subprojects-batch-1"
+      sbom_path_prefix: "subprojects"
+      force_regenerate: ${{ github.event.inputs.force_regenerate || 'false' }}
+      releases_mode: ${{ github.event.inputs.releases_mode || 'recent' }}
+      max_releases: ${{ github.event.inputs.max_releases || '3' }}
+    secrets: inherit
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+  # ===========================================
+  # Generate SBOMs for subproject repos (Batch 2)
+  # ===========================================
+  generate-sbom-subprojects-2:
+    needs: prepare-discovered-matrix
+    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos2 == 'true' }}
+    uses: ./.github/workflows/reusable-generate-sbom.yml
+    with:
+      matrix: ${{ needs.prepare-discovered-matrix.outputs.matrix2 }}
+      job_name: "subprojects-batch-2"
+      sbom_path_prefix: "subprojects"
+      force_regenerate: ${{ github.event.inputs.force_regenerate || 'false' }}
+      releases_mode: ${{ github.event.inputs.releases_mode || 'recent' }}
+      max_releases: ${{ github.event.inputs.max_releases || '3' }}
+    secrets: inherit
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'
-          cache: false
+  # ===========================================
+  # Generate SBOMs for subproject repos (Batch 3)
+  # ===========================================
+  generate-sbom-subprojects-3:
+    needs: prepare-discovered-matrix
+    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos3 == 'true' }}
+    uses: ./.github/workflows/reusable-generate-sbom.yml
+    with:
+      matrix: ${{ needs.prepare-discovered-matrix.outputs.matrix3 }}
+      job_name: "subprojects-batch-3"
+      sbom_path_prefix: "subprojects"
+      force_regenerate: ${{ github.event.inputs.force_regenerate || 'false' }}
+      releases_mode: ${{ github.event.inputs.releases_mode || 'recent' }}
+      max_releases: ${{ github.event.inputs.max_releases || '3' }}
+    secrets: inherit
 
-      - name: Install bom tool and go-licenses
-        run: |
-          go install sigs.k8s.io/bom/cmd/bom@latest
-          go install github.com/google/go-licenses@latest
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+  # ===========================================
+  # Generate SBOMs for subproject repos (Batch 4)
+  # ===========================================
+  generate-sbom-subprojects-4:
+    needs: prepare-discovered-matrix
+    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos4 == 'true' }}
+    uses: ./.github/workflows/reusable-generate-sbom.yml
+    with:
+      matrix: ${{ needs.prepare-discovered-matrix.outputs.matrix4 }}
+      job_name: "subprojects-batch-4"
+      sbom_path_prefix: "subprojects"
+      force_regenerate: ${{ github.event.inputs.force_regenerate || 'false' }}
+      releases_mode: ${{ github.event.inputs.releases_mode || 'recent' }}
+      max_releases: ${{ github.event.inputs.max_releases || '3' }}
+    secrets: inherit
 
-      - name: Get stable releases and generate SBOMs
-        id: generate
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate }}
-          RELEASES_MODE: ${{ github.event.inputs.releases_mode || 'recent' }}
-          MAX_RELEASES: ${{ github.event.inputs.max_releases || '3' }}
-        run: |
-          set -e
-          
-          OWNER="${{ matrix.owner }}"
-          REPO="${{ matrix.repo }}"
-          PROJECT_NAME="${{ matrix.name }}"
-          SANITIZED_PROJECT=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
-          SBOM_BASE_DIR="supply-chain/sbom/subprojects/${OWNER}/${REPO}"
-          PROCESSED=0
-          
-          ONE_WEEK_AGO=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -v-7d +%Y-%m-%dT%H:%M:%SZ)
-          
-          echo "::group::Processing discovered repo: $OWNER/$REPO"
-          echo "Releases mode: $RELEASES_MODE"
-          
-          extract_go_licenses() {
-            local DIR="$1"
-            local OUTPUT_FILE="$2"
-            
-            if [ ! -f "$DIR/go.mod" ]; then
-              echo "[]" > "$OUTPUT_FILE"
-              return 0
-            fi
-            
-            cd "$DIR"
-            go mod download 2>/dev/null || true
-            
-            local LICENSES_CSV
-            LICENSES_CSV=$(go-licenses csv ./... 2>/dev/null || echo "")
-            
-            if [ -z "$LICENSES_CSV" ]; then
-              echo "[]" > "$OUTPUT_FILE"
-              cd - > /dev/null
-              return 0
-            fi
-            
-            echo "$LICENSES_CSV" | awk -F',' '{
-              gsub(/"/, "\\\"", $1);
-              id = $1; gsub(/[^a-zA-Z0-9]/, "-", id); id = substr(id, 1, 50);
-              printf "{\"licenseId\": \"LicenseRef-%s\", \"extractedText\": \"License: %s\", \"name\": \"%s\", \"comment\": \"Package: %s\"}\n", id, $3, $3, $1
-            }' | jq -s '.' > "$OUTPUT_FILE" 2>/dev/null || echo "[]" > "$OUTPUT_FILE"
-            
-            cd - > /dev/null
-          }
-          
-          generate_sbom() {
-            local TAG="$1"
-            local VERSION=$(echo "$TAG" | sed 's/^v//')
-            local SBOM_DIR="${SBOM_BASE_DIR}/${VERSION}"
-            local SBOM_FILE="${SBOM_DIR}/${REPO}.json"
-            
-            if [ -f "$SBOM_FILE" ] && [ "$FORCE_REGENERATE" != "true" ]; then
-              echo "SBOM already exists, skipping..."
-              return 1
-            fi
-            
-            echo "Generating SBOM for $OWNER/$REPO@$TAG..."
-            
-            local TEMP_DIR=$(mktemp -d)
-            if ! git clone --depth 1 --branch "$TAG" "https://github.com/${OWNER}/${REPO}.git" "$TEMP_DIR" 2>/dev/null; then
-              rm -rf "$TEMP_DIR"
-              return 1
-            fi
-            
-            mkdir -p "$SBOM_DIR"
-            
-            local SBOM_NAME="${OWNER}/${REPO} ${TAG}"
-            local SBOM_NAMESPACE="https://github.com/${OWNER}/${REPO}/releases/tag/${TAG}"
-            
-            if bom generate --format json --name "$SBOM_NAME" --namespace "$SBOM_NAMESPACE" --output "$SBOM_FILE" "$TEMP_DIR" 2>/dev/null; then
-              local LICENSES_FILE=$(mktemp)
-              extract_go_licenses "$TEMP_DIR" "$LICENSES_FILE"
-              
-              local TEMP_SBOM=$(mktemp)
-              jq --arg owner "$OWNER" \
-                 --arg repo "$REPO" \
-                 --arg tag "$TAG" \
-                 --arg ghUrl "https://github.com/${OWNER}/${REPO}" \
-                 --arg generatedAt "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-                 --slurpfile licenses "$LICENSES_FILE" \
-                 '
-                 .creationInfo.creators += ["Tool: cncf-automation-sbom-generator"] |
-                 .creationInfo.comment = "SBOM for CNCF org subproject: \($owner)/\($repo)@\($tag)" |
-                 .annotations = ((.annotations // []) + [{
-                   "annotationDate": $generatedAt,
-                   "annotationType": "OTHER",
-                   "annotator": "Tool: cncf-automation",
-                   "comment": "CNCF Org Subproject: \($owner)/\($repo)\nVersion: \($tag)"
-                 }]) |
-                 .hasExtractedLicensingInfo = ((.hasExtractedLicensingInfo // []) + $licenses[0])
-                 ' "$SBOM_FILE" > "$TEMP_SBOM" && mv "$TEMP_SBOM" "$SBOM_FILE"
-              
-              rm -f "$LICENSES_FILE"
-              echo "Successfully generated SBOM: $SBOM_FILE"
-              rm -rf "$TEMP_DIR"
-              return 0
-            else
-              rm -rf "$TEMP_DIR"
-              return 1
-            fi
-          }
-          
-          RELEASES=$(gh api repos/${OWNER}/${REPO}/releases --paginate -q '.[0:50]' 2>/dev/null || echo "[]")
-          
-          if [ "$RELEASES" == "[]" ] || [ -z "$RELEASES" ]; then
-            TAGS=$(gh api repos/${OWNER}/${REPO}/tags --paginate -q '.[0:20] | .[].name' 2>/dev/null || echo "")
-            
-            if [ -z "$TAGS" ]; then
-              echo "No tags found, skipping..."
-              echo "::endgroup::"
-              exit 0
-            fi
-            
-            EFFECTIVE_MAX=$( [ "$RELEASES_MODE" == "recent" ] && echo 3 || echo $MAX_RELEASES )
-            
-            for TAG in $TAGS; do
-              if echo "$TAG" | grep -qiE '[-\.](alpha|beta|rc|pre|dev|snapshot|nightly|canary|test|draft|wip)[0-9]*'; then
-                continue
-              fi
-              if ! echo "$TAG" | grep -qE '^v?[0-9]+\.[0-9]+'; then
-                continue
-              fi
-              if generate_sbom "$TAG"; then
-                PROCESSED=$((PROCESSED + 1))
-              fi
-              if [ "$PROCESSED" -ge "$EFFECTIVE_MAX" ]; then
-                break
-              fi
-            done
-          else
-            if [ "$RELEASES_MODE" == "recent" ]; then
-              readarray -t RELEASE_DATA < <(echo "$RELEASES" | jq -r --arg since "$ONE_WEEK_AGO" '.[] | select(.draft == false and .prerelease == false and .published_at >= $since) | "\(.tag_name)"')
-            else
-              readarray -t RELEASE_DATA < <(echo "$RELEASES" | jq -r '.[] | select(.draft == false and .prerelease == false) | "\(.tag_name)"')
-            fi
-            
-            for TAG in "${RELEASE_DATA[@]}"; do
-              if echo "$TAG" | grep -qiE '[-\.](alpha|beta|rc|pre|dev|snapshot|nightly|canary|test|draft|wip)[0-9]*'; then
-                continue
-              fi
-              if generate_sbom "$TAG"; then
-                PROCESSED=$((PROCESSED + 1))
-              fi
-              if [ "$RELEASES_MODE" == "latest" ] && [ "$PROCESSED" -ge "$MAX_RELEASES" ]; then
-                break
-              fi
-            done
-          fi
-          
-          echo "::endgroup::"
+  # ===========================================
+  # Generate SBOMs for subproject repos (Batch 5)
+  # ===========================================
+  generate-sbom-subprojects-5:
+    needs: prepare-discovered-matrix
+    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos5 == 'true' }}
+    uses: ./.github/workflows/reusable-generate-sbom.yml
+    with:
+      matrix: ${{ needs.prepare-discovered-matrix.outputs.matrix5 }}
+      job_name: "subprojects-batch-5"
+      sbom_path_prefix: "subprojects"
+      force_regenerate: ${{ github.event.inputs.force_regenerate || 'false' }}
+      releases_mode: ${{ github.event.inputs.releases_mode || 'recent' }}
+      max_releases: ${{ github.event.inputs.max_releases || '3' }}
+    secrets: inherit
 
-      - name: Commit and push SBOMs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          
-          git add supply-chain/sbom/
-          
-          if git diff --cached --quiet; then
-            echo "No new SBOMs generated"
-            exit 0
-          fi
-          
-          git commit -m "chore(sbom): update SBOM for discovered repo ${{ matrix.owner }}/${{ matrix.repo }}"
-          
-          for i in $(seq 1 5); do
-            if git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}; then
-              exit 0
-            fi
-            sleep $((i * 5))
-          done
-          exit 1
+  # ===========================================
+  # Generate SBOMs for subproject repos (Batch 6)
+  # ===========================================
+  generate-sbom-subprojects-6:
+    needs: prepare-discovered-matrix
+    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos6 == 'true' }}
+    uses: ./.github/workflows/reusable-generate-sbom.yml
+    with:
+      matrix: ${{ needs.prepare-discovered-matrix.outputs.matrix6 }}
+      job_name: "subprojects-batch-6"
+      sbom_path_prefix: "subprojects"
+      force_regenerate: ${{ github.event.inputs.force_regenerate || 'false' }}
+      releases_mode: ${{ github.event.inputs.releases_mode || 'recent' }}
+      max_releases: ${{ github.event.inputs.max_releases || '3' }}
+    secrets: inherit
+
+  # ===========================================
+  # Generate SBOMs for subproject repos (Batch 7)
+  # ===========================================
+  generate-sbom-subprojects-7:
+    needs: prepare-discovered-matrix
+    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos7 == 'true' }}
+    uses: ./.github/workflows/reusable-generate-sbom.yml
+    with:
+      matrix: ${{ needs.prepare-discovered-matrix.outputs.matrix7 }}
+      job_name: "subprojects-batch-7"
+      sbom_path_prefix: "subprojects"
+      force_regenerate: ${{ github.event.inputs.force_regenerate || 'false' }}
+      releases_mode: ${{ github.event.inputs.releases_mode || 'recent' }}
+      max_releases: ${{ github.event.inputs.max_releases || '3' }}
+    secrets: inherit
+
+  # ===========================================
+  # Generate SBOMs for subproject repos (Batch 8)
+  # ===========================================
+  generate-sbom-subprojects-8:
+    needs: prepare-discovered-matrix
+    if: ${{ needs.prepare-discovered-matrix.outputs.has_repos8 == 'true' }}
+    uses: ./.github/workflows/reusable-generate-sbom.yml
+    with:
+      matrix: ${{ needs.prepare-discovered-matrix.outputs.matrix8 }}
+      job_name: "subprojects-batch-8"
+      sbom_path_prefix: "subprojects"
+      force_regenerate: ${{ github.event.inputs.force_regenerate || 'false' }}
+      releases_mode: ${{ github.event.inputs.releases_mode || 'recent' }}
+      max_releases: ${{ github.event.inputs.max_releases || '3' }}
+    secrets: inherit
 
   # ===========================================
   # Aggregate and generate index
   # ===========================================
   aggregate-sboms:
-    needs: [generate-sbom-cncf, generate-sbom-discovered]
+    needs: [generate-sbom-cncf, generate-sbom-subprojects-1, generate-sbom-subprojects-2, generate-sbom-subprojects-3, generate-sbom-subprojects-4, generate-sbom-subprojects-5, generate-sbom-subprojects-6, generate-sbom-subprojects-7, generate-sbom-subprojects-8]
     runs-on: ubuntu-latest
     if: always()
     steps:
