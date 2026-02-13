@@ -77,6 +77,7 @@ metadata:
   name: external-secrets-operator
   namespace: argocd
   annotations:
+    argocd.argoproj.io/manifest-generate-paths: .
     argocd.argoproj.io/sync-wave: "-1"
     notifications.argoproj.io/subscribe.slack: internal-gha-argo
   labels:
@@ -101,6 +102,7 @@ metadata:
   name: hacks
   namespace: argocd
   annotations:
+    argocd.argoproj.io/manifest-generate-paths: .
     argocd.argoproj.io/sync-wave: "5"
     notifications.argoproj.io/subscribe.slack: internal-gha-argo
   labels:
@@ -125,6 +127,7 @@ metadata:
   name: github-vm-runners
   namespace: argocd
   annotations:
+    argocd.argoproj.io/manifest-generate-paths: .
     argocd.argoproj.io/sync-wave: "3"
     notifications.argoproj.io/subscribe.slack: internal-gha-argo
   labels:

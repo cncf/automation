@@ -16,11 +16,13 @@ This document defines the schema for CNCF `.project` repository metadata files.
 | `name` | string | Yes | Project display name | Non-empty |
 | `description` | string | Yes | One-line project description | Non-empty |
 | `type` | string | No | Project type | Free text (e.g., `"project"`, `"platform"`, `"specification"`) |
+| `package_managers` | map[string]string | No | Registry identifiers (e.g., npm, Docker Hub) | All values must be non-empty strings |
 | `project_lead` | string | No | Primary contact GitHub handle | Non-empty if present; `@` prefix is stripped |
 | `cncf_slack_channel` | string | No | CNCF Slack channel name | Must start with `#` if present |
 | `maturity_log` | MaturityEntry[] | Yes | Maturity phase history | At least one entry; chronological order |
 | `repositories` | string[] | Yes | Repository URLs | At least one valid HTTP(S) URL |
 | `website` | string | No | Project website | Valid HTTP(S) URL if present |
+| `adopters` | PathRef | No | Link to ADOPTERS.md or adopters list | Path must be non-empty if present |
 | `artwork` | string | No | Artwork/logo URL | Valid HTTP(S) URL if present |
 | `social` | map[string]string | No | Social platform URLs | All values must be valid HTTP(S) URLs |
 | `mailing_lists` | string[] | No | Mailing list addresses | |
@@ -63,12 +65,45 @@ This document defines the schema for CNCF `.project` repository metadata files.
 | `codeowners` | PathRef | No | CODEOWNERS file | Path must be non-empty if present |
 | `governance_doc` | PathRef | No | Governance document | Path must be non-empty if present |
 | `gitvote_config` | PathRef | No | GitVote configuration | Path must be non-empty if present |
+| `vendor_neutrality_statement` | PathRef | No | Vendor neutrality statement | Path must be non-empty if present |
+| `decision_making_process` | PathRef | No | Decision-making process documentation | Path must be non-empty if present |
+| `roles_and_teams` | PathRef | No | Roles and teams documentation | Path must be non-empty if present |
+| `code_of_conduct` | PathRef | No | Code of conduct | Path must be non-empty if present |
+| `sub_project_list` | PathRef | No | Subproject listing | Path must be non-empty if present |
+| `sub_project_docs` | PathRef | No | Subproject documentation | Path must be non-empty if present |
+| `contributor_ladder` | PathRef | No | Contributor ladder documentation | Path must be non-empty if present |
+| `change_process` | PathRef | No | Change process documentation | Path must be non-empty if present |
+| `comms_channels` | PathRef | No | Communication channels listing | Path must be non-empty if present |
+| `community_calendar` | PathRef | No | Community calendar | Path must be non-empty if present |
+| `contributor_guide` | PathRef | No | Contributor guide | Path must be non-empty if present |
+| `maintainer_lifecycle` | MaintainerLifecycle | No | Maintainer lifecycle documentation | |
+
+### MaintainerLifecycle
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `onboarding_doc` | PathRef | No | Maintainer onboarding documentation | Path must be non-empty if present |
+| `progression_ladder` | PathRef | No | Maintainer advancement path (committer → maintainer → lead) | Path must be non-empty if present |
+| `mentoring_program` | string[] | No | URLs to mentoring/support program documentation | All must be valid HTTP(S) URLs if present |
+| `offboarding_policy` | PathRef | No | Emeritus/offboarding policy documentation | Path must be non-empty if present |
 
 ### LegalConfig
 
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
 | `license` | PathRef | No | License file | Path must be non-empty if present |
+| `identity_type` | IdentityType | No | Contributor identity agreement | |
+
+### IdentityType
+
+DCO can be used alone, or DCO + CLA together. CLA alone is not valid (DCO is the baseline requirement).
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `has_dco` | boolean | No | Whether the project uses DCO | Defaults to false |
+| `has_cla` | boolean | No | Whether the project uses CLA | Requires `has_dco` to be true |
+| `dco_url` | PathRef | No | Link to DCO document | Path must be non-empty if present |
+| `cla_url` | PathRef | No | Link to CLA document | Path must be non-empty if present |
 
 ### DocumentationConfig
 

@@ -207,6 +207,7 @@ type GitHubData struct {
 	Community   *GitHubCommunityProfile `json:"community"`
 	Maintainers []string                `json:"maintainers,omitempty"`
 	Reviewers   []string                `json:"reviewers,omitempty"`
+	HasAdopters bool                    `json:"has_adopters,omitempty"`
 }
 
 // fetchFromGitHub fetches repository, organization, community profile, and
@@ -311,6 +312,12 @@ var governanceFiles = []governanceFile{
 		parseFunc: func(data *GitHubData, content string) {
 			handles := parseMaintainersFile(content)
 			data.Maintainers = mergeStringSlices(data.Maintainers, handles)
+		},
+	},
+	{
+		name: "ADOPTERS.md",
+		parseFunc: func(data *GitHubData, content string) {
+			data.HasAdopters = true
 		},
 	},
 }
@@ -595,6 +602,8 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 			result.HasLicense = github.Community.Files.License != nil
 			result.HasReadme = github.Community.Files.Readme != nil
 		}
+
+		result.HasAdopters = github.HasAdopters
 	}
 
 	// Generate TODOs for missing required fields
@@ -616,6 +625,11 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	result.TODOs = append(result.TODOs, "Add maturity_log entry with TOC issue URL")
 	result.TODOs = append(result.TODOs, "Set project_lead GitHub handle")
 	result.TODOs = append(result.TODOs, "Set cncf_slack_channel")
+	result.TODOs = append(result.TODOs, "Set identity_type under legal (has_dco, has_cla)")
+	if !result.HasAdopters {
+		result.TODOs = append(result.TODOs, "Add adopters list (ADOPTERS.md)")
+	}
+	result.TODOs = append(result.TODOs, "Add package_managers if distributed via registries")
 
 	// Clean up empty social map
 	if len(result.Social) == 0 {

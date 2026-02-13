@@ -25,6 +25,13 @@ repositories:                   # REQUIRED: at least one repository URL
 website: "https://my-project.io"
 artwork: "https://github.com/cncf/artwork/tree/master/projects/my-project"
 
+# adopters:                      # Optional: link to adopters list
+#   path: "ADOPTERS.md"
+
+# package_managers:              # Optional: registry identifiers
+#   docker: "my-org/my-project"
+#   npm: "my-project"
+
 social:                         # Optional
   twitter: "https://twitter.com/myproject"
   slack: "https://myproject.slack.com"
@@ -47,10 +54,49 @@ governance:                     # Optional
     path: "CONTRIBUTING.md"
   codeowners:
     path: "CODEOWNERS"
+  # Governance DD items (optional):
+  # vendor_neutrality_statement:
+  #   path: "docs/vendor-neutrality.md"
+  # decision_making_process:
+  #   path: "docs/decision-making.md"
+  # roles_and_teams:
+  #   path: "docs/roles-and-teams.md"
+  # code_of_conduct:
+  #   path: "CODE_OF_CONDUCT.md"
+  # sub_project_list:
+  #   path: "docs/subprojects.md"
+  # sub_project_docs:
+  #   path: "docs/subproject-docs.md"
+  # contributor_ladder:
+  #   path: "docs/contributor-ladder.md"
+  # change_process:
+  #   path: "docs/change-process.md"
+  # comms_channels:
+  #   path: "docs/communication.md"
+  # community_calendar:
+  #   path: "docs/calendar.md"
+  # contributor_guide:
+  #   path: "docs/contributor-guide.md"
+  # maintainer_lifecycle:       # Optional: maintainer lifecycle documentation
+  #   onboarding_doc:
+  #     path: "docs/onboarding.md"
+  #   progression_ladder:
+  #     path: "docs/progression.md"
+  #   mentoring_program:
+  #     - "https://example.com/mentoring"
+  #   offboarding_policy:
+  #     path: "docs/offboarding.md"
 
 legal:                          # Optional
   license:
     path: "LICENSE"
+  # identity_type:               # Optional: contributor identity agreements
+  #   has_dco: true              # DCO can be used alone
+  #   has_cla: false             # CLA requires DCO
+  #   dco_url:
+  #     path: "https://developercertificate.org/"
+  #   cla_url:
+  #     path: "https://example.com/cla"
 
 documentation:                  # Optional
   readme:

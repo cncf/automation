@@ -4,30 +4,25 @@
 
 | Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
 |---|---|---|---|---|---|---|
-| Open Policy Agent | graduated | graduated | graduated | graduated | - | - |
-| metal3-io | incubating | - | incubating | incubating | - | - |
+| Open Policy Agent | graduated | graduated | graduated | graduated | - | graduated |
+| metal3-io | incubating | incubating | incubating | incubating | - | incubating |
 | cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | CoHDI | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Copa | sandbox | sandbox | sandbox | sandbox | - | - |
-| Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Hexa | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
-| Piraeus-Datastore | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Runme Notebooks | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | sandbox | archived | - | - | - | archived |
-| Spin | sandbox | - | sandbox | sandbox | sandbox | sandbox |
 | TrestleGRC | sandbox | sandbox | - | - | sandbox | - |
-| VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | - |
 | <QHTTPX> | forming | - | - | - | - | - |
 | Agones | forming | - | - | - | - | - |
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
 | Cedar | forming | sandbox | - | sandbox | - | - |
+| CNCF Standards & Specifications | forming | - | - | - | - | - |
 | Conveyor CI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
@@ -50,51 +45,31 @@
 | Terrascan | forming | - | - | - | - | - |
 | Velero | forming | - | - | - | - | - |
 | Brigade | archived | archived | - | - | - | archived |
-| Cluster API Provider for CloudStack(CAPC) | archived | - | - | - | - | - |
-| CNCF Standards & Specifications | archived | - | - | - | - | - |
 | CNI-Genie | archived | archived | - | - | - | - |
 | Curiefense | archived | archived | - | - | - | archived |
 | Curve | archived | archived | - | - | - | archived |
-| deploy-sh | archived | - | - | - | - | - |
 | Devstream | archived | archived | - | - | - | archived |
-| EGo | archived | - | - | - | - | - |
 | FabEdge | archived | archived | - | - | - | archived |
 | Fonio | archived | archived | - | - | - | archived |
-| IO Flow | archived | - | - | - | - | - |
-| joylive-agent | archived | - | - | - | - | - |
-| Kepimetheus | archived | - | - | - | - | - |
 | Keptn | archived | archived | - | - | - | archived |
-| Ketch | archived | - | - | - | - | - |
-| KLTS | archived | - | - | - | - | - |
 | Krator | archived | archived | - | - | - | archived |
 | Krustlet | archived | archived | - | - | - | archived |
-| KSail | archived | - | - | - | - | - |
 | KubeDL | archived | archived | - | - | - | archived |
-| Lagoon | archived | - | - | - | - | - |
-| MarbleRun | archived | - | - | - | - | - |
-| Matos | archived | - | - | - | - | - |
 | Merbridge | archived | archived | - | - | - | archived |
 | Nocalhost | archived | archived | - | - | - | archived |
 | Open Service Mesh | archived | archived | - | - | - | archived |
 | OpenELB | archived | archived | - | - | - | archived |
 | OpenMetrics | archived | archived | - | - | - | archived |
 | OpenTracing | archived | archived | - | - | - | archived |
-| pallet | archived | - | - | - | - | - |
 | Pravega | archived | archived | - | - | - | archived |
-| rainforest | archived | - | - | - | - | - |
 | RKT | archived | archived | - | - | - | archived |
-| sealer | archived | archived | - | archived | - | archived |
+| sealer | archived | archived | - | - | - | archived |
 | Service Mesh Interface | archived | archived | - | - | - | archived |
-| Silver Surfer | archived | - | - | - | - | - |
 | skooner | archived | archived | - | - | - | archived |
 | SuperEdge | archived | archived | - | - | - | archived |
-| Tarian | archived | - | - | - | - | - |
 | Teller | archived | archived | - | - | - | archived |
-| test | archived | - | - | - | - | - |
-| Turnbuckle | archived | - | - | - | - | - |
-| Wasm Mock Server | archived | - | - | - | - | - |
 | Xline | archived | archived | - | - | - | archived |
-| Yoke | archived | - | - | - | - | - |
+| CNCF Toolbox | prospect | - | - | - | - | - |
 
 ## Graduated
 
@@ -126,7 +101,7 @@
 | KubeEdge | graduated | graduated | graduated | graduated | graduated | graduated |
 | Kubernetes | graduated | graduated | graduated | graduated | graduated | graduated |
 | Linkerd | graduated | graduated | graduated | graduated | graduated | graduated |
-| Open Policy Agent | graduated | graduated | graduated | graduated | - | - |
+| Open Policy Agent | graduated | graduated | graduated | graduated | - | graduated |
 | Prometheus | graduated | graduated | graduated | graduated | graduated | graduated |
 | Rook | graduated | graduated | graduated | graduated | graduated | graduated |
 | SPIFFE | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -162,7 +137,7 @@
 | Lima | incubating | incubating | incubating | incubating | incubating | incubating |
 | LitmusChaos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Longhorn | incubating | incubating | incubating | incubating | incubating | incubating |
-| metal3-io | incubating | - | incubating | incubating | - | - |
+| metal3-io | incubating | incubating | incubating | incubating | - | incubating |
 | NATS | incubating | incubating | incubating | incubating | incubating | incubating |
 | Notary | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenCost | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -213,7 +188,7 @@
 | Devfile | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | DevSpace | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Dex | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Distribution | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Drasi | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | easegress | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Eraser | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -288,14 +263,14 @@
 | PARSEC | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Perses | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | PipeCD | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Piraeus-Datastore | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Piraeus-Datastore | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Pixie | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Podman Container Tools | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Podman Desktop | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Porter | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Radius | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Ratify | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Runme Notebooks | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Runme Notebooks | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | SchemaHero | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Score | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Serverless Devs | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -306,7 +281,7 @@
 | SlimToolkit | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | SOPS | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Spiderpool | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Spin | sandbox | - | sandbox | sandbox | sandbox | sandbox |
+| Spin | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | stacker | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Submariner | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Telepresence | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -318,7 +293,7 @@
 | urunc | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Vineyard | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Virtual Kubelet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| VS Code Kubernetes Tools | sandbox | sandbox | sandbox | - | sandbox | - |
+| VS Code Kubernetes Tools | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | WasmEdge Runtime | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | werf | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | xRegistry | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -334,6 +309,7 @@
 | AIBrix | forming | - | - | - | - | - |
 | BLAFS | forming | - | - | - | - | - |
 | Cedar | forming | sandbox | - | sandbox | - | - |
+| CNCF Standards & Specifications | forming | - | - | - | - | - |
 | Conveyor CI | forming | - | - | - | - | - |
 | Cruise | forming | - | - | - | - | - |
 | CubeCOS | forming | - | - | - | - | - |
@@ -361,49 +337,34 @@
 | Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
 |---|---|---|---|---|---|---|
 | Brigade | archived | archived | - | - | - | archived |
-| Cluster API Provider for CloudStack(CAPC) | archived | - | - | - | - | - |
-| CNCF Standards & Specifications | archived | - | - | - | - | - |
 | CNI-Genie | archived | archived | - | - | - | - |
 | Curiefense | archived | archived | - | - | - | archived |
 | Curve | archived | archived | - | - | - | archived |
-| deploy-sh | archived | - | - | - | - | - |
 | Devstream | archived | archived | - | - | - | archived |
-| EGo | archived | - | - | - | - | - |
 | FabEdge | archived | archived | - | - | - | archived |
 | Fonio | archived | archived | - | - | - | archived |
-| IO Flow | archived | - | - | - | - | - |
-| joylive-agent | archived | - | - | - | - | - |
-| Kepimetheus | archived | - | - | - | - | - |
 | Keptn | archived | archived | - | - | - | archived |
-| Ketch | archived | - | - | - | - | - |
-| KLTS | archived | - | - | - | - | - |
 | Krator | archived | archived | - | - | - | archived |
 | Krustlet | archived | archived | - | - | - | archived |
-| KSail | archived | - | - | - | - | - |
 | KubeDL | archived | archived | - | - | - | archived |
-| Lagoon | archived | - | - | - | - | - |
-| MarbleRun | archived | - | - | - | - | - |
-| Matos | archived | - | - | - | - | - |
 | Merbridge | archived | archived | - | - | - | archived |
 | Nocalhost | archived | archived | - | - | - | archived |
 | Open Service Mesh | archived | archived | - | - | - | archived |
 | OpenELB | archived | archived | - | - | - | archived |
 | OpenMetrics | archived | archived | - | - | - | archived |
 | OpenTracing | archived | archived | - | - | - | archived |
-| pallet | archived | - | - | - | - | - |
 | Pravega | archived | archived | - | - | - | archived |
-| rainforest | archived | - | - | - | - | - |
 | RKT | archived | archived | - | - | - | archived |
-| sealer | archived | archived | - | archived | - | archived |
+| sealer | archived | archived | - | - | - | archived |
 | Service Mesh Interface | archived | archived | - | - | - | archived |
-| Silver Surfer | archived | - | - | - | - | - |
 | skooner | archived | archived | - | - | - | archived |
 | SuperEdge | archived | archived | - | - | - | archived |
-| Tarian | archived | - | - | - | - | - |
 | Teller | archived | archived | - | - | - | archived |
-| test | archived | - | - | - | - | - |
-| Turnbuckle | archived | - | - | - | - | - |
-| Wasm Mock Server | archived | - | - | - | - | - |
 | Xline | archived | archived | - | - | - | archived |
-| Yoke | archived | - | - | - | - | - |
+
+## Prospect
+
+| Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
+|---|---|---|---|---|---|---|
+| CNCF Toolbox | prospect | - | - | - | - | - |
 
