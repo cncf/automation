@@ -1,0 +1,1375 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "CloudEvents - spec v0.2",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-13T14:58:10Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator",
+      "Tool: go-licenses"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM generated for CNCF project: CloudEvents (cloudevents/spec@v0.2). Repository: https://github.com/cloudevents/spec. CNCF Projects: https://www.cncf.io/projects/. License detection performed using go-licenses."
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/cloudevents/spec/releases/tag/v0.2",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.VBOYKfA1gw"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-Makefile",
+      "fileName": "Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "251ac0e84f363c6c3aee6afabb0ab934cd393b750467d79182fcee687bdd94cfa8c3a6f6c927cf0629dc21133d4d512de44609d57e4a3d64949195857daf0f08"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "00ba2108260b1bd34bdd40f1fbcd45fefce3557a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6e3b4d6f115c7809619528eba5493883862e97fe08420f6dc5f550e2e2b52663"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-SDK.md",
+      "fileName": "SDK.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1274b9d217dec5fb3e336f5129b6b3ffc0ed44c6e62faf6f16919b0ee8b4b303"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e2db7e1a1f42de5561f1584ca2556320d4b196394fd0183b7d0aded77b20a8acb4fc106151f52cea097cd87bb2286c745ab321f3ab0d35a0a7853a94cedb29de"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3c9894f0c569755d787d2e9bc1cddb0b3fcd6540"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-http-transport-binding.md",
+      "fileName": "http-transport-binding.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "628967b042e227f294f398233138fb07587971d7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "58ed63a2e5b7f5f077465d37de16f1c7c207042940ee47f3b9b13139303e50cd"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a95fa19555d2cba51833f3ee5bd0ccb089591d7d9701d954b05ae7b6cd860dcb3467bb1262caccede4e7ca8244860adb8cd1cbf39e498e392dfb70c8ae62ff4f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-source-event-action.png",
+      "fileName": "source-event-action.png",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "IMAGE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0cf35a3918c47c12a4464df992bf30cb8690d5d8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c3a2bfc4f342ac8fc7b9a39a5c8ae52f2f82980e990f4329730bde591a4dbea3"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "64de01c994e045b82f8528305bd21ed7671db489cb6255e5770f0d28b0b4eb12c787c81740a0a12d5387ccc0f843333258cd48a797676417a8774a1bd0bbf2e1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-json-format.md",
+      "fileName": "json-format.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fba2f11e86a68aa48ffe1acb434baf6c74421f95"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "260d6e8478af822ce6434ced171069435d1e2ff8d9140e67cd7400ffcd9b2d79"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e4de30fcf946d8ce7d7e5a8c192ce0e5851369e3c58189d1e6302d92d0ebfa56032f81b0326a6ec61529668d57d5cbf9d42d008dda8e6c0779edb48d86b4e480"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-specs.sh",
+      "fileName": "tools/verify-specs.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "104cfae855f69903dc1265a492c814e012de2883"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5770e9acd689ae2cf457dad27fec53c58457cbabc93f21bdd421eed64e32ee44"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "555efc1c4072a7534da3e264aa6d54ff3185ca72fea73266389848b7de837bd38fe549c7961810facbba34ca5411d118cf4d85e60c313677b7fc3da505132a2d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-.gitignore",
+      "fileName": ".gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9489ab60b9efc2dd9be7d12959a5a38323d85db0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4bb9ff4eea8965af93771be9bac447ce34eab71aefec1996c569fa461b16b934"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b78ea5c371a18fce672a18ca8e63302cab9d130be7bd60b5b5c3ff60b40121dc1ff43d7196f87ec2e28c32a1b2828e9288e1a13b33ca0ef5b2db5f456578b040"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-community-README.md",
+      "fileName": "community/README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fb3954e6989b12ffc370fd24618cee26ba5fe1048201f389394c512985d8503d07933d6f8b4145673a5729eb117ad4fc5e115fc0ed11b3bd34d4854f809d700c"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "34b32ac8567a96f893b92d35a2a1aa6a360871fb"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1fd0dfadbc4136f4f341e8ab647a198a32d8710454ddb37aea165f93d7b38871"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-community-demos.md",
+      "fileName": "community/demos.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "96385d94930a7e272d66855edbf08b4478f51d46"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2764bb668eb964015f35c3163397c0f6a8104a99b30871913d7dea0439ee4a6e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f38a383d287c6f2e6d652bdb17621a73c0474adb44e15c9cf3c410dcaae8c7c31200616ce0bc4fdf8c655f34b9feeb49c3e550ac2a848d997b151ce8fe5a39c6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-11-14-KubeCon-Intro-DeepDive.pdf",
+      "fileName": "share/2018-11-14-KubeCon-Intro-DeepDive.pdf",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ac6a698b9a20875c1cee855a886f668dc5e0af41"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "01269ce89c84fefa25c37af77a0083bf22246cb9e3b128fb4cd604bc15a129a9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "636db4b506bb47da2ea1ee05986ac5b0216a640efad20dcc3f81c3466be5170920cbfe8aff2f072d4e40b888f7c04113cf0f03e08fb4ef099dc2747f1f466d71"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-spec.json",
+      "fileName": "spec.json",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "20b9cd78c57f1a53487c001d4e7e5e9bc785b8463e244ecee83f7856f1cc9db7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1da3f22ff7d19f70818927aa818248b5326a4671c27ba6366dbe05c2f0d8e1a49e6da6a9e4ab7d869a2dc1bbd35df4f60848d20fe01f012614119ba06c76480d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4c6ad5cea683cce7c722285b4d7cd5a9bba7223d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-GOVERNANCE.md",
+      "fileName": "GOVERNANCE.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d9ca8706e0e77ef6d78421a7173c4c586d76d709cac1b6c55a94225beb6d0adb47be842b3797c6ad7f567b6acfc9d9137b4d33517840e08dbba0099890693595"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "32fd6e97714e1a3e67291653af8ad231c54904f0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "05110488ea31a2379426eebffcd8e814fd6a6b739a9aeed4adeffd00b341859f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-docs.sh",
+      "fileName": "tools/verify-docs.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3a05befbe37adf6fd45ca24cc55bbf9dd8f5a7a4e34f20113f9b6a92a0e8f6179dab1f98fb3e16db7a48ca696beed25a0e093fa7b57fa6d7664b1f2ee5b33b65"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "aeec4743b65a52fe2e2074c631551c0de911af37"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "22a4b884d589123b05a84643bfb877d1c27ee3f28b3088ca68a4468c1d8c5022"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-primer.md",
+      "fileName": "primer.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "53b93695d914e90afad790601746b0fc13e734ac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "61c9c1a5ca467479ef48e44caba60513b4139406a88e69a0de9ecc6ad296ce57"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6e2df133980f8e6e1cd36b0874cb9b58e7bf7717a36af3136f3f9cf2398f5af4194f1a9117880807f4f64c038c9a1f5854cc36bfd8ecba4505844628c0627709"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-share-README.md",
+      "fileName": "share/README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ec48f0be9b1ee71cf15edd9911b465b5a1c05e606b23f92a654d78c34dd8fc07"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "38f6c23fff9fdcc9f2871339859003d8e447ae77593cc1d50f492fa3bba3961a4bbddc9242e3f26de1ee9b1d13c6428faafc4174377619268b4d8389f8726f6c"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9c5f5860902594ff8f6596de36a60c1320d09387"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-02-22-CloudEvents.pdf",
+      "fileName": "share/2018-02-22-CloudEvents.pdf",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7eba5a504573ef9b14e1c9192f2ac72a1cd5c0e9"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3089baeef1ac94e6c09bb585f5441c7bfb1b0c6fd69a61d34b0d1709257a8773"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5751ffc5645c2cd8cedb79183fd16d2deb3ab9ed566ddfa7fc8957970fbe08551fb0f8de01205ebf45df7d945aab853cccd122753e98bb68af56f6e818954cd8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-amqp-format.md",
+      "fileName": "amqp-format.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "664ebd163e77e1f0513661219f9ae553815361d9"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4a4f414082c7706c9c57365ae41855879f55e23418b59d1683c6e4a441909e59"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cbfab4e217e38179372c73481bcbfb336badef2a809f5160c8ce70e2b8d0a6f59d4b27928223609f00292d3dacaf00fbed89d9d4c48d14b436ae17dadfd6bdef"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "04739bc745c426749be1b5397405db716c5d5547035e7a25ae9839400159948fd696afee43978ef9fbc9feda6d590899a84d13ce1dbd5fd2634defeb95f9b815"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5b6b4c5866bfe5e5a8fff156b6b46fb1d4f1ddde"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4c504c0c83a8a75c773430473f917709f1731b7a6b9d4bd2303bad2180f0298b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-extensions-sequence.md",
+      "fileName": "extensions/sequence.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "33190a0706486f2034c53e638d5875f22ca63637b386e5d8bb19215a7130f6f6ca55f036b37af6cb0c61e8200aab21c7c12e8e45c3d83e2ade94c9ebfed2f619"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "456c053f72311d7be436edf6a89605cf4886a0e2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "73e711fe5642d1b0f00ee81537b8f217d14984cab4f94a8decffb805e6ad94af"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-extensions-distributed-tracing.md",
+      "fileName": "extensions/distributed-tracing.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b7c55e451421931dab23ab7ddc7d39185afb896a5fd22f6ddbdd696c070be702"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7d11c47927acb2e91f4a8504636abd3ccfbc055eaeb9fce0276fb40f98c476239a1876399b0f03f6b56da5106dc5b8bed3ca81a6adc4f070a556a5b8037d2f45"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "72112f1d83adf0a2fda1b344000e3eade7f7ce3a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-LICENSE",
+      "fileName": "LICENSE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "83f884e6a28c91d6861fe62526d77d91f79872a995120e0dbcc3b94feafd14df2495c5e1ba740d4404c3cbac7112037ad748a8e888ec376e20010f744516bf1a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "90f290063daa2b4130c896bd275b5a03ec9adadd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c07c2bf22d1b6eadecdbc008b0693c9a876f85c1485c375ff57301085ffc8db9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-mqtt-transport-binding.md",
+      "fileName": "mqtt-transport-binding.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "638fe4a45a40e0b713350da3d4176234af9a68f7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1f52896c307dea50bb12a4f2754353ab50f42ef42777bcb6d33081e500e9de30"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6c21613c0846adedae0f2cecd3d0c6c4eb1196c772b301d7487bf27dd7e6515f86de64b5c98b9800ccdc890eb0019b9114b99b0d3facb4bee3fa3ae6b51273d1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-links.sh",
+      "fileName": "tools/verify-links.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "99f4904d7297c5d6c3cac294f137eb24b41370a44ed05df997589a97470b4fca"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dd300e9c61e3e31fce630fd24f346b21cc2c2e42b8344bd3dfdd5ee2d8d90b90ca2309a3e58f87e0b1c3d3bd338b562d1d760de38b53375e11d9498e43bae59f"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "641c531006705c71e9578f29ef434dfdfcfa6442"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-03-22-TopicsAndSubjects.pptx",
+      "fileName": "share/2018-03-22-TopicsAndSubjects.pptx",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "af6be335284263665ba01a25271ca4f23fa57354"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "677e1b6c85748dc3e360b6a483837e2be8e828d60db46aa964546832ed4daa12"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a033c3006901a761c45a54f915aca4dddb94d57edaebfd7eda8ce85d4ccf13a82ea000f62d565320dcb541b1a7883bb6c030a7d0a69bfb8ec20cc31b06a691b4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-extensions-sampled-rate.md",
+      "fileName": "extensions/sampled-rate.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a4e168463c9cfd3ddc002329826ad25f743106c2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "612cda12cdd0493d71cd6a442200aae38ac8f4edc25721733fff964b6d2a04b8"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e3096ac1020c45b00ab837d8ea86106d79acd2ca40526cae8809ece8c0f5f15e0bd5702c4dcf2df895926beb26bf1799c55f5bf11dfb863f9ef0225188f2c42f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-http-webhook.md",
+      "fileName": "http-webhook.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c6969392f8dd5a089e26193c1265a49ac728a6c9"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "08ab85261202e193ba9e152a7a55ed69fa7a74524def0a529a21398492024b67"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "27c20eedf2f9e8b06a7e509c28eb2ec2f9ffe8ff687200b259984982d1f0fb284eb93dc5dae104304672d1a6ac854d732d34999864cf42fa58d1035fc99e2d16"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-CONTRIBUTING.md",
+      "fileName": "CONTRIBUTING.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e708048b3af93c4e4bf67f4bd8e0a4e17457488f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "bf792e9e58fa1fcaf18eaa37ee16f87eb587d1af14a2d93e0e3d15de7bcc2c52"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4c04c7bc6cc6958bdb5bbcb2aa7a70a7c4e37c754532931e44d7605b80c3d890f5d1f503a9ff0f9d133536579f6160d876ba38b2e983085852acbcfd0e5be10b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-protobuf-format.md",
+      "fileName": "protobuf-format.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "45daedec1b9760768acccd26a289ae67979ce869f6601fd468c218be632441e2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "801a5fad4c0044027d1c7a6f42a1493573e60b5430c4027a24a7726d134ef43a1b1f9cc65e79a5a2b67686cca95ffc4da62ac383984808a0b06d1372a887ecb5"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c22188223c6220a4e75ec91d3830f287c1e51fd2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-02-22-CloudEvents-Routing.pptx",
+      "fileName": "share/2018-02-22-CloudEvents-Routing.pptx",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c533291f9723b5ee583ad8cbc2fac6afeb1835a846bdedb3fd4fec944ae8bed6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "37aee7a7fc0dfd14f3a4583664cf97356eec7267e1bbd8a27d0e4281c0418c451e2ada41b31128a37a3fe360687c8e201f74d8ce995fce89a804f862ebecb33a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "691ea5a53085381457a1127d83bc9ac470a0cbf2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-community-open-source.md",
+      "fileName": "community/open-source.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0b35fef840d2f135f219f38718b297345dab9085"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e1a7b6de879ffa67c9d081c177277a8090fe951c43db88eace00c99b2b60a419"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "efec1f503997fd38a2b390b77565857424c03d28bcc55ff5b2cb585747e5a1be07f08081bdaaa8c7bcc05ad7b495f17f6a206c562a59a97f26f6bc5493d7fc33"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-artwork-README.md",
+      "fileName": "artwork/README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3bfa704b6bf6be848baa0c19f8c7fda3525ef810ae9ecb4d32b939ce4d4d45f2398d7e05b6f41171b99f938cb8fbaad9537470e85fcc7fa11b13a823fe63d3c8"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "155eb712ff3bcea6110166f8aa0a71f032b3c527"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "da9245d88f40be2a4bf8fb106e90d46e687f85b3bb51c14d45749b8144ca6aed"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-cloudevent.proto",
+      "fileName": "cloudevent.proto",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "53bd849d58c56b31ba212ed8ded508ee85eea822e4248834ccdb3c735b75fd44"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2e65682cf4ac595106d8fe02c0a305ec29703799ffc93581fd1433d76c0dc3c270671516daa7e839b3f0e86cfe6dc140926b2ba8cb1b95fc3fa6522c87f7ccff"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "40152f68318d65b1b5acc3780e34085f5a957f6e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-amqp-transport-binding.md",
+      "fileName": "amqp-transport-binding.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3242c8fcf05d9f157c5576c830c0d12cc4ca5f8b89d581a809356062cdeae560ca3c7ee57929ca6dba33b0501aa64607d64a5741e90791c8db815b05454ce41b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "140cee7b3cbc7a2f3c4dc2d9896d6ec251ccd4f8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8f8610b0fab5b7f66d5044c36e38250803f4ee5dbdfd6d79d500f6574ea78460"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-.travis.yml",
+      "fileName": ".travis.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "553de91a3f2f336f205c6d8a02a12126629d3b6c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "69f4b84eb550c0d9f6cb6af0ec79671b841861c606ce42db7d9163ea1e66b55d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6df2ad5ebfb720d370928e848164917ccb0a1f9ef1ac3408c5177525d00e3cfcf575775683d2fe36aa156f62d0ddee761b0c08d2f2168586205db4963ceeceb3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-roadmap.md",
+      "fileName": "roadmap.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "535634f2324b12b5bc524633f79c40794ccdede4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "85753eeb71c97f179b83b409890dde81e1f99e75b4d4dbe9bfcd2aceb81997c4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9ff1b8838f2ad4035386b4963958f4e7b9785a011e5d1e24fd87270ff1a7139a0368cc1fc961fd1791281af2baf975a3b118c80ea27695c7a03850c0c12abf41"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-nats-transport-binding.md",
+      "fileName": "nats-transport-binding.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5e8db716c8844062f467ffe71a6c48045559186818301ad8e28f0eb2d629cc72"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6c45fa94c97d0ec272bac2f96d69cb35c5d37c194c19ed638bbf1b905fbb6c3faee7c1739ac531beb3b4b10b34943af5b42a39777cbb80d4a630718e4fd6d2e6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f63994198f56fd06da60cbfac6c679c66c6b13b0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-spec.md",
+      "fileName": "spec.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "136f8c14aa5772b6ea4c77098af32b4de5bca997"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "128307b89b9ec8829b4944a93d6ebb97170efbcffacf6198daf3fda5bb33a358"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "100c2c496f95b185a6801dd83df0132063301e47bcc5faee538ff1ae27a0a3a6111f1ef555ea6f1a06177d5cf2a68df4edb2cee726868102e1d6a53a53ff6b3a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-documented-extensions.md",
+      "fileName": "documented-extensions.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "219ce2f412dd73218f598776f1d5834a1fe328a1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cd0cb6200e1a2ef2da370df5dbfc3ccda3e041b8a312f9466d655ccd573f12ea"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e00f0cee498aa4264dbaa036dd784f2bb1a762d723e5fe2771bb189dde619aed347428a37fe5ac13e95ed11ed9b63ffbb9c73d39b2e16d847a89810ef3d53b55"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-OWNERS",
+      "fileName": "OWNERS",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e81b764d61dc3cb9ae5c6176f39fa8c5360989062e8a4965da3dba9bb8d65791"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "40eccb5e9dbc53835bd23fed23cad0d49b9bd52de53ca0099043d7e3c2b953102223773ce01a70950802fac3e66cd23a51463669d180ebe1109b4e237f705f00"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5d7b87c965a4989727d90788ddcb94c03cf37520"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.VBOYKfA1gw-community-contributors.md",
+      "fileName": "community/contributors.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "da9ea53feffb9710daafb370adfb0830c1838d7c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e5a14520f0e74e7200722f3a65959bf8ac243ec21b3ad67bbaacba30f87f1c4e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9aa618084a0367b789989d4e62714e6e74c77646ee7989eb06ee4076774e3efda581a2ce5a606a05053c1bc6d108dcf554798a82e1bff65800335512d7c786e3"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "name": "tmp.VBOYKfA1gw",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.VBOYKfA1gw-.travis.yml",
+        "SPDXRef-File-tmp.VBOYKfA1gw-GOVERNANCE.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-CONTRIBUTING.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-Makefile",
+        "SPDXRef-File-tmp.VBOYKfA1gw-LICENSE",
+        "SPDXRef-File-tmp.VBOYKfA1gw-.gitignore",
+        "SPDXRef-File-tmp.VBOYKfA1gw-README.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-amqp-format.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-SDK.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-artwork-README.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-amqp-transport-binding.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-cloudevent.proto",
+        "SPDXRef-File-tmp.VBOYKfA1gw-community-README.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-community-demos.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-OWNERS",
+        "SPDXRef-File-tmp.VBOYKfA1gw-documented-extensions.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-community-open-source.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-extensions-distributed-tracing.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-extensions-sampled-rate.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-extensions-sequence.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-http-transport-binding.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-json-format.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-http-webhook.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-community-contributors.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-nats-transport-binding.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-protobuf-format.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-roadmap.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-primer.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-mqtt-transport-binding.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-share-README.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-source-event-action.png",
+        "SPDXRef-File-tmp.VBOYKfA1gw-spec.json",
+        "SPDXRef-File-tmp.VBOYKfA1gw-spec.md",
+        "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-docs.sh",
+        "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-links.sh",
+        "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-specs.sh",
+        "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-02-22-CloudEvents.pdf",
+        "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-11-14-KubeCon-Intro-DeepDive.pdf",
+        "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-02-22-CloudEvents-Routing.pptx",
+        "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-03-22-TopicsAndSubjects.pptx"
+      ],
+      "licenseInfoFromFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "11537388e8b751d7ecf6370fa07000bc7aec2e3f"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-.travis.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-GOVERNANCE.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-CONTRIBUTING.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-LICENSE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-amqp-format.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-SDK.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-artwork-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-amqp-transport-binding.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-cloudevent.proto"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-community-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-community-demos.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-OWNERS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-documented-extensions.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-community-open-source.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-extensions-distributed-tracing.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-extensions-sampled-rate.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-extensions-sequence.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-http-transport-binding.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-json-format.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-http-webhook.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-community-contributors.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-nats-transport-binding.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-protobuf-format.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-roadmap.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-primer.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-mqtt-transport-binding.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-share-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-source-event-action.png"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-spec.json"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-spec.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-docs.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-links.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-tools-verify-specs.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-02-22-CloudEvents.pdf"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-11-14-KubeCon-Intro-DeepDive.pdf"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-02-22-CloudEvents-Routing.pptx"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.VBOYKfA1gw",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.VBOYKfA1gw-share-2018-03-22-TopicsAndSubjects.pptx"
+    }
+  ],
+  "externalDocumentRefs": [
+    {
+      "externalDocumentId": "DocumentRef-cncf-project",
+      "spdxDocument": "https://www.cncf.io/projects/",
+      "checksum": {
+        "algorithm": "SHA1",
+        "checksumValue": "0000000000000000000000000000000000000000"
+      }
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-13T14:58:10Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "CNCF Project: CloudEvents\nOwner: cloudevents\nRepository: spec\nVersion: v0.2\nGitHub: https://github.com/cloudevents/spec\nRelease: https://github.com/cloudevents/spec/releases/tag/v0.2"
+    }
+  ],
+  "hasExtractedLicensingInfo": []
+}

@@ -1,0 +1,484 @@
+name: Generate SBOM for CNCF Projects
+
+on:
+  schedule:
+    # Run weekly on Sunday at 02:00 UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      project_filter:
+        description: 'Filter by owner/repo (e.g., "kubernetes/kubernetes"), leave empty for all'
+        required: false
+        default: ''
+      force_regenerate:
+        description: 'Force regenerate existing SBOMs'
+        required: false
+        default: false
+        type: boolean
+      releases_mode:
+        description: 'Which releases to process'
+        required: false
+        default: 'recent'
+        type: choice
+        options:
+          - recent    # Only releases from the past week
+          - latest    # Latest N releases regardless of date
+      max_releases:
+        description: 'Maximum number of releases to process per repo (only used with "latest" mode)'
+        required: false
+        default: '3'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Generate repository matrix
+        id: set-matrix
+        run: |
+          FILTER="${{ github.event.inputs.project_filter }}"
+          
+          # Use cncf-projects.yaml which is auto-synced from CNCF landscape
+          PROJECTS_FILE="supply-chain/util/data/cncf-projects.yaml"
+          
+          if [ ! -f "$PROJECTS_FILE" ]; then
+            echo "Error: $PROJECTS_FILE not found. Run the sync-cncf-projects workflow first."
+            exit 1
+          fi
+          
+          if [ -n "$FILTER" ]; then
+            # Filter for specific project
+            OWNER=$(echo "$FILTER" | cut -d'/' -f1)
+            REPO=$(echo "$FILTER" | cut -d'/' -f2)
+            MATRIX=$(yq -o=json '.repositories | map(select(.owner == "'"$OWNER"'" and .repo == "'"$REPO"'")) | {"include": .}' "$PROJECTS_FILE" | jq -c .)
+          else
+            # All projects
+            MATRIX=$(yq -o=json '{"include": .repositories}' "$PROJECTS_FILE" | jq -c .)
+          fi
+          
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Generated matrix with $(echo "$MATRIX" | jq '.include | length') repositories"
+
+  generate-sbom:
+    needs: prepare-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: false
+
+      - name: Install bom tool and go-licenses
+        run: |
+          # Install kubernetes-sigs/bom
+          go install sigs.k8s.io/bom/cmd/bom@latest
+          # Install go-licenses for license detection
+          go install github.com/google/go-licenses@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Check if repository is a Go project
+        id: check-go
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OWNER="${{ matrix.owner }}"
+          REPO="${{ matrix.repo }}"
+          
+          echo "Checking if $OWNER/$REPO is a Go project..."
+          
+          # Check for go.mod or go.sum in the default branch
+          HAS_GO_MOD=$(gh api repos/${OWNER}/${REPO}/contents/go.mod --jq '.name' 2>/dev/null || echo "")
+          HAS_GO_SUM=$(gh api repos/${OWNER}/${REPO}/contents/go.sum --jq '.name' 2>/dev/null || echo "")
+          
+          if [ -n "$HAS_GO_MOD" ] || [ -n "$HAS_GO_SUM" ]; then
+            echo "Found Go project files (go.mod: ${HAS_GO_MOD:-not found}, go.sum: ${HAS_GO_SUM:-not found})"
+            echo "is_go_project=true" >> $GITHUB_OUTPUT
+          else
+            echo "No go.mod or go.sum found - skipping SBOM generation for non-Go project"
+            echo "is_go_project=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get stable releases and generate SBOMs
+        id: generate
+        if: steps.check-go.outputs.is_go_project == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCE_REGENERATE: ${{ github.event.inputs.force_regenerate }}
+          RELEASES_MODE: ${{ github.event.inputs.releases_mode || 'recent' }}
+          MAX_RELEASES: ${{ github.event.inputs.max_releases || '3' }}
+        run: |
+          set -e
+          
+          OWNER="${{ matrix.owner }}"
+          REPO="${{ matrix.repo }}"
+          PROJECT_NAME="${{ matrix.name }}"
+          # Use project name (sanitized) for directory structure: projectname/reponame/version/
+          SANITIZED_PROJECT=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+          SBOM_BASE_DIR="supply-chain/sbom/${SANITIZED_PROJECT}/${REPO}"
+          GENERATED_FILES=""
+          PROCESSED=0
+          
+          # Calculate date threshold for 'recent' mode (7 days ago)
+          ONE_WEEK_AGO=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -v-7d +%Y-%m-%dT%H:%M:%SZ)
+          
+          echo "::group::Processing $PROJECT_NAME ($OWNER/$REPO)"
+          echo "Releases mode: $RELEASES_MODE"
+          if [ "$RELEASES_MODE" == "latest" ]; then
+            echo "Max releases: $MAX_RELEASES"
+          else
+            echo "Processing releases from the past week (since $ONE_WEEK_AGO)"
+          fi
+          
+          # Function to extract licenses using go-licenses (for Go projects)
+          extract_go_licenses() {
+            local DIR="$1"
+            local OUTPUT_FILE="$2"
+            
+            # Check if it's a Go project
+            if [ ! -f "$DIR/go.mod" ]; then
+              echo "[]" > "$OUTPUT_FILE"
+              return 0
+            fi
+            
+            echo "  Extracting Go licenses..."
+            cd "$DIR"
+            
+            # Download dependencies first
+            go mod download 2>/dev/null || true
+            
+            # Run go-licenses csv and capture output
+            # Format: package,license_url,license_type
+            local LICENSES_CSV
+            LICENSES_CSV=$(go-licenses csv ./... 2>/dev/null || echo "")
+            
+            if [ -z "$LICENSES_CSV" ]; then
+              echo "[]" > "$OUTPUT_FILE"
+              cd - > /dev/null
+              return 0
+            fi
+            
+            # Convert CSV to JSON array for SPDX hasExtractedLicensingInfo format
+            echo "$LICENSES_CSV" | awk -F',' '{
+              gsub(/"/, "\\\"", $1);
+              gsub(/"/, "\\\"", $2);
+              gsub(/"/, "\\\"", $3);
+              id = $1;
+              gsub(/[^a-zA-Z0-9]/, "-", id);
+              id = substr(id, 1, 50);
+              printf "{\"licenseId\": \"LicenseRef-%s\", \"extractedText\": \"License: %s\", \"name\": \"%s\", \"comment\": \"Package: %s, License URL: %s\"}\n", id, $3, $3, $1, $2
+            }' | jq -s '.' > "$OUTPUT_FILE" 2>/dev/null || echo "[]" > "$OUTPUT_FILE"
+            
+            cd - > /dev/null
+            return 0
+          }
+          
+          # Function to generate SBOM for a specific tag
+          generate_sbom() {
+            local TAG="$1"
+            local VERSION=$(echo "$TAG" | sed 's/^v//')
+            local SBOM_DIR="${SBOM_BASE_DIR}/${VERSION}"
+            local SBOM_FILE="${SBOM_DIR}/${REPO}.json"
+            
+            # Check if SBOM already exists
+            if [ -f "$SBOM_FILE" ] && [ "$FORCE_REGENERATE" != "true" ]; then
+              echo "SBOM already exists: $SBOM_FILE, skipping..."
+              return 1
+            fi
+            
+            echo "Generating SBOM for $OWNER/$REPO@$TAG..."
+            
+            # Clone the repository at specific tag
+            local TEMP_DIR=$(mktemp -d)
+            if ! git clone --depth 1 --branch "$TAG" "https://github.com/${OWNER}/${REPO}.git" "$TEMP_DIR" 2>/dev/null; then
+              echo "Failed to clone $OWNER/$REPO@$TAG, skipping..."
+              rm -rf "$TEMP_DIR"
+              return 1
+            fi
+            
+            # Create output directory
+            mkdir -p "$SBOM_DIR"
+            
+            # Build descriptive name and namespace for the SBOM
+            local SBOM_NAME="${PROJECT_NAME} - ${REPO} ${TAG}"
+            local SBOM_NAMESPACE="https://github.com/${OWNER}/${REPO}/releases/tag/${TAG}"
+            
+            # Generate SBOM with bom tool including project metadata
+            if bom generate \
+              --format json \
+              --name "$SBOM_NAME" \
+              --namespace "$SBOM_NAMESPACE" \
+              --output "$SBOM_FILE" \
+              "$TEMP_DIR" 2>/dev/null; then
+              
+              # Extract licenses using go-licenses (for Go projects)
+              local LICENSES_FILE=$(mktemp)
+              extract_go_licenses "$TEMP_DIR" "$LICENSES_FILE"
+              local LICENSE_COUNT=$(jq 'length' "$LICENSES_FILE" 2>/dev/null || echo "0")
+              echo "  Found $LICENSE_COUNT dependency licenses"
+              
+              # Enrich SBOM with additional CNCF project metadata and licenses
+              local TEMP_SBOM=$(mktemp)
+              jq --arg owner "$OWNER" \
+                 --arg repo "$REPO" \
+                 --arg tag "$TAG" \
+                 --arg project "$PROJECT_NAME" \
+                 --arg sanitized "$SANITIZED_PROJECT" \
+                 --arg ghUrl "https://github.com/${OWNER}/${REPO}" \
+                 --arg releaseUrl "https://github.com/${OWNER}/${REPO}/releases/tag/${TAG}" \
+                 --arg cncfUrl "https://www.cncf.io/projects/" \
+                 --arg generatedAt "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                 --slurpfile licenses "$LICENSES_FILE" \
+                 '
+                 # Add CNCF-specific metadata as document annotations
+                 .creationInfo.creators += ["Tool: cncf-automation-sbom-generator", "Tool: go-licenses"] |
+                 .creationInfo.comment = "SBOM generated for CNCF project: \($project) (\($owner)/\($repo)@\($tag)). Repository: \($ghUrl). CNCF Projects: \($cncfUrl). License detection performed using go-licenses." |
+                 # Add external document references
+                 .externalDocumentRefs = ((.externalDocumentRefs // []) + [{
+                   "externalDocumentId": "DocumentRef-cncf-project",
+                   "spdxDocument": $cncfUrl,
+                   "checksum": {
+                     "algorithm": "SHA1",
+                     "checksumValue": "0000000000000000000000000000000000000000"
+                   }
+                 }]) |
+                 # Add document-level annotation with project info
+                 .annotations = ((.annotations // []) + [{
+                   "annotationDate": $generatedAt,
+                   "annotationType": "OTHER",
+                   "annotator": "Tool: cncf-automation",
+                   "comment": "CNCF Project: \($project)\nOwner: \($owner)\nRepository: \($repo)\nVersion: \($tag)\nGitHub: \($ghUrl)\nRelease: \($releaseUrl)"
+                 }]) |
+                 # Add extracted licensing info from go-licenses
+                 .hasExtractedLicensingInfo = ((.hasExtractedLicensingInfo // []) + $licenses[0])
+                 ' "$SBOM_FILE" > "$TEMP_SBOM" && mv "$TEMP_SBOM" "$SBOM_FILE"
+              
+              rm -f "$LICENSES_FILE"
+              echo "Successfully generated SBOM: $SBOM_FILE"
+              GENERATED_FILES="$GENERATED_FILES $SBOM_FILE"
+              rm -rf "$TEMP_DIR"
+              return 0
+            else
+              echo "Failed to generate SBOM for $OWNER/$REPO@$TAG"
+              rm -rf "$TEMP_DIR"
+              return 1
+            fi
+          }
+          
+          # Get releases from GitHub API (last 50)
+          RELEASES=$(gh api repos/${OWNER}/${REPO}/releases --paginate -q '.[0:50]' 2>/dev/null || echo "[]")
+          
+          if [ "$RELEASES" == "[]" ] || [ -z "$RELEASES" ]; then
+            echo "No releases found for $OWNER/$REPO, trying tags..."
+            TAGS=$(gh api repos/${OWNER}/${REPO}/tags --paginate -q '.[0:20] | .[].name' 2>/dev/null || echo "")
+            
+            if [ -z "$TAGS" ]; then
+              echo "No tags found for $OWNER/$REPO, skipping..."
+              echo "::endgroup::"
+              exit 0
+            fi
+            
+            # Note: Tags don't have date info, so we can only limit by count in 'latest' mode
+            # For 'recent' mode with tags, we skip as we can't determine date
+            if [ "$RELEASES_MODE" == "recent" ]; then
+              echo "Warning: 'recent' mode requires releases with publish dates. Tags don't have date info."
+              echo "Falling back to processing up to 3 latest tags..."
+              EFFECTIVE_MAX=3
+            else
+              EFFECTIVE_MAX=$MAX_RELEASES
+            fi
+            
+            # Process tags as releases
+            for TAG in $TAGS; do
+              # Filter out pre-releases (alpha, beta, rc, pre, dev, snapshot, nightly)
+              if echo "$TAG" | grep -qiE '[-\.](alpha|beta|rc|pre|dev|snapshot|nightly|canary|test|draft|wip)[0-9]*'; then
+                echo "Skipping pre-release tag: $TAG"
+                continue
+              fi
+              
+              # Only process semver-like tags
+              if ! echo "$TAG" | grep -qE '^v?[0-9]+\.[0-9]+'; then
+                echo "Skipping non-semver tag: $TAG"
+                continue
+              fi
+              
+              if generate_sbom "$TAG"; then
+                PROCESSED=$((PROCESSED + 1))
+              fi
+              
+              # Only process limited releases per repo
+              if [ "$PROCESSED" -ge "$EFFECTIVE_MAX" ]; then
+                echo "Processed $EFFECTIVE_MAX releases, stopping..."
+                break
+              fi
+            done
+          else
+            # Process releases - read into array to avoid subshell issues
+            # Filter by date for 'recent' mode, or just get stable releases for 'latest' mode
+            if [ "$RELEASES_MODE" == "recent" ]; then
+              echo "Filtering releases published after $ONE_WEEK_AGO..."
+              readarray -t RELEASE_DATA < <(echo "$RELEASES" | jq -r --arg since "$ONE_WEEK_AGO" '.[] | select(.draft == false and .prerelease == false and .published_at >= $since) | "\(.tag_name)|\(.published_at)"')
+            else
+              readarray -t RELEASE_DATA < <(echo "$RELEASES" | jq -r '.[] | select(.draft == false and .prerelease == false) | "\(.tag_name)|\(.published_at)"')
+            fi
+            
+            if [ ${#RELEASE_DATA[@]} -eq 0 ]; then
+              echo "No matching releases found for the selected mode"
+              echo "::endgroup::"
+              exit 0
+            fi
+            
+            echo "Found ${#RELEASE_DATA[@]} releases matching criteria"
+            
+            for RELEASE_INFO in "${RELEASE_DATA[@]}"; do
+              TAG=$(echo "$RELEASE_INFO" | cut -d'|' -f1)
+              PUBLISHED_AT=$(echo "$RELEASE_INFO" | cut -d'|' -f2)
+              
+              # Additional filter for pre-release patterns in tag name
+              if echo "$TAG" | grep -qiE '[-\.](alpha|beta|rc|pre|dev|snapshot|nightly|canary|test|draft|wip)[0-9]*'; then
+                echo "Skipping pre-release tag: $TAG"
+                continue
+              fi
+              
+              echo "Processing release: $TAG (published: $PUBLISHED_AT)"
+              
+              if generate_sbom "$TAG"; then
+                PROCESSED=$((PROCESSED + 1))
+              fi
+              
+              # In 'latest' mode, limit by MAX_RELEASES; in 'recent' mode, process all recent releases
+              if [ "$RELEASES_MODE" == "latest" ] && [ "$PROCESSED" -ge "$MAX_RELEASES" ]; then
+                echo "Processed $MAX_RELEASES releases, stopping..."
+                break
+              fi
+            done
+          fi
+          
+          echo "::endgroup::"
+          echo "generated_files=$GENERATED_FILES" >> $GITHUB_OUTPUT
+
+      - name: Commit and push SBOMs with retry
+        if: steps.check-go.outputs.is_go_project == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add files first, then check for changes (handles both new and modified files)
+          git add supply-chain/sbom/
+          
+          # Check for staged changes
+          if git diff --cached --quiet; then
+            echo "No new SBOMs generated for ${{ matrix.owner }}/${{ matrix.repo }}"
+            exit 0
+          fi
+          
+          git commit -m "chore(sbom): update SBOM for ${{ matrix.owner }}/${{ matrix.repo }}"
+          
+          # Retry push with rebase up to 5 times to handle parallel job conflicts
+          MAX_RETRIES=5
+          RETRY_DELAY=5
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Push attempt $i of $MAX_RETRIES..."
+            
+            # Pull latest changes with rebase before pushing
+            if git pull --rebase origin ${{ github.ref_name }}; then
+              if git push origin HEAD:${{ github.ref_name }}; then
+                echo "Successfully pushed changes on attempt $i"
+                exit 0
+              fi
+            fi
+            
+            if [ $i -lt $MAX_RETRIES ]; then
+              echo "Push failed, retrying in ${RETRY_DELAY}s..."
+              sleep $RETRY_DELAY
+              # Increase delay for next retry (exponential backoff)
+              RETRY_DELAY=$((RETRY_DELAY * 2))
+            fi
+          done
+          
+          echo "Failed to push after $MAX_RETRIES attempts"
+          exit 1
+
+  # Aggregate job to handle merge conflicts from parallel commits
+  aggregate-sboms:
+    needs: generate-sbom
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest changes
+        run: |
+          git pull --rebase origin ${{ github.ref_name }} || git pull origin ${{ github.ref_name }}
+
+      - name: Generate SBOM index
+        run: |
+          INDEX_FILE="supply-chain/sbom/index.json"
+          
+          # Ensure directory exists
+          mkdir -p supply-chain/sbom
+          
+          # Check if there are any SBOMs
+          SBOM_COUNT=$(find supply-chain/sbom -name "*.json" -type f ! -name "index.json" 2>/dev/null | wc -l)
+          if [ "$SBOM_COUNT" -eq 0 ]; then
+            echo "No SBOMs found, creating empty index..."
+            echo '{"generated_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "sboms": []}' > "$INDEX_FILE"
+            exit 0
+          fi
+          
+          # Generate index of all SBOMs using jq to properly build JSON array
+          find supply-chain/sbom -name "*.json" -type f ! -name "index.json" | sort | while read -r SBOM; do
+            REL_PATH="${SBOM#supply-chain/sbom/}"
+            PROJECT=$(echo "$REL_PATH" | cut -d'/' -f1)
+            REPO=$(echo "$REL_PATH" | cut -d'/' -f2)
+            VERSION=$(echo "$REL_PATH" | cut -d'/' -f3)
+            echo "{\"project\": \"$PROJECT\", \"repo\": \"$REPO\", \"version\": \"$VERSION\", \"path\": \"$REL_PATH\"}"
+          done | jq -s '{"generated_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "sboms": .}' > "$INDEX_FILE"
+
+      - name: Commit index
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          if ! git diff --quiet supply-chain/sbom/index.json 2>/dev/null; then
+            git add supply-chain/sbom/index.json
+            git commit -m "chore(sbom): update SBOM index" || true
+            git push origin ${{ github.ref_name }} || true
+          fi
