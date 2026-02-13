@@ -7,11 +7,11 @@ on:
   push:
     paths:
       - 'utilities/dot-project/**'
-      - 'utilities/dot-project/yaml/**'
+      - 'utilities/dot-project/example/**'
   pull_request:
     paths:
       - 'utilities/dot-project/**'
-      - 'utilities/dot-project/yaml/**'
+      - 'utilities/dot-project/example/**'
   workflow_dispatch:
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
       working-directory: utilities/dot-project/
       run: |
         # Re-run validator to get exit code
-        ./validator --config yaml/projectlist.yaml --maintainers yaml/maintainers.yaml --verify-maintainers
+        ./validator --config example/projectlist.yaml --maintainers example/maintainers.yaml --verify-maintainers
       env:
         REPO_ROOT: ${{ github.workspace }}
         MAINTAINER_API_ENDPOINT: https://api-gw.platform.linuxfoundation.org/

@@ -13,6 +13,10 @@
     "repositories"
   ],
   "properties": {
+    "adopters": {
+      "$ref": "#/$defs/PathRef",
+      "description": "Link to ADOPTERS.md or adopters list"
+    },
     "artwork": {
       "type": "string",
       "description": "Artwork/logo URL",
@@ -54,6 +58,13 @@
       "type": "array",
       "description": "Mailing list addresses",
       "items": {
+        "type": "string"
+      }
+    },
+    "package_managers": {
+      "type": "object",
+      "description": "Registry identifiers (e.g., npm package name, Docker Hub image)",
+      "additionalProperties": {
         "type": "string"
       }
     },
@@ -169,6 +180,76 @@
         },
         "governance_doc": {
           "$ref": "#/$defs/PathRef"
+        },
+        "vendor_neutrality_statement": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Vendor neutrality statement"
+        },
+        "decision_making_process": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Decision-making process documentation"
+        },
+        "roles_and_teams": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Roles and teams documentation"
+        },
+        "code_of_conduct": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Code of conduct"
+        },
+        "sub_project_list": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Subproject listing"
+        },
+        "sub_project_docs": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Subproject documentation"
+        },
+        "contributor_ladder": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Contributor ladder documentation"
+        },
+        "change_process": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Change process documentation"
+        },
+        "comms_channels": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Communication channels listing"
+        },
+        "community_calendar": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Community calendar"
+        },
+        "contributor_guide": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Contributor guide"
+        },
+        "maintainer_lifecycle": {
+          "$ref": "#/$defs/MaintainerLifecycle",
+          "description": "Maintainer lifecycle documentation"
+        }
+      }
+    },
+    "IdentityType": {
+      "type": "object",
+      "description": "Contributor identity agreements. DCO can be used alone or with CLA. CLA requires DCO.",
+      "properties": {
+        "has_dco": {
+          "type": "boolean",
+          "description": "Whether the project uses DCO"
+        },
+        "has_cla": {
+          "type": "boolean",
+          "description": "Whether the project uses CLA (requires DCO)"
+        },
+        "dco_url": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Link to DCO document"
+        },
+        "cla_url": {
+          "$ref": "#/$defs/PathRef",
+          "description": "Link to CLA document"
         }
       }
     },
@@ -192,6 +273,10 @@
     "LegalConfig": {
       "type": "object",
       "properties": {
+        "identity_type": {
+          "$ref": "#/$defs/IdentityType",
+          "description": "Contributor identity agreement (DCO, CLA, or none)"
+        },
         "license": {
           "$ref": "#/$defs/PathRef"
         }
@@ -249,6 +334,32 @@
         },
         "threat_model": {
           "$ref": "#/$defs/PathRef"
+        }
+      }
+    },
+    "MaintainerLifecycle": {
+      "type": "object",
+      "description": "Maintainer lifecycle documentation",
+      "properties": {
+        "onboarding_doc": {
+          "$ref": "#/$defs/PathRef",
+          "description": "URL to maintainer onboarding documentation"
+        },
+        "progression_ladder": {
+          "$ref": "#/$defs/PathRef",
+          "description": "URL to maintainer advancement path documentation (committer → maintainer → lead)"
+        },
+        "mentoring_program": {
+          "type": "array",
+          "description": "URLs to mentoring and onboarding support program documentation",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "offboarding_policy": {
+          "$ref": "#/$defs/PathRef",
+          "description": "URL to emeritus/offboarding policy documentation"
         }
       }
     }
