@@ -10,6 +10,7 @@ func TestExtensionValidation(t *testing.T) {
 		Name:          "Test Project",
 		Description:   "A test project",
 		SchemaVersion: "1.1.0",
+		Slug:          "test-project",
 		MaturityLog: []MaturityEntry{
 			{
 				Phase: "incubating",
@@ -213,6 +214,7 @@ func TestBackwardCompatibility(t *testing.T) {
 		Name:          "Legacy Project",
 		Description:   "A project without extensions",
 		SchemaVersion: "1.0.0",
+		Slug:          "legacy-project",
 		MaturityLog: []MaturityEntry{
 			{
 				Phase: "incubating",

@@ -29,10 +29,11 @@ gc = pygsheets.authorize(service_file='kubestronauts-handling-service-file.json'
 #open the google spreadsheet
 sh = gc.open_by_key(KUBESTRONAUT_RECEIVERS)
 # Select the first sheet
-wks = sh[0]
+issued = sh[0]
+invited = sh.worksheet_by_title("Invited")
 # Define elements used to ACK
 NON_acked_Kubestronauts=[]
-cell_f2 = wks.cell('F2')
+cell_f2 = issued.cell('F2')
 bg_color_f2 = cell_f2.color
 
 class People:
@@ -129,14 +130,34 @@ class People:
             indent=4)
 
 def ack_kubestronaut(email):
-    list_kubestronauts_cells=wks.find(pattern=email, cols=(2,2), matchEntireCell=False)
+#   list_kubestronauts_cells=issued.find(pattern=email, cols=(2,2), matchEntireCell=False)
+    list_kubestronauts_cells=invited.find(pattern=email, cols=(2,2), matchEntireCell=False)
     number_matching_cells = len(list_kubestronauts_cells)
 
     if (number_matching_cells==1):
         email_cell = list_kubestronauts_cells[0]
-        wks.update_value("G"+str(email_cell.row),"")
-        cell=wks.cell("F"+str(email_cell.row))
+        invited.update_value("G"+str(email_cell.row),"")
+        cell=invited.cell("F"+str(email_cell.row))
         cell.color = bg_color_f2
+
+
+        existing_emails = issued.get_col(2, include_tailing_empty=False)
+        next_row = len(existing_emails) + 1
+        # Insert a blank row before the next row
+        issued.insert_rows(next_row - 1, number=1)
+
+        # Add the email to column B in the newly inserted row
+        issued.update_value(f"B{next_row}", email)
+
+        # Add the first name to column C and last name to column D
+        issued.update_value(f"C{next_row}", invited.get_value("C"+str(email_cell.row)))
+        issued.update_value(f"D{next_row}", invited.get_value("D"+str(email_cell.row)))
+
+
+        # Set the background color of column F to green
+        issued.cell(f"F{next_row}").color = (0, 1.0, 0.0)
+
+
         print("Kubestronaut with email "+email+" : ACKed")
     elif (number_matching_cells==0):
         print("Kubestronaut with email "+email+" not found !!")
@@ -153,45 +174,51 @@ with open('../../people/people.json', "r+") as jsonfile:
     data = json.load(jsonfile)
 
 
-for lineToBeInserted in range(firstLineToBeInserted, lastLineToBeInserted+1, 1):
+# Import CSV that needs to be treated
+with open('Kubestronaut.tsv') as csv_file:
+    lineCount = 1
+    csv_reader = csv.reader(csv_file, delimiter='\t')
+    
+    for row in csv_reader:
+        # Check if the current line is within the requested range
+        if firstLineToBeInserted <= lineCount <= lastLineToBeInserted:
+            if row[1]:
+                print(f'\tProcessing line {lineCount}: {row[1]}')
+                newPeople = People(name=row[1], bio=row[2], company=row[3], pronouns=row[4], location=row[5], linkedin=row[6], twitter=row[7], github=row[8], wechat=row[9], website=row[10], youtube=row[11], certdirectory=row[17], slack_id=row[13], image=row[14])
+                
+                print(newPeople.toJSON())
 
-    # Import CSV that needs to be treated
-    with open('Kubestronaut.tsv') as csv_file:
-        lineCount = 1
-        csv_reader = csv.reader(csv_file, delimiter='\t')
-        peopleFound=False
-        for row in csv_reader:
-            if lineCount == lineToBeInserted:
-                if row[1]:
-                    print(f'\t{row[1]}')
-                    newPeople = People(name=row[1], bio=row[2], company=row[3], pronouns=row[4], location=row[5], linkedin=row[6], twitter=row[7], github=row[8], wechat=row[9], website=row[10], youtube=row[11], certdirectory=row[17], slack_id=row[13], image=row[14])
-                    peopleFound=True
-                break
-            else:
-                lineCount += 1
-        if (peopleFound == False):
-            print("File has an empty line "+str(lineToBeInserted))
-            continue
+                # Check if person already exists
+                name_exists = False
+                for people in data:
+                    if people["name"].lower() == newPeople.name.lower():
+                        print(f"⚠️  {newPeople.name} already in people.json, skipping...")
+                        name_exists = True
+                        break
+                
+                if name_exists:
+                    lineCount += 1
+                    continue
 
-    if (peopleFound == True) :
-        print(newPeople.toJSON())
-
-        indexPeople=0
-        for people in data:
-            if people["name"].lower() == newPeople.name.lower():
-                print("{newPeople.name} already in people.json, abort !")
-                exit(2)
-            else:
+                # If we reach here, name doesn't exist, so add it
                 print('Adding '+newPeople.name)
                 data.insert(0, json.JSONDecoder(object_pairs_hook=OrderedDict).decode(newPeople.toJSON()))
-                os.rename("imageTemp.jpg", "../../people/images/"+newPeople.image)
+                # Move the downloaded image to the final destination
+                final_image_path = "../../people/images/"+newPeople.image
+                if os.path.exists("imageTemp.jpg"):
+                    if os.path.exists(final_image_path):
+                         os.remove(final_image_path)
+                    os.rename("imageTemp.jpg", final_image_path)
+                    
                 ack_kubestronaut(row[12])
-                break
 
+        lineCount += 1
+
+# Sort the data before writing to maintain alphabetical order
 sorted_people = sorted(data, key=lambda x: x['name'])
 
 with open('../../people/people.json', "w", encoding='utf-8') as jsonfile:
-    jsonfile.write(json.dumps(data, indent=4, ensure_ascii=False))
+    jsonfile.write(json.dumps(sorted_people, indent=4, ensure_ascii=False))
 
 if NON_acked_Kubestronauts:
     print("\n\nList of Kubestroauts that were NOT ACKED:")

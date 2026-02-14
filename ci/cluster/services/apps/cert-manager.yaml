@@ -21,6 +21,8 @@ spec:
         fullnameOverride: "cert-manager"
         startupapicheck:
           enabled: false
+        config:
+          enableGatewayAPI: true
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager

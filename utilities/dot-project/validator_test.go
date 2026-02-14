@@ -3,6 +3,7 @@ package projects
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -16,8 +17,10 @@ func TestValidator(t *testing.T) {
 
 	// Test validation of a valid project
 	validProject := Project{
-		Name:        "Test Project",
-		Description: "A valid test project",
+		SchemaVersion: "1.0.0",
+		Slug:          "test-project",
+		Name:          "Test Project",
+		Description:   "A valid test project",
 		MaturityLog: []MaturityEntry{
 			{
 				Phase: "incubating",
@@ -56,6 +59,8 @@ func TestValidator(t *testing.T) {
 	expectedErrors := []string{
 		"name is required",
 		"description is required",
+		"slug is required",
+		"schema_version is required",
 		"maturity_log is required and cannot be empty",
 		"repositories is required and cannot be empty",
 		"website is not a valid URL: invalid-url",
@@ -74,17 +79,13 @@ func TestValidator(t *testing.T) {
 }
 
 func TestMaturityLogValidation(t *testing.T) {
-	project := Project{
-		Name:        "Test",
-		Description: "Test",
-		MaturityLog: []MaturityEntry{
-			{
-				Phase: "",          // Missing phase
-				Date:  time.Time{}, // Zero date
-				Issue: "",          // Missing issue
-			},
+	project := validBaseProject()
+	project.MaturityLog = []MaturityEntry{
+		{
+			Phase: "",          // Missing phase
+			Date:  time.Time{}, // Zero date
+			Issue: "",          // Missing issue
 		},
-		Repositories: []string{"https://github.com/test/repo"},
 	}
 
 	errors := validateProjectStruct(project)
@@ -109,23 +110,12 @@ func TestMaturityLogValidation(t *testing.T) {
 }
 
 func TestAuditsValidation(t *testing.T) {
-	project := Project{
-		Name:        "Test",
-		Description: "Test",
-		MaturityLog: []MaturityEntry{
-			{
-				Phase: "incubating",
-				Date:  time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC),
-				Issue: "https://github.com/cncf/toc/issues/123",
-			},
-		},
-		Repositories: []string{"https://github.com/test/repo"},
-		Audits: []Audit{
-			{
-				Date: time.Time{},   // Zero date
-				Type: "",            // Missing type
-				URL:  "invalid-url", // Invalid URL
-			},
+	project := validBaseProject()
+	project.Audits = []Audit{
+		{
+			Date: time.Time{},   // Zero date
+			Type: "",            // Missing type
+			URL:  "invalid-url", // Invalid URL
 		},
 	}
 
@@ -151,21 +141,11 @@ func TestAuditsValidation(t *testing.T) {
 }
 
 func TestRepositoriesValidation(t *testing.T) {
-	project := Project{
-		Name:        "Test",
-		Description: "Test",
-		MaturityLog: []MaturityEntry{
-			{
-				Phase: "incubating",
-				Date:  time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC),
-				Issue: "https://github.com/cncf/toc/issues/123",
-			},
-		},
-		Repositories: []string{
-			"https://github.com/test/repo", // Valid
-			"invalid-url",                  // Invalid
-			"",                             // Empty
-		},
+	project := validBaseProject()
+	project.Repositories = []string{
+		"https://github.com/test/repo", // Valid
+		"invalid-url",                  // Invalid
+		"",                             // Empty
 	}
 
 	errors := validateProjectStruct(project)
@@ -224,6 +204,9 @@ func TestIsValidURL(t *testing.T) {
 		{"", false},
 		{"not-a-url", false},
 		{"https://", false},
+		{"https://x", false},               // No domain (no dot)
+		{"https://.", false},               // Invalid domain
+		{"https://example.com/path", true}, // URL with path
 	}
 
 	for _, tc := range testCases {
@@ -340,24 +323,13 @@ func TestValidateMaintainersFile_Verification(t *testing.T) {
 }
 
 func TestNewFieldsValidation(t *testing.T) {
-	project := Project{
-		Name:        "Test",
-		Description: "Test",
-		MaturityLog: []MaturityEntry{
-			{
-				Phase: "incubating",
-				Date:  time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC),
-				Issue: "https://github.com/cncf/toc/issues/123",
-			},
-		},
-		Repositories: []string{"https://github.com/test/repo"},
-		Security: &SecurityConfig{
-			Policy: &PathRef{Path: ""}, // Empty path should fail
-		},
-		Governance: &GovernanceConfig{
-			Contributing: &PathRef{Path: "CONTRIBUTING.md"}, // Valid
-			Codeowners:   &PathRef{Path: ""},                // Empty path should fail
-		},
+	project := validBaseProject()
+	project.Security = &SecurityConfig{
+		Policy: &PathRef{Path: ""}, // Empty path should fail
+	}
+	project.Governance = &GovernanceConfig{
+		Contributing: &PathRef{Path: "CONTRIBUTING.md"}, // Valid
+		Codeowners:   &PathRef{Path: ""},                // Empty path should fail
 	}
 
 	errors := validateProjectStruct(project)
@@ -378,4 +350,360 @@ func TestNewFieldsValidation(t *testing.T) {
 			t.Errorf("Expected error '%s' not found in: %v", expectedError, errors)
 		}
 	}
+}
+
+func TestSchemaVersionValidation(t *testing.T) {
+	tests := []struct {
+		name          string
+		version       string
+		expectError   bool
+		errorContains string
+	}{
+		{"valid version", "1.0.0", false, ""},
+		{"missing version", "", true, "schema_version is required"},
+		{"unsupported version", "99.0.0", true, "unsupported schema_version"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			project := validBaseProject()
+			project.SchemaVersion = tt.version
+			errs := validateProjectStruct(project)
+			if tt.expectError {
+				found := false
+				for _, e := range errs {
+					if strings.Contains(e, tt.errorContains) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected error containing %q, got: %v", tt.errorContains, errs)
+				}
+			} else {
+				if len(errs) != 0 {
+					t.Errorf("expected no errors, got: %v", errs)
+				}
+			}
+		})
+	}
+}
+
+func TestMaturityLogOrdering(t *testing.T) {
+	tests := []struct {
+		name        string
+		entries     []MaturityEntry
+		expectError bool
+	}{
+		{
+			"correct order",
+			[]MaturityEntry{
+				{Phase: "sandbox", Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Issue: "https://github.com/cncf/toc/issues/1"},
+				{Phase: "incubating", Date: time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC), Issue: "https://github.com/cncf/toc/issues/2"},
+			},
+			false,
+		},
+		{
+			"wrong order",
+			[]MaturityEntry{
+				{Phase: "incubating", Date: time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC), Issue: "https://github.com/cncf/toc/issues/2"},
+				{Phase: "sandbox", Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Issue: "https://github.com/cncf/toc/issues/1"},
+			},
+			true,
+		},
+		{
+			"same date is ok",
+			[]MaturityEntry{
+				{Phase: "sandbox", Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Issue: "https://github.com/cncf/toc/issues/1"},
+				{Phase: "incubating", Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Issue: "https://github.com/cncf/toc/issues/2"},
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			project := validBaseProject()
+			project.MaturityLog = tt.entries
+			errs := validateProjectStruct(project)
+			hasOrderError := false
+			for _, e := range errs {
+				if strings.Contains(e, "chronological order") {
+					hasOrderError = true
+					break
+				}
+			}
+			if tt.expectError && !hasOrderError {
+				t.Errorf("expected ordering error, got: %v", errs)
+			}
+			if !tt.expectError && hasOrderError {
+				t.Errorf("did not expect ordering error, got: %v", errs)
+			}
+		})
+	}
+}
+
+func TestSlugValidation(t *testing.T) {
+	tests := []struct {
+		name        string
+		slug        string
+		expectError bool
+	}{
+		{"valid slug", "kubernetes", false},
+		{"valid with hyphen", "cert-manager", false},
+		{"valid with numbers", "k3s", false},
+		{"empty slug", "", true},
+		{"uppercase", "Kubernetes", true},
+		{"spaces", "my project", true},
+		{"underscores", "my_project", true},
+		{"leading hyphen", "-kubernetes", true},
+		{"trailing hyphen", "kubernetes-", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			project := validBaseProject()
+			project.Slug = tt.slug
+			errs := validateProjectStruct(project)
+			hasSlugError := false
+			for _, e := range errs {
+				if strings.Contains(e, "slug") {
+					hasSlugError = true
+					break
+				}
+			}
+			if tt.expectError && !hasSlugError {
+				t.Errorf("expected slug error for %q, got: %v", tt.slug, errs)
+			}
+			if !tt.expectError && hasSlugError {
+				t.Errorf("did not expect slug error for %q, got: %v", tt.slug, errs)
+			}
+		})
+	}
+}
+
+func TestProjectLeadValidation(t *testing.T) {
+	project := validBaseProject()
+	project.ProjectLead = "jdoe"
+	errs := validateProjectStruct(project)
+	if len(errs) != 0 {
+		t.Errorf("expected no errors with valid project_lead, got: %v", errs)
+	}
+
+	// With @ prefix should also work (stripped internally)
+	project.ProjectLead = "@jdoe"
+	errs = validateProjectStruct(project)
+	if len(errs) != 0 {
+		t.Errorf("expected no errors with @-prefixed project_lead, got: %v", errs)
+	}
+}
+
+func TestSlackChannelValidation(t *testing.T) {
+	tests := []struct {
+		name        string
+		channel     string
+		expectError bool
+	}{
+		{"valid channel", "#kubernetes", false},
+		{"empty is ok", "", false},
+		{"missing hash", "kubernetes", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			project := validBaseProject()
+			project.CNCFSlackChannel = tt.channel
+			errs := validateProjectStruct(project)
+			hasChannelError := false
+			for _, e := range errs {
+				if strings.Contains(e, "cncf_slack_channel") {
+					hasChannelError = true
+					break
+				}
+			}
+			if tt.expectError && !hasChannelError {
+				t.Errorf("expected slack channel error for %q, got: %v", tt.channel, errs)
+			}
+			if !tt.expectError && hasChannelError {
+				t.Errorf("did not expect slack channel error for %q, got: %v", tt.channel, errs)
+			}
+		})
+	}
+}
+
+func TestLandscapeValidation(t *testing.T) {
+	// No landscape section is fine
+	project := validBaseProject()
+	errs := validateProjectStruct(project)
+	if len(errs) != 0 {
+		t.Errorf("expected no errors without landscape, got: %v", errs)
+	}
+
+	// Valid landscape
+	project.Landscape = &LandscapeConfig{
+		Category:    "Orchestration & Management",
+		Subcategory: "Scheduling & Orchestration",
+	}
+	errs = validateProjectStruct(project)
+	if len(errs) != 0 {
+		t.Errorf("expected no errors with valid landscape, got: %v", errs)
+	}
+
+	// Missing subcategory
+	project.Landscape = &LandscapeConfig{
+		Category: "Orchestration & Management",
+	}
+	errs = validateProjectStruct(project)
+	hasSubcatError := false
+	for _, e := range errs {
+		if strings.Contains(e, "landscape.subcategory") {
+			hasSubcatError = true
+		}
+	}
+	if !hasSubcatError {
+		t.Errorf("expected landscape.subcategory error, got: %v", errs)
+	}
+}
+
+func TestMaturityPhaseValues(t *testing.T) {
+	tests := []struct {
+		name        string
+		phase       string
+		expectError bool
+	}{
+		{"sandbox", "sandbox", false},
+		{"incubating", "incubating", false},
+		{"graduated", "graduated", false},
+		{"archived", "archived", false},
+		{"invalid phase", "invalid-phase", true},
+		{"typo", "graduating", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			project := validBaseProject()
+			project.MaturityLog = []MaturityEntry{
+				{Phase: tt.phase, Date: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Issue: "https://github.com/cncf/toc/issues/1"},
+			}
+			errs := validateProjectStruct(project)
+			hasPhaseError := false
+			for _, e := range errs {
+				if strings.Contains(e, "invalid value") {
+					hasPhaseError = true
+					break
+				}
+			}
+			if tt.expectError && !hasPhaseError {
+				t.Errorf("expected phase validation error for %q, got: %v", tt.phase, errs)
+			}
+			if !tt.expectError && hasPhaseError {
+				t.Errorf("did not expect phase validation error for %q, got: %v", tt.phase, errs)
+			}
+		})
+	}
+}
+
+func TestAdoptersValidation(t *testing.T) {
+	t.Run("empty path", func(t *testing.T) {
+		project := validBaseProject()
+		project.Adopters = &PathRef{Path: ""}
+		errs := validateProjectStruct(project)
+		found := false
+		for _, e := range errs {
+			if e == "adopters.path is required" {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("expected 'adopters.path is required' error, got: %v", errs)
+		}
+	})
+
+	t.Run("valid path", func(t *testing.T) {
+		project := validBaseProject()
+		project.Adopters = &PathRef{Path: "ADOPTERS.md"}
+		errs := validateProjectStruct(project)
+		for _, e := range errs {
+			if strings.Contains(e, "adopters") {
+				t.Errorf("unexpected adopters error: %s", e)
+			}
+		}
+	})
+
+	t.Run("nil adopters", func(t *testing.T) {
+		project := validBaseProject()
+		errs := validateProjectStruct(project)
+		for _, e := range errs {
+			if strings.Contains(e, "adopters") {
+				t.Errorf("unexpected adopters error: %s", e)
+			}
+		}
+	})
+}
+
+func TestIdentityTypeValidation(t *testing.T) {
+	tests := []struct {
+		name          string
+		identityType  *IdentityType
+		expectError   bool
+		errorContains string
+	}{
+		{"dco only", &IdentityType{HasDCO: true}, false, ""},
+		{"dco plus cla", &IdentityType{HasDCO: true, HasCLA: true}, false, ""},
+		{"neither", &IdentityType{HasDCO: false, HasCLA: false}, false, ""},
+		{"cla without dco", &IdentityType{HasDCO: false, HasCLA: true}, true, "has_cla requires has_dco"},
+		{"dco with url", &IdentityType{HasDCO: true, DCOURL: &PathRef{Path: "https://developercertificate.org/"}}, false, ""},
+		{"dco with empty url", &IdentityType{HasDCO: true, DCOURL: &PathRef{Path: ""}}, true, "dco_url.path is required"},
+		{"dco+cla with urls", &IdentityType{HasDCO: true, HasCLA: true, DCOURL: &PathRef{Path: "https://developercertificate.org/"}, CLAURL: &PathRef{Path: "https://example.com/cla"}}, false, ""},
+		{"cla with empty url", &IdentityType{HasDCO: true, HasCLA: true, CLAURL: &PathRef{Path: ""}}, true, "cla_url.path is required"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			project := validBaseProject()
+			project.Legal = &LegalConfig{
+				IdentityType: tt.identityType,
+			}
+			errs := validateProjectStruct(project)
+			if tt.expectError {
+				found := false
+				for _, e := range errs {
+					if strings.Contains(e, tt.errorContains) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected error containing %q, got: %v", tt.errorContains, errs)
+				}
+			} else {
+				for _, e := range errs {
+					if strings.Contains(e, "identity_type") {
+						t.Errorf("unexpected identity_type error: %s", e)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestPackageManagersValidation(t *testing.T) {
+	t.Run("valid entries", func(t *testing.T) {
+		project := validBaseProject()
+		project.PackageManagers = map[string]string{
+			"docker": "kubernetes/kubectl",
+			"npm":    "@kubernetes/client-node",
+		}
+		errs := validateProjectStruct(project)
+		for _, e := range errs {
+			if strings.Contains(e, "package_managers") {
+				t.Errorf("unexpected package_managers error: %s", e)
+			}
+		}
+	})
+
+	t.Run("nil package_managers", func(t *testing.T) {
+		project := validBaseProject()
+		errs := validateProjectStruct(project)
+		for _, e := range errs {
+			if strings.Contains(e, "package_managers") {
+				t.Errorf("unexpected package_managers error: %s", e)
+			}
+		}
+	})
 }

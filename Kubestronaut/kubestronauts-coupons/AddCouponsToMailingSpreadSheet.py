@@ -8,7 +8,7 @@ import pygsheets
 import pandas as pd
 from dotenv import load_dotenv
 
-validity="31st December 2025"
+validity="31st December 2026"
 
 
 # In the same directory :
@@ -76,4 +76,6 @@ coupons_data.to_csv("Coupons.csv")
 
 
 print("\n\n\nThe URL of the merger is \"https://docs.google.com/spreadsheets/d/"+KUBESTRONAUTS_MAILING_COUPONS+"\"")
+cmd = "echo 'Coupons as a Kubestronaut' | pbcopy"
+os.system(cmd)
 print("\n\n\nThe name of the email to use in the mail merger is Coupons as a Kubestronaut")

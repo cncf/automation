@@ -1,0 +1,134 @@
+# Example .project metadata for Kubernetes
+# This is a realistic, filled-in example showing what a CNCF project's
+# project.yaml should look like. For a blank starter, see ../template/
+#
+# Documentation: https://github.com/cncf/automation/tree/main/utilities/dot-project
+
+schema_version: "1.0.0"
+slug: "kubernetes"
+name: "Kubernetes"
+description: "Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications."
+type: "platform"
+project_lead: "thockin"
+cncf_slack_channel: "#kubernetes-dev"
+
+maturity_log:
+  - phase: "sandbox"
+    date: 2016-03-10T00:00:00Z
+    issue: "https://github.com/cncf/toc/issues/123"
+  - phase: "incubating"
+    date: 2017-03-01T00:00:00Z
+    issue: "https://github.com/cncf/toc/issues/123"
+  - phase: "graduated"
+    date: 2018-03-06T00:00:00Z
+    issue: "https://github.com/cncf/toc/issues/123"
+
+repositories:
+  - "https://github.com/kubernetes/kubernetes"
+  - "https://github.com/kubernetes/kubectl"
+  - "https://github.com/kubernetes/client-go"
+  - "https://github.com/kubernetes/api"
+
+website: "https://kubernetes.io"
+artwork: "https://github.com/cncf/artwork/tree/master/projects/kubernetes"
+
+adopters:
+  path: "https://github.com/kubernetes/community/blob/master/ADOPTERS.md"
+
+package_managers:
+  docker: "registry.k8s.io/kube-apiserver"
+  homebrew: "kubernetes-cli"
+  chocolatey: "kubernetes-cli"
+
+social:
+  twitter: "https://twitter.com/kubernetesio"
+  slack: "https://kubernetes.slack.com"
+  youtube: "https://www.youtube.com/user/KubernetesCommunity"
+  linkedin: "https://www.linkedin.com/company/kubernetes"
+  reddit: "https://www.reddit.com/r/kubernetes"
+  stackoverflow: "https://stackoverflow.com/questions/tagged/kubernetes"
+
+mailing_lists:
+  - "kubernetes-dev@googlegroups.com"
+  - "kubernetes-users@googlegroups.com"
+  - "kubernetes-sig-release@googlegroups.com"
+
+audits:
+  - date: 2019-08-06T00:00:00Z
+    type: "security"
+    url: "https://example.com"
+  - date: 2021-05-17T00:00:00Z
+    type: "security"
+    url: "https://example.com"
+  - date: 2022-11-30T00:00:00Z
+    type: "performance"
+    url: "https://example.com"
+
+security:
+  policy:
+    path: "https://github.com/kubernetes/kubernetes/blob/master/SECURITY.md"
+  threat_model:
+    path: "https://github.com/kubernetes/community/blob/master/sig-security/threat-model.md"
+  contact: security@kubernetes.io
+
+governance:
+  contributing:
+    path: "https://github.com/kubernetes/community/blob/master/CONTRIBUTING.md"
+  codeowners:
+    path: "https://github.com/kubernetes/kubernetes/blob/master/CODEOWNERS"
+  governance_doc:
+    path: "https://github.com/kubernetes/community/blob/master/governance.md"
+  vendor_neutrality_statement:
+    path: "https://github.com/kubernetes/community/blob/master/governance.md#vendor-neutrality"
+  decision_making_process:
+    path: "https://github.com/kubernetes/community/blob/master/governance.md#decision-making"
+  roles_and_teams:
+    path: "https://github.com/kubernetes/community/blob/master/community-membership.md"
+  code_of_conduct:
+    path: "https://github.com/kubernetes/community/blob/master/code-of-conduct.md"
+  sub_project_list:
+    path: "https://github.com/kubernetes/community/blob/master/sig-list.md"
+  sub_project_docs:
+    path: "https://github.com/kubernetes/community/blob/master/governance.md#subprojects"
+  contributor_ladder:
+    path: "https://github.com/kubernetes/community/blob/master/community-membership.md"
+  change_process:
+    path: "https://github.com/kubernetes/community/blob/master/contributors/guide/pull-requests.md"
+  comms_channels:
+    path: "https://github.com/kubernetes/community/blob/master/communication/README.md"
+  community_calendar:
+    path: "https://github.com/kubernetes/community/blob/master/events/community-meeting.md"
+  contributor_guide:
+    path: "https://github.com/kubernetes/community/blob/master/contributors/guide/README.md"
+  maintainer_lifecycle:
+    onboarding_doc:
+      path: "https://github.com/kubernetes/community/blob/master/community-membership.md"
+    progression_ladder:
+      path: "https://github.com/kubernetes/community/blob/master/community-membership.md#member"
+    mentoring_program:
+      - "https://github.com/kubernetes/community/blob/master/mentoring/README.md"
+    offboarding_policy:
+      path: "https://github.com/kubernetes/community/blob/master/community-membership.md#emeritus"
+
+legal:
+  license:
+    path: "https://github.com/kubernetes/kubernetes/blob/master/LICENSE"
+  identity_type:
+    has_dco: true
+    has_cla: false
+    dco_url:
+      path: "https://developercertificate.org/"
+
+documentation:
+  readme:
+    path: "https://github.com/kubernetes/kubernetes/blob/master/README.md"
+  support:
+    path: "https://github.com/kubernetes/community/blob/master/SUPPORT.md"
+  architecture:
+    path: "https://github.com/kubernetes/community/blob/master/architecture/README.md"
+  api:
+    path: "https://kubernetes.io/docs/reference/"
+
+landscape:
+  category: "Orchestration & Management"
+  subcategory: "Scheduling & Orchestration"

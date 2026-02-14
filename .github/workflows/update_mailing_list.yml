@@ -1,0 +1,120 @@
+name: Update Mailing List
+
+on:
+  workflow_dispatch:
+    inputs:
+      mailing_list_id:
+        description: 'Mailing list ID (SUBGROUP_ID)'
+        required: true
+        type: string
+      add_staff:
+        description: 'Add staff members from staff_emails.txt'
+        required: false
+        type: boolean
+        default: false
+      add_emails:
+        description: 'Email addresses to add (paste; one per line, or space/comma/tab separated)'
+        required: true
+        type: string
+
+jobs:
+  update-mailing-list:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Validate mailing list ID
+        env:
+          MAILING_LIST_ID: ${{ inputs.mailing_list_id }}
+        run: |
+          # Validate that mailing_list_id is numeric only to prevent shell injection
+          if ! [[ "$MAILING_LIST_ID" =~ ^[0-9]+$ ]]; then
+            echo "Error: mailing_list_id must be numeric only. Got: '$MAILING_LIST_ID'"
+            exit 1
+          fi
+          echo "Mailing list ID validated: $MAILING_LIST_ID"
+
+      - name: Create config.txt
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        env:
+          LFX_TOKEN: ${{ secrets.LFX_TOKEN }}
+          MAILING_LIST_ID: ${{ inputs.mailing_list_id }}
+        run: |
+          if [ -z "$LFX_TOKEN" ]; then
+            echo "Error: secrets.LFX_TOKEN is not set"
+            exit 1
+          fi
+          # Write config file with validated numeric ID
+          echo "TOKEN=$LFX_TOKEN" > config.txt
+          echo "SUBGROUP_ID=$MAILING_LIST_ID" >> config.txt
+          chmod 600 config.txt
+          echo "Config file created successfully"
+
+      - name: Validate and prepare emails (from workflow input)
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        env:
+          ADD_EMAILS: ${{ inputs.add_emails }}
+        run: |
+          # Normalize pasted input into a temp file (accept newline/space/comma/tab separated)
+          # Avoid logging the full list to the Actions logs.
+          printf '%s' "$ADD_EMAILS" | tr ',\t ' '\n' > maintainers_emails_temp.txt
+          # Trim and drop empty lines
+          sed -i 's/^[[:space:]]*//; s/[[:space:]]*$//' maintainers_emails_temp.txt
+          sed -i '/^[[:space:]]*$/d' maintainers_emails_temp.txt
+
+          # Require at least one email
+          if ! test -s maintainers_emails_temp.txt; then
+            echo "Error: No email addresses provided."
+            exit 1
+          fi
+
+          # Validate: every line must be a valid email
+          grep -nEv '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}$' maintainers_emails_temp.txt > /tmp/invalid_emails.txt || true
+          if [ -s /tmp/invalid_emails.txt ]; then
+            echo "Error: Invalid email format detected (showing up to first 20 invalid lines):"
+            head -n 20 /tmp/invalid_emails.txt
+            exit 1
+          fi
+
+          echo "Email input validated."
+          echo "Email count: $(wc -l < maintainers_emails_temp.txt | tr -d ' ')"
+
+      - name: Add emails using maintainer_list_add.sh
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        run: |
+          chmod +x maintainer_list_add.sh
+          # Note: The script redacts email addresses in logs by default.
+          # Set VERBOSE=true to log full email addresses (for debugging only).
+          EMAIL_FILE="maintainers_emails_temp.txt" ./maintainer_list_add.sh
+
+      - name: Add staff members (if enabled)
+        if: ${{ inputs.add_staff == true }}
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        run: |
+          if [ -f "staff_emails.txt" ]; then
+            echo "Adding staff members from staff_emails.txt"
+            chmod +x staff_list_add.sh
+            # Note: The script redacts email addresses in logs by default.
+            # Set VERBOSE=true to log full email addresses (for debugging only).
+            ./staff_list_add.sh
+          else
+            echo "Warning: staff_emails.txt not found, skipping staff addition"
+          fi
+
+      - name: Cleanup temporary files
+        if: always()
+        working-directory: utilities/add_maintainers_and_staff_to_mailinglist
+        run: |
+          rm -f config.txt
+          rm -f maintainers_emails_temp.txt
+
+

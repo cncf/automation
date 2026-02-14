@@ -11,7 +11,7 @@ import datetime
 
 
 # In the same directory :
-# - a file named Jackets-Coupons.csv should contains coupons provided by Pinnacle
+# - a file named Coupons-Kubestronaut-Jackets-US.csv should contains coupons provided by Pinnacle
 # - a file name KubestronautToReceiveJackets.csv that contains the infos of Kubestronauts to send the coupon
 parser = argparse.ArgumentParser(description='Add Kubestronaut info and Jacket Coupons to mailing spreadsheet')
 #parser.add_argument('-ll','--lastLine', help='Last row number to be added from the tsv file', required=True)
@@ -40,7 +40,7 @@ today = datetime.datetime.now()
 annotation="Individual-"+str(today.year)+str(today.month)+str(today.day)
 
 # Read the csv using pandas
-coupons_data = pd.read_csv("Jackets-Coupons.csv")
+coupons_data = pd.read_csv("Coupons-Kubestronaut-Jackets-US.csv")
 
 numberOfKubestronauts = 0
 
@@ -63,15 +63,17 @@ with open('KubestronautToReceiveJackets.csv') as csv_file:
 
         if (number_matching_cells==1):
             email_cell = list_kubestronauts_cells[0]
-            wks_infos.update_value("S"+str(email_cell.row),annotation)
+            wks_infos.update_value("T"+str(email_cell.row),annotation)
             print(email+" : OK")
         elif (number_matching_cells==0):
             print("Kubestronaut with email "+row[2]+" not found !!")
         else:
             print("Kubestronaut with email "+row[2]+" found multiple times !!")
 
-coupons_data.to_csv("Jackets-Coupons.csv")
+coupons_data.to_csv("Coupons-Kubestronaut-Jackets-US.csv")
 
 
 print("\n\n\nThe URL of the mail merger is \"https://docs.google.com/spreadsheets/d/"+KUBESTRONAUTS_MAILING_JACKET_COUPONS+"\"")
+cmd = "echo 'Your Kubestronaut jacket !' | pbcopy"
+os.system(cmd)
 print("\n\n\nThe name of the email to use in the mail merger is \"Your Kubestronaut jacket !\"")

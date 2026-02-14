@@ -4,39 +4,142 @@ kind: Gateway
 metadata:
   name: shared-gateway
   namespace: envoy-gateway
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   gatewayClassName: envoy
   addresses:
    - type: IPAddress
      value: 146.235.214.235
   listeners:
-  - name: https
+  - name: https-guac
     protocol: HTTPS
     port: 443
-    hostname: "*.cncf.io"
+    hostname: guac.cncf.io
     tls:
       mode: Terminate
       certificateRefs:
-      - name: guac-tls
-        namespace: guac
+      - name: guac-tls-gw
         kind: Secret
         group: ""
-      - name: auth-dex-tls
-        namespace: auth
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: https-api-guac
+    protocol: HTTPS
+    port: 443
+    hostname: api.guac.cncf.io
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: api-guac-tls-gw
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-guac
+    protocol: HTTP
+    port: 80
+    hostname: guac.cncf.io
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-api-guac
+    protocol: HTTP
+    port: 80
+    hostname: api.guac.cncf.io
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: https-notes
+    protocol: HTTPS
+    port: 443
+    hostname: notes.cncf.io
+    tls:
+      mode: Terminate
+      certificateRefs:
       - name: codimd-tls
-        namespace: codimd
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-notes
+    protocol: HTTP
+    port: 80
+    hostname: notes.cncf.io
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: https-auth-services
+    protocol: HTTPS
+    port: 443
+    hostname: auth.services.cncf.io
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: auth-dex-tls
+        kind: Secret
+        group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-auth-services
+    protocol: HTTP
+    port: 80
+    hostname: auth.services.cncf.io
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: https-services
+    protocol: HTTPS
+    port: 443
+    hostname: services.cncf.io
+    tls:
+      mode: Terminate
+      certificateRefs:
       - name: kdp-dashboard-tls
-        namespace: kdp
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-services
+    protocol: HTTP
+    port: 80
+    hostname: services.cncf.io
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: https-public-api-services
+    protocol: HTTPS
+    port: 443
+    hostname: public.api.services.cncf.io
+    tls:
+      mode: Terminate
+      certificateRefs:
       - name: kdp-kcp-public
-        namespace: kdp
         kind: Secret
         group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-public-api-services
+    protocol: HTTP
+    port: 80
+    hostname: public.api.services.cncf.io
     allowedRoutes:
       namespaces:
         from: All

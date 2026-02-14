@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/mail"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -96,7 +97,9 @@ func (pv *ProjectValidator) validateProject(url string) (ValidationResult, error
 
 	// Parse and validate YAML
 	var project Project
-	if err := yaml.Unmarshal([]byte(content), &project); err != nil {
+	decoder := yaml.NewDecoder(strings.NewReader(content))
+	decoder.KnownFields(true)
+	if err := decoder.Decode(&project); err != nil {
 		result.Errors = append(result.Errors, fmt.Sprintf("YAML parsing error: %v", err))
 		result.Valid = false
 	} else {
@@ -122,17 +125,6 @@ func (pv *ProjectValidator) validateProject(url string) (ValidationResult, error
 	return result, nil
 }
 
-// ProjectListEntry represents a single entry in the project list
-type ProjectListEntry struct {
-	URL string `yaml:"url"`
-	ID  string `yaml:"id,omitempty"`
-}
-
-// ProjectListConfig represents the structure of the project list file
-type ProjectListConfig struct {
-	Projects []ProjectListEntry `yaml:"projects"`
-}
-
 // loadProjectList loads the list of project URLs
 func (pv *ProjectValidator) loadProjectList() ([]string, error) {
 	// For compatibility, check if projectListURL is set, otherwise use a default projectlist.yaml
@@ -140,7 +132,7 @@ func (pv *ProjectValidator) loadProjectList() ([]string, error) {
 	if pv.config.ProjectListURL != "" {
 		projectListURL = pv.config.ProjectListURL
 	} else {
-		projectListURL = "yaml/projectlist.yaml" // Default to local file
+		projectListURL = "testdata/projectlist.yaml" // Default to local file
 	}
 
 	var content string
@@ -205,6 +197,22 @@ func (pv *ProjectValidator) fetchContent(url string) (string, error) {
 	return string(content), nil
 }
 
+// ValidMaturityPhases lists the allowed maturity phase values
+var ValidMaturityPhases = map[string]bool{
+	"sandbox":    true,
+	"incubating": true,
+	"graduated":  true,
+	"archived":   true,
+}
+
+// SupportedSchemaVersions lists the schema versions this validator supports
+var SupportedSchemaVersions = []string{"1.0.0", "1.1.0"}
+
+// ValidateProjectStruct is the exported wrapper for project structure validation
+func ValidateProjectStruct(project Project) []string {
+	return validateProjectStruct(project)
+}
+
 // validateProjectStruct validates the project structure
 func validateProjectStruct(project Project) []string {
 	var errors []string
@@ -217,6 +225,45 @@ func validateProjectStruct(project Project) []string {
 		errors = append(errors, "description is required")
 	}
 
+	// Validate slug
+	if project.Slug == "" {
+		errors = append(errors, "slug is required")
+	} else if !isValidSlug(project.Slug) {
+		errors = append(errors, fmt.Sprintf("slug must be lowercase alphanumeric with hyphens, got: %s", project.Slug))
+	}
+
+	// Validate project_lead (optional but must be non-empty if present)
+	if project.ProjectLead != "" {
+		lead := strings.TrimSpace(project.ProjectLead)
+		lead = strings.TrimPrefix(lead, "@")
+		if lead == "" {
+			errors = append(errors, "project_lead cannot be empty or just '@'")
+		}
+	}
+
+	// Validate cncf_slack_channel (optional but must start with # if present)
+	if project.CNCFSlackChannel != "" {
+		if !strings.HasPrefix(project.CNCFSlackChannel, "#") {
+			errors = append(errors, fmt.Sprintf("cncf_slack_channel must start with '#', got: %s", project.CNCFSlackChannel))
+		}
+	}
+
+	// Validate schema version
+	if project.SchemaVersion == "" {
+		errors = append(errors, "schema_version is required")
+	} else {
+		supported := false
+		for _, v := range SupportedSchemaVersions {
+			if project.SchemaVersion == v {
+				supported = true
+				break
+			}
+		}
+		if !supported {
+			errors = append(errors, fmt.Sprintf("unsupported schema_version: %s (supported: %v)", project.SchemaVersion, SupportedSchemaVersions))
+		}
+	}
+
 	// Validate maturity log
 	if len(project.MaturityLog) == 0 {
 		errors = append(errors, "maturity_log is required and cannot be empty")
@@ -225,11 +272,25 @@ func validateProjectStruct(project Project) []string {
 			if entry.Phase == "" {
 				errors = append(errors, fmt.Sprintf("maturity_log[%d].phase is required", i))
 			}
+			if entry.Phase != "" && !ValidMaturityPhases[entry.Phase] {
+				errors = append(errors, fmt.Sprintf("maturity_log[%d].phase has invalid value %q (allowed: sandbox, incubating, graduated, archived)", i, entry.Phase))
+			}
 			if entry.Date.IsZero() {
 				errors = append(errors, fmt.Sprintf("maturity_log[%d].date is required", i))
 			}
 			if entry.Issue == "" {
 				errors = append(errors, fmt.Sprintf("maturity_log[%d].issue is required", i))
+			}
+		}
+
+		// Check chronological ordering
+		for i := 1; i < len(project.MaturityLog); i++ {
+			if !project.MaturityLog[i-1].Date.IsZero() && !project.MaturityLog[i].Date.IsZero() {
+				if project.MaturityLog[i].Date.Before(project.MaturityLog[i-1].Date) {
+					errors = append(errors, fmt.Sprintf("maturity_log[%d].date (%s) is before maturity_log[%d].date (%s); entries must be in chronological order",
+						i, project.MaturityLog[i].Date.Format("2006-01-02"),
+						i-1, project.MaturityLog[i-1].Date.Format("2006-01-02")))
+				}
 			}
 		}
 	}
@@ -275,6 +336,11 @@ func validateProjectStruct(project Project) []string {
 		}
 	}
 
+	// Validate adopters
+	if project.Adopters != nil && project.Adopters.Path == "" {
+		errors = append(errors, "adopters.path is required")
+	}
+
 	// Validate new fields
 	if project.Security != nil {
 		if project.Security.Policy != nil && project.Security.Policy.Path == "" {
@@ -300,11 +366,84 @@ func validateProjectStruct(project Project) []string {
 		if project.Governance.GovernanceDoc != nil && project.Governance.GovernanceDoc.Path == "" {
 			errors = append(errors, "governance.governance_doc.path is required")
 		}
+
+		// Validate governance DD PathRef fields
+		if project.Governance.VendorNeutralityStatement != nil && project.Governance.VendorNeutralityStatement.Path == "" {
+			errors = append(errors, "governance.vendor_neutrality_statement.path is required")
+		}
+		if project.Governance.DecisionMakingProcess != nil && project.Governance.DecisionMakingProcess.Path == "" {
+			errors = append(errors, "governance.decision_making_process.path is required")
+		}
+		if project.Governance.RolesAndTeams != nil && project.Governance.RolesAndTeams.Path == "" {
+			errors = append(errors, "governance.roles_and_teams.path is required")
+		}
+		if project.Governance.CodeOfConduct != nil && project.Governance.CodeOfConduct.Path == "" {
+			errors = append(errors, "governance.code_of_conduct.path is required")
+		}
+		if project.Governance.SubProjectList != nil && project.Governance.SubProjectList.Path == "" {
+			errors = append(errors, "governance.sub_project_list.path is required")
+		}
+		if project.Governance.SubProjectDocs != nil && project.Governance.SubProjectDocs.Path == "" {
+			errors = append(errors, "governance.sub_project_docs.path is required")
+		}
+		if project.Governance.ContributorLadder != nil && project.Governance.ContributorLadder.Path == "" {
+			errors = append(errors, "governance.contributor_ladder.path is required")
+		}
+		if project.Governance.ChangeProcess != nil && project.Governance.ChangeProcess.Path == "" {
+			errors = append(errors, "governance.change_process.path is required")
+		}
+		if project.Governance.CommsChannels != nil && project.Governance.CommsChannels.Path == "" {
+			errors = append(errors, "governance.comms_channels.path is required")
+		}
+		if project.Governance.CommunityCalendar != nil && project.Governance.CommunityCalendar.Path == "" {
+			errors = append(errors, "governance.community_calendar.path is required")
+		}
+		if project.Governance.ContributorGuide != nil && project.Governance.ContributorGuide.Path == "" {
+			errors = append(errors, "governance.contributor_guide.path is required")
+		}
+
+		// Validate maintainer_lifecycle
+		ml := project.Governance.MaintainerLifecycle
+		if ml.OnboardingDoc != nil && ml.OnboardingDoc.Path == "" {
+			errors = append(errors, "governance.maintainer_lifecycle.onboarding_doc.path is required")
+		}
+		if ml.ProgressionLadder != nil && ml.ProgressionLadder.Path == "" {
+			errors = append(errors, "governance.maintainer_lifecycle.progression_ladder.path is required")
+		}
+		if ml.OffboardingPolicy != nil && ml.OffboardingPolicy.Path == "" {
+			errors = append(errors, "governance.maintainer_lifecycle.offboarding_policy.path is required")
+		}
+		for i, u := range ml.MentoringProgram {
+			if !isValidURL(u) {
+				errors = append(errors, fmt.Sprintf("governance.maintainer_lifecycle.mentoring_program[%d] is not a valid URL: %s", i, u))
+			}
+		}
 	}
 
 	if project.Legal != nil {
 		if project.Legal.License != nil && project.Legal.License.Path == "" {
 			errors = append(errors, "legal.license.path is required")
+		}
+		if project.Legal.IdentityType != nil {
+			if project.Legal.IdentityType.HasCLA && !project.Legal.IdentityType.HasDCO {
+				errors = append(errors, "legal.identity_type: has_cla requires has_dco (CLA cannot be used without DCO)")
+			}
+			if project.Legal.IdentityType.DCOURL != nil && project.Legal.IdentityType.DCOURL.Path == "" {
+				errors = append(errors, "legal.identity_type.dco_url.path is required")
+			}
+			if project.Legal.IdentityType.CLAURL != nil && project.Legal.IdentityType.CLAURL.Path == "" {
+				errors = append(errors, "legal.identity_type.cla_url.path is required")
+			}
+		}
+	}
+
+	// Validate landscape
+	if project.Landscape != nil {
+		if project.Landscape.Category == "" {
+			errors = append(errors, "landscape.category is required when landscape section is present")
+		}
+		if project.Landscape.Subcategory == "" {
+			errors = append(errors, "landscape.subcategory is required when landscape section is present")
 		}
 	}
 
@@ -340,7 +479,9 @@ var reservedExtensionNames = map[string]bool{
 	"website": true, "mailing_lists": true, "audits": true,
 	"schema_version": true, "type": true, "security": true,
 	"governance": true, "legal": true, "documentation": true,
-	"extensions": true,
+	"extensions": true, "landscape": true, "slug": true,
+	"project_lead": true, "cncf_slack_channel": true,
+	"package_managers": true, "adopters": true,
 }
 
 // validateExtensions validates the extensions section of a project
@@ -438,16 +579,42 @@ func parseVersion(version string) ([3]int, error) {
 	return result, nil
 }
 
-// isValidURL checks if a string is a valid URL
+// isValidSlug checks if a string is a valid project slug (lowercase alphanumeric + hyphens)
+func isValidSlug(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, c := range s {
+		if !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-') {
+			return false
+		}
+	}
+	// Must not start or end with hyphen
+	if s[0] == '-' || s[len(s)-1] == '-' {
+		return false
+	}
+	return true
+}
+
+// isValidURL checks if a string is a valid HTTP(S) URL
 func isValidURL(str string) bool {
-	if !strings.HasPrefix(str, "http://") && !strings.HasPrefix(str, "https://") {
+	u, err := url.Parse(str)
+	if err != nil {
 		return false
 	}
-	// Check that there's something after the protocol
-	if strings.HasPrefix(str, "https://") && len(str) <= 8 {
+	if u.Scheme != "http" && u.Scheme != "https" {
 		return false
 	}
-	if strings.HasPrefix(str, "http://") && len(str) <= 7 {
+	if u.Host == "" {
+		return false
+	}
+	// Host must contain at least one dot (basic domain validation)
+	// and must have non-empty labels (reject hosts like "." or ".com")
+	if !strings.Contains(u.Host, ".") {
+		return false
+	}
+	parts := strings.SplitN(u.Host, ".", 2)
+	if parts[0] == "" || parts[1] == "" {
 		return false
 	}
 	return true
@@ -559,7 +726,7 @@ func (pv *ProjectValidator) GenerateDiff(results []ValidationResult) string {
 // NewValidator creates a new validator instance - compatibility alias
 func NewValidator(cacheDir string) *ProjectValidator {
 	config := &Config{
-		ProjectListURL: "yaml/projectlist.yaml",
+		ProjectListURL: "testdata/projectlist.yaml",
 		CacheDir:       cacheDir,
 		OutputFormat:   "text",
 	}

@@ -310,6 +310,24 @@ func run(cmd *cobra.Command, argv []string) error {
 			return nil
 		}
 		log.Printf("Image capabilities updated:\n%s", string(output))
+	} else {
+		// Add VM.GPU.A10.1 and VM.GPU.A10.2
+		addList := []string{
+			"VM.GPU.A10.1",
+			"VM.GPU.A10.2",
+		}
+		for _, machine := range addList {
+			command = exec.Command("oci", "raw-request", "--http-method", "PUT", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/images/"+imageID+"/shapes/"+machine, "--request-body", "{\"imageId\":\""+imageID+"\",\"shape\":\""+machine+"\"}")
+			output, err = command.CombinedOutput()
+			if err != nil {
+				log.Print(command.String())
+				log.Printf("OCI command failed. Output:\n%s", string(output))
+				log.Fatal("could not run command: ", err)
+				exec.Command("oci", "compute", "image", "delete", "--force", "--image-id", imageID)
+				return nil
+			}
+			log.Printf("%s compatibility added", machine)
+		}
 	}
 
 	log.Println("New Ubuntu 24.04 image created successfully.")
@@ -662,6 +680,29 @@ build {
 
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
+	} else {
+		replacements[`provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script          = "${path.root}/../scripts/build/list-dpkg.sh"
+  }`] = `provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    script          = "${path.root}/../scripts/build/list-dpkg.sh"
+  }
+
+  provisioner "shell" {
+    environment_vars = ["TOOLKIT_VERSION=1.17.0-1"]
+    execute_command   = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline            = [
+      "apt install -y nvidia-driver-570-server nvidia-utils-570-server",
+      "curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg",
+      "curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list",
+      "apt-get update",
+      "apt install -y --allow-downgrades nvidia-container-toolkit=$TOOLKIT_VERSION nvidia-container-toolkit-base=$TOOLKIT_VERSION libnvidia-container-tools=$TOOLKIT_VERSION",
+      "apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools",
+      "sed -i '/#accept-nvidia-visible-devices-as-volume-mounts/a accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml",
+      "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest"
+    ]
+  }`
 	}
 
 	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",

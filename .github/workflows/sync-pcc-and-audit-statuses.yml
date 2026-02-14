@@ -1,0 +1,80 @@
+name: Sync PCC and Audit CNCF Project Statuses
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pyyaml beautifulsoup4
+
+      - name: Generate pcc_projects.yaml
+        env:
+          LFX_TOKEN: ${{ secrets.LFX_TOKEN }}
+        run: |
+          python scripts/fetch_pcc_projects.py
+        working-directory: ./utilities/audit_project_lifecycle_across_tools
+      - name: Fetch external data sources
+        run: |
+          mkdir -p datasources
+          curl -fsSL https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml -o datasources/landscape.yml
+          curl -fsSL https://raw.githubusercontent.com/cncf/clomonitor/main/data/cncf.yaml -o datasources/clomonitor.yaml
+          curl -fsSL https://raw.githubusercontent.com/cncf/foundation/main/project-maintainers.csv -o datasources/project-maintainers.csv
+          curl -fsSL https://devstats.cncf.io/ -o datasources/devstats.html
+          curl -fsSL https://raw.githubusercontent.com/cncf/artwork/main/README.md -o datasources/artwork.md
+        working-directory: ./utilities/audit_project_lifecycle_across_tools
+      - name: Generate status audit
+        run: |
+          python scripts/audit_landscape_status.py
+        working-directory: ./utilities/audit_project_lifecycle_across_tools
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # DCO requires a "Signed-off-by" line on every commit. This enables `git commit --signoff`
+          # inside the action so PRs created by automation pass the DCO check.
+          signoff: true
+          # Ensure the commit author matches the sign-off identity to satisfy strict DCO checkers.
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          commit-message: "Update CNCF project status audit outputs"
+          title: "Update CNCF project status audit outputs"
+          body: |
+            Automated update of CNCF project status audit outputs.
+
+            This PR includes:
+            - **PCC projects** (`pcc_projects.yaml`): Source of truth from LFX PCC API
+            - **Status audit** (`audit/status_audit.md`): Anomalies and mismatches across sources
+            - **Full status report** (`audit/all_statuses.md`): Complete project status comparison
+            - **Data source snapshots** (`datasources/**`): Reproducible snapshots of external sources
+
+            Sources audited:
+            - LFX PCC API (project-service/v1/projects, Foundation: CNCF a0941000002wBz4AAE)
+            - CNCF Landscape
+            - CLOMonitor
+            - Foundation Maintainers CSV
+            - DevStats
+            - Artwork README
+          branch: automation/update-pcc-projects
+          add-paths: |
+            utilities/audit_project_lifecycle_across_tools/datasources/pcc_projects.yaml
+            utilities/audit_project_lifecycle_across_tools/audit/status_audit.md
+            utilities/audit_project_lifecycle_across_tools/audit/all_statuses.md
+            utilities/audit_project_lifecycle_across_tools/datasources/**
+
