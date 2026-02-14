@@ -1,0 +1,2064 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "spiffe/spiffe-csi v0.2.9",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-14T01:54:39Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM for CNCF project: spiffe/spiffe-csi@v0.2.9"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/spiffe/spiffe-csi/releases/tag/v0.2.9",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.eMe7I5Jp7v"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-logkeys-keys.go",
+      "fileName": "pkg/logkeys/keys.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "25806f422d74b3a95d3dca03ba65c88a1de967e511a6d4d1b06bb1a1f9fd37b0"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "772fc2317191914d9859ab8384a649e61da624cf734d7972c755add8f0d386983439f3cd62c3cf6b40673ae84bc07a0cab4c06951030b866510d4cad1623b95d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f1cbc2b6eca914cadae104e376c10d9c31bdd334"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-nightlyC95build.yaml",
+      "fileName": ".github/workflows/nightly_build.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "614f5b9bdec59adc317739624476aa6d170a0e735edfd3e51cc6151465627192"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "52fdf1571bcfc4d65e181c66583a190a8db2a8b67e5fd157db980ea0f8fbfa24bbc93ee77775411df1882c1dce629cfa853dd155b8f1f7d793dced4ed33c11ce"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b7ca1c4d8d5467d6ab5ff37d43ef0d7c56c9ab07"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-test-workload-1.yaml",
+      "fileName": "test/config/workloads/test-workload-1.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d7c07df1b6c4c08b66f2b4d066926b5b23d84623"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5fd2e32a4d8345a063d526ecc1844031a56798a2c2cc9d1c9eb51dc992b0451f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "aef8a23b3a50ca0960d35e8f8fb684b177a33661ecedd68cd79888e25fc6cceb0c10dd85111aba0d710cbaf7ef0dbc8f54804b21b5a8724cbb0698790db950a1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-go.mod",
+      "fileName": "test/workload/go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ec800c1b9e8e61b52d91da7af3b913f2587ef652"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4c2db392ccd3ffadd5538ed4e0237027ade791dc739a399c156399c02be404bc"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ea2e4450e9b921892cdb76d4f78fbd102057461d6be9f0ae6b7b9bd6df7232d894f31fe241de0fa5c6a9268ffc6b406adda2a0bf6917fef3dca6a4a592161a8e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-prC95build.yaml",
+      "fileName": ".github/workflows/pr_build.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e18ff1ff8534a682e046d3ffaa7ac682b55d4780"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "719be6072a9c44853ad9d95f826cec7f1b446cd441ea6a8899c79147c07adce1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7218f039ada800ace872aaf8620c3ca62011385a0e2a5a8a5e68ec2ec8952f83cd35514f07234e52e01503aa4e5998851fd2df9f474ecf4bf6468088cd3bfb02"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-scripts-push-images.sh",
+      "fileName": ".github/workflows/scripts/push-images.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "11fe05f03572b40455c5b1784a39a3cddc6d4bb2784a8f6005c48a3915a4f492"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2137411e243d4fb6bb25f50d353cdbbc1429ebbe2c820d49d8bb0e5157eb6f1cad98f328fdf31b9d8a25f0d4dca72f8a4e01a661e8e16106871817fbf5dd479c"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d236797180926f2c572b1fbea6cb6b8e7f66d6a6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-server.yaml",
+      "fileName": "example/config/spire-server.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c0843a119a9f7864282cb3e4fc8989a20df1fdba217f87e6c133f31edce2592e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5c81b92218c739230043137534134b26e4f28b0b9db1074a8180fd381031424f08915b78800a4838aad558867b7dffd79058dbdd8eabc48c97228b5e28808c05"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9b9e4fa041088ca9e11a950dea863770e08980d0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-.gitignore",
+      "fileName": "test/workload/.gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "adc1286d6647f1ec8b8e9530399fccaf396c828e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5d99ff7ae6b66d715481d05411a61df1dd7ce9d9b3b15b92f0fbb873ca5dae51"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0bb3f1e209a02446dc72fab9b1018108a825e92dff45278293b7083de87ec2308d63b657e6e9cbd60d839f4a81736caac6c37a96d49df6e3e50e084333cf5630"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-CHANGELOG.md",
+      "fileName": "CHANGELOG.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2d04a1ec59fce7c1ae0e2e3ca18b242dca0b831e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "98957a30eb6304e4bc01012c5d8d5bd0a3b1ef9f150ae7cca237bc124d8741e2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ab9db8279a029174fd0d695fb1c868ed8fc1382878d8587f9800065dd242770978a4821f151a6699aebc53f8fdeef507b20b52209246262b72bcdbf7bfab917e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.golangci.yml",
+      "fileName": ".golangci.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a5d3f27164058db59a2c0ac43849dfff407425fd2edaf451df728dbea5f2bc4897423e0bc2af9c5bffcbe2d0c13b82c64e80b4fb9119ba44e41bafcc2c1128ad"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c652223d6c9dce165bc19d6558cb84105fd78127"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6b92158e78685a038bba00a25a090c0bf4387300e6475e8613f849675828241a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-go.sum",
+      "fileName": "test/workload/go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c04016774d7fd4cddd2af5f9f85254aa3a801b2c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "132c85d19a89c6a4b14a34d6abe63376c2073a67cbaf01d6cb32b01768fa0ef1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "226cd737bc607c8b04455c1814823abe981f68a5cffcb7f26468156c5b3aef187bb587a5a2c9c504e14279ad055d2c686b0c88b0a7b3543962f1edad9a1d30dd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-run.sh",
+      "fileName": "test/run.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e26fa9d7644d95ae1704e547bb196e80482def3d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fd83e9fb0a0dcd4943e9ff88dd216f6e27f7b7bb403d04f693a832c03950ea14"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "21008ddbd3304d48d4282234ebbf26a715296d614d461157eae3324d1410d0467ba22cdbcb70a1b442dabbf9bf806200a3158af0c87ec768375bc2e59a0081ee"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-LICENSE",
+      "fileName": "LICENSE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7df059597099bb7dcf25d2a9aedfaf4465f72d8d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc6b68d13b8cf959644b935f1192b02c71aa7a5cf653bd43b4480fa89eec8d4d3f16a2278ec8c3b40ab1fdb233b3173a78fd83590d6f739e0c9e8ff56c282557"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-go.sum",
+      "fileName": "go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d1f436ff8a6a03a3e12e0b38587bc92143922219"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "01379372f101f87bfcef7a30c0a5a29e7c4ad22a831d271e11889de7b90f9a16"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c4e2c60ea28612ab4c50f40f5ddb6ffbc7fcacf9bc53b679d3ec46214a03ffc7128019b1aa25ebe194d163e7ba168a5ce488c25a59d41c6935b3a6e1d76d70dd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-workload.yaml",
+      "fileName": "example/config/workload.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "125e249b96069f55725274361f981f9015f01601"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "29d3131fb05d94a7ee8cc3d481ad7ee5545d4981077365fbe11ed1137f9f9e81"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "203c60e78587613c8f26b833edcfd315e009d7b33587018d38a19374528bf0157c3990b1052d7a6256fe63ab6e0fbfce4c6c37969623d84b805e1714862d92f5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-driver-driver.go",
+      "fileName": "pkg/driver/driver.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "53253e690eca1a33a07568aec7520dc4b420808a254eff29fc789ad809b600084a588997ce8afb6dba7f6536b1119f92927444525648dbaea96ca7ce89747aee"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "557f0852baa47c005207927c7a9db97b86695bd2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cd7afc102f390db05cf2d90d78c6dcb519d1621a03a79af5daf68b3dd34e51e6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-releaseC95build.yaml",
+      "fileName": ".github/workflows/release_build.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "251336a3a7dd460b773f30a9a668b06ef2af6fbc"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0b0f4659662251e5d0677e6dd9466017a4aecdb1c511d7723d06f5d242da2551"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ca33ddee522e6418f24e66a5353a2dc4898ffbbac9a8e3ee427281b9c453898560a2b5e47e4d630442bb440a8129402e12f9d6357e141607c504cf91692c55b8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-go.mod",
+      "fileName": "example/workload/go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ec800c1b9e8e61b52d91da7af3b913f2587ef652"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4c2db392ccd3ffadd5538ed4e0237027ade791dc739a399c156399c02be404bc"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ea2e4450e9b921892cdb76d4f78fbd102057461d6be9f0ae6b7b9bd6df7232d894f31fe241de0fa5c6a9268ffc6b406adda2a0bf6917fef3dca6a4a592161a8e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0529bdd43695589d451a92a41a1a4ac7272cfc6a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0045235f687f0da26a10b7ae93a80817b577c4e0e7ab1b8f40f2c0435025a6d8"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "29d5e9aff268d310d1266acff9cc43f049f03609c222079a2f9c42ac900fa76a3f9b096148c13d2d2102d11b0011b41326a165676e4d10261ca0f0d59f75b08b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-deploy-spire-and-csi-driver.sh",
+      "fileName": "example/deploy-spire-and-csi-driver.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "021177f6b5c5e84e9f7125a39df7c08063b6c84e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "622fdd1f6eef915dd629bb6bc48e7364e81f2d77e838210a6f22f6e68e5eb497"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d70176fe1244f2075e89ec6cd4061ffa3279578aaeabb5a6d2f7599243264482528210dc105b8dbe7926233a17800adc2de0391625d885fc73328cee47ababf1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-README.md",
+      "fileName": "example/README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6fffb84a0eefd3c6b4db0d809f0da4232b9ac024"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "be01482942b996a92fd3febee2cbcacb5b765f1fd88afe0034caaaa0b9f3a66b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f830688386a7a60439cebb32b4a1ae490c1195414db554e33eb6ac41fd1b19b724996fa70216de0241223170c5a0e36d7a87c7ff0158178ef3c851e13bd6db8d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-server-server.go",
+      "fileName": "pkg/server/server.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e92d83c01f17bd0bb309042df6303790826f754d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f873bb91da5869e9ffd557f449e674284e71eb42910ab20bab723e09628c5427"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8190b00602dfb37e3059e22359b619ee208685bb8e39582ed6d3741c06504006880e55e8eec3c6a5ce8d6ec201176cfbc637029e86964de8af39ebef555ebe16"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95linux.go",
+      "fileName": "pkg/mount/mount_linux.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f9b4b4eb082280f3ff32bc560f4812c08b9bf803"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "38b51c873d8bb81497c3530a435c2c9f5e6a19aa0c5f011b83ee5a8ee3b0ea67"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "97351c649f853c394bd4466eb79be7f86aea1342aee29424f99b91c8019f1dc240be811540505ea39335b8019d89b8356f50d5fde1b1b6982723d1ca199b8d96"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.gitignore",
+      "fileName": ".gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "31004ecca8eaa07c0bd9006447b4718ca535f644f34b852840336de2e1e7c8a7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "853a23a472f66b4ab59d081f4831f148fc67dd4f7067b96e10126abc33ad7d6254fec5baae50e3d9daba3ddc598584c9365c6e3c5dc0c18d9c4aac633ec7d68c"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "baf603ef1fb869ccf89b561097a0e97bad35be4a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-Dockerfile",
+      "fileName": "example/workload/Dockerfile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7d1108301d4277c13b0366ee3f0fdcd9aedf7a31"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "723ae341ffd56107b97281dad536a1b2c48bad923171fd3b091edd0e395dd3ff"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "21d0a3472b064b01573b33f62a680026d1b3fca9ea1502880992cf4690100cdeedc1bc6b8dde7e5d099648b9d8d3664945bd038e9c84a2e14292f20835def201"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-CODEOWNERS",
+      "fileName": "CODEOWNERS",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "179353aef462f649a5d46f4bd4f10ff9566d088fcf9c6622775aacc6c54ee63c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0d3997ab142ba1cf3d05bc89efec2ef4324c46252d153b55e1cb382c1bd9b245cab824d130335395fb63064e7d2a6ae6b08a3d58c51d1b549eb1269cd0367102"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f7f60a48b9d923724744a9ec132c38c024dfe2f2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-namespace.yaml",
+      "fileName": "example/config/spire-namespace.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a6025aeabb652c86b7d088a3fe6af37610bf6e0f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b01bbba362bc469e6b3cdfd71367c1c4e78ac8b97c81a10a3135537b2ad85bc7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "671bc3d5bd7385ad581a8ad3c0cee77db615e99a65e9076426a09f2be00d37e97a7dd2335de2c0abefe2e187782de949dc39d39ffbcd1b2047e512fd57307685"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spiffe-csi-driver.yaml",
+      "fileName": "example/config/spiffe-csi-driver.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "136945bbda0a6bbbe287816540d58a8ed63f0cd7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "83a4fcbc66af560b02161929237dab093ff16347fd3405b1e8067e1577ae44bb"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b658480274f7ba3c78ebd6ea777a70af03ad2410db48351da7cb4d38e0502537afac65a42bface83831e2301bb936dc8387a9e233bb721781dda87698706c49e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mount.go",
+      "fileName": "pkg/mount/mount.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "33193976b96446a6f8e4544a11eda2bc80a80037"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "19f23ffea83951b8d2adb1a9dfc2a96d0548038acbd4335387468bc5b7ef65ba"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f4a7e48d955e3b4956b6031ba07a6ae38400d50a02a9d01108e801f40b57cb350bcc6b4604b7551526760a08a0b883c95a06d505b83323d1846e7a44b2a8d151"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-main.go",
+      "fileName": "test/workload/main.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8eff092e8658e2c3f62e15cad27695a03476e06b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4a43840c425b02dd21a0ae7079108b9bbd974de1426c4bba9f1d1e99c3985d46"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "18bed7161b893ace3efcfc43f0fcd08bcfb1b3a568975a3963cc23bfc795e9c7da94948386b0c4df54353aae74713ce4dc36d86e3ffcb1347fdac040b4ad6e47"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-agent.yaml",
+      "fileName": "test/config/spire/spire-agent.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "65bcc03f91c100162fac197a1e4f389d45a2d55c2683a2413718c89401195a8e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a2924d595e0c4ea003c1abb2dd3ab566c2e3963e7c09e702584d5fc44dba5469dc37026f3ed1b24f69e560d7d34a924a480a3865e6d4e5d172fcfdd690e26f6f"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a495be61486b774e12c520693af03f03cbf83889"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-go.mod",
+      "fileName": "go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e6b12e64337ba9deca505f6fde0440db42672eac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "41c22ba65ea859982d1633ce76a8436c8956610b072243ef934f036d6c240719"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9462d0a0683bd251d4c82aeadf830eb93472b20a6e796a202b65be7e4f1f77635d079c596ab7443640a3ea4241811879c2fbfc9d1cc6fcac535f88912570f677"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-test-workload-2.yaml",
+      "fileName": "test/config/workloads/test-workload-2.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e5c9d052a84da1032d504023ab7e1bccb90e3933d518454c8a6bd9b13ab8d404bbd12b3e7b30e97f0f544d3a9dde911c136c267d29c3266e98facf2b5484de3a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4b82cdf8f7541e12d46ce18b89c31bd8967f0ff1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d60447c9742d083f3b32a8a3eb35d24d6235b8786aa42c1e6d47b7f8a0b6097a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-namespace.yaml",
+      "fileName": "test/config/spire/spire-namespace.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e19624d23c0cb1f733aecfb00fa4a0501b575b45"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e993a8854c43e3507cb4c4494dfca1ed434e822b9e7902b4f40fa08f8db70d90"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "40be6b234979864467f250933fd83afca91e5339de7d7125207d3d248c5e70e87d1f461e9caca6dc5e3a7c047903c5734edc6bc68c7e65d2544d43957a0ccdc0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spiffe-csi-driver.yaml",
+      "fileName": "test/config/spire/spiffe-csi-driver.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8736a33b0c9f06766a5d36cb759d8d76e5ff17c6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "673957ccb1aed7e315e36269084a919837e585a9c1bbd1f3bd5dbb8d7fd7c8df"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a70bcc85dce20b5f910d5b3167f9d57a36e1aaa2299f362bc8790f0b849e2111f78e3ecae87bc7e7e04447b02a5aee3a269037a0eeb83ae35a45670a637dd48e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-Dockerfile",
+      "fileName": "Dockerfile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2c3222d58e8a169afe3408bbb88727c98f969a45"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0a2b73de89f9dafc3e9181b9039a260be1206c1fafce22cce2c3b85acadc8f47"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3cd9dfd51833a3fd6183e73c66361e60b19275b99c36eb8363a83e5ab7a0abbd975d6cb4d28c992ee2f592abe331aaba310c0611926f705ea64fcffdf3175f0b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-Makefile",
+      "fileName": "Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "721b7ef26612f4b3a4ca24e9a57c3252dacf0448270a12f31e90a7f6911fdbdb"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "490c6bbdb67b7d8cfff5b76206cb7828517aedb0c4c39328735a80c59e3af928bdbec5aa2b5eb7447f8d251fa20dba86e623a8bdb7c30ebd3354416d8355e42a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f5ff13f612df8dfd684d78d9303ab7e4294c5dbd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-kustomization.yaml",
+      "fileName": "test/config/spire/kustomization.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3b7114e83d2c0cf11ee87eff4e8a14fc241c41e6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3ceb5b33a490622fe111294dd3c49a3095b2e2045817315597a459ba499ca3e6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ba767acb44b1d6514f10e3d0bcd2bf63edc745f86809f2320886ac51636c66d37a442e75b7e297ba45b3c939dcddd63f2700efb328e7f0c928e8b67201ed1888"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-agent.yaml",
+      "fileName": "example/config/spire-agent.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0b54935a12e093b43a0f3b17b0f30591e61638e6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1eb5a32b73e2a2842ba8dac8e52b6c80afce3747ce0feade44275411e3793ee0"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cd16132b1d1ee91ef77695c163692bc55e3adeeb2a5b4706a83d648d18e9a0ef35ea47171b22238168232eebf1fc17ea8311e608d043bd0ffa353ef50f5df28a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-register-workload.sh",
+      "fileName": "example/register-workload.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "59eaed3a013f4dc7a3bb12a45f1da14d87413e96"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "738e76b78d335d2790e59af028f6082a1fb268120daed795f23794bbd8ddbc72"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ec960d47132221ded91d8809c357b7524810f6b05e5176a030990de9a1fa00fcf215ec8247221206a9e2c37ee07c1a13f9ca1c1ad5f936bca854eee938608cde"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-cluster.yaml",
+      "fileName": "test/config/cluster.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a4a9e3eb7baa63c84a4aad8a7713bd1fb483268e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7f85f3f3531729fff3e13eac7d17eceb16d0fc69e7ccfd205aa3be0f2eec42ed"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9445d9325c8a9c295949c3f772f23f07f547b4fe0f3a296b38efebb1e6898ab9816ff217424555bcbbc47582eba1b44ef712b72c707dcf1cf264ada751d9be56"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95linuxC95test.go",
+      "fileName": "pkg/mount/mount_linux_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "12988f4d4949fb1a796722a84ea3ce2f52eb9c28"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0a6a4cbd63534239c5674c91e43f3540cd767f25da6f561808a48ca9571f4547"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "880d2423580fadf530f41d8d2e896ba135fa02f07eaba6dd73ead638ce9d3e26c0097ce5c6675743932b48320df01e472a817cf12fb99025dd4b50fab4a45a7a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-Dockerfile",
+      "fileName": "test/workload/Dockerfile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "723ae341ffd56107b97281dad536a1b2c48bad923171fd3b091edd0e395dd3ff"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "21d0a3472b064b01573b33f62a680026d1b3fca9ea1502880992cf4690100cdeedc1bc6b8dde7e5d099648b9d8d3664945bd038e9c84a2e14292f20835def201"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7d1108301d4277c13b0366ee3f0fdcd9aedf7a31"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-testdata-mountinfo",
+      "fileName": "pkg/mount/testdata/mountinfo",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8fe3f2dd5fcca778ec4f985c4750549f3d952ec9500608a63ba97fabda74fc92a7100a5c111cce88b82690c293cbd164f78d4d408acd141ff28fc1e45710e3ec"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "190379c2f1d81e5b62443a13a9f7288d6437e86c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "41b6a4bbb7f7998340cd9c91421d79bbc56e2a105357a3f1d9e69a06a7acb8a1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-dco.yaml",
+      "fileName": ".github/workflows/dco.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e0fe9573681db2ca9ba0ab4897ed622cad22ce5d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a48b276fe75a88e44ccc1fdacac1dffd3033c1873c4a2d01e347463c6bcf7069"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fb1493a90c6f2839b057bc31bafaf544b0e67640114d888de6d8f5fe4028b5de13f82859310624a5e3659121e7258f16ff44b967b5da749a8700fdfd44b093d2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95other.go",
+      "fileName": "pkg/mount/mount_other.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7a68d082043e8ab44e7d77e23dfb2252a28dc023"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9c8cf35ad9d91edc95b779ab4c5414d982621ee974f824c68dbd72cde3b7d7c4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2c4d457ecfa2d2126ff50de2278c6d7990120c1fe5f7dbad607d3de81a85fac44602d8f5dc6ab259521c71c87e20228c2648cffd92592f054af7eb8e44459e79"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-server.yaml",
+      "fileName": "test/config/spire/spire-server.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d739477b44112db2358351be55b1384f83d5b629"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "112c36767b2b74cbd3676ea74f2442647e891f26e886babd2b8b0a950abb7b85"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9965fbf141f493faa92d0db9a9f6535fc08c2de212ac5650d52437a93e7dda53e5223a915674b05a6d291ffe14acdde5025923cf2659614a91ce4e09e0895ae2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-driver-driverC95test.go",
+      "fileName": "pkg/driver/driver_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "62777fd5a002bac4b26d97b38cbeb6c06f29be22"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d07b7b6b6efa6cd747c53aa82ef64bddc283789b1e01c6ac5ea2b0e836e7d20b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fc8bf292e838224164cab106ad06b84649257b679107324205199cf0b4f4e0ed9376c9809f320b69d60f188a1bb23756b097d5a426d704f13a4c72d03e186576"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-internal-version-version.go",
+      "fileName": "internal/version/version.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "65583d3b3db4fb69c3c9eb7e67d60d7d7c279c99"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3441587a1d55c1c9c3e80573355ca02b8fe64706398ab408b9bb577ddbc6fbce"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d5063d8cda3d9a00c19a2b4a45bf91c83a5f0816c7237f78923dffd5616d3b9ca6e4fe3cae203f9a176f21974fe72fdfa3dd9470c059e801520fa3586273894f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-scripts-load-oci-archives.sh",
+      "fileName": ".github/workflows/scripts/load-oci-archives.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "58cc68df5a6cc36fec85669072d3f55a785211cb"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a3041dd5e0102283132ae669bc2461ea48f2b8baa72cb5583c75092aa2549472"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6713c3c5fa67dc196bbb10d8ffba9b2cfb3987df3739b5c589a01fb5308f07baecb78df1921de4ce0a7d4a07c5abb83381d078e222df5157f23584efb0fa056b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-dependabot.yml",
+      "fileName": ".github/dependabot.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1b54cee350a8ff4cda24da5b00a726ec2de18637dc3f5d1ae826e5021bf523a8"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e3f9b380e3216b5be297205e1aefe9bd22f4f765cbb78483167dd599a95d261a7337d1719de2f10bf2932ebbf3db0726cc3d9bb55cd69ea93c52be5cc2339ca0"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7ab4977cdab9e12ad6eff3818b1b7bc4630de5c9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-go.sum",
+      "fileName": "example/workload/go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c04016774d7fd4cddd2af5f9f85254aa3a801b2c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "132c85d19a89c6a4b14a34d6abe63376c2073a67cbaf01d6cb32b01768fa0ef1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "226cd737bc607c8b04455c1814823abe981f68a5cffcb7f26468156c5b3aef187bb587a5a2c9c504e14279ad055d2c686b0c88b0a7b3543962f1edad9a1d30dd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-kustomization.yaml",
+      "fileName": "test/config/workloads/kustomization.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0a3e70cad9c71400a9de1e0d93616486b1dca0f6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "401700d1317831440eba0fbe9045b8d2f62ac326307318fb6a294c968242ba11"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cdaf6711a5bca06d920f1911fc666b343b3b34bc98b09dae6eb389c966d98c0565c932a8182f7c9ee99ea5c538cbd4f81b7b2ad4e10e377168e46a72916d7359"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-main.go",
+      "fileName": "example/workload/main.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "dcbf301aa09cf04cd4017a5a3adf95df61c3d658748b042aee691b16a4e01630"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "390241f3433522975a1fac7ef7b1190b511ebf04427807417dacaab5f26d606e169d0112af25559030a319dda1b766825dc6447a9a74fb4377c60bb78fbc286d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d11759705515320b3d8f66ac4365185c4811cecf"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.eMe7I5Jp7v-example-build-and-load-workload-image.sh",
+      "fileName": "example/build-and-load-workload-image.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "de97c38994152e43393504c6e392b152cf92931e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "62893a6f68a8af888d4f895b62046b8e28be8f6a6c924623ee67d0d0e461bfb5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c71cea6659d666d280618b2272e96cbf801940f02c389bfbd96e7214934f68d0879a9bc9b3f6f93fcf5aef9d862b28cfb96c09e4a095da17c3c2e677cd29b4a9"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-go-logr-logr-v1.4.3",
+      "name": "github.com/go-logr/logr",
+      "versionInfo": "v1.4.3",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://proxy.golang.org/github.com/go-logr/logr/@v/v1.4.3.zip",
+      "copyrightText": "                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"{}\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright {yyyy} {name of copyright owner}\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/go-logr/logr@v1.4.3",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-golang.org-x-sys-v0.37.0",
+      "name": "golang.org/x/sys",
+      "versionInfo": "v0.37.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "BSD-3-Clause",
+      "downloadLocation": "https://proxy.golang.org/golang.org/x/sys/@v/v0.37.0.zip",
+      "copyrightText": "Copyright 2009 The Go Authors.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n   * Redistributions of source code must retain the above copyright\nnotice, this list of conditions and the following disclaimer.\n   * Redistributions in binary form must reproduce the above\ncopyright notice, this list of conditions and the following disclaimer\nin the documentation and/or other materials provided with the\ndistribution.\n   * Neither the name of Google LLC nor the names of its\ncontributors may be used to endorse or promote products derived from\nthis software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/sys@v0.37.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-google.golang.org-protobuf-v1.36.10",
+      "name": "google.golang.org/protobuf",
+      "versionInfo": "v1.36.10",
+      "filesAnalyzed": false,
+      "licenseConcluded": "BSD-3-Clause",
+      "downloadLocation": "https://proxy.golang.org/google.golang.org/protobuf/@v/v1.36.10.zip",
+      "copyrightText": "Copyright (c) 2018 The Go Authors. All rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n   * Redistributions of source code must retain the above copyright\nnotice, this list of conditions and the following disclaimer.\n   * Redistributions in binary form must reproduce the above\ncopyright notice, this list of conditions and the following disclaimer\nin the documentation and/or other materials provided with the\ndistribution.\n   * Neither the name of Google Inc. nor the names of its\ncontributors may be used to endorse or promote products derived from\nthis software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/google.golang.org/protobuf@v1.36.10",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "name": "tmp.eMe7I5Jp7v",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.github-dependabot.yml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-dco.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-releaseC95build.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-nightlyC95build.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.gitignore",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-scripts-load-oci-archives.sh",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.golangci.yml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-scripts-push-images.sh",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-CHANGELOG.md",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-Dockerfile",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-prC95build.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-LICENSE",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-Makefile",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-README.md",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-README.md",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-build-and-load-workload-image.sh",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-agent.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spiffe-csi-driver.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-namespace.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-CODEOWNERS",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-workload.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-deploy-spire-and-csi-driver.sh",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-server.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-Dockerfile",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-go.sum",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-go.mod",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-main.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-go.mod",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-go.sum",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-internal-version-version.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-driver-driver.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-driver-driverC95test.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mount.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-example-register-workload.sh",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95linuxC95test.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95linux.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95other.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-testdata-mountinfo",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-cluster.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-server-server.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-kustomization.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spiffe-csi-driver.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-agent.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-namespace.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-logkeys-keys.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-kustomization.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-test-workload-1.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-test-workload-2.yaml",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-run.sh",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-.gitignore",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-Dockerfile",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-go.mod",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-go.sum",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-main.go",
+        "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-server.yaml"
+      ],
+      "licenseInfoFromFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "b6ded270ea1a518f43ecd993c17357c71ff271a4"
+      }
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-go.uber.org-zap-v1.27.0",
+      "name": "go.uber.org/zap",
+      "versionInfo": "v1.27.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "downloadLocation": "https://proxy.golang.org/go.uber.org/zap/@v/v1.27.0.zip",
+      "copyrightText": "Copyright (c) 2016-2017 Uber Technologies, Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.uber.org/zap@v1.27.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-go-logr-zapr-v1.3.0",
+      "name": "github.com/go-logr/zapr",
+      "versionInfo": "v1.3.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://proxy.golang.org/github.com/go-logr/zapr/@v/v1.3.0.zip",
+      "copyrightText": "                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"{}\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright {yyyy} {name of copyright owner}\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/go-logr/zapr@v1.3.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-golang.org-x-text-v0.27.0",
+      "name": "golang.org/x/text",
+      "versionInfo": "v0.27.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "BSD-3-Clause",
+      "downloadLocation": "https://proxy.golang.org/golang.org/x/text/@v/v0.27.0.zip",
+      "copyrightText": "Copyright 2009 The Go Authors.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n   * Redistributions of source code must retain the above copyright\nnotice, this list of conditions and the following disclaimer.\n   * Redistributions in binary form must reproduce the above\ncopyright notice, this list of conditions and the following disclaimer\nin the documentation and/or other materials provided with the\ndistribution.\n   * Neither the name of Google LLC nor the names of its\ncontributors may be used to endorse or promote products derived from\nthis software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/text@v0.27.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-golang.org-x-net-v0.42.0",
+      "name": "golang.org/x/net",
+      "versionInfo": "v0.42.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "BSD-3-Clause",
+      "downloadLocation": "https://proxy.golang.org/golang.org/x/net/@v/v0.42.0.zip",
+      "copyrightText": "Copyright 2009 The Go Authors.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n   * Redistributions of source code must retain the above copyright\nnotice, this list of conditions and the following disclaimer.\n   * Redistributions in binary form must reproduce the above\ncopyright notice, this list of conditions and the following disclaimer\nin the documentation and/or other materials provided with the\ndistribution.\n   * Neither the name of Google LLC nor the names of its\ncontributors may be used to endorse or promote products derived from\nthis software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/net@v0.42.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-container-storage-interface-spec-v1.12.0",
+      "name": "github.com/container-storage-interface/spec",
+      "versionInfo": "v1.12.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://proxy.golang.org/github.com/container-storage-interface/spec/@v/v1.12.0.zip",
+      "copyrightText": "                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"{}\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright {yyyy} {name of copyright owner}\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/container-storage-interface/spec@v1.12.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-google.golang.org-grpc-v1.76.0",
+      "name": "google.golang.org/grpc",
+      "versionInfo": "v1.76.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://proxy.golang.org/google.golang.org/grpc/@v/v1.76.0.zip",
+      "copyrightText": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright [yyyy] [name of copyright owner]\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/google.golang.org/grpc@v1.76.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-go.uber.org-multierr-v1.11.0",
+      "name": "go.uber.org/multierr",
+      "versionInfo": "v1.11.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "downloadLocation": "https://proxy.golang.org/go.uber.org/multierr/@v/v1.11.0.zip",
+      "copyrightText": "Copyright (c) 2017-2021 Uber Technologies, Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.uber.org/multierr@v1.11.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-google.golang.org-genproto-googleapis-rpc-v0.0.0-20250804133106-a7a43d27e69b",
+      "name": "google.golang.org/genproto/googleapis/rpc",
+      "versionInfo": "v0.0.0-20250804133106-a7a43d27e69b",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://proxy.golang.org/google.golang.org/genproto/googleapis/rpc/@v/v0.0.0-20250804133106-a7a43d27e69b.zip",
+      "copyrightText": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright [yyyy] [name of copyright owner]\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/google.golang.org/genproto/googleapis/rpc@v0.0.0-20250804133106-a7a43d27e69b",
+          "referenceType": "purl"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-dependabot.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-dco.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-releaseC95build.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-nightlyC95build.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-scripts-load-oci-archives.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.golangci.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-scripts-push-images.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-CHANGELOG.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-Dockerfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-.github-workflows-prC95build.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-LICENSE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-build-and-load-workload-image.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-agent.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spiffe-csi-driver.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-namespace.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-CODEOWNERS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-workload.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-deploy-spire-and-csi-driver.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-config-spire-server.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-Dockerfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-workload-main.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-internal-version-version.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-driver-driver.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-driver-driverC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mount.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-example-register-workload.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95linuxC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95linux.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-mountC95other.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-mount-testdata-mountinfo"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-cluster.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-server-server.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-kustomization.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spiffe-csi-driver.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-agent.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-namespace.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-pkg-logkeys-keys.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-kustomization.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-test-workload-1.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-workloads-test-workload-2.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-run.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-Dockerfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-workload-main.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.eMe7I5Jp7v-test-config-spire-spire-server.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-google.golang.org-protobuf-v1.36.10"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-golang.org-x-text-v0.27.0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-container-storage-interface-spec-v1.12.0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-go-logr-logr-v1.4.3"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-go.uber.org-zap-v1.27.0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-go-logr-zapr-v1.3.0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-golang.org-x-net-v0.42.0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-google.golang.org-grpc-v1.76.0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-google.golang.org-genproto-googleapis-rpc-v0.0.0-20250804133106-a7a43d27e69b"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-go.uber.org-multierr-v1.11.0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.eMe7I5Jp7v",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-golang.org-x-sys-v0.37.0"
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-14T01:54:42Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "Repository: spiffe/spiffe-csi\nVersion: v0.2.9"
+    }
+  ],
+  "hasExtractedLicensingInfo": []
+}
