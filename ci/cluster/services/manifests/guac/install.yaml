@@ -4,6 +4,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: guac-nats
+  namespace: guac
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -28,6 +29,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: guac-nats
+  namespace: guac
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -43,7 +45,7 @@ metadata:
   annotations:
     {}
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -59,7 +61,7 @@ metadata:
   annotations:
     {}
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -75,7 +77,7 @@ metadata:
   annotations:
     {}
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -91,7 +93,7 @@ metadata:
   annotations:
     {}
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -107,7 +109,7 @@ metadata:
   annotations:
     {}
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -123,7 +125,7 @@ metadata:
   annotations:
     {}
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -139,7 +141,7 @@ metadata:
   annotations:
     {}
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -155,7 +157,7 @@ metadata:
   annotations:
     {}
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -584,6 +586,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: guac-nats-config
+  namespace: guac
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -739,6 +742,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: guac-nats
+  namespace: guac
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -777,7 +781,7 @@ kind: Service
 metadata:
   name: collectsub
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -801,7 +805,7 @@ kind: Service
 metadata:
   name: graphql-server
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -826,7 +830,7 @@ kind: Service
 metadata:
   name: rest-api
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -850,7 +854,7 @@ kind: Service
 metadata:
   name: visualizer
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -951,7 +955,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -977,7 +981,7 @@ spec:
       serviceAccountName: cd-certifier
       containers:
       - name: cd-certifier
-        image: "ghcr.io/guacsec/guac:v1.0.0"
+        image: "ghcr.io/guacsec/guac:v1.0.1"
         imagePullPolicy: "IfNotPresent"
         command:
           - sh
@@ -1008,7 +1012,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -1034,7 +1038,7 @@ spec:
       serviceAccountName: collectsub
       containers:
       - name: collectsub
-        image: "ghcr.io/guacsec/guac:v1.0.0"
+        image: "ghcr.io/guacsec/guac:v1.0.1"
         imagePullPolicy: "IfNotPresent"
         command:
           - sh
@@ -1065,7 +1069,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -1091,7 +1095,7 @@ spec:
       serviceAccountName: depsdev-collector
       containers:
       - name: depsdev-collector
-        image: "ghcr.io/guacsec/guac:v1.0.0"
+        image: "ghcr.io/guacsec/guac:v1.0.1"
         imagePullPolicy: "IfNotPresent"
         command:
           - sh
@@ -1123,7 +1127,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -1149,7 +1153,7 @@ spec:
       serviceAccountName: graphql-server
       containers:
       - name: graphql-server
-        image: "ghcr.io/guacsec/guac:v1.0.0"
+        image: "ghcr.io/guacsec/guac:v1.0.1"
         imagePullPolicy: "IfNotPresent"
         command:
           - sh
@@ -1180,7 +1184,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -1205,7 +1209,7 @@ spec:
     spec:
       containers:
       - name: rest-api
-        image: "ghcr.io/guacsec/guac:v1.0.0"
+        image: "ghcr.io/guacsec/guac:v1.0.1"
         imagePullPolicy: "IfNotPresent"
         command:
           - sh
@@ -1236,7 +1240,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -1262,7 +1266,7 @@ spec:
       serviceAccountName: ingestor
       containers:
       - name: ingestor
-        image: "ghcr.io/guacsec/guac:v1.0.0"
+        image: "ghcr.io/guacsec/guac:v1.0.1"
         imagePullPolicy: "IfNotPresent"
         command:
           - sh
@@ -1293,7 +1297,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -1319,7 +1323,7 @@ spec:
       serviceAccountName: oci-collector
       containers:
       - name: oci-collector
-        image: "ghcr.io/guacsec/guac:v1.0.0"
+        image: "ghcr.io/guacsec/guac:v1.0.1"
         imagePullPolicy: "IfNotPresent"
         command:
           - sh
@@ -1350,7 +1354,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -1376,7 +1380,7 @@ spec:
       serviceAccountName: osv-certifier
       containers:
       - name: osv-certifier
-        image: "ghcr.io/guacsec/guac:v1.0.0"
+        image: "ghcr.io/guacsec/guac:v1.0.1"
         imagePullPolicy: "IfNotPresent"
         command:
           - sh
@@ -1407,7 +1411,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    helm.sh/chart: guac-0.6.2
+    helm.sh/chart: guac-0.7.0
     app.kubernetes.io/instance: guac
     app.kubernetes.io/part-of: "guac"
     app.kubernetes.io/version: "v0.14.0"
@@ -1442,7 +1446,7 @@ spec:
             subPath: default.conf
             readOnly: true
       - name: visualizer
-        image: "ghcr.io/guacsec/guac-visualizer:v0.4.10"
+        image: "ghcr.io/guacsec/guac-visualizer:v0.6.3"
         imagePullPolicy: "IfNotPresent"
         ports:
           - containerPort: 3000
@@ -1471,6 +1475,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: guac-nats
+  namespace: guac
   labels:
     helm.sh/chart: nats-0.19.17
     app.kubernetes.io/name: nats
@@ -1490,7 +1495,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 5ad82f1f278ce840d80ba5cd357e3d662fe3aef0740cc7db1960b84e5fcc4797
+        checksum/config: 5fd9346d7aa0854f3e927cb757a6119e166ade202a953c8dc697823a0f6e61d8
       labels:
         app.kubernetes.io/name: nats
         app.kubernetes.io/instance: guac
