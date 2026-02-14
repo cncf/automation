@@ -1,0 +1,2030 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "external-secrets/bitwarden-sdk-server v0.5.0",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-14T02:38:57Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM for CNCF project: external-secrets/bitwarden-sdk-server@v0.5.0"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/external-secrets/bitwarden-sdk-server/releases/tag/v0.5.0",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.5vGXYdb1uV"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-serviceaccount.yaml",
+      "fileName": "deploy/charts/bitwarden-sdk-server/templates/serviceaccount.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6c25fe49cc27a6d4cbd8c1d80b0231f3682864f464b7737d077eca9a84439773"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3cfce146473eb052c0d489af0b28472586c7de99920764ae5cfad75b1f7fe4e557c5d7e82dccd149175ba45601b53864360e15a173e81b42fa1d484ff83cbb8f"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "97b22f0bd6f1a0ea555d80357ab31f5133dd7278"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-pkg-server-server.go",
+      "fileName": "pkg/server/server.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "198152b3ca7c43a7b9cb7da6c5fd59c8014e7ee4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2f95b7c3cd45dda2787e4967d712507d44973f02a354e97452322ab3b6ff7a4f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ae9c795034461fc2af763a714324b8deefc5d73dc0ee851faea5793d64d7bde5c49f67c25bb267908ea675404faa0a24f09808bb046d707b8c695b5b6195f412"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-SECURITYC95RESPONSE.md",
+      "fileName": "SECURITY_RESPONSE.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6fec1402bc2437950624af3a2fa664771f5f308efdc7058ebee1b223565aad18"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "802097380c854ff6d5894c14eab76a93769192929f3b96148bb44c0a4b14410beed6cb914eebe9d9c7a884cbe7aca24d7d9957647394212725801bc516798ea0"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ae5b908f91c3f9ae8619e6e43091d1cd380bdaaa"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-Makefile",
+      "fileName": "Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1081f0a3b4868d8c4518d2ac768b99395344c2476858aab9b12ddb11b991ec90"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "bc2829980bb67adc8d2b47e4bcd8adc3a6bd04604b6fb692bd87f7e031d2fd56c0c396bb7826962f49d1955879cb09ab039506e9a36b8c0f1daab52a7188ed6b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e0720399884c6aa697ae5df9431199ff26d15141"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-CODEOWNERS",
+      "fileName": ".github/CODEOWNERS",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4dd62d3c34079f2da47f2599e3ff83ebdfd65d86"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c2af3bc682433228aefe2b2ca33ca9e41d70fd2d935199e04151af88500241d5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc1a6a7ce95dfcc478672717643835d8424bcad0c0ea1eb32d0bacd499cdf830fcd04a92b871ce306b28c7d8d3790796b16fda34dec18cf70a6cc07306429963"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-tilt.dockerfile",
+      "fileName": "tilt.dockerfile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "349ae84b286f5056bb41c0828553546e2912bafbaeae0bd58fd99726e1e36aeb"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "189b2d6de96a4b83a0564a43da40272d3c3f5941a1a1fcd5b760fdcd24fcbd866ab45475ed0ba2c36654155dd916507e1d820a96318487248fc720fd64ab3be3"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5fb79fedcc86babd29144e51b9d770de65034c8a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-go.mod",
+      "fileName": "go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c37075e72b1d88580ed846e0315165d8c097245a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2b37a801574659e03c840cadd2dfd12380701339c57a00c694ef6f4f179a2d1e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "df12fad09fe93d3d466bf6ecff9c269a8dda641bd643c69445fb3b5aa5d139fc27b82ab4071934acdfb833755c537b70072c4821f9da4fc71bee1c206990c988"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-release.yaml",
+      "fileName": ".github/workflows/release.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d297b500b4ac066a11b7df9edf526121da5042db"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "14d0f39dcce0daad4d9f2146b4162d53eb9e959b65905c4c24859f49666b3635"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d91154e94f61dfb62398b28931d6d4e0145da5419aa84d8f8a8e38a2972f742ed91044321414d74371659deb9ccc72289baa6dad69c006ef6112e3f9753d995a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-Tiltfile",
+      "fileName": "Tiltfile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c90fbd6b205802e4e70d1f794bf3612a52d49a1d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "93e36b20195b74de11e4d2db9413a38777f508b41ce0f3df2525b7e419a1a678"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "735c5176ccc11847f553a2bcd46ef13ff04ac3acb58473144ebca60945093084ee40f4298f4bb3bc8df083ef2a3ee231a9429e8a852bd375f1d8804968707190"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.2.md",
+      "fileName": "docs/release_notes/v0.4.2.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0a7059283a4ccb4902b576c6bb874ffce9fb9706"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1397a0be14e5ccfd388003363e14c0a31222d7f0ee5ee6fba54235661602aca0"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b5a4cba9e70f2f71dd493e62c2de72b8990b3d80391cc13818aa89b26fab7f6ffc1a1dc4d026a662b3f6776affbd79777b444dbe03aa551a5c2a03b1ab92a6ef"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.2.md",
+      "fileName": "docs/release_notes/v0.3.2.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "186c27addbab0839f42cc2509e4bfa359359f52fd73bb5a51484cf13ad4702b6210830d4560d6c6d98abbfb1b83a1e934f15c793018fe98e7a996fec8c09db48"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "47149a21b13abbb76ab7dc0983791ac5cc770cd3"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4a063c072a21abcb500c567f850a7fd3b48380f0e846cb19126adbc5492d441c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-check-manifest-generation-diff.yaml",
+      "fileName": ".github/workflows/check-manifest-generation-diff.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d70e79f1336242e74686a928725cc03c2e1534e6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5b721cc0629d8fba48f0c5f8db9a95884b5c838bfa902e76c939a7e342b5abee"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a78a01970f94430159069a07fc17aca3a58d3c888eda0999bb1d330dcb34f3d67ce8d0cd891ebe4e44be02fc67efbf21380ba8b990eff7adfcdeec63a0f53c71"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.0.md",
+      "fileName": "docs/release_notes/v0.1.0.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5a9e6735052cadf47775e6f3f5aceb6a5c0e9de1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7891c3e75ac246b85c736d25273bd4ed48f8c15ae2d73c78d6bb71439106ae44"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "819805860a1790a2dfd990b4d28c03bcc1a98cdc0a4ff902da609b3fb17a977997c3646600ae9d8bcffabe2e9d4dabe455ab92d44b49759b72e21895179fba74"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.1.md",
+      "fileName": "docs/release_notes/v0.4.1.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "95ac1488205d8a480e9c098a40831d9ac2cfc0345387853eb3c3574f3601f112"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4e18d3e4fc612e9522562298b0122ce7b5f901b2416103698a993b2b3f37ae1cf4f65fe8e4f5622c840e6d5aac07bbb089b317b3a303c38f4ede936cfb02d59a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e647a898479d701d6b7bb653783baaf323732723"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-Dockerfile",
+      "fileName": "Dockerfile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a86e601d59dfe8a565f753dc4df146737b17c76b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "38e8ead60b9080148b02090b0d1cc570f66b05f46041c547bbe487c0a95e35ad"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8de90546d1689e4e1f072fcfe5614cd79f41d8094795b74a010ae7e2b957e1b5a7f0b83233aa09a841823a85c930643e948c3fcf797c0da1a0fb34ed83e52c55"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-main.go",
+      "fileName": "main.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8bd05fb0cdd25df9c7d8462ba2aaf979ff11115ae2dd0a2f4c2e3f549c3f1d1fe8557ae0f7051ae3c6b66d17b3ac30c7754f6d8297b7219a06422d0edf4569e2"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7e9e2639092c36005abeb3c09735ba0d8030343d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6305f6bcb10de5a8c41ab55c01a673b01c4812fc7641edefc6fca23a5be7ab74"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-LICENSE",
+      "fileName": "LICENSE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc6b68d13b8cf959644b935f1192b02c71aa7a5cf653bd43b4480fa89eec8d4d3f16a2278ec8c3b40ab1fdb233b3173a78fd83590d6f739e0c9e8ff56c282557"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7df059597099bb7dcf25d2a9aedfaf4465f72d8d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-tests-C95C95snapshotC95C95-deploymentC95test.yaml.snap",
+      "fileName": "deploy/charts/bitwarden-sdk-server/tests/__snapshot__/deployment_test.yaml.snap",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e0455d7dc620ad2715bad2e711308b4a826ed706"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e7aca5e1ad06c00df923c8f0432378bab8bbb6ab527e9f7b50e28fbb9b3734e7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8c866788d423ab3b6385868bcf03bc87c7ce74a4206abc30cecc46399066a066650aa9cd472609cb47faaf7a9e9ab07770598a611247bd0891fbac18c3cbc5d2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-cmd-root.go",
+      "fileName": "cmd/root.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1befacf37243790c573f30931fe762a86e3cadab"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "78bf35d646b6bf9a76be2ba15700102c9b8236665af75d90e58cb8b526c60d38"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d470aa8fb3ce8c968e6ece4e74b8e82944f0a9223b59f89eb59a2019d7cc1689471351bdef604f41fbdc6feaab58dee87f44086ee71a3c6eff84133e9ff1ad79"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.2.0.md",
+      "fileName": "docs/release_notes/v0.2.0.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "160a49935ec12289609e65c0243bb1668637f347"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "12e827a54ed3ea5c087b943e73ec4c00a5fe440dd8772e77ae103187377b6435"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2d3b8ac9574e88a44f50d7f7861ec4993d182d0ab338be7b96f89c839bbca065e3d15d0cfa68488a1a611b3c644cbd4dc52960c78df679ed58326bc6c476a87e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.5.0.md",
+      "fileName": "docs/release_notes/v0.5.0.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6ea4143ac4a6e724b0b947cc4778f017b7f5442a8df9fb1366e861b914f1f2fa"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a7e1e9695a1d21fe0afee57b899108376d3a4f577e90be2fea1a8b05582afcccac26563a5efd93e53c71cf3c7272e95e7f3148b3061a26dacd1d37ce76ac8eba"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "97c7b8622e858529caf8dbafecd8899f71922972"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-MAINTAINERS.md",
+      "fileName": "MAINTAINERS.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "562e20bda233085c8e2f40e6f081b0fb2a15367ef7dce382a4da33beb5493917"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "398a270305528ab2e9488ce7edf26991a81b3782913788e1dd56d52670bab7c437676594c186d84e1e4656784e15ab27f2cf240ac84a95dc5e92494a933e6b29"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "79ee6a58f269c68b83054431abf0e8399ba875e0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.golangci.yaml",
+      "fileName": ".golangci.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fcd38849f6ba0a21f451d667af1652aeed1f56742d4fc63341d799dd7cedd0c9eafc770c51631fed01f1ced8567db72b7952fd1c20dc59aca43eacbc6f2f1265"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4106849e7d1af6ee7786b90540f7e3a3606cadce"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1d55c76a8e9d7baede38fe752aec827aa243f5f48d63f3ec73b4cdd8881d85bc"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.gitignore",
+      "fileName": ".gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a4bd7390637d180c47a03491449f8f8ba135b281"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "de4c11c71c985d01b3710ee1f925e480b1d241417e609d60190e77033ce4c731"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc6cdccbf154ee2fdd05efafc53fbccf347dfb6be119b05f191e84b8793056496a3c2d30b76ea1d0876747c19d0f678adbe1f148dedbc2121e7fa6e29fde39f1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.1.md",
+      "fileName": "docs/release_notes/v0.3.1.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "320d6da4a504fb66c181aca6d05593d0790d39e9"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "881e3f4c842789bf6d040a5f42a12b56078048e4ee4a4cd7313927085802853d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6c9570c5fdc78c608654f0614f8e96ca9e52385cabac0b351254b3054b3345587c569e5b90662d5e2b9f06d758136a06bb9c2b2daeed445a5344f5368ffcf35d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-hack-primeC95testC95cluster.sh",
+      "fileName": "hack/prime_test_cluster.sh",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "97e773bf244cec3a16163f96c27c7797125d8386"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0de72c337b972fbe7dad3c10cbca7f22d6189beecafaaf41cefec9724fcc8bcb"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8b69e990597a6c4b8e48e9f7f4d9e665a51afa0ae9e4906c197028f74ec5d985d57fb4acfd210636d06b379719054fe2aab9222f0b124b962322c09cbdaebb1e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-tests.yaml",
+      "fileName": ".github/workflows/tests.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8ee8f33f9f386649a774c46e1ff735fed0a0b731"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c1db389c2c20154478b98fdbbb06e6dbe9277147144761d2c73663edbb2e6e0a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc529664597ed19847757b19cd843c551bd46a28d50ffa8805a932ec78b219b5f4b177ecd658f9b1bbb04ddd4b828db594a248cff9ad99d503bbe7cdb1771b60"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-goreleaser.dockerfile",
+      "fileName": "goreleaser.dockerfile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ec12586b0b16aab4295079f735be8351ef5e18e0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8e339ef21c79be44c4ad0245aae2f81a8a91f279d8e9ceed92343e1d0ed4c614"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fb620c31caffb854d3434cd595ed2ba03d9144ea44f95a7df6e610908332ab5afe7416b9a82b6819818ca2b11957569f9ec6d1680ba43cfedaf186a579f59982"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-pullC95requestC95template.md",
+      "fileName": ".github/pull_request_template.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "703f25d58576ea3995803bfe7f3695e6e8e6357d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1af8bc7cc6f795e328dbd987bbb0957e5fd267560ce558927c6c82a354b81645"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "91514dbdeca5c757bf61bd283ff756b1fadb8c3f9efa9d79107290e5a292d1956039379d84be8969d3d2212ae212a48fb4742e2a9f822333e660c89192f4e8cf"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.4.md",
+      "fileName": "docs/release_notes/v0.1.4.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a062a4399bb87963007ddc5dc2eab9190e3c18f3dad4778a4fb2396d75b6b6dd136f1e952a533796d00e82fb7c6f32c8f6c8e8cdb3de591a12e0b46c767dfc73"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7fc9f98001294790e28083d4f8059dfebb903634"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2ed9444e000ffbfbac85c2e7a4f82669ff47f9a135314f79d2c55c0ccf0fa256"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-hack-boilerplate.go.txt",
+      "fileName": "hack/boilerplate.go.txt",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "78d78c25e97631ec0497f4f1404940879988c53c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9dc80bf6cde91e54fcdc586cb12eca053844e452fa5dc006c4a57cdb78fe0b2c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dcce719593b870f7385eba475d82f055580171e66d784b46b2f79aa6cfd8916c3bff5a24aa3847acce6ee63f31c8fa4fb20193c1fff0c8cceaf7d24601436e9c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-tests-deploymentC95test.yaml",
+      "fileName": "deploy/charts/bitwarden-sdk-server/tests/deployment_test.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8861cc67dee80fc08e0ac4410c9d6b50e3cf4ba0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "029f4d3543843cf22a5e2c1a978986dd3ec2870f7ab96ac507050a36b67d83f2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6fd8d9ef23d0969838db0e07a3e6bb67661f36aa588cd023bd5e07ff2552c9f75e575f2228ecc9d704cfdba5cf557d4cf8dd71498264ab64a982d585b690958b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8a5ebb8d8516cdf544926abc10dffdf7185b4f89"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2566a765ab1d84635d80ffefbb461905f04064917d9b6ac3556f897684126659"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9e99013d03c27fc1569317ac5516d757107d45afd8f254694f1ac696969865f2c0ebbe3b417f47cc0b3e937f69c23d71ccdf17302849d85510e8c3b29dde50ef"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-Chart.yaml",
+      "fileName": "deploy/charts/bitwarden-sdk-server/Chart.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "92ac243a6e5ac11c392d32337435ecfc8b077092"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9082b5b711d4e9506099cf00b8c04d1a487e7db2a1576127de518e61cd324fde"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6497139555a98ffec74df97d40b07032391db1d18e4d6945e3d7a92feff769ca3bde57ebbbda4384d3bdffa6adfd2918aa5299dc31403440f8fad7e29b9ae1ef"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-dependabot.yml",
+      "fileName": ".github/dependabot.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7bbd2c3cf170afcb0006084c09a2697fd783c927"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "17db0e469bd2e37bd216e3a4524a76f070ef51c6f8ebbfc6f0489144f0e2855a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "66d5c2fc866a30eab6628fa242bee79aec799235752d31622b3f21a6d31f631bcebd6b47ce710ccbe3db12b5d8e9fc0f2afd2e60bc0a782e40d0abf2cd793141"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.1.md",
+      "fileName": "docs/release_notes/v0.1.1.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e966fd78db76c61d7dae4b610ac5a466e6ac05c1f19c92f872d5c0674c7f04e4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ffa3f74ba57910aede81afef614c508783d2fb2996009d7523f1b2917137cd2c25c9a8c2b0ab9069d8aa03bb0e2bb7cee17c5d6b6f5a0b04c9c05e096561221b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b5b229326653f59b4577553d427fdd6d70147b2d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-deployment.yaml",
+      "fileName": "deploy/charts/bitwarden-sdk-server/templates/deployment.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "34c5699827e82ffc83e5a1ad01a454db7429f3c9ea182f440f368d9d62e77107"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "427838b1a3b7b95d0e4283a48ad49b7fabbd8970295a167406a67e2146bef64c5bd4cc478249d399262a486dfb4abe0d05b0ef7853f09815df59815a47b5f828"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e3bb15607ed6962ce282374955ba7e74e94072b7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-service.yaml",
+      "fileName": "deploy/charts/bitwarden-sdk-server/templates/service.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f12d7ff06f8c7c1e4c43255e124df93dc0adfa5c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4e7433f8b7e429f55090a21dc017ede25e55666f86869c6f670cb21ae0a46f42"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "80ac287254e1a456fbae691747b2af03631a1a00de601484eab8872220ad8ac44ebafdfb2c7873989277b95f3e6b54b6a567f0f1bcc40c9d53598baac8663c38"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-go.sum",
+      "fileName": "go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f90143798f44d73d98d025b201bcce7972a4dd19"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c4435011d4c4ff7ebe21c9a88ad0e8ea92041a6692c8a7bb480bc6b033f9cd21"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "99fed2c40fff35e9d24d4cf43849527987dc1c4a1d9ada1bc558c20c49230c68bdc92826f45489bc0deb6f6dc3ce2ab5ab5913d3aabb4bcaee40f6feae149f4a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-pkg-bitwarden-bitwarden.go",
+      "fileName": "pkg/bitwarden/bitwarden.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "71dac64e2fa4b1df3c9f25dfabf2b9d1c94ec385"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b51c8db4be68878bf3d75bb1a995549f3bef362bbec71f860e194943d4489635"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b461385a4b7b0cb74c89638cf7e2854b9bfc6b338e56309862f7b0256c5db673435bae9067f77c8a3b50e73c4067cf71a2a86563f007edbb840dff895c63923f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-GOVERNANCE.md",
+      "fileName": "GOVERNANCE.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d01827ba387924567c89d72298fb7a663f157b5c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e04fe0e9020f69d93d6d61fbe32e12685b7a8be7fcb898327968368631afc0a0"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "bf4d2352a50a6c8dc47128496ae147e9851152eaabd8ac609be9f0954b850c8e40709dae5f540c95bd2f2848225192eb42782f295e7066f0dcb4b43477c4d7f4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.0.md",
+      "fileName": "docs/release_notes/v0.4.0.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0ed8587aded5b530ee88ad6850ccb82beb17b8be"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d2e13ca7c3beaf98d5f135a91f2ce499296d551ff4bb9f1b4119ca4da7566cae"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6de4fc7036f950fe794d9cc0e4b8a69fea0842eb361e077705dc1216dad1860120f1056038067d31f6ee5b637af952d4842e96f5bdf498c34ea5825c2fc1fcae"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-featureC95request.md",
+      "fileName": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ae9ee2c82a20400bf03947eeb9d56336e2f932dcb8e26e49ad4e762598b2ff63"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c49ea1f6669dac7c6144911fcf219a1290a96d5cec8583961c990959ccb93cd2142ff43bd7869b2f975175c564f03ec8a50699808aaf0a6fb3348dd452763aaa"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "66c01f3d34cea734e2e8fbbf9a98b70a648f873c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-values.yaml",
+      "fileName": "deploy/charts/bitwarden-sdk-server/values.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a1887fe12241bd2618662f23a7587456cd7e2f32"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "894de49b76237a53e6eba9881e50a1ad8b7dc5581245c670e99cc08c7b84f135"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7008cf02e7d6c400d456cb938589671963b9da236297510b1e10f515251d80c2a3cd6d67429b258f529b89ef040d277c4c3d7789eee3dc797316e3e8d3b9a907"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-pkg-bitwarden-bitwardenC95test.go",
+      "fileName": "pkg/bitwarden/bitwarden_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "488b45de5eddb5f41448ba27e68f93295435b3cb"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2f9bb35f8dba4a91e5ad897a9ce9cb47c8aa31bb0832b924d0ceeb2631824e41"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b56e7a4ac6a6a5aaec1a09bcbee8dca3356942fd60e2edca32eeb45174ecd57bd52d3920bd197af0e1489979f9694906e407c257dfc9a10310c5957e6f1ba546"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.0.md",
+      "fileName": "docs/release_notes/v0.3.0.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4580aaef248c2b8ed304d9294d3b613a1e19db40"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0e9a1aea8100a884377ccd95c9762d70971e951fb0122b948731c76fd18a9583"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5120165b38fa15b1579d6166ca7d9ceb0ad774503d103c1b36930272b806c68ccf710a74d3885476d5b4d5db3d18d7cfdf73f21a080dbb44de634b055b478fec"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-hack-bitwarden-certificate.yaml",
+      "fileName": "hack/bitwarden-certificate.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f20682f6d000139a4e9030e7070e1a086705518b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "180530a2ae8dcaf4a779f8e9bf3bcfdf01cd1e26506bfa7b32aff2c88d75f435"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a8050bd72e1ad8995f0b70fbe1011f0cad0fb80cb2e295ded998cfc5a433b5fd9af898bfc070eba9c0d8154e5f5bfa040e1c33fbf224d1a1898569d7f9e01c5b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-createC95release.md",
+      "fileName": ".github/ISSUE_TEMPLATE/create_release.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "071809e59db28af6f2bdbf6b1c961022cde6c236"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cea3519ffcc2e6eaf3e7793181f1316881b20a584748ce963453a63c74d213da"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c94bbcdc58fbece8340889e15b698e374c48f66ce418ef6ba097e9c723c95c033ac8721f7a78a6f3243b4053332f830dc069e7d74458d14d43a1c71a3ddf1e52"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-hack-clusterC95issuer.yaml",
+      "fileName": "hack/cluster_issuer.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "345cd7a327b8a750c88320fc546c9ae679d5e0bd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0a3b305bd5fec04a960999d5684ba181400d5a0c22128a0d15053969951214ec"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1ac97d5cf1261cb8989eaa6044655166b5cb2dc2904613ed845f85928591f62786ee321ca648c9708681f37f42fcdbc3437bae6b8bf12bc49b7bab25eccdb039"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-bugC95report.md",
+      "fileName": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "09281fb9ac52f4b29f5edc7c60a0a41980963aca"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "eb0a00edde90533b0c8b17c2689a34a6f2fa09b91bc9936875b51c73b8a61820"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5f183c24067ed04c8585c1b6a008eadf80e5a310256ee5edb1b0ee758501cbda63514bde5c5746d638c5d051586cbb43f3327577ea043a780e847e961bd92354"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.2.md",
+      "fileName": "docs/release_notes/v0.1.2.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "67a22e344d726577fa37aa86c2e4fbab17437e7a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a35e7a49d74a2478aa88fb6e97ffbbdef95b0c0cfa19d5d7c981ef82b1a102aa"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "216637cad08e9f360f8faf87a99276fa75cc9aa1699b0a9a9d391720b47e7c11eaf859abffce814bc03248cc0109fd5e06478debd79a8bae63ea464e14709226"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-CONTRIBUTING.md",
+      "fileName": "CONTRIBUTING.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "55241cf923df6e3d5932b6f8d5fe985c15e70393"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e513d94c730289cf669829976efe10bcfe617c4f1024ba621f2c6b934be8aeb7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a13db0c6afbb1f9848a0bc5f7ac83fb644a8be47dadf24d53ae41bb3fffe177e30b823f89983f7427fd1ac23cd156e4f7d17bb1050e3a1233b81ebe532324bb1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-SECURITY.md",
+      "fileName": "SECURITY.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e5580bb7e42fe9849a6e016850d3aab8646a1ba6fafd3988aded3685cb8c0380"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "08851e834e4a88e068a4f8a560ede2c3384644f70605b60dfcca80ea7e2cd0a2570daf19fa233b6a92bb4436fe096f9a653a5d3818fb280a25924ad6f5c6cfff"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b29c093f6f76c5cd048d289b01981927981642e4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.3.md",
+      "fileName": "docs/release_notes/v0.1.3.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "00b0cc7243ada141648a3f9f959f340147838778"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d2c6e7b0af19cfd59df1158069216d52e91ee35528000fb3f4d1aea774a2b277"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9a123be134627653bc6a9204f88ccb71cdd243379aeac09a007cbd443552a56ea7bd93332979c5b7e7ef0931b1dc78f705f83b9ab44d48cb5cbaf5dcb2893fcd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-NOTES.txt",
+      "fileName": "deploy/charts/bitwarden-sdk-server/templates/NOTES.txt",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "367de128a203b753be3caf43a023da1954417a4e090e7bf1cce5c3500b67b43c50c49f0a2ce2e23c1e607b734ec836fa1565d6244be8842c21ec3ef3b03dfc54"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "37eef3791f1509c2cb143f7f03de79b1597a9879"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9a10b6a6737dc6571cc0fcbaf7225a7bd442a810b6bbb75694248393c5518cec"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-C95helpers.tpl",
+      "fileName": "deploy/charts/bitwarden-sdk-server/templates/_helpers.tpl",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0514347f92cb5b58dd93fb84a6056ac07091fe2152b50dbcb3be890065b189a1dc95d2093b1eaaaae58c8fab611fa10c956d88a98b64c4b80ccd8dfb84ee9ac0"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b1354aba31d64c3fc29b5d0f05ce1ad759c81735"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "160feb10116c5435a8d1cbf0d6fce543db364f48fdf8840197cfcf56995595b1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-.helmignore",
+      "fileName": "deploy/charts/bitwarden-sdk-server/.helmignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "67c7c190a6648e54c8be47bbdf87136f4b2ee2f4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "bb987e6a8ef45a99255d1d632812482d5f0f3255ea841520b4d90342df5fe2b3"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "21284956b6c2591139903f65265c650755da2d3f9ab6215b24c15cb9c6127f95b21ee84f315a89767f0d4856030e15e9ee151d64b15b8e403f3406665576a865"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "name": "tmp.5vGXYdb1uV",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-CODEOWNERS",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-dependabot.yml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-bugC95report.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-createC95release.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-pullC95requestC95template.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-check-manifest-generation-diff.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-release.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-tests.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.gitignore",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.golangci.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-CONTRIBUTING.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-MAINTAINERS.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-GOVERNANCE.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-featureC95request.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-LICENSE",
+        "SPDXRef-File-tmp.5vGXYdb1uV-Makefile",
+        "SPDXRef-File-tmp.5vGXYdb1uV-SECURITY.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-README.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-Tiltfile",
+        "SPDXRef-File-tmp.5vGXYdb1uV-Dockerfile",
+        "SPDXRef-File-tmp.5vGXYdb1uV-SECURITYC95RESPONSE.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-.helmignore",
+        "SPDXRef-File-tmp.5vGXYdb1uV-cmd-root.go",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-NOTES.txt",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-C95helpers.tpl",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-service.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-deployment.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-tests-C95C95snapshotC95C95-deploymentC95test.yaml.snap",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-serviceaccount.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-tests-deploymentC95test.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-values.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.0.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.1.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.2.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.4.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-Chart.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.2.0.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.0.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.1.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.2.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.1.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.0.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-go.sum",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.2.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-go.mod",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.5.0.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-goreleaser.dockerfile",
+        "SPDXRef-File-tmp.5vGXYdb1uV-hack-clusterC95issuer.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.3.md",
+        "SPDXRef-File-tmp.5vGXYdb1uV-hack-boilerplate.go.txt",
+        "SPDXRef-File-tmp.5vGXYdb1uV-hack-primeC95testC95cluster.sh",
+        "SPDXRef-File-tmp.5vGXYdb1uV-main.go",
+        "SPDXRef-File-tmp.5vGXYdb1uV-pkg-bitwarden-bitwarden.go",
+        "SPDXRef-File-tmp.5vGXYdb1uV-pkg-bitwarden-bitwardenC95test.go",
+        "SPDXRef-File-tmp.5vGXYdb1uV-tilt.dockerfile",
+        "SPDXRef-File-tmp.5vGXYdb1uV-hack-bitwarden-certificate.yaml",
+        "SPDXRef-File-tmp.5vGXYdb1uV-pkg-server-server.go"
+      ],
+      "licenseInfoFromFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "5dabf37b261ae1ee1b385e9f011e311e0a2c7dd9"
+      }
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-bitwarden-sdk-go-v1.0.2",
+      "name": "github.com/bitwarden/sdk-go",
+      "versionInfo": "v1.0.2",
+      "filesAnalyzed": false,
+      "downloadLocation": "https://proxy.golang.org/github.com/bitwarden/sdk-go/@v/v1.0.2.zip",
+      "copyrightText": "NOASSERTION",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/bitwarden/sdk-go@v1.0.2",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-go-chi-chi-v5-v5.2.2",
+      "name": "github.com/go-chi/chi/v5",
+      "versionInfo": "v5.2.2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "downloadLocation": "https://proxy.golang.org/github.com/go-chi/chi/v5/@v/v5.2.2.zip",
+      "copyrightText": "Copyright (c) 2015-present Peter Kieltyka (https://github.com/pkieltyka), Google Inc.\n\nMIT License\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of\nthis software and associated documentation files (the \"Software\"), to deal in\nthe Software without restriction, including without limitation the rights to\nuse, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\nthe Software, and to permit persons to whom the Software is furnished to do so,\nsubject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\nFOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\nCOPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\nIN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/go-chi/chi/v5@v5.2.2",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-spf13-cobra-v1.9.1",
+      "name": "github.com/spf13/cobra",
+      "versionInfo": "v1.9.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Pixar",
+      "downloadLocation": "https://proxy.golang.org/github.com/spf13/cobra/@v/v1.9.1.zip",
+      "copyrightText": "                                Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/spf13/cobra@v1.9.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-spf13-pflag-v1.0.6",
+      "name": "github.com/spf13/pflag",
+      "versionInfo": "v1.0.6",
+      "filesAnalyzed": false,
+      "licenseConcluded": "BSD-3-Clause",
+      "downloadLocation": "https://proxy.golang.org/github.com/spf13/pflag/@v/v1.0.6.zip",
+      "copyrightText": "Copyright (c) 2012 Alex Ogier. All rights reserved.\nCopyright (c) 2012 The Go Authors. All rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n   * Redistributions of source code must retain the above copyright\nnotice, this list of conditions and the following disclaimer.\n   * Redistributions in binary form must reproduce the above\ncopyright notice, this list of conditions and the following disclaimer\nin the documentation and/or other materials provided with the\ndistribution.\n   * Neither the name of Google Inc. nor the names of its\ncontributors may be used to endorse or promote products derived from\nthis software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/spf13/pflag@v1.0.6",
+          "referenceType": "purl"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-CODEOWNERS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-dependabot.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-bugC95report.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-createC95release.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-pullC95requestC95template.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-check-manifest-generation-diff.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-release.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-workflows-tests.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.golangci.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-CONTRIBUTING.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-MAINTAINERS.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-GOVERNANCE.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-.github-ISSUEC95TEMPLATE-featureC95request.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-LICENSE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-SECURITY.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-Tiltfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-Dockerfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-SECURITYC95RESPONSE.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-.helmignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-cmd-root.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-NOTES.txt"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-C95helpers.tpl"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-service.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-deployment.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-tests-C95C95snapshotC95C95-deploymentC95test.yaml.snap"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-templates-serviceaccount.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-tests-deploymentC95test.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-values.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.0.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.1.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.2.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.4.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-deploy-charts-bitwarden-sdk-server-Chart.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.2.0.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.0.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.1.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.3.2.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.1.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.0.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.4.2.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.5.0.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-goreleaser.dockerfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-hack-clusterC95issuer.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-docs-releaseC95notes-v0.1.3.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-hack-boilerplate.go.txt"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-hack-primeC95testC95cluster.sh"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-main.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-pkg-bitwarden-bitwarden.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-pkg-bitwarden-bitwardenC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-tilt.dockerfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-hack-bitwarden-certificate.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.5vGXYdb1uV-pkg-server-server.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-spf13-pflag-v1.0.6"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-spf13-cobra-v1.9.1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-bitwarden-sdk-go-v1.0.2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.5vGXYdb1uV",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-go-chi-chi-v5-v5.2.2"
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-14T02:38:58Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "Repository: external-secrets/bitwarden-sdk-server\nVersion: v0.5.0"
+    }
+  ],
+  "hasExtractedLicensingInfo": [
+    {
+      "licenseId": "LicenseRef-github-com-bitwarden-sdk-go",
+      "extractedText": "License: Unknown",
+      "name": "Unknown",
+      "comment": "Package: github.com/bitwarden/sdk-go"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-bitwarden-sdk-go-internal-cinterface",
+      "extractedText": "License: Unknown",
+      "name": "Unknown",
+      "comment": "Package: github.com/bitwarden/sdk-go/internal/cinterface"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-external-secrets-bitwarden-sdk-server",
+      "extractedText": "License: Apache-2.0",
+      "name": "Apache-2.0",
+      "comment": "Package: github.com/external-secrets/bitwarden-sdk-server"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-go-chi-chi-v5",
+      "extractedText": "License: MIT",
+      "name": "MIT",
+      "comment": "Package: github.com/go-chi/chi/v5"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-spf13-cobra",
+      "extractedText": "License: Apache-2.0",
+      "name": "Apache-2.0",
+      "comment": "Package: github.com/spf13/cobra"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-spf13-pflag",
+      "extractedText": "License: BSD-3-Clause",
+      "name": "BSD-3-Clause",
+      "comment": "Package: github.com/spf13/pflag"
+    }
+  ]
+}
