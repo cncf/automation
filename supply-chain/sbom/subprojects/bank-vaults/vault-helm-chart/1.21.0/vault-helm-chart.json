@@ -1,0 +1,1692 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "bank-vaults/vault-helm-chart v1.21.0",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-14T00:01:49Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM for CNCF project: bank-vaults/vault-helm-chart@v1.21.0"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/bank-vaults/vault-helm-chart/releases/tag/v1.21.0",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.8qXjpGhQc7"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.gitignore",
+      "fileName": ".gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2bfc535f3fb1c107341514946fb429c47f7d71bf35e06217b997531da048030dd2d70635dd202fb588bede09ea3d64471c7e9db5b38e44d4bb1def7b7090a8ae"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c9a6d1257383a060eab203155fe3344265c50e25"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "58835fbcf15d9e2b34ccab15b382acd2470fb8500ad220693a3cb426a29959da"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-pvc.yaml",
+      "fileName": "vault/templates/pvc.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "10bd76aa4edb33b0709aa6ab072f0ac60bf5ee76"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6586a66c5fe7d866c34804c2e6fc6149e51267e31e364eafcbb051f687d64f04"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "578d0f1ec2d5fec109d0816f1804e03177a3eafc93f1a77c96ae04e30a27ba0f2dd9e74ae06967ccd3eea33ebea2ddb72f0bff57394542b56d8de9131992b6c7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-values.yaml",
+      "fileName": "vault/values.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "edd73da893c90d47a57342641b5a04f3be3c84775c2275cd41605081db4bf30e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7b68423308b04e2dfb4bdbcd6430e4439ff24579d4bedd70f7acabac92c7ed5127b80c91871bd10424331130b1d2fc534ab1901ffffe0d9b1ed5c86de2382436"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "83f38af430a954c8ea35b3d328f2706802b9300a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-certificate-issuer.yaml",
+      "fileName": "vault/templates/certificate-issuer.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0cba1e7387a34245a73b6da11d06e34d6bfeb630"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a12560617cce10588a2327ad4def995f00a1468826fa7410774e2a7207401b28"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cbab136c3f68a8c7599e869a27c9ea2803465b1f5073c5de6188f648c8f0969685dbdfdc5849431ac15ce9314274b1eb38d02568e42456282b119f799724db8d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-release.yaml",
+      "fileName": ".github/workflows/release.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3dbf9ccaf4dce755b9502c4381c81cc9f4780fe1a0174a651bdfcc322385cb06fcde9675e583b234679aa9a76430c182d72421cd52363002e0c6a91e1042262d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "48b18558a5c39589f42811c3b35ac5d1830985bf"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c4e512afb612da457482045dda0c296ab313be3420b24d8dcd9bc5ca262d183b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-ingress.yaml",
+      "fileName": "vault/templates/ingress.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f90109f7e804851ab73c0a179e0b320459229bd5"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "42a74a125a62ee6fe029050ef93b4ea2a572454828d35e61ce184988a885beac"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "28bab415bfc8e532557b318411a4b3b4db7a64a7482507737a9bdbd4a5edd233dc0105000118d146d15bc88167b4425be61d158ccd27ef35f2457a9b90cf5458"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-NOTICE",
+      "fileName": "NOTICE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a5e4bc5e6bb367559c3b0353fa68821bbc9ebf81451bbd18f33f5a725ec1d217fb4a0b7476cd3d0441c025ebbeef34c09d6928cede42ca798476ca28edfa4e53"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "67a273f47c9f629841c55237689c7153beb521e8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "70fe4976243dd3097310a71ea7962f985dbc206664a43bb6107e4dbd3e88969a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-README.md.gotmpl",
+      "fileName": "vault/README.md.gotmpl",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9069f50122b5738ee2ed6f2a5195f77f2939a85c5cdf044842d5f94b59404838"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "934ba32a11818bd67d03830bc47eaf055feeedb8119488a9bc657819396fe4445f56217ffdd4b8a0227b48ab3821116bbe2deffce1db787f1c95d7903ec0a048"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f943f735a6a660e1a02aff419d75541b7963f3ad"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-pdb.yaml",
+      "fileName": "vault/templates/pdb.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "df0048c047b70b7d5ec12860c3496b5c1be287e4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6f6261f2bd36b9a2abe84495f3324b0664e54d9457fd998a8d856d73bc447723"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f13cca1058be59f8300ad243f61f90e1ab06b58820289427c8abb2268e83c7c870fa39b2b5bcc6647c3e8622b703aefe52505598f57369c240621e58e7eb57a9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-README.md",
+      "fileName": "vault/README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4da15b1ffeb6e98af3002bed921e357169606c71f83034dde2af4c7324e93a051d4d3af3b72f17d1db5289886f48efab356e2ffec3f7834607dbe001de74c143"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bf4bae7e9a5091d3facbdde1da0b9584912597b7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c32af3c23f323e6b94d3f1848551a0ba24ae96b7a68c7ad3d70dc6b3ceaa1f0d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-test-acceptanceC95test.go",
+      "fileName": "test/acceptance_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a6f7abfa23dddea6e23b6b7c6fa0672d1020c018"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "388d5c0707cd9ded92f5eb5964cb078debe61e6377192c7bd04b63c954442a09"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2c4691858de404e7227dc9ce5bce606485171b906b1a82382dda6327ace436ec53f451e2eeda1300b42648518ebd55744f77eb8fd7b618a72f32cf850c62db27"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-secret-cleanup.yaml",
+      "fileName": "vault/templates/secret-cleanup.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f74aba1694096a6d80f480140225c7cb88793dede57c953928a0835278e040a2077fe9c1969eeffe271aff54879f03c2bc2171a8351a5c9f6e298ef7b98c4a50"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6fd3f120834dd4b50423ff3a8443500387312aef"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "105608133bc834fd23110e45d44753bfffec862b4582c6dc8736914ed492e3d2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-renovate.json",
+      "fileName": ".github/renovate.json",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1021718621686e261f385639b349c1aa9343248c46f9c9b70f76282e604cdeec213f9db35978fb8917b6c9da149ed8dddb39cc4f260d3955525fecd1ff5f778a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "aa3e5941c004593d47883d97c3d4931816be4a08"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "301b47327f678bb11fd506fe752bbd15323519e2ea9caeb635c64e14ad2cd144"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-certificate.yaml",
+      "fileName": "vault/templates/certificate.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "48b1790ca51657faef65c0609c2ff64cf203d7a6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "de06af88247597a507ba092a3d05860aeb796396fbc30604065f72d49cdc1fa2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "865f682ea1d14d395267670a8d252f919d4d737378cf0423a2e64b253fd8cff27a0317104cf3004cb3ec26072bc136fff677dcda9211b5cde386c0b02dc4a985"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-.helmignore",
+      "fileName": "vault/.helmignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "36fbf7fb9cf040f3bb7807f74108ce51c6eb9004"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0a1e8ed08a372234d8af441442044a88c27dc4409e039dbd3e113fec1ee91024"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "057101cfe7743c79b563375b0e48fdf27e2911f4a1ffc300b0ccf2d11f2cfbcc6275e0e9fa5f27821856ca8c81ca4c7b2d54ae08089a3d033cee0c82987fe210"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-ci.yaml",
+      "fileName": ".github/workflows/ci.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "94dc3aefbc2a2173c9fb04d762b696aeb54cd367"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "03758400d1c70eb16102db44bb2fb239357e690300e32078aa96e9d565c52dc6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "82df664a7ce1dcdf7812e9b3ceefb3c6be3cf260a12922e47a24e2a56232e661b013d6866564c4c688035846139bbadf163ef9cc7e407fc6116f79cfae3b6b97"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-role.yaml",
+      "fileName": "vault/templates/role.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f2824e294faed45faeba9db62621236dc12afcd1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ad3758fac9f865cacc5b3ee0d0b4ca02cd7921eb2c56b8c48d4c4dc03c61b04c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e4c8dd8f0483d36936738f8d843b086a10a6d9a9c1665a193e54e368ddf21b05340dea80bb3878ece9b5c1ddc3021a653ee1d8ea8d64c4aeda713529c1b0c869"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-NOTES.txt",
+      "fileName": "vault/templates/NOTES.txt",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5671a4187ee9488d3b3bc972e27c5bc1764be2c7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2b1da361ee60529b64c150f3ab13da771f383f1490dc1e0b890bfb891c7e605d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5779d50fd512a853ecd9f8188dab3b8085f875df28e08e47aaba49b1999788aadf407a5a8a308e4610d89a1eb22530a8220842731deafe326cec2b28081a169f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-Chart.yaml",
+      "fileName": "vault/Chart.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "249bdc0d48f86bdf106168125b8aee0029d64642c0d64db0eb3c2d4fec24468f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "86364500091c8bc7774fe0b569789ef53422dc75622731c7865e74f297c0798202f623e820d7a7d440036af8cc66a4945def29da10e45349d2b7bc3c18df441a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "62b3cb568bcc760b1a9e7460cb6eda1139bf64a2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-analysis-scorecard.yaml",
+      "fileName": ".github/workflows/analysis-scorecard.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ae83718dc538ead75e3c4022e1d0f7a024da737efe0b1aadaef6fd8ab54aa338f0033bfe8cedfbdf8d1d83a2d25514cc12e0e3cff01141f24f6726d5e98f8cd8"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "95de86a8c2e01af99e1cfa71216ff2e893ba0bf8"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0ad3e156c204b5de3ea3d88a5216e85fccb0f64405e568c4a7184094dff5a389"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-service-headless.yaml",
+      "fileName": "vault/templates/service-headless.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6333c2e5c2b961265e7d614f8a3b00450ebf3c99"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "220b85542e74acaefcd9fca0811fd5f4163eaf3a83fcf5902a8e0ea46d912a33"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5345690aacca4b0ec3d152d830ada6c4ede7e31992af4f7ad772ceb9e3fc24c91686fc252f057456b0de8659bc09d60fc18185eb433a77ac5a63c52fba3e281d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-statefulset.yaml",
+      "fileName": "vault/templates/statefulset.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8f99241327c7ddce271aa00adc14d311288ac4fe28a12224b5d64aa86b7fd6a9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "937c003928e01760c50af27d97bf2cc8cc0a922b1fc4d100550f1ef261c35656840c76364c1fcde685cb494d970d72031f6121924329bcf7fef79197dca68dec"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f5480eb3625c52102eb4d309d255383175751496"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-CODEOWNERS",
+      "fileName": ".github/CODEOWNERS",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b843d3295746ac55f5f5f90aba50c5898005335372b6d9fdd232837861f3399f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "aabb2fbb673e89e4a447df3b3e57e6c96b15f25826eadb7d75f34ac5bd9c91c305c01e4fd3a99910569159f554ff5802a7a53f982ffef4bfd53323519ba7bed9"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "faeadb70b5c5d17df8b6487e14089d45d2752aac"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-PULLC95REQUESTC95TEMPLATE.md",
+      "fileName": ".github/PULL_REQUEST_TEMPLATE.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a102ec7cc11257cc15e91329388bf11b967f8db0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "bf5867595b74e7e3fd0baefbf5ef0202d4018288fd524a65adbecde309d91d8c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "144ad7a684131f91c1dd982d009f6e805f1b71f75e42bc0c4bfa0f343da436052e826f14c636e3141358048c463be6c18440458766f07ebd0957a336c9341316"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-go.sum",
+      "fileName": "go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ee9b84568a69d27d546a9aec3b61939d35bf6e16"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b96b80203a9a575c85fef670d5dd91c6358fb50586e06173dadb0b001a3ac947"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4acae84bc5ee7e62d6d8ba0a4621b0fbff335a456e18fdd5fb17d8f4d5430794c1c0c9bd3c4762c34210933b845c801b3dfd9e54c649a7a8a167bbc9756a9e48"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-dependabot.yaml",
+      "fileName": ".github/dependabot.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2fd9f236b696fb5343a5153b1efd255be1da5a49"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c2a12d076b97ddbae816e20e240acc46fafe637836a4d535a2743f8116771063"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7dd91f1f86d19790f40ad408fe1abcc3d28ae3a0de901580d329bfaeebf9d440b6816c0467ab56ae02f54e578155d9288870e3c288beb42364e788ed01aec178"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-configmap.yaml",
+      "fileName": "vault/templates/configmap.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "56e050e6f258b96e56d1e738fa87d41e0b0cb66811c49822d3388aa19d67f506"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "068d2792911baf613d6ec29220c0d5cff3d07e24643843c12761a390b9a803e6194b35cec2158718fbed63ac55aa0a2c92a55c69152cd756fa6ca92c217a8978"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "989d49b67537b592a36e519a85345ae6bd9ed60f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.yamllint.yaml",
+      "fileName": ".yamllint.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "28bc53c4389bc346ec2f2b13f2122d984a0674712f1d392c8a2861c744fb231a7540cc23d4162304c081c68f564c8f434b32ed5d07eb35c62fc6a4c8859e1e54"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bd1d94dcff2cd0ae503a5c5b1de78d31fcb515ed"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b9a6706ffae7c129e930fe3ecf437cb656ede16590dbe90a42189410cccc26c0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-tests-test-vault-status.yaml",
+      "fileName": "vault/templates/tests/test-vault-status.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3d454f7df5f66eb95f2a2aea231552386bc4f54317dbc2c44f181c1918afb4b02f1735aa8d5aec6f3377acd443ea477fb71eb4d55bc7db4fb8ea5e545b6a0446"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1a1c447dc01765fd88f8466f7fa0707cc62a7131"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e6e2225233f5703e26ab8c69f39385aeae0ebc0470d34c99918e852b32200a1f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-flake.nix",
+      "fileName": "flake.nix",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7a7f734d8fcd12d9bc3a6b9c9ea19516204a28fa878ea1cc3dc73bb34dff2e84"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "494da98f23677404a84edf986d7bbbddc0b49e466e97ec5e7200453deab7dd1bed489e8daf1b0c784a3870890b3af3b15700b28a8fda3cda66943d27790eef40"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "df20ff5eac05270e276ec021c19e0405194c1f92"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-config.yml",
+      "fileName": ".github/ISSUE_TEMPLATE/config.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9878759eb60ff61c2bfdc8fafa8057bfaeb12b4e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "590a1d9295a9aeb346c323c3cb7155d363ccd6d619a1be789621c81b5cff5f35"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "39dd6ecb49fa065fdc6dea32091a49de58e9e097fd3f819333e474f45dddeec0e1880088f564d7649ab127db3077e2aeaab21393ba65d7745f3bfd135a08b51f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-.editorconfig",
+      "fileName": ".github/.editorconfig",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6ad3a00f9807116a55c50b745f352691ded61e7c35a5cf96d51dd4c6f83fc13b823feba80dc81e375f14fbe9732f58ae4db3a2740d5bdd08d607a1dc984bad76"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "34adc6ba4cee8a1a3eb0d9b7857f84601029b6ad"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "72120fc419a2193761ef92e9e922212b2b25cdd9d55330732a8cdb7a1895b301"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-serviceaccount.yaml",
+      "fileName": "vault/templates/serviceaccount.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5389225443a90a323f0f3b490242f4f2518df090eb1cabc76394b8b0f87cc7402818d567c801e5e8d58dcbd3c688983ff6da12975c3985369be38c91f1a8912f"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b470e67ad203f8f563d16288b054338371568c23"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7f5c08cca4cf11e6ac881c99b4f1d6920e3362272177eaa8008f48821e1af743"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-artifacts.yaml",
+      "fileName": ".github/workflows/artifacts.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "df0b795a608e20db1f0894ef4975f557802b913e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "33e5dcaaca329e00dbf632b2da5d561941b82fde55d7bb56805a259edd73e496"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c322731a1f16addb2a596ce4a0ede114168321e689fbf3625b15fed5d6f46d89edbeec901654607712f7259ac7c8403dbb72558682e20e892da3ed3cf2d110fe"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.editorconfig",
+      "fileName": ".editorconfig",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "350cf3ee16932fd12869ec71af40daaa07322a5b2a6e181119b77d05c260996f5c0959db6984a5399dc34b4c078529f593f65f510983bfca1cae24f5daa392b9"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4991ca5480d99a099b4d87a75a30313a2ce003ad"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ab4c849660f59c26d0f9c60527fcfdc5ff1baa67cf283b4879f5e3a1ff7c144f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-rolebinding.yaml",
+      "fileName": "vault/templates/rolebinding.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d1c9c98c06acd31a0217acff2f11cebafc55cbb1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "aa5f93bec54c2b7d20e5d7316195f43a348dfe4c7e22242ceea461ad73832a2a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9fd9c188c9574924407ab2b661c959d36c22db8fb6c284a93307ff6b05762a4ff0f488d37092a3f0214c08f2bfa377830667da23eecd0cd62c3ab0d7525decd0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-featureC95request.yaml",
+      "fileName": ".github/ISSUE_TEMPLATE/feature_request.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "75a4f7ebaa8bebe1d8aca31d3c34316183e52f89fa1f659d27d6eb9f3735604c0c6b67455dd10b165dac7ccee8d0c6f06154793e8d7c5f2a87591ed6141d7408"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e1894b39f8720b000e5bc829f6a12c42ccf72432"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "89fc00c2868540f201313c690719ff6b2345c2603fcbb59583ff713bae45f8b3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-LICENSE",
+      "fileName": "LICENSE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7df059597099bb7dcf25d2a9aedfaf4465f72d8d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc6b68d13b8cf959644b935f1192b02c71aa7a5cf653bd43b4480fa89eec8d4d3f16a2278ec8c3b40ab1fdb233b3173a78fd83590d6f739e0c9e8ff56c282557"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-go.mod",
+      "fileName": "go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6e585bf0530d0a037d9d90919238f71e37ac28af2b562142bb1b4c831f50fcef"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "58a4db480bbf8ebce264aafd35ba09f3558305febdafe3a40d6dd8b44a523c17d3511ef9282a97ba715a9d2713a6bb20a3a3c96b8dbc5a222e0d309ad068a4e6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c8f4812fdd04b01e1425e24e1693cb6cf79f16be"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-service.yaml",
+      "fileName": "vault/templates/service.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b55e03e48ffbc5d75c14e068d19417c61c5bb101"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "aa9726649bad7d08c33e05bf101289d9f688bcbb9bc116ae293f1b105ae03766"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "faa074a18f0ccc5d4c0c079603d8bef245192e6f66e159e0906ca3f62bd641c700432288ac893d25645da918ccfff1a967c889b4be0d08a090f91d46620e9577"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.envrc",
+      "fileName": ".envrc",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0912f917d1a3dec1ecba9a7d5a2aa1f2b3d4f270a21bd56a940f8fcc96bc03a5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7817fb8c934a0e0a51829550cc5a205977d1daa5e2fc1e940e1629d5b27ad6f283a50dc955ee27d27cca07f00d776c694b09c411adb90ff11b641402fbe4a032"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "557c92fa62bc53f246c2ba3fe624dcfb1b010d47"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-bugC95report.yaml",
+      "fileName": ".github/ISSUE_TEMPLATE/bug_report.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0a3336b35dbeca2194091fd6a6d9fa39a96b4337"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b5195915a07b6a334b9090499e51f611631845462d75fb529bd975fa4525f10f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "90f9986c08d1a186c746f00e2fc19ed63e7e744b327c93ba681f33091093bb827a01ade8ac01de677154d850eb5b2e51e722b047528d619a81c4646b2a0b2a18"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-C95helpers.tpl",
+      "fileName": "vault/templates/_helpers.tpl",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0d93b8cf8f94b7bd93473821d783ff9f7b2fb4ac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c4955b5b43719ef13f34664926efa7d1fc0d23c2e230028f72fbf9fa0b20b9b5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b13d41befcb516b88d429bc77307068c7e56de88e97d0ea5d029964796c4b5ac6a77c57b7887198d8d8dc9e808212ec3b3963e1c767f9da32297105b7fc074be"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-prometheus-monitorservice.yaml",
+      "fileName": "vault/templates/prometheus-monitorservice.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d3c0d9164ed84e76f1d9d078d4ff604d8498aec2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "cb0ef3ea2f30584ed20fdf26298dea63e0de4d6ab897cc602362985a793b9439"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0e77308f653807c34419bab69a9378c02355ba2b68ad559e680e5999ba6a2a91ab38503d18f70f78aa43cac37efcfe85ecc07439964811dccc3d4c74cc99c889"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-project.yml",
+      "fileName": ".github/workflows/project.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d4be61fe723f8f01204e173eb5687598a15ec897"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "29ab3994bf273e038c3688a2459d2b7521128930b600963f9002b7c93830907b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7d45ad15ba08e1a2f55ee0e5fbc2f0d309f5d8d07ce01a8b42e624cf324fe8739803b92ba7b477fb0974ffb6aa0b5298bae6d6bfd12bd5f40eb7eadbfc3cd1d1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7f5b02a478acac08a1513d030fcd5e3b3217c9c2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e5b0ed127e799a78e02eadb830020faffc9e1bf9806d174723ea13c96e028279"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4b016378c9cd696fdfca58dd7528d82db6a34d9e4b6cf3616a916c21bafd07f37759752dcbc4522db3f023dc571d595a0010e49555aaab1b530b2b39b7c227e8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-flake.lock",
+      "fileName": "flake.lock",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "38cbd15ef5ef5f0639dda8ceb644e1d82aef7433"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8b902868a8519e12070ff13e32e551342cdd82a4a86574c7e7c34bc97b505491"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c0eb6ba23ea2629ab932687853ba2bbcb120b7ccfb555c67aa8ca3b61994943ab35b311195678d4692cd63fb78e5033874b80c0269c8d29332e62c1535bcbff6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.yamlignore",
+      "fileName": ".yamlignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "99cecc39d106653a0ae69fa63592807e8f393b0d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "419103b827c3fed80aafd0d45db60c0a1419018e4d202eafbcf38c2ed39965e1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4d596cb92c6de3271d23e66dde5f56e1c9c7a028a0a030fc67fd9c07cbba9cdda854ab198c5944ef5e20b1e6aeae2b797cf42d6b087dad68c6d577224a92c888"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-Makefile",
+      "fileName": "Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fe9994b5e6a974396fe17cd381fd0e840f3e1d88"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fe68abdd40d5efa83c5f10687aafa9a33b9fae683c2dc069542f314507026abe"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7e0afc886255b0f47b54bc5f2bc199b2c6765b585d38bd27d85e5c2d800d50a445e5f0635b234b33cbe83488b8de13c95ad6efa66c8042dd8b5e46ebfca21fb4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-secret.yaml",
+      "fileName": "vault/templates/secret.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "557a9a009947d02509e96a3cf7631b37f9cd08d19c2b415e16214dd2ba24fb25"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "badf0f0a275d405c06226098925e18a8f7ffbdc340c94df034cb06bea062e8b55ecad0ec83a259f8fa20e062e56a302f0faff6e5df96e6ed89a8094b4b013100"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "60961a34e5548405e7ed380b5a20e05d5b21d8d8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-pr.yml",
+      "fileName": ".github/workflows/pr.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fb45ec76c58b5c8d8bd0f8c201a74d9ee7b718db"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b9f404608c86344e6e177d93af758103a68323c30227366928f7dbb91461f6c2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6922b6c6db352858fe024fa3d06dbe9af9b59c62310945ac0a8033a1247d952532f61401e68e47b5bd950ada324796d763c8ce59091cfa261f30b053dc363f86"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "name": "tmp.8qXjpGhQc7",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-.editorconfig",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.editorconfig",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.envrc",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-bugC95report.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-config.yml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-CODEOWNERS",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-PULLC95REQUESTC95TEMPLATE.md",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-dependabot.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-featureC95request.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-analysis-scorecard.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-artifacts.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-ci.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-pr.yml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-renovate.json",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.gitignore",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-release.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.yamlignore",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.yamllint.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-Makefile",
+        "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-project.yml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-LICENSE",
+        "SPDXRef-File-tmp.8qXjpGhQc7-flake.lock",
+        "SPDXRef-File-tmp.8qXjpGhQc7-flake.nix",
+        "SPDXRef-File-tmp.8qXjpGhQc7-NOTICE",
+        "SPDXRef-File-tmp.8qXjpGhQc7-go.mod",
+        "SPDXRef-File-tmp.8qXjpGhQc7-go.sum",
+        "SPDXRef-File-tmp.8qXjpGhQc7-README.md",
+        "SPDXRef-File-tmp.8qXjpGhQc7-test-acceptanceC95test.go",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-Chart.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-.helmignore",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-NOTES.txt",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-README.md.gotmpl",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-certificate-issuer.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-C95helpers.tpl",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-certificate.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-configmap.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-README.md",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-pdb.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-prometheus-monitorservice.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-pvc.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-role.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-secret-cleanup.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-ingress.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-secret.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-service-headless.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-service.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-serviceaccount.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-rolebinding.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-statefulset.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-values.yaml",
+        "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-tests-test-vault-status.yaml"
+      ],
+      "licenseInfoFromFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "b69472d645e4e3e2606d8b750d0a389c46e77bd6"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-.editorconfig"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.editorconfig"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.envrc"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-bugC95report.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-config.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-CODEOWNERS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-PULLC95REQUESTC95TEMPLATE.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-dependabot.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-ISSUEC95TEMPLATE-featureC95request.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-analysis-scorecard.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-artifacts.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-ci.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-pr.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-renovate.json"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-release.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.yamlignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.yamllint.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-.github-workflows-project.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-LICENSE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-flake.lock"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-flake.nix"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-NOTICE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-test-acceptanceC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-Chart.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-.helmignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-NOTES.txt"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-README.md.gotmpl"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-certificate-issuer.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-C95helpers.tpl"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-certificate.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-configmap.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-pdb.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-prometheus-monitorservice.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-pvc.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-role.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-secret-cleanup.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-ingress.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-secret.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-service-headless.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-service.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-serviceaccount.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-rolebinding.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-statefulset.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-values.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.8qXjpGhQc7",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.8qXjpGhQc7-vault-templates-tests-test-vault-status.yaml"
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-14T00:01:52Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "Repository: bank-vaults/vault-helm-chart\nVersion: v1.21.0"
+    }
+  ],
+  "hasExtractedLicensingInfo": []
+}
