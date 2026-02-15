@@ -1,0 +1,3675 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "falcosecurity/plugin-sdk-go v0.8.1",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-14T02:52:07Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM for CNCF project: falcosecurity/plugin-sdk-go@v0.8.1"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/falcosecurity/plugin-sdk-go/releases/tag/v0.8.1",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.4Ad3Nd7KHr"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-strlcpy.patch",
+      "fileName": "pkg/loader/strlcpy.patch",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a1016f56817b5841eb7464c6cd65a8b72a6fa09906e2e9179fc72a993514800c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9d8232bf10bfe90a0a0b894567f1bb717a27c403a94b3cc3ad5bbff15cba0e9df30eb6744cba5d2bab04390421df4e978b91a5f9f1a889a920be5c25f0c3f0b1"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a357ac8b0d02be9401c9fbb35897091f4babfff8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-open-open.go",
+      "fileName": "pkg/sdk/symbols/open/open.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b193f5639854b209ddc3b614deb9de241272373a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0de604f101983591f4480c0bc97b06d939efebe694ef33e18a2bc18b375c36d9"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b89966cd916d990f026bf064da7bdfe27d6243264af533b7fd9d3f479b2370a3f73e42f4bf5a862c6b7018f45f1971169142500325456673ee75e40e2f3e3414"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-workload.go",
+      "fileName": "pkg/sdk/symbols/extract/internal/asyncbench/workload.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "718a37a0519469da03872960b1d44ae6d68e193b13978e0a7d2f8c451e7807ce126bc9d19e07c8e8aec92c5256d1bceb8cc599fcbced7d5438b4bff5fac202da"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8ecea2a7be46ed49c9e7f83a6c2ff57380cd14e3"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "87691b8ff8c12983e970c6bd5acb935191437e0685f1670c70be35d295e5c632"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-.gitignore",
+      "fileName": "benchmarks/async/.gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b16f186cfd4edf46d5064cb54a555d5757de1bcc9737616ce28cc17a8ce8f66dee72ac84ca932b89fe90d23404007d63b6db0ac43b51e85b814e19d4dbb094ad"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "80754af91bfb6d1073585b046fe0a474ce868509"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "44575cf5b28512d75644bf54a517dcef304ff809fd511747621b4d64f19aac66"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-cgo-handleC95test.go",
+      "fileName": "pkg/cgo/handle_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b1f7f3bca38986d9901049ac0301a0b1a23c621ad3749e1d49ac9e268dbbe58f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "00f4a9b869afe1365b863dcd98c723ec5aceb3c8998ea192ba9f6bebc482d51981f2efdd6fad2a8ca801d2539132443ae47927a1697a5a37dbd5b573093dbe25"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "86c5a6eb8eb95f038c320e32cd16151f3f42852c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-go.sum",
+      "fileName": "examples/full/go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b52dd207bc738a365e2b5255157d1b98aa11fde4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f5d743345e71bd6cc70209a0842fd948100549572e070b00038a038910115655"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "55110b37f5815d4c72a32e854b4cb3b5439bf7a4fcf75b67a289800f918a9a629a804c7a766f09e08a505784f739cdefa8ace05ccd84f0a3533a1e8fc8aa07c6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-lasterr-lasterrC95test.go",
+      "fileName": "pkg/sdk/symbols/lasterr/lasterr_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "062bfe7dd2289ff799e61ed1f62fc659898a2cb4f38cdbb8f9d6074dba40c44a9fb19c92a7bf13c168c90e8cbeef97e90c79bcea720b9055600922c8459ffdc9"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8b004901fa2b122d7a32f5af2c0e5436db1c583f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f12f90b7d1e28c9a5e47e279bf668c2ece7d11bac56dee9da3abdb6f20d5f024"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95apiC95include.patch",
+      "fileName": "pkg/loader/plugin_api_include.patch",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e3d3450c87ee627de20fb76be9dabcec36519f06"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "913d3dd1ac2ce591d0e22b6aa6d4923e596b7e6c77b11f69a4fa6cc9c9a5db9b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a5e1003219ce4d4a904f4fec6d47f73144d628a30ea9cfc0c7ee20d6910bd470deabd7e8fb35363b9484102079b01a234e0096fdf0a045ad5413d65e8be1539e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-evtstr-evtstr.go",
+      "fileName": "pkg/sdk/symbols/evtstr/evtstr.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "86eb63e7e1ac5516c7ba59a868607296197d6659"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "64e2d2c0fc62a1db05690a5e3c3ce600bc134016073fde85be832d7c8e919819"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d778318b5af5aae21a0fc4eb63b74fa00e66682b9c97fdd928c9e983ee4b8fca02d5f42e4e04c2d37f0e4c6bdaa6afd38caacc300dc86d4362438706fe525e70"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-doc.go",
+      "fileName": "pkg/sdk/doc.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "06e7b5ff15c7299a981fe0555558fac2879b3c0e72ca214ed7e9993aa8b4b094"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "aadd14979d4f25ef03824f8b82c256b88678edf7d4412b45c009e8020a1a227fe816616e8b683cb9d90b26d9fc3fbce024d0b52db08923d82c24d4b5263c9f65"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f695f8362267d4a4049eb36197f55574c04e845d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-open-openC95test.go",
+      "fileName": "pkg/sdk/symbols/open/open_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0707043fa6da8882339125102f6e44352726b881cd3521a9dc48b066a399202992a4c6ab715d7d064484432f11ac85963590f6d1ff7c0e405abb61c8c8f801c8"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f984be8cd185af6301e31be655088e23dc385a26"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f54caeaa58862c84ec6de9bece66bb31ec8c0261b8812088a9c0edf3de65a32c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-pluginsC95test.go",
+      "fileName": "pkg/sdk/plugins/plugins_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6a61bb462eeace55b64b7817c95142c07e950d54ec5bae76b01e708f182819660c20a23fc092facbe0ef6b1b51a2e002d724bc1d14eeacf3e69a6817d1660441"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "346574c247ad58525ab0c0b82e5d671d95065a42"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b92a247ef077827299ebeb8b0460781df37bb651c46ee35770e03e40807b1d89"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugin.go",
+      "fileName": "pkg/sdk/plugin.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c1a71bfb36026c3c597286ae7f86b7703fa4324b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9f16b4df724c7b8cf053fcf1c22710e3290f56af0c69c9c6c7dca8203fe3d6e8"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8d03cd3ea1a1ad1cc7a589a19f9e6b18f520d05cc67d1128664815964faed49611c6461bc8708c0cd7d9fde41c6c8d914ec7de21c28a5cf917da8f07d55f5d29"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95loader.h",
+      "fileName": "pkg/loader/plugin_loader.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b094fc1e8b296b6365c0e4bfab91537ed91b32c7"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c9aec74d468c9841fc08a32d8dc08c70705d12c9534ce13501dc348158c05346"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f009e23df07bbab5efe3cd34f86014ee6ad49a87c0c1aab5f6fc6d62f3dad9a335f4621ccaf5446b3e8ce409637b51136070b7b287dda2dba5f9ff32373b337d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-fullC95rules.yaml",
+      "fileName": "examples/full/full_rules.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3d58e1f1dfdcfc6e12677f81b00525454ca71486"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c34e726e6a3b5d8cb1b13cd35248b4787fa8d3239034c55d3d991352cfe5e37b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a13d63137e4408e7759acf82b0e213195ee0792c40f06c2b13ebbc89a0e564880f04dbb5df4835dd5384768245826ca9e482b61e9fdc570e37ee331674f02ded"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-go.sum",
+      "fileName": "examples/custom/go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2ae73916abc61faa4f312c89781ce606591a8f8b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2f1c79c9fdde31bb83162d9ce40eb4d2d65135b5f09b009a0f2dbca37814b921"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "500d3081a6eb43642ae5bd3ddf1f69eb32551c3f423acca95bffc54f686dac5ac30b4c1212a90f9ea12e5a629fe0050eee3a25493d3fbb12c97fc6da3bd963f9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-source.go",
+      "fileName": "examples/source/source.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c3287c7239384695292e3211d3f2570617be6e9ccc6f59463255d1d87970e2032156748b3e6ebc11bb1692de991e9a12de3403da6c99ece4249708f81e295fd8"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9f611c80268d5754326a2a33c28b025c6fc1bd0d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8e3479948733039fa7bb137d0e8515bd0d95f321ce5ef9ac4cffa4d84fab4c54"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.h",
+      "fileName": "pkg/sdk/symbols/info/info.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e916ca362c215c94885773cda759fee92cf3052a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ba04e7bb0899faaac561d4b66f253586cc7b8558299ca5fb206c8835978a2986"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "79e0d74e485dbac5732428e30ebc7b2eac7dab11e1241e2b69398535a6a8d586398ed482e50080851df59bc57be09a004d2b6e72c13dd0d73da433d6249580f6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-LICENSE",
+      "fileName": "LICENSE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7df059597099bb7dcf25d2a9aedfaf4465f72d8d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc6b68d13b8cf959644b935f1192b02c71aa7a5cf653bd43b4480fa89eec8d4d3f16a2278ec8c3b40ab1fdb233b3173a78fd83590d6f739e0c9e8ff56c282557"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-eventC95test.go",
+      "fileName": "pkg/sdk/event_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "cc67617214b8678bd69572fc48f8918ffb026aa1"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ac4d9aba0cefed963a4d10a8a2c96f09bd76831d65040b7a4dd45ff4474e59a2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e1a98a7ae4c68a738a8a44f3a23aea3c537f4c13bddca70c05ac4cddde43042cf0ea87e5f4c60e73ea1accc902874b1360b833094b5bc4b42deccfee570a2d49"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-extract.go",
+      "fileName": "pkg/sdk/extract.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7fff29bc9fda2f5e97f47e65f68fdc5def6024c3"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f7b2c432f74f12ecc5461bf0ea59d3b3214d745d9a0145190c1706e07e5ea02f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fdab8d6866715c87673c70b691533558a9e71df31433d8d2b9da31953079d83872f8e7566d4a9e6df5a053107f2a2cdafee08cb646295cdb1e790caec758e3b7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-lasterr-lasterr.go",
+      "fileName": "pkg/sdk/symbols/lasterr/lasterr.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b36143a83ed1210900a9b080d2e107304a3861af7f0ca685a50410dbd13b44fb"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "386806c97198a8302f5aa09418c3ab0bc867f91b44b92eb1c1cf96ff75957b1352b1b3b15f65d01e38327c16a11e6c691996f1159652b0648bd40b4968d14c75"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8ef7d19ed243d9590fd883ec6674f71af66db644"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-infoC95test.go",
+      "fileName": "pkg/sdk/symbols/info/info_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "12bfa7cf079ade71f33b4fa8e672dde04a08de4676bef8e304d8ec448d7eaf12"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6b9f550c1ea80376e2cfcbf833c9e2827e9e590eaaccdbd981633a2504d322270d5fe51341f1da9979609661adda907d0186c445663870e50825c0f82319220d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5cceac9bd7879d7340d9242ae695250a416d2428"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extractC95test.go",
+      "fileName": "pkg/sdk/symbols/extract/extract_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "436517e573887ae0e6deb139eea57bf8130508bd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4889337a322b15de1fb4569b8611df55f35df86ac15ca6470d5b24e5290300e2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "35bf11b79f7e6b14964855d18e319c1c1631042201d14b9b45a9beadc50829cb06f792cf66506138a9d3d14a47d902989d8494c0690aff48843166e31ec10119"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-go.mod",
+      "fileName": "examples/full/go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "54cf98675524f02d2e90f981852559f83dbaa6e6041300a918aece30d9d03276c52472ad97d97bc5817b6f0d60f04fb115cc7c53b86cb1367627e0bf069f269c"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bb5285c6c7012060c4356c0347a2942e4b26b622"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "91e367acbc294fe459b88401746090fb7fc817a559356f43bdc704b6fec79e83"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-fields-fields.go",
+      "fileName": "pkg/sdk/symbols/fields/fields.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1f2864001c6273ff4f0c8d7940593e127a730e84"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "91b5e39edcd05683521366f3053d4e1e1d9dc9ce85b0f7d5beb8cacff7009fbf"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "79b6fb6a06a0dc4d299e3da46dc84f8fbd1abfd953ae37e0edba4635a960c8219b8643c44ef78d90fb17a93fe4bc672da898c8aefdbced98857b39fcdb7f0f45"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.go",
+      "fileName": "pkg/sdk/symbols/info/info.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c448d3cfae3b91c09edd9242eef15de9f2498c9fd9901135add6f7bd3773f29c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "38aec9815fd658b590145ff87cfe37a6617bce56f4e881a15af877d63dcc804a50cceaf57c4aeaae190572bb8fda451afaf98bb6351da78ca7d9ce66098f3427"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c76596fc0e1fa67203d5cd308b58d65c02df1549"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initialize-initialize.go",
+      "fileName": "pkg/sdk/symbols/initialize/initialize.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d70352bfa24e22ca6be7ebb5255e428e635fc2ef"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "eea3f9bfa96eef8cf156e9163ccdac8ac5652db86d8ef3cf0652aea6c429364b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cadc7d97235e1370b6a43aba1a499ff5eccfb06cd347c1932750905cf82ac36173cbfefd7c95081c77cb1a250be595f5b279df173ddd1eec7a1048986ad0aa4e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-bytes.go",
+      "fileName": "pkg/ptr/bytes.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "25d73351d1555a59ddc49c632eec0757f9a9477f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "55c1dec58bbf84c59b1afd30454cf9dd4d5d434cc4d997505a2e18280effcd16"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fa101091ad7d41eaae8cb34b8702379a95ac70cdd3276311db7d63c034f22015ce37556b36fca0c8f2edb4781623d27388200e1c851376f846e1856054d8958a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-Makefile",
+      "fileName": "examples/extractor/Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "04535177ab2cb8551474416fa805f9e7577d7255bd7e6213777de6e3938683a9dafdd2d85154b348f201cc91bc0cace2c61ee966a981a290bac2dd96f84189e8"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "91cab405c0cbb210c87165079617c0e227c546e4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "460982a27e39a0d6532e9c933b61afa059607e701e9e9254a2cdc18094f3298a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-extractC95test.go",
+      "fileName": "pkg/sdk/extract_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8d9636c060b5ccded3f3790e3559787e5fd1eec9"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "38a6e089f3cc0a3d9eabf0bb3347d8dd37e2c3e222494272a764196ae3e4ab8f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dfd1826e9dd1ddac86a0c038248e599fd407dcb30c9ccf7e8ab8a0a312500dd049f44c42fff6a2b67037a2d05e3f686ed1d24feeb93ccf6dfce49796ef741f1d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-go.mod",
+      "fileName": "examples/custom/go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4dc32afca2cc843e0698b4b4d14d7677cfcf381584f7bfdb43ca7573796ee0ee50e5a3f4166bac5254bf6111f1b63e9154b8594c4f43ba762c13703c90784d97"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6aca5427ea4f1afa97cc2f95013c42bb29389065"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "076c8078eb3b9672f9dc728c896f51da66bf17da0910696a0f6bb982e3c94562"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-ci.yml",
+      "fileName": ".github/workflows/ci.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "86640a826a5873193f321cb2c0b61bc762a0a054"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2254f3926a3156166819b283445df8e467afcfa29fe236f957039491a45b98a1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7aad5eac39651ed54e7df63b460a83aa78931073fd8f27dc49e17c72ed695a6c6e7e8cf76378fa1fd14eedf5542c554819a3a6099ef8190134da199bcb6a9481"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-instanceC95test.go",
+      "fileName": "pkg/sdk/plugins/source/instance_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0d7b63f7ee08f068a28962458e2fb680ea52351f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fd4c0b3b1af1c09401d4462e451397e4af035bdf8da159b768db7d93a96d1b1c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e8cabb0d7392999e74b5af08f2b8949b85a4177023250734a845d0c3f4f249292e23d4f8c06a7278dddd0f017870957836e0b56f166282633043051da6c12266"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-nextbatch-nextbatchC95test.go",
+      "fileName": "pkg/sdk/symbols/nextbatch/nextbatch_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "efd3e5c976d4c2332ed0b2aa7da5d35afdad0804"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6ef3cb338ebba42cacb410965446e272b4468e8c3b5b43fda797dd7b4151d87a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2eed9733e54747a64d69d16c20e1fd3fa14f67af61d407ef751fd95d44c2e153909714f793a983c617c03469ae44d38b81b5ca3cff49b9c83999731a0a8e30be"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-buffers.go",
+      "fileName": "pkg/sdk/buffers.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "cfb8ed5b06be5805bdb901199a985b06d45c2877"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "412a543cdb023c77c6488a1e06c70132b7110294bfb5f419b11601168c4e294d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1043fb520a37d71b0430ef46ea17cab5dc5539b8f91e30981ab79176a96d839a1aa93434d61f473a18c7e79e55d4c2c127c810db7e52681a662a4b53588a6360"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-Makefile",
+      "fileName": "benchmarks/async/Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "26509c009a4348156dd98ce19efbe820f8f00302"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ece7097cf330cafbae6644b19e02aa94f882ff56e4bf381f6ac77efd9db26a7a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7f9d4923b18d16e5f438d87945971993e96a0ded29fe124a9e884a0414286f710a47c1dc50147b40dab3b6ae4d7648c0e764b4ba05ebe3fb16787e0cfb65255e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-go.sum",
+      "fileName": "examples/extractor/go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "500d3081a6eb43642ae5bd3ddf1f69eb32551c3f423acca95bffc54f686dac5ac30b4c1212a90f9ea12e5a629fe0050eee3a25493d3fbb12c97fc6da3bd963f9"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2ae73916abc61faa4f312c89781ce606591a8f8b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2f1c79c9fdde31bb83162d9ce40eb4d2d65135b5f09b009a0f2dbca37814b921"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initialize-initializeC95test.go",
+      "fileName": "pkg/sdk/symbols/initialize/initialize_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e98b47b92583bfa6ba183da48f2b4cd26db8b1ae7858de2f829efff2fd0bfb11b1b03bc77953f0e30778ee55e7465460532129bd62e4acae60a5f644a82791dc"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2d95072281b08f9f6432fbac0c5df18da9eaae37"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "52111681dd8c61f97a24676378e213d929334c739d4985208ee8b3b594c741bf"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initschema-initschema.go",
+      "fileName": "pkg/sdk/symbols/initschema/initschema.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "99f51b46adadc84f54626cfa1114d008345d1705"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c64bcffcb151ea0f7bea482b71177fb09613d8a904ad14f7be40691dbf764fc4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d52842698c4c2f7875ee31670ee01c8fad96de99b835e1b36093985535eafc25145732a0754d51f873ddce2f658082dcf91873acce161f9b76ce3ca9953eb2bb"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-.gitignore",
+      "fileName": "examples/extractor/.gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2eb16ee741740f141591dd92917d8733a3e99866c17bc3dd8d246eec15f341ac"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4efad9594368273b2fae56ac49ed505eda3896aa143d5e0d6ae376daa2fd4c2ccf0cc79444e10ab373e95794a8abb5ddec4252f6c3be1ed983f8ef4980dff07b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1d8bf1b96687fd85eb3d6df55bfb0463e386834d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-OWNERS",
+      "fileName": "OWNERS",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8412721c4fa31dcd1aacada4b7828fb117cffd82c74201a45aaa129719d5a8dd"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "861df827f6e323eea2f1bc354cb98ece85602e720d6e50ef3d1da87a49b5962a98b4f3b228c6b9b00c1007fc9c642c0371a82e3f133105cfa92dcb1fd4568605"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "beabe35b6cc69e72dc42240f5ff8134da17e867f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bac3f5cef6b00a88e62105de971781bab9efe33b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "af90ae5934c9ed96581eb18a11a400b193779ba3db310aba8b58cfc767b9d8ab"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b0f440e828174cf028b23e510f547ed3c89e03203e56976758d8b9d2f309cb788029150d04cda6e32933f8ab4f413ff1d3f01ff8c75a62572a60c6358d56777d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-full.go",
+      "fileName": "examples/full/full.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0f324dd0d2c1df7314ee84fb62792cb8d2d88955"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b956c4156d91fdb7c07435da58172d88dcdfd3affb33b4bf1f3b3c3186849c7d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ccbdfc5035784192cc8721cbda6feae8f6ffdd3411cf74ac737a0f35e6d0bc6529ccb5e0ef4eb51cf3b45d009298d13c96a891144436beb85c08e13f07e5ebd2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-go.mod",
+      "fileName": "examples/source/go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5c61089b21b9833d1395042a5ead93d99408304ba8d74ebc770d3432f7e7e48e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c58b2f4439a8c7bbf4e9cfd27e170944ef7bddec7ebf736bcb40340e037b3cafb5c426d9576b9138f845616864f65673aa37353b9607fd81d38329da8602552c"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "678411cda6d170bc425ba914fb4102cc18f94368"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-event.go",
+      "fileName": "pkg/sdk/event.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0db228f72534f1add93ff096fd3f66c25bb3d083ecc52e12054f532d264be652e8e5eb42106c4d66b90fb1944048df76ad92264b240343a1cdde731296853db7"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0320cfa2f14a6b3cfe4c6f0e3fac656c3680702d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "53f5d86763c4c39ec494462c4644605c6ba7955f54e1389c64723e1fbffa695d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-release.md",
+      "fileName": "release.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "47257059e5081d8d35171fbed09a862d384cf2b4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e27a77b620e23c1df70d77735c891da8bae2e022c69294410077d4089c5a105b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "76c54f98ed150cad7864dde0bf4aa43bdd84b4605f02d80086194fa20f2dabdeed21050c424b483141d451d1d429bbd53ce8fcfafa9e9c687df5408a65765167"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-go.mod",
+      "fileName": "examples/extractor/go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b015ecff6f9e12b09590bfb72301154ded72d5b0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9eda916c5adfe92510b02c1139ca30bd131409343d6998cca4671ded9a1d63bb"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4c0fae305f3540f29be66daedd877fe0227abb969205c4330d13f86df19953ffda92d6557f476a51e15f64354d997fef6fd2f29063fd445d0c4ce2af484c6375"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-evtstr-evtstrC95test.go",
+      "fileName": "pkg/sdk/symbols/evtstr/evtstr_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1b3a7fa840b8c87a17b753c1a4bd79fe6e3b1857"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9e417e0fad9599194b1ed95e077225c4d655157d881bce5e8352a9f3ebfce0f5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9f3c34e51af02db1440bc88a5c5a8292cfae5a145ac232c66cd45afd053e53a1dd1c3d358bdb2d17539c254ca44d396fbf8ef98644b6f5e546fd6ff7f4173346"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-.gitignore",
+      "fileName": "examples/full/.gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2eb16ee741740f141591dd92917d8733a3e99866c17bc3dd8d246eec15f341ac"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4efad9594368273b2fae56ac49ed505eda3896aa143d5e0d6ae376daa2fd4c2ccf0cc79444e10ab373e95794a8abb5ddec4252f6c3be1ed983f8ef4980dff07b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1d8bf1b96687fd85eb3d6df55bfb0463e386834d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-bytesC95test.go",
+      "fileName": "pkg/ptr/bytes_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "30c4a601be83a01311a44fc4d50d502b4c289fbf"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7a0cce0be8865cdfb1ff195dd573e5ce47bd07d3321d0e80b6e1a256f7e9a1fd"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f5de13b0ef2d1d10f7943902ef8bc2358018a407c7212e2e258fb45059324cde815fc663841ca8065b519a8e77b374170cf22b6ae25639100643b4dfe4a7f56f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-PULLC95REQUESTC95TEMPLATE.md",
+      "fileName": ".github/PULL_REQUEST_TEMPLATE.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f949280bcecbe59942d299e44b968734eddafe1e52beee13221259f5678d95ed3b04b8382fd2c4b7d8e77aae0702955d004e505d10a7cf75022ca2be79c3b6f8"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0febdd7257d28a2abc59ab7e9a42a87ba13a19ed"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5d1bb3952fd28a3f291f92000d32a9b105f579f20f6be6ccb42386e238cea33e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-asyncC95test.go",
+      "fileName": "pkg/sdk/symbols/extract/internal/asyncbench/async_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "99a58fc46c4b01abc9468e574e82fb1e67f8d0477cb76e6ad8af93ba7d695a8d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "bb8efb49eedca45df29e01d48cc1779be5fc38133b20538cd30d69674511153fd45d20fd68feb56aae4bb50c6a3e4b9e20c5f356c3176e1f6248cd76fd77fb93"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f22d094aee44a3c4146cd418fdc8cf146e10c3d7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.h",
+      "fileName": "pkg/sdk/symbols/extract/extract.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f2b92556dfe390d16ca5418d9d8336cd4152aacc"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a1ec5c811332d8f47f06502a7e4bc266e02c214548701c05aae00e8a1523e918"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "3c66fa8d8de507ef98a5c1a7fec1c6ca7e62545208d2bfb90b6e59f03823cf65beca95732f33dc19dbf9ffe93bf09ed00e7887f5ca4ec210dcec33dae0fd445c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-fields-fieldsC95test.go",
+      "fileName": "pkg/sdk/symbols/fields/fields_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "621300ef5b21022f9521f834ddddffd42ca04244668b17af9de83b05ec509e96"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b8c7f1d00c24623385114a991e95560fdb747724f5c1221b290f64debb26bc759643e291afdd70fe70eb6fb9ef3c579acd9c11221090d6903c29703ba9ef5c7f"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "81a66a19731be9e93092e56242bfe5d588be9df7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-asyncC95test.go",
+      "fileName": "pkg/sdk/symbols/extract/async_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "761b8f502ec73def0e91c85dcb9927958dd79421"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ee1195b05bdbd0e262b783923ac173265479825b70f8bf6a4b094ba602478e41"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e8235a7c247e6b331a496a22cb9bb64fa400b72e123a5c6f139c8a1d797ea592dd1b4647b724c125e8f356fed8e071281c432473fac7ea978d76b8da18c9db77"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-extractor-extractorC95test.go",
+      "fileName": "pkg/sdk/plugins/extractor/extractor_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1b8c139c8ff931100919533512e668204c7a95c846f4b9194c558774a953cbf5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "290a92aa7dac085ac0f073929174139e1a3b8f76768672f84beb587e843f2511cf81a76495c7f81708de55af02e8e57f5f5887c994eeb4dc5f06559e0fc0ab55"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "bde2f5b705236382ec901d135e3ae9745aadba4b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.c",
+      "fileName": "pkg/sdk/symbols/extract/extract.c",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b288629fa6423aef66ad4d755f002a1446c407fb2ba93b595cc79454dcc4f6e3"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b2a30d08aa24a1e8133dc7c535c780b25f03f2d7a8edbcfef4fd34e11bccfee92a546f4512c16265fbb058f20708205d580eae0529a6f403cfe2173d231f329e"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c10ce841fd0aaa5ad4713628afc0b0adb9621c7a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-Makefile",
+      "fileName": "examples/source/Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "febdc1d7a9aba1503478f3fd1d833eb6655de889dbdfcba1d62f6f56b0e4d0ba91a15ba11d5e48f521201335933d8416a2575f5c526fd9a37df26e9771dc5a5a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "596b4ef67007c716844e54cb719ed4b68495de59"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f0fbb12c5444d0f10a117f35dac715897f6f43b01d66e8611d079162e6ab5e15"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95types.h",
+      "fileName": "pkg/sdk/plugin_types.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fd358a57e009901c5bcc6db2c946e61d1ddf6e19"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a66750bfa033ebc1ed13e4c66726f2e1926505d0720e9bbab2c57068484c1c57"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7b9406b0cb28a86fb6b6e908f620268029a137676d19085aa948d64df23f651aa4d57b668ed0c09bdac32d870504a902cb7ff1f19f39bbbe9c70e91e73422b3b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-async.go",
+      "fileName": "pkg/sdk/symbols/extract/internal/asyncbench/async.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e96fffc96ffe6814ae547bcec1874d37285d30a315d12bb87980ee9a753b299a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "04025f5206eb2160cb5dd76e784c03cf80ba27d50241ef664dcf2df0c2c7d66b7110b9597c5cc8dc1a55d1eb615dfde4afa9ae4eb10ff34cbfbbc27db798c9cb"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0d05cc8b73d8cdcde4f1b724f29fbacf7a9b7643"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-extractor.go",
+      "fileName": "examples/extractor/extractor.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b348aa7cae5979a5306e092b780df3b0ba4176eafd6b36ec2d6ab0a79823ae59"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1ce2d53b0f35167192a61543d9ad13b52c313cb9b7eef6a0a65f7c65ef00e2209aaacce8d6d7532326bb5d2087685b8a4c2780e86c4c28bf048d911254070136"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c48ed2ab87af1dd72513d729d558fe2c532510f3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-sourceC95test.go",
+      "fileName": "pkg/sdk/plugins/source/source_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "71c11fdc0badeaf22041194002691c6f9cbe2cc2c3b23880ad4813a62a681d8c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1c2e0608957153f7fcb00d40495348c5f377c3fe284d0591122dc69f1859a27a180df4ada43ff0beef7807ea9212dfc90ddfc894533dfa26c4f558b6e300a3d1"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "163b2fd8cc342d597f2952d9b3795fef79877f63"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-progress-progress.go",
+      "fileName": "pkg/sdk/symbols/progress/progress.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3ba56f7350f6f15032f177e32d375409dc5797e587b9b74052d77243882d5176"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "304f82a092fb4a9dd75a2acb779509e27238638c32bbc05653a108529cc8f7ddf8d2efd4298f068f437708ae7b83b45dff160e270a7e3cfdc8267fbbe716cf67"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "77dfb935a05ded6a0069d125c9613b2d130c0294"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-Makefile",
+      "fileName": "Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "aa0ad9cc1e2a08f442c1a0bd52c87c8683d77045"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6c85be26c10597b6b3c30b4145e86e12fb62a9f1d3a0ee2dcaaf44474d786e84"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4de39448fc5c7e290815ac6b8138f23913b8775d5dd85fa04ea3bc396164124b05a146e4d7c538598ca6915aa7e4345ffd0577acefbb73352f2555eba1df17d3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-go.sum",
+      "fileName": "examples/source/go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2ae73916abc61faa4f312c89781ce606591a8f8b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2f1c79c9fdde31bb83162d9ce40eb4d2d65135b5f09b009a0f2dbca37814b921"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "500d3081a6eb43642ae5bd3ddf1f69eb32551c3f423acca95bffc54f686dac5ac30b4c1212a90f9ea12e5a629fe0050eee3a25493d3fbb12c97fc6da3bd963f9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-codeql-analysis.yml",
+      "fileName": ".github/workflows/codeql-analysis.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "19d0fce220a2f9f9f76e0d3e5d7df6312d6d1df57e7059fabed19710970661a296abf35c4ca44dd7a2a961c193e8941d0adbd926df16c018880bc9e647c90774"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "fcd6b0d4dedae34226c6196acad3ee069aab15ea"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c6393d7bd20f960007335651dd480293585ab86dc9fbb409888a7a1b6a2c8d2b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-async.go",
+      "fileName": "pkg/sdk/symbols/extract/async.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8db2208916afbf4ca5cd68480623541f3a80649d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "79e896cd44a30d5af38d3d2a4892710aa31d3650bb67763910260645d2f00cca"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a979c0d42925c1717f6e64b4649c4367a9204899fe0922bc9bbe250a1ed2a5cb406fb71bc2751b72ee79b0c52f2f0222f96fb830763d4a40372c5c368061bdb4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-listopen-listopen.go",
+      "fileName": "pkg/sdk/symbols/listopen/listopen.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f80063e9d764b2703495c77027b326fa5a5e12ae"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "65487aff582183e285d109315103316466c68bdd9c671f0d48281ef52f7fbe0f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "575c39c1978411b4a19d141bff6911dd89ea4666cc22fd6af1ade7ad1e3779b5ef355be4386c2b0feef29ac5ac987dd5e7dc17a74e76ee3ec2e3925f8c1c6b2d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-cgo-handle.go",
+      "fileName": "pkg/cgo/handle.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a3b2d28688eb66112ee81bf9048aef708c7944b4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "160a3c5c0113009b331bef7d80bfa3d5b6a3f265514a0846859b1310e1ebeeb7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "91c64f225dfab5d3567d887878d95477bf1e1ff22930d0e4c1f444b3fd205d4911a47da6e951e7035e0b9bc99dd4e0136ce41afd1eaf204a947f2ca7074a32c3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-progress-progressC95test.go",
+      "fileName": "pkg/sdk/symbols/progress/progress_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9b3011f7c7e744d2df9e45be7d32f6e1053aa696"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "34592c0f661d0dd9f1982bf4832fc0d490638d26cf5b54890212c4a37db8bae1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ca0f8aef243a247adf25cc7ef7a385f419cfeb51a7419e0a0a43fe10b3ecee3a1406828a71e534bc27ba25280e00bb1c4afafe63dca96eaf042f04c37f4a00a8"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-sdk.go",
+      "fileName": "pkg/sdk/sdk.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f8aa0dc3b9e0330ae3f164f713377562a083f85a36717d868fa395bcf1394eeb"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2570b027883693e2a4c2e2ff29cc0cf2c3fa96c8fff9f395bfba330cdd6f908572207d6a06a2237c7ca5ec2b943ff6ed858dd79f858e0e9fa6e0e59fbe64e169"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e306f49b51cc8d4b0c23ee804a7ed8d158355c95"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-nextbatch-nextbatch.go",
+      "fileName": "pkg/sdk/symbols/nextbatch/nextbatch.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "94bb70b8fa933de858e796824454f3f6bd4c2bded8b42c52a46be57d3b8ec60d67cff117b16ad029f70a01df38c7913122aac6f49cd92a9ee890077021a2e0b4"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c565a6f80ecb9d220c670fb7f9ad8a13ad6eca48"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d471942143b67a5e01286d8e6b156e7357a90fd3ec57bb4334d7dbcf4843fead"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-doc.go",
+      "fileName": "pkg/sdk/symbols/doc.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e3a706dc1a5611b7416bdcadddbb37b89dbc3831f82c09ea0bccd63421d4b46aea4802a7782186df9d9d8ed01f453b6eb4118476787660b2e40088ba8a1ffcd7"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f8b149e8e2eec405c6f1b61c047c5c5fb8065ef6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a0d2e5c988b0763ada3e791cd0e20847bcee090d8cabd425cd2ac84e10c04fae"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-Makefile",
+      "fileName": "examples/custom/Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "eb19907da7583eea0b3d28bf38f4e2d6d0820506"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "af4f53bddde94e39861bf26ddc84d8134d3bfc0b1ab5a27f3f3912d3e95c528c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "96d2c1714e42ae5ad2916ff255d0f9a2778d336a27150718e33276f795f203b4aebf504d21908df24de43d665d5d781d83b94188173997a20db646c2e577e128"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-internal-hooks-hooks.go",
+      "fileName": "pkg/sdk/internal/hooks/hooks.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "aa5b1fe9b5e531b93c48f878af8a1daf027c77ba"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a2d612834ea5e26ac5d2ffb108847acdbb518a9b239bc1fd4bb42ab1c5c6141b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d47e3b4966866f566b071790865fada3789c56dbe070a344bf851c237254ace0aabc71aed03b42d89b42157a0b3330a5596c74bf3c57f44cfb36203ef8fece72"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initschema-initschemaC95test.go",
+      "fileName": "pkg/sdk/symbols/initschema/initschema_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "34a7748e4e267daeed6afef0f31e5cb03bdb940a11e8f2226a3ed2c1d5d92f49f99be3ae309b90ea1138a75331a7bfad6ff337a157cd563de35f71997f1851e4"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7b84718ac665af820b57b81c4c18cf6b5591649d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d11c2d612dafa8e30f0b314dbff0ab9118e929b95607373b07a225c22ef38fac"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-internal-sdk-inmemory.go",
+      "fileName": "pkg/sdk/internal/sdk/inmemory.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b1e69c1f79fe54e3873460300fc2ecbc34818efa0a1c1949652f037533474a46"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "05890a3b5ec3e33f9bca57bf2c329ec15c8de12239b91c9b5567608b86126c1dffdcaa712627527d0e4b9101114d4acac5c20ea974c403bd2824f85f35102737"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6c77238d6a786b20253bc1b6c7307c8f2b25b9c3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-go.mod",
+      "fileName": "go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "e2bf7912dadfe215715c1889ad4be70252f08889"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "eee0ee945f8caba23b77568d65aefcca48f927c542a28965f66fd7f40f7f655c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "38f7803b2bb45ba7ed3071e9d6c003d26f5e84e26842a01452294b71eb3657b8b564fef95d554f4e60eabf29ae16cb3191314909b752c871006fb42a0abcaf2b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-plugins.go",
+      "fileName": "pkg/sdk/plugins/plugins.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a77f959a691c6dc0c26911935d60ba79fc34df98"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "925b8302f80f1b1cc12fd132cd07056641b046abdb0f4a0f00d91adc58b580f6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4acf0792bcca02bd48b0768beed839876566e14cf81f050ec0fc742438d7840203092406b70405bc5b9a82e3053918d568c94887d85fdda17b937d4681703062"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95loader.c",
+      "fileName": "pkg/loader/plugin_loader.c",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d69bdc443c2200474b3d395364fc4247a4b5b1d056775ed2ede068e9dbe04b7b26fc67d07ca1439ed0ec31c7685b2404f5c2b31a00cf3aae6db5a54846abb8eb"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9f2e3f01ad27c2625d8bf2bac9af41d372d9dcda"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d95cb5ed85a6cbed16664ae08134f4ac1d96f0be58e440d2e89ce1586c391e62"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95typesC95include.patch",
+      "fileName": "pkg/sdk/plugin_types_include.patch",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a04202529d54275a70182a170cfb72ed335da2be"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d106e9fafec07f84b89181e78f551f7c61f19924b82314dd53e30bd309007973"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a07880e4dd6cfc46e03f392ed56121a7cea07f3db24017119468d39ccb6790a8b43289e5388f5236701b698614ce87f4f9e3f5b5823f733c2d500c89f8dacf70"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-go.sum",
+      "fileName": "benchmarks/async/go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2ae73916abc61faa4f312c89781ce606591a8f8b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2f1c79c9fdde31bb83162d9ce40eb4d2d65135b5f09b009a0f2dbca37814b921"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "500d3081a6eb43642ae5bd3ddf1f69eb32551c3f423acca95bffc54f686dac5ac30b4c1212a90f9ea12e5a629fe0050eee3a25493d3fbb12c97fc6da3bd963f9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-loader.go",
+      "fileName": "pkg/loader/loader.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1314906796148fb8f6f03a5d4e3352bc309c6255"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fbe5afb160ad395b27c27f4695137c10c0e6767b5a9a640cdfdc5c6b146e6714"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "579f0f7e26ac569602ea389121a37703d102735218b05eecc759e842d4afcde266f83d7b594b8049c9024e4f5f8bf624dac13586bcaa3d526ddd1671fccfb705"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-.gitignore",
+      "fileName": "examples/custom/.gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1d8bf1b96687fd85eb3d6df55bfb0463e386834d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2eb16ee741740f141591dd92917d8733a3e99866c17bc3dd8d246eec15f341ac"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4efad9594368273b2fae56ac49ed505eda3896aa143d5e0d6ae376daa2fd4c2ccf0cc79444e10ab373e95794a8abb5ddec4252f6c3be1ed983f8ef4980dff07b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-release.yml",
+      "fileName": ".github/workflows/release.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "cc905a430f2335bcb46faca6e06095520b958975"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8b86ef7c55d1f1c794168935a2e5b3e905a800241fc2ab7017080b0e9b8c6467"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c140d3b75870a9032f2c8419a3b01091c2eb88ff38d6f90d1d8ea428e9072f3174865f27c5aab517ee21b63f98f367144112a146d3ea9868926163daae81b0c0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-bench.c",
+      "fileName": "pkg/sdk/symbols/extract/internal/asyncbench/bench.c",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "70e15859ce7802f395eb1de955a4037cb59dedcd7e2ae25c6fbab6f6cd42032d425898f144abb8a5931d71144046f8c9e18e919a1700e6c4d21306bf3d17ca46"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "399eeceb3948174339a87d48f90a60e26e890d8b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "05144376580f75ba6ead5d9f2b99b1c80a53d2d41e8eb7498b48cb2ff8aad2af"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-go.mod",
+      "fileName": "benchmarks/async/go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c5fe0eae87210412d742151d88a5a48a931aa5b2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "30d292c5808a877f3039ce5752182fac35f5d3859eb64e603825f3c1ff5da48b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cf6a1e5498cadfd9c8f6e4335fa1526c94bd42d11036e1273be67a3904658f47c109034be3d99736f5071a87896bb28b0f240c73cd00b8d3ee8879cde27e1dfc"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.c",
+      "fileName": "pkg/sdk/symbols/info/info.c",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b18f14e5274eaba0ab73a3fe9f3ec12622137e97"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b5ea17a9b9d0ef1d8c9e264e2cc961d37f461d35b1602ba4e0268addfa59de8e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "767a6c79768418687f3cdd2f50b8807363abfa8f54997eea33003647d6bdf9cbd03d3b9f24d390f001e63cdae0f4326df3ebd6367597960694c8dbcf171146a9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-string.go",
+      "fileName": "pkg/ptr/string.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0b797092cb6c60c2047ea9b0a96fcbffa50a1f90"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "34638b07ca1796697aafe8938f970a92108c295b54ad6d52fe4182cebfcb980d"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c4b7508c4ca05a87231ab458c0022158fa7e53051cfa0f7bb804d48f4936a7d94d29caaafb0dc448d9147e1acfdc03966d772a74067336551c300fe992e5286b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.go",
+      "fileName": "pkg/sdk/symbols/extract/extract.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "550294c096cafe661f139b7a4ba234d38c211ee3"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b4b87427e2560b138b0f4b0d4cbe6f6e6181ab47708be0722941596d6bca0059"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c48d580659ab4335c26fb2efe162d70d400919e5b5d927ed1418bb1d5fa4e6bcafcbd494098f8dd5141bb9c98b11606e654d8b6399d3e0950e5b6dc13d81d90a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-.gitignore",
+      "fileName": ".gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "514af979d3a633b9af03f96862a61ef5656e50a6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a16edea83da4b17239e6b118967f3404c0f74929b8ef14526a0e449d73ba1ba7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "bcd1a0dc1294de4d5396ffd9b897a668673bf4d93455462f9e87cceba4a80e1730d4f792af91d8f54b298c4fae6f298957c7d8ba90705a95cfc5d706bc401c50"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95api.h",
+      "fileName": "pkg/sdk/plugin_api.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a31c4000b2ec9689f50aeda5ade509aa57740b0c7f175032b99d592ef3c1fc7cc27f5916614de1397f4e1122e86deb6a8527f416417ade3ab2b082cd307842a6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d7f43a2fb08ac30fc5f701292ff6026ab65b2041"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1b282421b1bdf2d513f66fd3eaf1f4eb498ebdddf8b12304fbafb0792edb987c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-Makefile",
+      "fileName": "examples/full/Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "aa1df9b47de4a78859b3d9283949385f8f029289c68b26f2700dea8cd4042d32d8236933520fe6394a88e794cb68714dc4690c9660721722b6525f485e778948"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8d2edf1973564d9ab9d5731dcb7675fb588e1549"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "28a3da2e2f28bbb3edd08dfcd78691f7c8f9793f46f5abe613fe97310d6f2cb6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-bench.cpp",
+      "fileName": "benchmarks/async/bench.cpp",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0c7680bdd4f0976aebe75f8e0e00183e3432851a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4b1644568d54ba484d79c89ae476447610bfc83d2d3610edc730848966ae1cbe"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "136328b6f2ba96db5fefca3bee4e09c7b25e03276349d8aa9f99fe04d216d7213f5f6e68c3128117eb533e54e645bd00b4ffc42a894b7d4255f5efe5496effbd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-README.md",
+      "fileName": "benchmarks/async/README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3d7692fb8c735d3f74f5598185faa5db705af3d2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f59b604eb3663d6edb9535f970bf4e13f47a8429492db18f74fdd910f71c5f6c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4a17aa4fe6d714d7223620c6a7119e886679e4370c578632ec0e75c7b4ae4dd4e4712f66b13996b3b30e1b314e581763f2cfa600dab85c6c7436874ec6923350"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-.gitignore",
+      "fileName": "examples/source/.gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4efad9594368273b2fae56ac49ed505eda3896aa143d5e0d6ae376daa2fd4c2ccf0cc79444e10ab373e95794a8abb5ddec4252f6c3be1ed983f8ef4980dff07b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1d8bf1b96687fd85eb3d6df55bfb0463e386834d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2eb16ee741740f141591dd92917d8733a3e99866c17bc3dd8d246eec15f341ac"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-.goreleaser.yml",
+      "fileName": ".goreleaser.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d2e389b57666deff7fb890689beb19be30cc259262de8965d587273683ca83cb5ab93ff267c2d05e1a76561a1a796dbe622ec48e8090d6da0d1f4c2c930f19d0"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d3eec92424f370ad7717331fa3797762af3332dc"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1a55df1b554c6f2176c7acad57f345dcd6a47a11d43cbf39fcb57a65adf38f15"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-instance.go",
+      "fileName": "pkg/sdk/plugins/source/instance.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7f03d11fd5b962bfa9b09eae2df1771d1692c796"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ca040cc12b5f9e2244269baf81e72950d2bdb5c233749a1bd6910c6488a45d47"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7cb1c21ad84127e234dd29b6e9de6578bdbfb7ae8807611c7d232b153dc2662b7b1fb17c8cca2f9672a6f7a32f8a52a608772200f5db6dced3c9ef00d9fd2079"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-bench.go",
+      "fileName": "benchmarks/async/bench.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8fb802a2a3ed292beebf587a036407887c4ef4d97b286f144427911f74fb597f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "13450fed020f9c1e77b58cbfa3940d2eb8a5fa5502035d35dab65dff73ac4faa2220177df51c69a3aca72a0a1829f16a77e1d6f40427cf3afa15cfa5da4a8eb5"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2bfb15fd598763523c57520e09890ffac994583d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-bench.h",
+      "fileName": "pkg/sdk/symbols/extract/internal/asyncbench/bench.h",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "02d2ee684e74685b52850c1f2a783531338a3e0ba728e9294928dc0f20e39cc4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d045ea9c6fa03f2fc066b16a7d8d99361b3047ffc378ad33d6345b910bf4697547e798acc5992d5ea1913e2c4b5946cfa6646c194b096fe56fb8957a78140424"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "23fa8e213d998b2e1e29f3b56331e9e821dcba20"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-dependabot.yaml",
+      "fileName": ".github/dependabot.yaml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8471c6e027e4a7aad77124a8910f35735013a64c"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7cf70573b4d12f880d9db64d81f04c6b7aa80adc895b3bc87abb8d18e71791a8"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0857eaf841bc15092dad31ccd276c0d23a6ab6ec988cbbd0e9c1f5619d89f61e9142111c09e329e9e4121f5cbbe59128c356ab543bf8d87992f4661c17ccb754"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-instance.go",
+      "fileName": "pkg/sdk/instance.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "cfd46818ad1a575dec588bb230d6d9e015495090"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2cbdfa24a891ff7afbe152977a302337389d60c88733abbb3b81f9edcd8316a7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4bc3e5cc4348ddae60a4de2ab1f955f05fd28511d3c01d9591c6106f1301e036274cfd10f72d2f47f2769c01762d770b4cf61b53380576d37c7101e1c681639a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-custom.go",
+      "fileName": "examples/custom/custom.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "05bace859bb0bbf1f993d2254bd3a985fbe72477"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "df6611cf8f1aa98e77717df44949ca6d964155055ea8e93bc7af301d048ff8b2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1bbf3186e6a7c1fbca4e466ffc92fc2b931f6893e79f5b73a0e00295f19a1079568eff79d22cb48065cb496627a16858a3398de5f1ef9a5f135f5e53e1165278"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-listopen-listopenC95test.go",
+      "fileName": "pkg/sdk/symbols/listopen/listopen_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8029ff3ea339344d33a50d6598d745075a66aff9fd80c0a1576f8039a3636628"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f0c3443d1df4beb1bb89168968233716ec0f1609b3449b6d881fbd1509bc64b0642e699ce771f9194e3d511d33332f9fff4ff39efcbbead548c75cfcf73f8319"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6811fbd5cfde91b005644052de7d951b8e88e191"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-extractor-extractor.go",
+      "fileName": "pkg/sdk/plugins/extractor/extractor.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "433b55ea618408296c1ad78a96ddbfc584258fe5"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "be3a4506c9d07335f4576d921c8558542f574c72a9ea715d58b27d319b9816cc"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fc37099bc971dd386723bfe39b12ad6ee786388fa41d64dfc6dd4f33df63d37307c61a5ff80e235c71545e928ec9d8fde68861650369226ceeefc7c065ca436d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-doc.go",
+      "fileName": "pkg/sdk/plugins/doc.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "142ad777e0b9143bc6e4aefbd186a6f4e89b99b3dce76abe98568ff1f52fe937"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d867d64dfe6fef74444a7dc1693aff16db2c2e92ad0450e24a69e0c35755cf9d1a75bbaa9ff7c76390583b1900b83d603118aeb9af4dfd05375832b5d9478550"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2fe79cd6972b2f7f786e269f6135123c226ac26a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-stringC95test.go",
+      "fileName": "pkg/ptr/string_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "af682dd7edb738c9bf20fe2a7fdd753ae60dfada"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "af4d7a32aa2fe72f544aefaaa2b49ceb3a4daa4d274a977b64237165303d5eee"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "1cf1648a99038330ba5e93a554a5a0ad2fe911e5fac7ebed76e898ea1d0c12442deca7c9c866eb10257c2f109e60dcd35241b8725a96adca03e19d1e3a21c39b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-source.go",
+      "fileName": "pkg/sdk/plugins/source/source.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "df8436096ec6f22fc874e9f3e8a01737061ea57ab6e8bfb699190726b54776a35c0085dd672fc2637f2489fae4b8b40aadf21c7628eaa92180a4088c27eb472e"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "97aa39679da1a17a2de8d8716ed5786c586edfd0"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "12e0f413c6a7c7009fcdba7e1d420bb2b9a17a541b1df88c57311d2f3fa6c824"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4Ad3Nd7KHr-go.sum",
+      "fileName": "go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "13a61dfc93314744618d062ea1ea2069c1fa85da"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "7545d0c1bfe33cb3831f21a8752ef7c8139f9b6e0476b9c52f2dc5a3db421734"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c989d666701ebef5e024eab412ca3d892c745559744a4e62826d8abf0cc35a4d12604829a2f90020baa475bffc85aa13c0e8977e1d1900d0bccd629c578c9a9c"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "name": "tmp.4Ad3Nd7KHr",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-release.yml",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-.gitignore",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-ci.yml",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-PULLC95REQUESTC95TEMPLATE.md",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-Makefile",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-codeql-analysis.yml",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-dependabot.yaml",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-.goreleaser.yml",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-OWNERS",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-Makefile",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-README.md",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-LICENSE",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-README.md",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-bench.cpp",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-.gitignore",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-go.sum",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-.gitignore",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-bench.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-Makefile",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-go.mod",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-go.sum",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-custom.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-.gitignore",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-go.sum",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-go.mod",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-Makefile",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-extractor.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-go.mod",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-Makefile",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-fullC95rules.yaml",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-full.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-go.mod",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-go.sum",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-.gitignore",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-Makefile",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-go.mod",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-go.sum",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-source.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-go.mod",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-go.sum",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-.gitignore",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95apiC95include.patch",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-cgo-handleC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-loader.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95loader.c",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95loader.h",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-strlcpy.patch",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-bytes.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-string.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-bytesC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-buffers.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-cgo-handle.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-doc.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-event.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-eventC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-extractC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-extract.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-instance.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-stringC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugin.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-internal-sdk-inmemory.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95typesC95include.patch",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95types.h",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95api.h",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-doc.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-extractor-extractor.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-extractor-extractorC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-internal-hooks-hooks.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-plugins.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-instanceC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-instance.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-source.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-sourceC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-sdk.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-doc.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-evtstr-evtstrC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-evtstr-evtstr.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-pluginsC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-asyncC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-async.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.h",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extractC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-asyncC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-async.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-bench.c",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-bench.h",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-workload.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-fields-fields.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-fields-fieldsC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.c",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.h",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initialize-initialize.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-infoC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initschema-initschema.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initialize-initializeC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initschema-initschemaC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-lasterr-lasterr.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-lasterr-lasterrC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.c",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-listopen-listopenC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-nextbatch-nextbatch.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-nextbatch-nextbatchC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-open-open.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-open-openC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-listopen-listopen.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-progress-progress.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-progress-progressC95test.go",
+        "SPDXRef-File-tmp.4Ad3Nd7KHr-release.md"
+      ],
+      "licenseInfoFromFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "1844ca6be2cea9bf00c530f21800dec4ceb47a97"
+      }
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-xeipuuv-gojsonschema-v1.2.0",
+      "name": "github.com/xeipuuv/gojsonschema",
+      "versionInfo": "v1.2.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://proxy.golang.org/github.com/xeipuuv/gojsonschema/@v/v1.2.0.zip",
+      "copyrightText": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright 2015 xeipuuv\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/xeipuuv/gojsonschema@v1.2.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-xeipuuv-gojsonreference-v0.0.0-20180127040603-bd5ef7bd5415",
+      "name": "github.com/xeipuuv/gojsonreference",
+      "versionInfo": "v0.0.0-20180127040603-bd5ef7bd5415",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://proxy.golang.org/github.com/xeipuuv/gojsonreference/@v/v0.0.0-20180127040603-bd5ef7bd5415.zip",
+      "copyrightText": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright 2015 xeipuuv\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/xeipuuv/gojsonreference@v0.0.0-20180127040603-bd5ef7bd5415",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-xeipuuv-gojsonpointer-v0.0.0-20190905194746-02993c407bfb",
+      "name": "github.com/xeipuuv/gojsonpointer",
+      "versionInfo": "v0.0.0-20190905194746-02993c407bfb",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://proxy.golang.org/github.com/xeipuuv/gojsonpointer/@v/v0.0.0-20190905194746-02993c407bfb.zip",
+      "copyrightText": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright 2015 xeipuuv\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/xeipuuv/gojsonpointer@v0.0.0-20190905194746-02993c407bfb",
+          "referenceType": "purl"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-release.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-ci.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-PULLC95REQUESTC95TEMPLATE.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-workflows-codeql-analysis.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-.github-dependabot.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-.goreleaser.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-OWNERS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-LICENSE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-bench.cpp"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-bench.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-custom-custom.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-extractor-extractor.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-benchmarks-async-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-fullC95rules.yaml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-full.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-source-source.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-examples-full-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95apiC95include.patch"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-cgo-handleC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-loader.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95loader.c"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-pluginC95loader.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-loader-strlcpy.patch"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-bytes.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-string.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-bytesC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-buffers.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-cgo-handle.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-doc.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-event.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-eventC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-extractC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-extract.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-instance.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-ptr-stringC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugin.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-internal-sdk-inmemory.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95typesC95include.patch"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95types.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-pluginC95api.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-doc.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-extractor-extractor.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-extractor-extractorC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-internal-hooks-hooks.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-plugins.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-instanceC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-instance.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-source.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-source-sourceC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-sdk.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-doc.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-evtstr-evtstrC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-evtstr-evtstr.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-plugins-pluginsC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-asyncC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-async.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extractC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-asyncC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-async.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-bench.c"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-bench.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-internal-asyncbench-workload.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-fields-fields.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-fields-fieldsC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-extract-extract.c"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.h"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initialize-initialize.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-infoC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initschema-initschema.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initialize-initializeC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-initschema-initschemaC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-lasterr-lasterr.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-lasterr-lasterrC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-info-info.c"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-listopen-listopenC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-nextbatch-nextbatch.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-nextbatch-nextbatchC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-open-open.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-open-openC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-listopen-listopen.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-progress-progress.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-pkg-sdk-symbols-progress-progressC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4Ad3Nd7KHr-release.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-xeipuuv-gojsonschema-v1.2.0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-xeipuuv-gojsonpointer-v0.0.0-20190905194746-02993c407bfb"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4Ad3Nd7KHr",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-xeipuuv-gojsonreference-v0.0.0-20180127040603-bd5ef7bd5415"
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-14T02:52:09Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "Repository: falcosecurity/plugin-sdk-go\nVersion: v0.8.1"
+    }
+  ],
+  "hasExtractedLicensingInfo": [
+    {
+      "licenseId": "LicenseRef-github-com-falcosecurity-plugin-sdk-go-pkg",
+      "extractedText": "License: Apache-2.0",
+      "name": "Apache-2.0",
+      "comment": "Package: github.com/falcosecurity/plugin-sdk-go/pkg"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-xeipuuv-gojsonpointer",
+      "extractedText": "License: Apache-2.0",
+      "name": "Apache-2.0",
+      "comment": "Package: github.com/xeipuuv/gojsonpointer"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-xeipuuv-gojsonreference",
+      "extractedText": "License: Apache-2.0",
+      "name": "Apache-2.0",
+      "comment": "Package: github.com/xeipuuv/gojsonreference"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-xeipuuv-gojsonschema",
+      "extractedText": "License: Apache-2.0",
+      "name": "Apache-2.0",
+      "comment": "Package: github.com/xeipuuv/gojsonschema"
+    }
+  ]
+}

@@ -1,0 +1,1729 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "containerd/console v1.0.5",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-14T01:29:57Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM for CNCF project: containerd/console@v1.0.5"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/containerd/console/releases/tag/v1.0.5",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.4zcIXcRxFc"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-commit-msg.sample",
+      "fileName": ".git/hooks/commit-msg.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ee1ed5aad98a435f2020b6de35c173b75d9affac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d6bb7fa747f4625adf1877f546565cbe812ca7dd4168f7e9068e6732555d8737eba549546cf5946649e3f38de82d173aaf9c160a4c9f9445655258b4c5f955eb"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95linux.go",
+      "fileName": "console_linux.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "061880b50ce9737baffced487847c110a2730c9b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "23b20f414eb405f5d25c652d15e0cb200a1a02925cb75d4a70807573dd295e26"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "192c27132c40602c13684a901dab295d5ac7dd6bb19fe0c8af7559483d92752f338bdf17c5fc9448b89bf522be871139b61a505e0e7d1e931ae263b428fdb65d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-update.sample",
+      "fileName": ".git/hooks/update.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "730e6bd5225478bab6147b7a62a6e2ae21d40507"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "be3780974589d06eddba6fa0aa15a3e3dfe390e2827a1a6ae5cb83d6ac47e79ef9b1bbb53f067372f8dc70db0350d3770e78537fd3cfe734200ff824eca4cada"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95unix.go",
+      "fileName": "pty_unix.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ab4b63c5af973dc5c68d7b741554db7a58a742621e66bf1f68931f5ba2d7df06"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a40aed03887cba7d62fec76eb068e8e983864cf964be03437b93eb1d88e145b7ba60f783fdf8393163420d3c2fc0b8c34f1239c1ece388795ccce43dcde3d2c2"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ded37b5c940e16b0b902edd53976361ed4d05259"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95darwin.go",
+      "fileName": "tc_darwin.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cd0d752449f76c1fcb215eab7747537aaa11e6ddd309ec515dc6157c225a7627b95c4764f709ac4336dbd39f559f88194ae6b487d4101702812bf9888c9ff769"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1c6a265126956504eae9da3af73a3688fc96ba8d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "938187e2d67887de26baf8ec0cda899b47b2772fd36bd8d01e9be64f1ff031ae"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95unix.go",
+      "fileName": "tc_unix.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ba290445072b5e6dc55c9dd9ce2369143edd8a7b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fd07cd09bcbefea0259c26b9d7c1d7f42ab5220e557442021e069e48fe64fad2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "af478013a12c28058d4b993ebc4da513c6965ea31e2a44889e69062fa4db3ed06c543042cb3fd866f43eda35db4716818d16ebc27a27ab517db17fa495831e2f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-config",
+      "fileName": ".git/config",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3704cf210d756dd47a6aea92cf784d9e784fcc11b56432d179bfdbd0c75cdbc1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "15577a7f9286d77e852cecd09d49ef9aea2bdcc1d90bc13b971495bbdb7c59926c6e8c917c35c1efc944a48d276cc1e9462755f3df576dd33ffc2744470c190e"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3a7298a798320624a124b96cea35b05b62923f65"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-commit.sample",
+      "fileName": ".git/hooks/pre-commit.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8093d68e142db52dcab2215e770ba0bbe4cfbf24"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4fed684b7e262fc847610ca646074fca45c3c677c40d8fb6c7ae522b9c8a9be7327b41a59b4550ceadd41edf57ec5ed07e575e02dbc6c003951e1822ac3ddd5b"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-push.sample",
+      "fileName": ".git/hooks/pre-push.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a599b773b930ca83dbc3a5c7c13059ac4a6eaedc"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cc98bbe0e3865e2023af04416e10689e3aecd3f3928cf90c2acc0d3d7306388886779025c8967c8ea198af1f4fe29d16c65d4e1d546c7a8fa513f5ba7df16850"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-receive.sample",
+      "fileName": ".git/hooks/pre-receive.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ee08c11fab7e896b2e09c241954ba7640338b12c75cd8040daf053c31b2f22236d7a0deac736f89d305236312fdb4f560a38d4d8debdcc9dcdd23b2d975907d5"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "705a17d259e7896f0082fe2e9f2c0c3b127be5ac"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-HEAD",
+      "fileName": ".git/HEAD",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c5c639c4a4676646b3e941e56953806a7928df936cd8581fd5272b74087d48464faa203522320a885f162960903d1fb8ab276b1f282195c45695b5d8c9d30451"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8875cbbc60454f945ea1bee21270d412bcc3b639"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5bf5cca6f2b64623b2ffc9ebc14e2492af79cf4fcc576f2152b9151713614a61"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95windows.go",
+      "fileName": "console_windows.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a1d4d92fcf9c4ea31e6b3c7301c82bf85aa332a07741fb3643212cddcde11778"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "0df9e6bd9b68664fb969685d69ba3db01637c367de1b5f6674b7cb675f34c9661c4fe67917c104776e59598832441ce34e91aee287429d359a2f768cbdbaf7c1"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "81df80b221ebf6642a4c37820b3a2e33a4890793"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95freebsdC95nocgo.go",
+      "fileName": "tc_freebsd_nocgo.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "54fad535eea77ece689ce48fedb5282d435655ef"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "694a4566482d826562aa823a53ee05916c5cb28c73f8614028a0680415b61fe2"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "fa5bdbbf7b9d0a65e0a76ce0cb3b2275220502ac199e36fb7525d51434cf2a7257d9cc6f75cb26c64fc112c03d9655d055db8af54da67b9ce951bb2dbaecbc16"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.github-workflows-ci.yml",
+      "fileName": ".github/workflows/ci.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "42642a01edc316dc505f27a911258681039ac673"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "27b7d0e72ff142814462c24a83a6afc6e6a5b8932ad9e63f71a94d99b8feaa54"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9cef8dec1e4517e51f1ddaed3d28b60a61fa0fa0184447484b0935897117d663c9cb730ea8f4ff534adfff6f5a80474c575baca72b451f230e2707f6c6fa64f3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-applypatch-msg.sample",
+      "fileName": ".git/hooks/applypatch-msg.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "536cce804d84e25813993efdd240537b52d00ce9cdcecf1982f85096d56a521290104c825c00b370b2752201952a9616a3f4e28c5d27a5b4e4842101a2ff9bee"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4de88eb95a5e93fd27e78b5fb3b5231a8d8917dd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95other.go",
+      "fileName": "console_other.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "482f6ae864c7e85ed8c889c241b1e3097d13704f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f6391476e60a1d95bbe8c8a28b4b38469085996ae5ff9fe442d38c23f79328c3"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4cb5c3b8049c10686342fa2f1f89b0967f0101c54249589f8f0d735541d8bb05226e70dfa41aa437495d3cec4b2a9095b07da9f577cf604e9aeecdf1ae3c241e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95freebsdC95cgo.go",
+      "fileName": "pty_freebsd_cgo.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "65b6b8ffaebbf643f9451322778dde2e7103f35f6e6b292188e59f021ebfb7a4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e36c8af751cdb112f7e40747e9f0f44cfaf563e9810de4be9f4308cce413ed38d0498e152d63e0cb2fca3b0b2e1a9673ce4e54702d115ae9fb3262ff73931c7d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1966e753ac91130e103fc2134153b2b9470d5668"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-post-update.sample",
+      "fileName": ".git/hooks/post-update.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "473ad124642571656276bf83b9ff63ab1804d3c23a5bdae52391c6f70a894849ac60c10c9d31deff3938922ce83b68b1e60c11592bbf7ea503f4acd39968cefa"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b614c2f63da7dca9f1db2e7ade61ef30448fc96c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-merge-commit.sample",
+      "fileName": ".git/hooks/pre-merge-commit.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e4dc204494f5062efa3032b00c64707a4f38978040482501b3e085f071e3ee5a9737d537e6a52002ceb4ebe2bfe09e555c5d969581e80b3eba2a922015c67960"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "04c64e58bc25c149482ed45dbd79e40effb89eb7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.idx",
+      "fileName": ".git/objects/pack/pack-90474c096e940385b51430f93eb9764f70ca22da.idx",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "821cd20d56fdad213cd0c3b362e3509a0b771a376090a00f64fed3f6d3a67fd461df3d5a4787c2de99642bc970ec3422d2d50d893538df5870989c6025e69143"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "12177d5a21e596d947e1a76e5c716edb3c533fe6"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "166b59ec2e7f29092518f7905cf188242cdf2340303f41344ee939ea5e96783f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-info-exclude",
+      "fileName": ".git/info/exclude",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c879df015d97615050afa7b9641e3352a1e701ac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9828c6ecdf91bf117416e17f4ee9caee2e1e37b6fb00b9ff04035ace17a3089b9d0a25c6baa1046c0e1c62d3da88838e8fca74ea82973d6b975905fde58f3072"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-applypatch.sample",
+      "fileName": ".git/hooks/pre-applypatch.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cb78aa7e9b9c146e5db65d86dd83f04e2b6942a06fab50c704a0fd900683f3b6ad1164e74afe2f267f6da91cdff0b9ab07713e12cefc6f8d741b5df194f4fda6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f208287c1a92525de9f5462e905a9d31de1e2d75"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95zos.go",
+      "fileName": "tc_zos.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1a318955c91aa20f1023f70a699c985ad704ed8a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0c925a5ecf8808f50a46714c00f2df82dbcdde976c1496697203a7a1dce8ef56"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8464ef9d959771aa361a9fb0c406491ba9cd2ec014f4fa682fa8bb76132d962259e09e9b3d6e1fea14e042064309fbc65866776dc4a18d2f0587bcbaea4d50b9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95netbsd.go",
+      "fileName": "tc_netbsd.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9db83fd4615f572c0883cba34aef660bc0a2d62b0c540bc2875dbec66b351717"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "76f5eb8242c0fffb239b65960a098dcacf44f6031f8dc89d26200ae9964e72ebf76326d5084419525ae7ea5b818733583937452dd180f96abe0e14dfedd02a3d"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3d3b6e34a982deb0126682456166371ee2195caa"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95zos.go",
+      "fileName": "pty_zos.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f8ad9a8e9717ffc7e4e8658f026fdc5745a3fdd49fb3cccc9f710df687a7ec24"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "63b532ba0561308813cfd8712f73addf23356ab26851bd42bb26f5054d485a22e6c854790add0f1d26168fd3845fd5008ac2912bec1baa55f3f9016c965ccb3b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d8d9694ea2ad2b00a87e33075fb403e0ebfe9a68"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95unix.go",
+      "fileName": "console_unix.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "09a031c6480a465d9aed938ee74872e098f4b24c36d564d55b3173c07ac7df72"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4f583b38564f24436eb445007d837275ce217e490832e11ae64079906d290e7557df998b030bdf3402497b64c8d589083b5881373ab033870e2f3059db55992b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "90a8af93c6bebc06272cfb8757f1a6ff1a5607b6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95freebsdC95nocgo.go",
+      "fileName": "pty_freebsd_nocgo.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "67cc7345305297bf6b844517f6f7b0ba31c59207"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6e54be4e26d08cf142507066c347c67ead03b2923586ebd44271b1a366d77229"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2abbfb0eb138ab41e0090f8e956eabc0570a594ea31412527e278df14de128bd426c5d13ff6dc4c4be290ed6fb191a0518dc1cb538b8619fd59fdccad0a7a491"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-fsmonitor-watchman.sample",
+      "fileName": ".git/hooks/fsmonitor-watchman.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5168643c1768ec83554a9066754507a781b6d14251a46a469222d462efc6ca87a72c90679154e8a723349c91e7772b32ac9b08dfe313cded0ee0a6f17885079e"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "0ec0ec9ac11111433d17ea79e0ae8cec650dcfa4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-logs-HEAD",
+      "fileName": ".git/logs/HEAD",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8135cbdce536de127c768d8d2d56cf3b1c94eaf95819edc116cf32c6258c04e6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f8c9bdefda1e0ea3ccfdcb46ab0232571ef04c1df5be6089eb1901d34c74eebfc862c87acfed1055404d8e735565531d866ae773c9cc18b9abc07740ed0e179b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2ddb10abb526afcdb6bd00bb26cc243e2be39d63"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-go.sum",
+      "fileName": "go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "44d6851f0706673c2fcb98d77fdba613b4a7af6a810451986377f6e3a920ec4c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "d88a4a145506f6a5956ba0f239d3349aa1cc45d1d9f6fa033e8763f893511cdab961a0f6f0c53944ce37c97e9ca29eb43a3fd614b7c21e8ba5239c3cfd84e520"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3266e609fc676a7089cd240e700f9bed56aea45e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-push-to-checkout.sample",
+      "fileName": ".git/hooks/push-to-checkout.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "508240328c8b55f8157c93c43bf5e291e5d2fbcb"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "586efb6a206f73d8a94561266153a624e2753830bc431a283bed998c46ac00a9df4995ddfd0aa852b1a22b4672c80f2c33cee3fe2e3321e392ff4cef26dbf75e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.pack",
+      "fileName": ".git/objects/pack/pack-90474c096e940385b51430f93eb9764f70ca22da.pack",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "b66efde5758ab6ca478abcab09cc6768c931bc2f"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "517e015628e369c91cf746a1fe220f1a7e2b34c46854c77d0d38deebdab64b63"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "cb3a0ed65d1e76eee4dc1bb75d5339e1c224861f30d664bb3f35e344e4e7305168d0ee36a5bb22f402647279b7f87e8158aeaa2b88dd1916a61e4c0c6ba76543"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-packed-refs",
+      "fileName": ".git/packed-refs",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "50ede0437eff7298e398d5dc85067806071155a8bd7e21a2e7d9a8ffe824b70e506f88b9943b2105d720f607fdacd891ce8eb14e0516d45588f819ad835e9ede"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7019cb543df3aefdff9d1f8895758e62b710b96e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d6903b384f1b7c624fd36bf180cc45913d3828bf4b3a220fee553c1899d76ccf"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.rev",
+      "fileName": ".git/objects/pack/pack-90474c096e940385b51430f93eb9764f70ca22da.rev",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "45f2fd16aa3f9fa8c85612b42bfe0f8c6a03cae9"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a61a14a3e16a56c1958bbd3697308c7b6a65188e40f84fff3b345454a1f6bc0f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "17e6b9147eaeb98d7eeacddc0e1daafc8b3d901e5d9d6284b0bc320033d34224742c21cddafc5ed60166bda296415c14fa8ea0383158d7740f8ccaefcbaac499"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-console.go",
+      "fileName": "console.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f0b00a6b0bcca85e476c54a15d7da93871f725d4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b181f3de93054dd48531a25a2f626080e655e575f284b17a90bd9ab1e77b0168"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "9ccb344166154af81c5f3bb24fa90aa9f82c93121b1564d1dffd949fe5d96ae76c24109d46e099137b21a162c9e3969bb85c591d49f0057e6abe2ef60c4678f2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-go.mod",
+      "fileName": "go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3bcf232cf809267361727f12c0789c66f4f7e456"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "371ec2acc7c06d5f2fa41f245ce83fc49fb0f9ddc4ef613e8a62ea49008aa958"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e79b10ec0b5c81eb3c78a1edaee9d24b52fedf986f56a84fa7d82f5227fc3bebb0f1e07e8073ee8351ba14cd8961ad4a1e9f090fbfebcaca80f675d2e75e925a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-prepare-commit-msg.sample",
+      "fileName": ".git/hooks/prepare-commit-msg.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2584806ba147152ae005cb675aa4f01d5d068456"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "50ec8a0dd98427e80a82a8d8ce44462a845876e1594c9d0e89483ce9a8aaad616edea0e5c45c1bb69d8fe7f520c6f2260d6fa350d77b400899c3ae375e965bfb"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95openbsdC95nocgo.go",
+      "fileName": "tc_openbsd_nocgo.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a1d01c3831b314fea0c6d1e792cec7244eaf677d6c8f10b7acd6091ed74c7915"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "77f1e7230409d2eb58796ef736f14cf73f696774790eb2a335acb023f18b31129b465a0dd6ad8111af35fcd7788e099c051ca9084943d7acb2f68b8c30531692"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "761961e79386ff258a94cda6d4aaf052b3290212"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95openbsdC95cgo.go",
+      "fileName": "tc_openbsd_cgo.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6f7db8250b41961270e3b99801e7d002484430ea054a01914351daf51fcfcb2e61fcbb9f09d0e3d7985cac43863758cab32e8702f9f384b5c191eef8b77c0141"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "a251b927be52e84c61e223c9ff471128f863b5c4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5d3ef7187cbf00139d215bcdcca0884faadcd37eef20eecfb091eecfece0945f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95test.go",
+      "fileName": "console_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c8ac795b1d15bde5c375723ae0450072b1ad261d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "885520ef155b985caf37910a373627fd8b43d6d4e9ed3b92327b6a3e7c0264b1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ac5e4f6978e9587bf5618cf9c955ff0367aeea19a02a48912bf2e6bef29629ac4fc2294886d4e367728b5c88e719157eacbd68adba33b9a987b014a22e1c3b2c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "87c512e9de5069947e657b3af37482e6b2ff21719341ae5a1d50d7fff33f35e1"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e244061d851830ae0dff2de5b9781462aa5b38a79487ce16527ca86843e2eb3f55d6c00409d4d050b092189dd447c173116e9412a563ce643581fc8070e66d34"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c980b75ef43a371afff54bbde673e96846cc8104"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-sendemail-validate.sample",
+      "fileName": ".git/hooks/sendemail-validate.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "a19dbbc2ef6c367aadbfb900ae58c377d88ac9b6c0ac6de49c962d44d993418875f64143defda56bae8d0697dcd15be2928d32aa77508d3958769f18a4a53154"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "74cf1d5415a5c03c110240f749491297d65c4c98"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.golangci.yml",
+      "fileName": ".golangci.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "660fa5c4bc376c3f2122252ee13031d61b9f4ee9507aff41b276859ce1949dc6"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ece72029635329b70d7da89dd609edeb3172da33feb31379e82506c4967cfb1535f0be98f3ad3c4deca278eeafe5bac35d74b7684afdfce132cc468e096c011b"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "62f832b93ec79096e5343f9856c0db8872427331"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95linuxC95test.go",
+      "fileName": "console_linux_test.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1a095fce92ec834a91cd72ac728f10219e398f82"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f5e66003d8357512b917ad78cecfcfd977355319c7df0e632dac828ae6887240"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "09769f47852e01e958c8771049e980973a2cdd363a331c142a05a2bc5d3c2108f0a0f4f11a2fb2e068af36275c37509d681ee668e87bb792a77049d6bb6655fd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-index",
+      "fileName": ".git/index",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c26be53dc3f5d78ddc84c69d44a678cd1b182cc1ed1bed657fdc5ae378abd9b968b29006f0def2bb08b6c86fab37e8c9ad551ccedb29710c78513e5ce3292bf5"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "704e15637d91f7e0d9eb9308163d4d99042b9a72"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "097b2b2f1f5041cf698e00b9f48e88e1e18310359c9cf0c00894e52465365fc1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-LICENSE",
+      "fileName": "LICENSE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Pixar"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d3b7a70b03b43d4e7205d178100581923a0baad2"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4bbe3b885e8cd1907ab4cf9a41e862e74e24b5422297a4f2fe524e6a30ada2b4"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "698823e75afcb392f7f7a4a44765add284dfd9be4917e23d29bf95a2c11b0273730b7cdf29ee9f73d67afd136af05df8e3f92227a0feabf16801d149bbe71249"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95linux.go",
+      "fileName": "tc_linux.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1c00ba573d24e3fc967c1168b5c15f729ebd1db36be033aeb7f38458fe935f3a"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "22fa802999362f53709e233060aa784e9a71f18881d07c72144acb72c3e5c4f895107ca86df7671a44320d97a9725025ae068502f74a9a58bee3f554a8a0ef8f"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "40a4b964955c0b738478696e82ffbbf841050d9a"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-description",
+      "fileName": ".git/description",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "f7e152f75b124c3e1c5d12f00427729d9eec4e2c1bf70d7606440a6600d003367eb178331e75ab976a61496e79c2c822020849d28ffd170946397b934611b471"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "9635f1b7e12c045212819dd934d809ef07efa2f4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95freebsdC95cgo.go",
+      "fileName": "tc_freebsd_cgo.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4d4c28d1ebc8f870106272e2e710e8e41139f10e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d97bd73d0fc1e72829febeb5cd1dceafaaccd1f95fd5ceb386bf7cc37980815f"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2e64a3b78d9668c58b3de26f243f1e674f6aede9fc8824eda7c4f351e62e77fca0ff71debf990c40f542b760ec03b5822034331139146ae106dca18c4280015f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-shallow",
+      "fileName": ".git/shallow",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "8875cbbc60454f945ea1bee21270d412bcc3b639"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5bf5cca6f2b64623b2ffc9ebc14e2492af79cf4fcc576f2152b9151713614a61"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c5c639c4a4676646b3e941e56953806a7928df936cd8581fd5272b74087d48464faa203522320a885f162960903d1fb8ab276b1f282195c45695b5d8c9d30451"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-rebase.sample",
+      "fileName": ".git/hooks/pre-rebase.sample",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Pixar",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "288efdc0027db4cfd8b7c47c4aeddba09b6ded12"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "00d21d5d72386c3d9b5a1c36ba85201f730556a8295d4353af54af7892ab81010d42aff209ec1fda61c54e4dda3737cea5fda64f09d40ce5004ae28239565025"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "name": "tmp.4zcIXcRxFc",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "Pixar",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-config",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-description",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-applypatch-msg.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-commit-msg.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-post-update.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-applypatch.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-fsmonitor-watchman.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-commit.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-HEAD",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-push.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-receive.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-rebase.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-prepare-commit-msg.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-push-to-checkout.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-merge-commit.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-update.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-index",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-logs-HEAD",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-info-exclude",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.rev",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.pack",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-sendemail-validate.sample",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-packed-refs",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-shallow",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.idx",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.golangci.yml",
+        "SPDXRef-File-tmp.4zcIXcRxFc-.github-workflows-ci.yml",
+        "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95linux.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-LICENSE",
+        "SPDXRef-File-tmp.4zcIXcRxFc-console.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-README.md",
+        "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95other.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95unix.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95test.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95linuxC95test.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-go.mod",
+        "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95windows.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95freebsdC95cgo.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95freebsdC95nocgo.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95unix.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95zos.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-go.sum",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95freebsdC95cgo.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95linux.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95freebsdC95nocgo.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95netbsd.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95darwin.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95openbsdC95cgo.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95openbsdC95nocgo.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95zos.go",
+        "SPDXRef-File-tmp.4zcIXcRxFc-tcC95unix.go"
+      ],
+      "licenseInfoFromFiles": [
+        "Pixar"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "75b4a288381edd4b557f22eae9de9b71c5616377"
+      }
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-golang.org-x-sys-v0.1.0",
+      "name": "golang.org/x/sys",
+      "versionInfo": "v0.1.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "BSD-3-Clause",
+      "downloadLocation": "https://proxy.golang.org/golang.org/x/sys/@v/v0.1.0.zip",
+      "copyrightText": "Copyright (c) 2009 The Go Authors. All rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n   * Redistributions of source code must retain the above copyright\nnotice, this list of conditions and the following disclaimer.\n   * Redistributions in binary form must reproduce the above\ncopyright notice, this list of conditions and the following disclaimer\nin the documentation and/or other materials provided with the\ndistribution.\n   * Neither the name of Google Inc. nor the names of its\ncontributors may be used to endorse or promote products derived from\nthis software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/sys@v0.1.0",
+          "referenceType": "purl"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-config"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-description"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-applypatch-msg.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-commit-msg.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-post-update.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-applypatch.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-fsmonitor-watchman.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-commit.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-HEAD"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-push.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-receive.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-rebase.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-prepare-commit-msg.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-push-to-checkout.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-pre-merge-commit.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-update.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-index"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-logs-HEAD"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-info-exclude"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.rev"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.pack"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-hooks-sendemail-validate.sample"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-packed-refs"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-shallow"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.git-objects-pack-pack-90474c096e940385b51430f93eb9764f70ca22da.idx"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.golangci.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-.github-workflows-ci.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95linux.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-LICENSE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-console.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95other.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95unix.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95linuxC95test.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-consoleC95windows.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95freebsdC95cgo.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95freebsdC95nocgo.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95unix.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-ptyC95zos.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95freebsdC95cgo.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95linux.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95freebsdC95nocgo.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95netbsd.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95darwin.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95openbsdC95cgo.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95openbsdC95nocgo.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95zos.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.4zcIXcRxFc-tcC95unix.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.4zcIXcRxFc",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-golang.org-x-sys-v0.1.0"
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-14T01:29:58Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "Repository: containerd/console\nVersion: v1.0.5"
+    }
+  ],
+  "hasExtractedLicensingInfo": [
+    {
+      "licenseId": "LicenseRef-github-com-containerd-console",
+      "extractedText": "License: Apache-2.0",
+      "name": "Apache-2.0",
+      "comment": "Package: github.com/containerd/console"
+    },
+    {
+      "licenseId": "LicenseRef-golang-org-x-sys-unix",
+      "extractedText": "License: BSD-3-Clause",
+      "name": "BSD-3-Clause",
+      "comment": "Package: golang.org/x/sys/unix"
+    }
+  ]
+}

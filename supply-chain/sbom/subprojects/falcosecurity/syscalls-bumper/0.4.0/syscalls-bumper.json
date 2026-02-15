@@ -1,0 +1,685 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "falcosecurity/syscalls-bumper v0.4.0",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-02-14T02:52:26Z",
+    "creators": [
+      "Tool: bom-v0.7.1",
+      "Tool: cncf-automation-sbom-generator"
+    ],
+    "licenseListVersion": "3.27",
+    "comment": "SBOM for CNCF project: falcosecurity/syscalls-bumper@v0.4.0"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://github.com/falcosecurity/syscalls-bumper/releases/tag/v0.4.0",
+  "documentDescribes": [
+    "SPDXRef-Package-tmp.Bnr09AsiqB"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-.gitignore",
+      "fileName": ".gitignore",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "438b1e27e8ef71102512f71c56236c3949540dce2f7da624e54107873a86babd0f9b530d470ad0bf387f25f4ca701089401d6b1edb103f5785c05e81068315e9"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c3af68e9f1010523baff8b2c6b1775a60762a54b"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "531d3480a935d4abdb5266ae0d86488a5f1b267586d86e0bac1e1a3682355a89"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-release.yml",
+      "fileName": ".github/workflows/release.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2e04bd2ed08deff267d19f5d008f41757c4ca7f4"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5ab0fabd109638cd49d2278e5333d2fc1c3c56fc0325bd8a31afb910c47c7f27"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "28f79f09526753b1906c59a9bbe925c6c1a444c341eaf6a4153e36e8894051351e307b68edae50fcc344367a7b6639c99b912ecba2251d70948c2fecc4d285f0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-action.yml",
+      "fileName": "action.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "1e7f5ad3c4ec7bbec18387c392d9363e4610a35c74064f069529694c982f2e6e"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "74a9d9ae44c504c5f41d95f776d0935f5800c148ae99d2a56558fd55690a55086f9f1015739849aa5aa6496b475c7f8a52fdbe0c1e36b260106ea305c5fb90a5"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c8fb8b853ebf050296dbd9dedeec17a9ae5ff973"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-test.yml",
+      "fileName": ".github/workflows/test.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "db623575b4ed3a52d9e3c97520de9e2e3db94d0e"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0301ec245d20a619ee3b7e127872a2a6e30f0cb7c8db6e21d27836c37a9e00e5"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "8e67adc37f8a922228d0d75015120ea19d1897935c63def6176cf61c8edd07b0430801c297d6f52c50ec56ad9494656ca50b79304862bb35de3698380cac8abd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-README.md",
+      "fileName": "README.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4db750139d6abea0fba9ab4ff3331bf4e1189dd03b8919500d7a62213df92ccbd0c4773aa3585901d947154322f5118d187fae4577a015a8246cc955e454c443"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f199b5875a80284734bf25a374300af551e137de"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "144266eb37d5df01dd7458df52328d441b0a770ed44793071157822978e1d5ab"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-main.go",
+      "fileName": "main.go",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "139810fa73b7a03742af591747d151ac0061b4db"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "856f1b95d2247d8f2dd7357a6982f76a6b92bc4fabfbd963dc5c337a5fcd5ebf"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c3e770206db7502df8e71d23ff6b2a684bcd271c09ff36d3aa1b473ed17c0382980cf5d2ac6672e268bf9f06f4957601405d04dd8b2ae48481dc26697e26e7b0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-go.sum",
+      "fileName": "go.sum",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "03a3e3f151c85ba72cf79a79cd0acdee3a5ad59ffab927322d214972a2c4d8850a19531b3f15656b806e187bed06288d6c6001903a0e1fe615848444cb0b75c6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "6134faeed17509b585ac965aa3c5d1526f6af4b5"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0040a7ff9b480dcdb9a1793eb9216405872367b23c8fb15ac8a7f1917d4fa492"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-ci.yml",
+      "fileName": ".github/workflows/ci.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "2225a0279a62505659294c3ba26a70f5bbad03ac"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c4b893794ae00da7ae7563b2dfdbc166855f92435d78575330e5f791ba762d14"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "86cb30afff8ffb513b4ae2dea7c3f075d1d05249e5daa194daaf458e19146a7b886bffceebb7a4167697f6c08cf7d568359c5e5b1db816bd26253831765c1358"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-OWNERS",
+      "fileName": "OWNERS",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c4daefc420a996e99f318bfb5ad45ae20c0d0007"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c96d520ea61124599691026a60da0f9a99a786a2d252b6fbe5b464a88e2a1e21"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7cd1ffd4daee1d73bcc8077f20918382c24d6e162f41c709ab1bdcdfe361afadb3ad2f7fcce340e92bba85efe65933218eb58e07d1dadca0f53121b5310b3361"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-.goreleaser.yml",
+      "fileName": ".goreleaser.yml",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4291c6bbe14e974dab6331487f2348bc6b8c5c04"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "70a95ecfdd19fa19208ae9eb79bffcdc31ce84e62dcf79fe5f8aa5aa8e190caa"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "2f4d661a3780f9c3a737d3f1f0e95174c98bbe7482a079ac36e065fc93b253cf943bdf78de02376fc6eb618b0329a072758dbaddf457fa40033fb7f4d921e5e1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-LICENSE",
+      "fileName": "LICENSE",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "dc6b68d13b8cf959644b935f1192b02c71aa7a5cf653bd43b4480fa89eec8d4d3f16a2278ec8c3b40ab1fdb233b3173a78fd83590d6f739e0c9e8ff56c282557"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "7df059597099bb7dcf25d2a9aedfaf4465f72d8d"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-release.md",
+      "fileName": "release.md",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "TEXT",
+        "DOCUMENTATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "c439961bf69a53a58179df8d4eef772bc075864084905f53576773ae3056d3fb887e0ca31d90dddd6a0263dc1687a20dde9d75876c5c5d8b1fd4afb8e5efd760"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "4dea990a5d9661639cf56f78cfca8a1505f15f50"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "69f3eb98307ac4cd0540368efb3c7cb934cd03acca378ee6446f6578338c1122"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-Makefile",
+      "fileName": "Makefile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fd3c9222c06ea5934aea1991df3372386969b52f6cbe020dff6ca611cb8e342c"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "73c61890f39851eb6be4e87a8bb71c7f5899906c1179fff9e9dcc9d3631f2f8f20164bb9e516c22ab5536c1b6db9c93d75b5fb2f4a73d02f69acde5e730499de"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "53d52a56b301f6e5cb67e15fd1b58de9d101db08"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-go.mod",
+      "fileName": "go.mod",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "OTHER"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "6e0802a0ad8b260f08b4253d1dad93e80da2f6f257e6b581890d9e350cebfd089e19b11cc7fdce5669b05271466dab480ea66e1d2821740af60f8579d6c38f30"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "5902ff907b959f747d2e5ba7541ddc8ea972d06a"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "72064b8eaafa44d9b1151c086c39f04e9d45eb31679f7681baf4c6ed9d7f4756"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-tmp.Bnr09AsiqB-Dockerfile",
+      "fileName": "Dockerfile",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "Apache-2.0",
+      "fileTypes": [
+        "BINARY",
+        "APPLICATION"
+      ],
+      "licenseInfoInFiles": [
+        "NONE"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "d619cbf260b69dcb2e488b0f7cea967cd6019ecd"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3be3955877f9bb74bed4506c1ee24a07d6ac3ce01e17480d77e6d9ebefdb10ef"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "15603e1d46b694a1f1cc2b8c539f345e390d12dc629fb2f0546d2a9b9cd79aa3124e0c0d2818d7920ea361fc4cfa8a733b7aa227471ec0e2052534d0d2610506"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-olekukonko-tablewriter-v0.0.5",
+      "name": "github.com/olekukonko/tablewriter",
+      "versionInfo": "v0.0.5",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "downloadLocation": "https://proxy.golang.org/github.com/olekukonko/tablewriter/@v/v0.0.5.zip",
+      "copyrightText": "Copyright (C) 2014 by Oleku Konko\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/olekukonko/tablewriter@v0.0.5",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-blang-semver-v3.5.1C43incompatible",
+      "name": "github.com/blang/semver",
+      "versionInfo": "v3.5.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "downloadLocation": "git+https://github.com/blang/semver",
+      "copyrightText": "The MIT License\n\nCopyright (c) 2014 Benedikt Lang <github at benediktlang.de>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/blang/semver@v3.5.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "name": "tmp.Bnr09AsiqB",
+      "versionInfo": "",
+      "filesAnalyzed": true,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "NONE",
+      "copyrightText": "NOASSERTION",
+      "hasFiles": [
+        "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-ci.yml",
+        "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-release.yml",
+        "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-test.yml",
+        "SPDXRef-File-tmp.Bnr09AsiqB-Dockerfile",
+        "SPDXRef-File-tmp.Bnr09AsiqB-OWNERS",
+        "SPDXRef-File-tmp.Bnr09AsiqB-LICENSE",
+        "SPDXRef-File-tmp.Bnr09AsiqB-.goreleaser.yml",
+        "SPDXRef-File-tmp.Bnr09AsiqB-Makefile",
+        "SPDXRef-File-tmp.Bnr09AsiqB-.gitignore",
+        "SPDXRef-File-tmp.Bnr09AsiqB-action.yml",
+        "SPDXRef-File-tmp.Bnr09AsiqB-go.mod",
+        "SPDXRef-File-tmp.Bnr09AsiqB-README.md",
+        "SPDXRef-File-tmp.Bnr09AsiqB-go.sum",
+        "SPDXRef-File-tmp.Bnr09AsiqB-release.md",
+        "SPDXRef-File-tmp.Bnr09AsiqB-main.go"
+      ],
+      "licenseInfoFromFiles": [
+        "Apache-2.0"
+      ],
+      "checksums": [],
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "b6d0ec2a7a4eb94c183b8e24db67dd37a6d0cf56"
+      }
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-sirupsen-logrus-v1.9.0",
+      "name": "github.com/sirupsen/logrus",
+      "versionInfo": "v1.9.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "downloadLocation": "https://proxy.golang.org/github.com/sirupsen/logrus/@v/v1.9.0.zip",
+      "copyrightText": "The MIT License (MIT)\n\nCopyright (c) 2014 Simon Eskildsen\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/sirupsen/logrus@v1.9.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-golang.org-x-sys-v0.0.0-20220715151400-c0bba94af5f8",
+      "name": "golang.org/x/sys",
+      "versionInfo": "v0.0.0-20220715151400-c0bba94af5f8",
+      "filesAnalyzed": false,
+      "licenseConcluded": "BSD-3-Clause",
+      "downloadLocation": "https://proxy.golang.org/golang.org/x/sys/@v/v0.0.0-20220715151400-c0bba94af5f8.zip",
+      "copyrightText": "Copyright (c) 2009 The Go Authors. All rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are\nmet:\n\n   * Redistributions of source code must retain the above copyright\nnotice, this list of conditions and the following disclaimer.\n   * Redistributions in binary form must reproduce the above\ncopyright notice, this list of conditions and the following disclaimer\nin the documentation and/or other materials provided with the\ndistribution.\n   * Neither the name of Google Inc. nor the names of its\ncontributors may be used to endorse or promote products derived from\nthis software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\nLIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\nA PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\nOWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/sys@v0.0.0-20220715151400-c0bba94af5f8",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-gomod-github.com-mattn-go-runewidth-v0.0.9",
+      "name": "github.com/mattn/go-runewidth",
+      "versionInfo": "v0.0.9",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "downloadLocation": "https://proxy.golang.org/github.com/mattn/go-runewidth/@v/v0.0.9.zip",
+      "copyrightText": "The MIT License (MIT)\n\nCopyright (c) 2016 Yasuhiro Matsumoto\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "checksums": [],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/mattn/go-runewidth@v0.0.9",
+          "referenceType": "purl"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-ci.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-release.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-.github-workflows-test.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-Dockerfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-OWNERS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-LICENSE"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-.goreleaser.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-Makefile"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-.gitignore"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-action.yml"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-go.mod"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-README.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-go.sum"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-release.md"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-tmp.Bnr09AsiqB-main.go"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-blang-semver-v3.5.1C43incompatible"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-mattn-go-runewidth-v0.0.9"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-olekukonko-tablewriter-v0.0.5"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-golang.org-x-sys-v0.0.0-20220715151400-c0bba94af5f8"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-tmp.Bnr09AsiqB",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-gomod-github.com-sirupsen-logrus-v1.9.0"
+    }
+  ],
+  "annotations": [
+    {
+      "annotationDate": "2026-02-14T02:52:26Z",
+      "annotationType": "OTHER",
+      "annotator": "Tool: cncf-automation",
+      "comment": "Repository: falcosecurity/syscalls-bumper\nVersion: v0.4.0"
+    }
+  ],
+  "hasExtractedLicensingInfo": [
+    {
+      "licenseId": "LicenseRef-github-com-blang-semver",
+      "extractedText": "License: MIT",
+      "name": "MIT",
+      "comment": "Package: github.com/blang/semver"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-falcosecurity-SyscallsBumper",
+      "extractedText": "License: Apache-2.0",
+      "name": "Apache-2.0",
+      "comment": "Package: github.com/falcosecurity/SyscallsBumper"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-mattn-go-runewidth",
+      "extractedText": "License: MIT",
+      "name": "MIT",
+      "comment": "Package: github.com/mattn/go-runewidth"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-olekukonko-tablewriter",
+      "extractedText": "License: MIT",
+      "name": "MIT",
+      "comment": "Package: github.com/olekukonko/tablewriter"
+    },
+    {
+      "licenseId": "LicenseRef-github-com-sirupsen-logrus",
+      "extractedText": "License: MIT",
+      "name": "MIT",
+      "comment": "Package: github.com/sirupsen/logrus"
+    },
+    {
+      "licenseId": "LicenseRef-golang-org-x-sys",
+      "extractedText": "License: BSD-3-Clause",
+      "name": "BSD-3-Clause",
+      "comment": "Package: golang.org/x/sys"
+    }
+  ]
+}

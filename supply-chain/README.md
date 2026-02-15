@@ -38,16 +38,26 @@ supply-chain/
 ├── README.md                           # This file
 ├── sbom/                               # Generated SBOM files
 │   ├── index.json                      # Index of all generated SBOMs
-│   └── <project-name>/
-│       └── <repo-name>/
-│           └── <version>/
-│               └── <repo>.json         # SPDX SBOM file
+│   ├── <project-name>/                 # Official CNCF projects
+│   │   └── <repo-name>/
+│   │       └── <version>/
+│   │           └── <repo>.json         # SPDX SBOM file
+│   └── subprojects/                    # Subproject repos from CNCF orgs
+│       └── <owner>/
+│           └── <repo>/
+│               └── <version>/
+│                   └── <repo>.json     # SPDX SBOM file
 └── util/
     ├── data/
-    │   └── cncf-projects.yaml          # Auto-synced CNCF project list (DO NOT EDIT)
+    │   ├── cncf-projects.yaml          # Auto-synced CNCF project list (DO NOT EDIT)
+    │   └── discovered-repos.yaml       # Subproject repos found in CNCF orgs (DO NOT EDIT)
     ├── extract-projects/               # Go tool to sync projects from CNCF landscape
+    ├── discover-repos/                 # Go tool to find subproject repos in CNCF orgs
+    ├── cleanup-sbom/                   # Go tool to remove orphaned SBOM folders
+    ├── generate-index/                 # Go tool to generate index.json
     ├── generate-sbom-local.sh          # Local testing script (Linux/macOS)
     └── generate-sbom-local.ps1         # Local testing script (Windows)
+```
 ```
 
 ## GitHub Actions Workflows
@@ -60,7 +70,21 @@ Automatically syncs the list of CNCF projects from the official landscape.
 - **Manual trigger**: Via workflow_dispatch
 - **Output**: `util/data/cncf-projects.yaml`
 
-### 2. Generate SBOMs (`.github/workflows/generate-sbom.yml`)
+### 2. Discover Additional Repos (`.github/workflows/discover-cncf-repos.yml`)
+
+Scans GitHub organizations of CNCF projects to find additional subproject repositories with releases.
+
+- **Scheduled**: Weekly on Monday at 04:00 UTC
+- **Manual trigger**: Via workflow_dispatch
+- **Output**: `util/data/discovered-repos.yaml`
+
+This workflow finds subproject repositories that:
+- Belong to the same GitHub org/user as a CNCF project
+- Have at least one release
+- Contain a `go.mod` file (Go-based project)
+- Are not forks, archived, or disabled
+
+### 3. Generate SBOMs (`.github/workflows/generate-sbom.yml`)
 
 Generates SBOMs for CNCF projects.
 
@@ -92,6 +116,21 @@ cd supply-chain/util/extract-projects
 go run . ../data/cncf-projects.yaml
 ```
 
+### discover-repos
+
+Go tool that scans GitHub organizations of CNCF projects to find additional subproject repositories with releases.
+
+```bash
+cd supply-chain/util/discover-repos
+go run . /path/to/cncf-automation
+```
+
+The tool will:
+- Read the list of CNCF projects from `cncf-projects.yaml`
+- Scan each unique GitHub organization/user
+- Find subproject repos that have releases and contain `go.mod`
+- Output results to `discovered-repos.yaml`
+
 ### cleanup-sbom
 
 Go tool that removes SBOM folders for projects no longer in the CNCF list.
@@ -100,6 +139,15 @@ Go tool that removes SBOM folders for projects no longer in the CNCF list.
 cd supply-chain/util/cleanup-sbom
 go run . /path/to/cncf-automation --dry-run  # Preview changes
 go run . /path/to/cncf-automation            # Execute cleanup
+```
+
+### generate-index
+
+Go tool that generates the `index.json` file for all SBOMs.
+
+```bash
+cd supply-chain/util/generate-index
+go run . /path/to/cncf-automation
 ```
 
 ## Local Testing
