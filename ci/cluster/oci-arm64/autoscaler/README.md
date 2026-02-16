@@ -1,31 +1,34 @@
-# Cluster autoscaler configuration
+# Cluster Autoscaler
 
-Configuration files for the cluster autoscaler for the OKE cluster running
-external GitHub Actions.
+Adjusts the number of OKE nodes based on pending pod demand. **Not managed by ArgoCD** — applied directly to the cluster.
 
-REFS:
-Step by Step
-https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/contengusingclusterautoscaler_topic-Working_with_the_Cluster_Autoscaler.htm#Working_with_the_Cluster_Autoscaler
+## Files
 
-OKE Workload Identity: Greater control of access
-https://blogs.oracle.com/cloud-infrastructure/post/oke-workload-identity-greater-control-access
+| File | Description |
+|------|-------------|
+| `cluster-autoscaler.yaml` | ServiceAccount, RBAC, and Deployment manifest |
 
-## Step 1: Setting Up an Instance Principal or Workload Identity Principal to Enable Cluster Autoscaler Access to Node Pools
+## Key Details
 
-### Using instance principals to enable access to node pools🔗
-Created Instance Principal
+- **Image**: `iad.ocir.io/oracle/oci-cluster-autoscaler:1.33.0-3`
+- **Namespace**: `kube-system` (3 replicas)
+- **Node Pool Range**: 1–10 nodes
+- **Auth**: OCI Instance Principal
+- **Metrics**: Prometheus scrape on port `8085`
 
-### Create a new compartment-level dynamic group containing the worker nodes (compute instances) in the cluster:
+## Prerequisites
 
-https://cloud.oracle.com/identity/domains/ocid1.domain.oc1..aaaaaaaaqlvbp36i7exr5phcr4jy4o33fn7vw5vtd4h4rxmwzzfpf4dtylea/dynamic-groups/ocid1.dynamicgroup.oc1..aaaaaaaa7qbdtn3zbnph3yy62gjyr5i2ls7cvwe3pzoimmjckzg5cyki3bzq/application-roles?region=us-sanjose-1
+Requires OCI IAM setup:
+1. **Dynamic Group** containing the worker node compute instances
+2. **IAM Policy** allowing the group to manage node pools
 
-### Policy to allow work nodes to manage nodes pools:
+Reference: [OCI Cluster Autoscaler Docs](https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/contengusingclusterautoscaler_topic-Working_with_the_Cluster_Autoscaler.htm) · [OKE Workload Identity](https://blogs.oracle.com/cloud-infrastructure/post/oke-workload-identity-greater-control-access)
 
-https://cloud.oracle.com/identity/domains/policies/ocid1.policy.oc1..aaaaaaaanawfi3j4otvdhlefhgf5fogr2wnhjzljpxmf4afjwufd3zknmk7q?region=us-sanjose-1
+## Deployment
 
-### Using workload identity principals to enable access to node pools
+```bash
+kubectl apply -f cluster-autoscaler.yaml
+```
 
-https://cloud.oracle.com/identity/domains/policies/ocid1.policy.oc1..aaaaaaaaqbjexxhyrjdjf2py2vchiz6dg7ewt4qburayq7n35k4fnuoirg7q?region=us-sanjose-1S
-
-Step 2: Copy and customize the Cluster Autoscaler configuration file
+Scales the node pool hosting the runner pods in [`../runners/`](../runners/).
 

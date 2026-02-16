@@ -1,28 +1,19 @@
 # Actions Runner Controller (ARC)
 
-Configuration for the GitHub Actions Runner Controller (ARC) on the OCI ARM64 runner cluster.
-
-## Overview
-
-ARC is deployed as an ArgoCD `Application` that installs the `gha-runner-scale-set-controller` Helm chart from `ghcr.io/actions/actions-runner-controller-charts`. It manages the lifecycle of GitHub Actions self-hosted runners using Kubernetes-native autoscaling.
+Deploys the `gha-runner-scale-set-controller` Helm chart (v0.11.0) via ArgoCD into the `arc-systems` namespace. Manages the lifecycle and autoscaling of GitHub Actions self-hosted runners.
 
 ## Files
 
 | File | Description |
 |------|-------------|
-| `arc.yaml` | ArgoCD Application manifest that deploys the ARC controller Helm chart (v0.11.0) into the `arc-systems` namespace |
-| `values.yaml` | Helm values for the ARC controller — configures metrics endpoints and Prometheus scrape annotations |
+| `arc.yaml` | ArgoCD Application deploying the ARC Helm chart |
+| `values.yaml` | Helm values — metrics endpoints and Prometheus scrape annotations |
 
-## Configuration Details
+## Key Details
 
-- **Chart**: `gha-runner-scale-set-controller` v0.11.0
-- **Namespace**: `arc-systems`
-- **Cluster Label**: `oci-gha-arm64-runners`
+- **Chart**: `gha-runner-scale-set-controller` v0.11.0 from `ghcr.io/actions/actions-runner-controller-charts`
 - **Sync Policy**: Automated with pruning and self-healing
-- **Metrics**: Exposed on port `8080` at `/metrics`, with Prometheus scrape annotations enabled
+- **Metrics**: Port `8080` at `/metrics`
+- **Sync-wave**: `2` (via [`../argo-automation.yaml`](../argo-automation.yaml))
 
-## Relationship to Other Components
-
-- The ARC controller manages the `AutoscalingRunnerSet` resources defined in [`../runners/`](../runners/)
-- This Application is referenced by [`../argo-automation.yaml`](../argo-automation.yaml) (sync-wave `2`)
-- Metrics are scraped by the Prometheus stack configured in [`../monitoring/`](../monitoring/)
+Manages the `AutoscalingRunnerSet` resources in [`../runners/`](../runners/). Metrics are scraped by [`../monitoring/`](../monitoring/).
