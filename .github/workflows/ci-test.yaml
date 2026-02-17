@@ -9,7 +9,7 @@ jobs:
     steps:
       - 
         name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - 
         name: Start kind cluster
         run: |
@@ -83,7 +83,7 @@ jobs:
     runs-on: oci-ci-test
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Update APT
         run: |
