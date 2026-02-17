@@ -16,6 +16,7 @@ type JSONSchema struct {
 	Properties           map[string]JSONSchemaProperty `json:"properties,omitempty"`
 	AdditionalProperties *bool                         `json:"additionalProperties,omitempty"`
 	Defs                 map[string]JSONSchema         `json:"$defs,omitempty"`
+	AnyOf                []JSONSchema                  `json:"anyOf,omitempty"`
 }
 
 type JSONSchemaProperty struct {
@@ -48,7 +49,7 @@ func main() {
 			"name":               {Type: "string", Description: "Project display name"},
 			"description":        {Type: "string", Description: "One-line project description"},
 			"type":               {Type: "string", Description: "Project type (e.g., project, platform, specification)"},
-			"project_lead":       {Type: "string", Description: "GitHub handle of primary contact"},
+			"project_lead":       {Type: "string", Description: "GitHub handle or team (org/team-name) of primary contact"},
 			"cncf_slack_channel": {Type: "string", Description: "CNCF Slack channel", Pattern: "^#"},
 			"maturity_log": {
 				Type:        "array",
@@ -104,7 +105,19 @@ func main() {
 				Properties: map[string]JSONSchemaProperty{
 					"policy":       {Ref: "#/$defs/PathRef"},
 					"threat_model": {Ref: "#/$defs/PathRef"},
-					"contact":      {Type: "string", Format: "email", Description: "Security contact email"},
+					"contact":      {Ref: "#/$defs/SecurityContact", Description: "Security contact information"},
+				},
+			},
+			"SecurityContact": {
+				Type:        "object",
+				Description: "Security contact information. At least one of email or advisory_url must be provided.",
+				Properties: map[string]JSONSchemaProperty{
+					"email":        {Type: "string", Format: "email", Description: "Security contact email address"},
+					"advisory_url": {Type: "string", Format: "uri", Pattern: `^https://github\.com/.+/.+/security/advisories/new$`, Description: "GitHub Security Advisory URL"},
+				},
+				AnyOf: []JSONSchema{
+					{Required: []string{"email"}},
+					{Required: []string{"advisory_url"}},
 				},
 			},
 			"GovernanceConfig": {

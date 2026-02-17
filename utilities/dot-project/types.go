@@ -50,9 +50,16 @@ type PathRef struct {
 }
 
 type SecurityConfig struct {
-	Policy      *PathRef `json:"policy" yaml:"policy"`
-	ThreatModel *PathRef `json:"threat_model,omitempty" yaml:"threat_model,omitempty"`
-	Contact     string   `json:"contact" yaml:"contact"`
+	Policy      *PathRef         `json:"policy" yaml:"policy"`
+	ThreatModel *PathRef         `json:"threat_model,omitempty" yaml:"threat_model,omitempty"`
+	Contact     *SecurityContact `json:"contact,omitempty" yaml:"contact,omitempty"`
+}
+
+// SecurityContact represents security contact information.
+// At least one of Email or AdvisoryURL must be set when the section is present.
+type SecurityContact struct {
+	Email       string `json:"email,omitempty" yaml:"email,omitempty"`
+	AdvisoryURL string `json:"advisory_url,omitempty" yaml:"advisory_url,omitempty"`
 }
 
 type GovernanceConfig struct {

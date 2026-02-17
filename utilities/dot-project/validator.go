@@ -12,11 +12,16 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
 )
+
+// githubAdvisoryURLPattern matches GitHub Security Advisory URLs of the form:
+// https://github.com/{org}/{repo}/security/advisories/new
+var githubAdvisoryURLPattern = regexp.MustCompile(`^https://github\.com/[^/]+/[^/]+/security/advisories/new$`)
 
 // NewProjectValidator creates a new project validator
 func NewProjectValidator(configPath string) (*ProjectValidator, error) {
@@ -232,11 +237,21 @@ func validateProjectStruct(project Project) []string {
 	}
 
 	// Validate project_lead (optional but must be non-empty if present)
+	// Accepts either a GitHub handle (e.g., "jdoe") or a GitHub team (e.g., "org/team-name")
 	if project.ProjectLead != "" {
 		lead := strings.TrimSpace(project.ProjectLead)
 		lead = strings.TrimPrefix(lead, "@")
 		if lead == "" {
 			errors = append(errors, "project_lead cannot be empty or just '@'")
+		} else if strings.Contains(lead, "/") {
+			parts := strings.Split(lead, "/")
+			if len(parts) != 2 {
+				errors = append(errors, fmt.Sprintf("project_lead team format must be org/team-name (got too many segments): %s", project.ProjectLead))
+			} else if parts[0] == "" {
+				errors = append(errors, fmt.Sprintf("project_lead team format requires a non-empty org (expected org/team-name): %s", project.ProjectLead))
+			} else if parts[1] == "" {
+				errors = append(errors, fmt.Sprintf("project_lead team format requires a non-empty team name (expected org/team-name): %s", project.ProjectLead))
+			}
 		}
 	}
 
@@ -348,9 +363,19 @@ func validateProjectStruct(project Project) []string {
 		if project.Security.ThreatModel != nil && project.Security.ThreatModel.Path == "" {
 			errors = append(errors, "security.threat_model.path is required")
 		}
-		if project.Security.Contact != "" {
-			if _, err := mail.ParseAddress(project.Security.Contact); err != nil {
-				errors = append(errors, fmt.Sprintf("security.contact is not a valid email: %s", project.Security.Contact))
+		if project.Security.Contact != nil {
+			if project.Security.Contact.Email == "" && project.Security.Contact.AdvisoryURL == "" {
+				errors = append(errors, "security.contact must have at least one of email or advisory_url")
+			}
+			if project.Security.Contact.Email != "" {
+				if _, err := mail.ParseAddress(project.Security.Contact.Email); err != nil {
+					errors = append(errors, fmt.Sprintf("security.contact.email is not a valid email: %s", project.Security.Contact.Email))
+				}
+			}
+			if project.Security.Contact.AdvisoryURL != "" {
+				if !githubAdvisoryURLPattern.MatchString(project.Security.Contact.AdvisoryURL) {
+					errors = append(errors, fmt.Sprintf("security.contact.advisory_url must be a valid GitHub Security Advisory URL (https://github.com/{org}/{repo}/security/advisories/new), got: %s", project.Security.Contact.AdvisoryURL))
+				}
 			}
 		}
 	}

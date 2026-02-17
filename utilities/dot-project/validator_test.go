@@ -480,18 +480,48 @@ func TestSlugValidation(t *testing.T) {
 }
 
 func TestProjectLeadValidation(t *testing.T) {
-	project := validBaseProject()
-	project.ProjectLead = "jdoe"
-	errs := validateProjectStruct(project)
-	if len(errs) != 0 {
-		t.Errorf("expected no errors with valid project_lead, got: %v", errs)
+	tests := []struct {
+		name        string
+		lead        string
+		expectError bool
+		errorSubstr string
+	}{
+		{"valid handle", "jdoe", false, ""},
+		{"handle with @ prefix", "@jdoe", false, ""},
+		{"valid team format", "kubernetes/sig-leads", false, ""},
+		{"valid team with hyphens", "my-org/my-team", false, ""},
+		{"team with @ prefix", "@kubernetes/sig-leads", false, ""},
+		{"empty org in team", "/team-name", true, "non-empty org"},
+		{"empty team name", "org/", true, "non-empty team name"},
+		{"too many segments", "org/team/extra", true, "too many segments"},
+		{"bare @", "@", true, "cannot be empty or just '@'"},
+		{"just whitespace", "  ", true, "cannot be empty or just '@'"},
+		{"empty string", "", false, ""}, // Optional field
 	}
 
-	// With @ prefix should also work (stripped internally)
-	project.ProjectLead = "@jdoe"
-	errs = validateProjectStruct(project)
-	if len(errs) != 0 {
-		t.Errorf("expected no errors with @-prefixed project_lead, got: %v", errs)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			project := validBaseProject()
+			project.ProjectLead = tt.lead
+			errs := validateProjectStruct(project)
+
+			hasLeadError := false
+			for _, err := range errs {
+				if strings.Contains(err, "project_lead") {
+					hasLeadError = true
+					if tt.expectError && tt.errorSubstr != "" && !strings.Contains(err, tt.errorSubstr) {
+						t.Errorf("expected error containing %q, got: %s", tt.errorSubstr, err)
+					}
+				}
+			}
+
+			if tt.expectError && !hasLeadError {
+				t.Errorf("expected project_lead error for %q, got none (errors: %v)", tt.lead, errs)
+			}
+			if !tt.expectError && hasLeadError {
+				t.Errorf("did not expect project_lead error for %q, got: %v", tt.lead, errs)
+			}
+		})
 	}
 }
 

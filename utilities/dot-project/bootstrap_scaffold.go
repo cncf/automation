@@ -23,7 +23,7 @@ slug: "{{ .Slug }}"
 name: "{{ .Name }}"
 description: "{{ .Description }}"{{ if .ProjectLead }}
 project_lead: "{{ .ProjectLead }}"{{ else }}
-# TODO: Set project lead GitHub handle
+# TODO: Set project lead GitHub handle or team (org/team-name)
 # project_lead: "github-handle"{{ end }}{{ if .CNCFSlackChannel }}
 cncf_slack_channel: "{{ .CNCFSlackChannel }}"{{ else }}
 # TODO: Set CNCF Slack channel
@@ -62,9 +62,12 @@ social:{{ range $platform, $url := .Social }}
 security:
   policy:
     path: "SECURITY.md"{{ if .SecurityContactURL }}
-  contact: "{{ .SecurityContactURL }}"{{ else }}
-  # TODO: Set security contact email
-  # contact: "security@{{ .Slug }}.io"{{ end }}
+  contact:
+    advisory_url: "{{ .SecurityContactURL }}"{{ else }}
+  # TODO: Set security contact
+  # contact:
+  #   email: "security@{{ .Slug }}.io"
+  #   advisory_url: "https://github.com/org/repo/security/advisories/new"{{ end }}
 {{ if .HasContributing }}
 governance:
   contributing:

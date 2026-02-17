@@ -11,7 +11,7 @@ slug: "my-project"              # REQUIRED: lowercase identifier (a-z, 0-9, hyph
 name: "My Project"              # REQUIRED: display name
 description: ""                 # REQUIRED: one-line project description
 type: "project"                 # Optional: project, platform, specification, etc.
-project_lead: "github-handle"   # Optional: GitHub handle of primary contact
+project_lead: "github-handle"   # Optional: GitHub handle or team (org/team-name)
 cncf_slack_channel: "#my-project" # Optional: CNCF Slack channel
 
 maturity_log:                   # REQUIRED: at least one entry
@@ -47,7 +47,9 @@ audits:                         # Optional (recommended for incubating+)
 security:                       # Optional
   policy:
     path: "SECURITY.md"
-  contact: "security@my-project.io"
+  contact:
+    email: "security@my-project.io"
+    # advisory_url: "https://github.com/my-org/my-project/security/advisories/new"
 
 governance:                     # Optional
   contributing:

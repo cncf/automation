@@ -17,7 +17,7 @@ This document defines the schema for CNCF `.project` repository metadata files.
 | `description` | string | Yes | One-line project description | Non-empty |
 | `type` | string | No | Project type | Free text (e.g., `"project"`, `"platform"`, `"specification"`) |
 | `package_managers` | map[string]string | No | Registry identifiers (e.g., npm, Docker Hub) | All values must be non-empty strings |
-| `project_lead` | string | No | Primary contact GitHub handle | Non-empty if present; `@` prefix is stripped |
+| `project_lead` | string | No | Primary contact GitHub handle or team | Non-empty if present; `@` prefix is stripped; can be a GitHub handle (e.g., `jdoe`) or a GitHub team (e.g., `org/team-name`) |
 | `cncf_slack_channel` | string | No | CNCF Slack channel name | Must start with `#` if present |
 | `maturity_log` | MaturityEntry[] | Yes | Maturity phase history | At least one entry; chronological order |
 | `repositories` | string[] | Yes | Repository URLs | At least one valid HTTP(S) URL |
@@ -55,7 +55,18 @@ This document defines the schema for CNCF `.project` repository metadata files.
 |-------|------|----------|-------------|-------------|
 | `policy` | PathRef | No | Security policy file | Path must be non-empty if present |
 | `threat_model` | PathRef | No | Threat model document | Path must be non-empty if present |
-| `contact` | string | No | Security contact email | Valid email address (RFC 5322) if present |
+| `contact` | SecurityContact | No | Security contact information | At least one of `email` or `advisory_url` required when present |
+
+### SecurityContact
+
+At least one of `email` or `advisory_url` must be provided when the `contact` section is present.
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `email` | string | No* | Security contact email | Valid email address (RFC 5322) if present |
+| `advisory_url` | string | No* | GitHub Security Advisory form URL | Must match `https://github.com/{org}/{repo}/security/advisories/new` |
+
+\* At least one of `email` or `advisory_url` is required when the section is present.
 
 ### GovernanceConfig
 
