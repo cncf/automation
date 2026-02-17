@@ -38,6 +38,12 @@ runs:
       run: |
         cd .cncf-automation-tool/utilities/dot-project
         go build -o ../../../.cncf-landscape-updater ./cmd/landscape-updater
+    
+    - name: Configure Git Identity
+      shell: bash
+      run: |
+        git config --global user.name "landscape-pr[bot]"
+        git config --global user.email "projects@cncf.io"
 
     - name: Run Updater
       shell: bash

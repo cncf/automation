@@ -82,6 +82,7 @@ func main() {
 		fmt.Printf("Body: Automated update for %s from cncf/automation\n", project.Name)
 		fmt.Printf("Branch: update-%s-%d\n", strings.ReplaceAll(strings.ToLower(project.Name), " ", "-"), time.Now().Unix())
 		fmt.Printf("Target Repo: %s\n", *landscapeRepo)
+		fmt.Println("Commit will be signed off for DCO compliance")
 		return
 	}
 
@@ -140,9 +141,9 @@ func createPullRequest(landscapePath, landscapeRepo string, project *projects.Pr
 		return fmt.Errorf("git add failed: %v", err)
 	}
 
-	// Commit
+	// Commit with sign-off for DCO compliance
 	msg := fmt.Sprintf("Update %s metadata", project.Name)
-	if err := runGit("commit", "-m", msg); err != nil {
+	if err := runGit("commit", "-s", "-m", msg); err != nil {
 		return fmt.Errorf("git commit failed: %v", err)
 	}
 
