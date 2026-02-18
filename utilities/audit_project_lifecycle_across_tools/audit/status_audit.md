@@ -12,7 +12,7 @@
 | Hexa | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
+| Oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | sandbox | archived | - | - | - | archived |
 | TrestleGRC | sandbox | sandbox | - | - | sandbox | - |
 | <QHTTPX> | forming | - | - | - | - | - |
@@ -32,7 +32,7 @@
 | KAI Scheduler | forming | - | - | - | - | - |
 | Kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | forming | - | - | - | - | - |
-| KubeElasti | forming | sandbox | - | - | sandbox | - |
+| KubeElasti | forming | sandbox | - | sandbox | sandbox | - |
 | NMstate | forming | - | - | - | - | - |
 | OpenEverest | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - | - | - | - |
