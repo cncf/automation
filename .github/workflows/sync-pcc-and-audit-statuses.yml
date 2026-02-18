@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -45,6 +43,15 @@ jobs:
         run: |
           python scripts/audit_landscape_status.py
         working-directory: ./utilities/audit_project_lifecycle_across_tools
+      - name: Clean up git credentials
+        run: |
+          # Remove URL rewrite that causes duplicate Authorization headers
+          # This is the most common cause of the "Duplicate header" error
+          git config --global --unset url."https://github.com/".insteadOf || true
+          git config --local --unset url."https://github.com/".insteadOf || true
+          # Ensure remote URL is clean (no embedded credentials)
+          git remote set-url origin https://github.com/${{ github.repository }}.git
+          # create-pull-request will configure its own authentication
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
