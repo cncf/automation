@@ -14,7 +14,7 @@
 | Hexa | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
+| Oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | sandbox | archived | - | - | - | archived |
 | TrestleGRC | sandbox | sandbox | - | - | sandbox | - |
 | <QHTTPX> | forming | - | - | - | - | - |
@@ -34,7 +34,7 @@
 | KAI Scheduler | forming | - | - | - | - | - |
 | Kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | forming | - | - | - | - | - |
-| KubeElasti | forming | sandbox | - | - | sandbox | - |
+| KubeElasti | forming | sandbox | - | sandbox | sandbox | - |
 | NMstate | forming | - | - | - | - | - |
 | OpenEverest | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - | - | - | - |
@@ -258,7 +258,7 @@
 | OpenTofu | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ORAS (OCI Registry as Storage) | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OVN-Kubernetes | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Oxia | sandbox | sandbox | sandbox | - | sandbox | - |
+| Oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Paralus | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | PARSEC | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Perses | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -321,7 +321,7 @@
 | KAI Scheduler | forming | - | - | - | - | - |
 | Kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | forming | - | - | - | - | - |
-| KubeElasti | forming | sandbox | - | - | sandbox | - |
+| KubeElasti | forming | sandbox | - | sandbox | sandbox | - |
 | NMstate | forming | - | - | - | - | - |
 | OpenEverest | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - | - | - | - |
