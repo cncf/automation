@@ -103,16 +103,13 @@ jobs:
   provenance:
     if: ${{ github.event_name != 'pull_request' }}
     needs: [build-cloudrunner-images]
-    strategy:
-      matrix:
-        image: ${{ needs.build-cloudrunner-images.outputs.image }}
     permissions:
       id-token: write  # For signing.
       actions: read    # For reading workflow info.
       packages: write  # For uploading attestations.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
-      image: ${{ matrix.image }}
+      image: ${{ needs.build-cloudrunner-images.outputs.image }}
       digest: ${{ needs.build-cloudrunner-images.outputs.digest }}
       registry-username: ${{ github.actor }}
       compile-generator: true
@@ -126,9 +123,6 @@ jobs:
     # other pre-submits.
     name: verify container provenance
     needs: [build-cloudrunner-images, provenance]
-    strategy:
-      matrix:
-        image: ${{ needs.build-cloudrunner-images.outputs.image }}
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
@@ -140,7 +134,7 @@ jobs:
       - env:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          IMAGE_NAME: ${{ matrix.image }}
+          IMAGE_NAME: ${{ needs.build-cloudrunner-images.outputs.image }}
           IMAGE_DIGEST: ${{ needs.build-cloudrunner-images.outputs.digest }}
         run: |
           cosign version
