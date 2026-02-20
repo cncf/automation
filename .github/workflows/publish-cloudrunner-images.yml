@@ -96,13 +96,7 @@ jobs:
 
       - name: Output image
         id: image
-        run: |
-          # NOTE: We need to use the image and digest in order to make sure
-          # that the image we attest has not been modified.
-          # NOTE: The digest output from docker/build-push-action is of the
-          # form "sha256:<digest>"
-          image_name="${REGISTRY}/${IMAGE_NAME}:${{ github.ref_name }}"
-          echo "::set-output name=image::$image_name"
+        run: echo "images=${REGISTRY}/${IMAGE_NAME}:${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
   
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io
