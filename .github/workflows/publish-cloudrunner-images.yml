@@ -28,7 +28,7 @@ env:
 jobs:
   build-cloudrunner-images:
     outputs:
-      images: ${{ steps.image.outputs.images }}
+      image: ${{ steps.image.outputs.image }}
       digest: ${{ steps.build-and-push.outputs.digest }}
     runs-on: ubuntu-latest
     permissions:
@@ -96,7 +96,7 @@ jobs:
 
       - name: Output image
         id: image
-        run: echo "images=${REGISTRY}/${IMAGE_NAME}:${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+        run: echo "image=${REGISTRY}/${IMAGE_NAME}:${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
   
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io
@@ -105,7 +105,7 @@ jobs:
     needs: [build-cloudrunner-images]
     strategy:
       matrix:
-        image: ${{ fromJSON(needs.build-cloudrunner-images.outputs.images) }}
+        image: ${{ needs.build-cloudrunner-images.outputs.image }}
     permissions:
       id-token: write  # For signing.
       actions: read    # For reading workflow info.
@@ -128,7 +128,7 @@ jobs:
     needs: [build-cloudrunner-images, provenance]
     strategy:
       matrix:
-        image: ${{ fromJSON(needs.build-cloudrunner-images.outputs.images) }}
+        image: ${{ needs.build-cloudrunner-images.outputs.image }}
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
