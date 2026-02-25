@@ -72,7 +72,6 @@ spec:
         name: listen-host-config
         readOnly: true
   podTemplate:
-    topologyZoneKey: topology.kubernetes.io/zone
     volumes:
       - name: listen-host-config
         configMap:
