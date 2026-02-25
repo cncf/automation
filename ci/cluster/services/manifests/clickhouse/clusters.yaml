@@ -30,10 +30,8 @@ spec:
         name: clickhouse-password
         key: password
     tls:
-      enabled: true
-      required: true
-      serverCertSecret:
-        name: clickhouse-cert
+      enabled: false
+      required: false
 ---
 apiVersion: clickhouse.com/v1alpha1
 kind: KeeperCluster
@@ -59,7 +57,5 @@ spec:
     topologyZoneKey: topology.kubernetes.io/zone
   settings:
     tls:
-      enabled: true
-      required: true
-      serverCertSecret:
-        name: keeper-cert
+      enabled: false
+      required: false
