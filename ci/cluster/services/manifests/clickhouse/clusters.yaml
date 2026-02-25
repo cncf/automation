@@ -15,8 +15,8 @@ spec:
         storage: 500Gi
   containerTemplate:
     image:
-      repository: clickhouse/clickhouse-server
-      tag: "25.12"
+      repository: docker.io/clickhouse/clickhouse-server
+      tag: "26.1.3"
     resources:
       requests:
         cpu: "2"
@@ -46,6 +46,9 @@ spec:
       requests:
         storage: 10Gi
   containerTemplate:
+    image:
+      repository: docker.io/clickhouse/clickhouse-keeper
+      tag: "26.1.3"
     resources:
       requests:
         cpu: "500m"
