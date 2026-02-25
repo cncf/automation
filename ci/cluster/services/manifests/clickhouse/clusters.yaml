@@ -42,7 +42,6 @@ metadata:
 spec:
   replicas: 3
   dataVolumeClaimSpec:
-    storageClassName: fast-ssd
     accessModes:
       - ReadWriteOnce
     resources:
