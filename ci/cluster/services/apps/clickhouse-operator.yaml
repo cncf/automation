@@ -11,9 +11,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: ghcr.io/clickhouse/clickhouse-operator-helm
+    repoURL: ghcr.io/clickhouse
+    chart: clickhouse-operator-helm
     targetRevision: 0.0.2
-    path: .
     helm:
       values: |
         watchNamespaces: ["clickhouse"]
