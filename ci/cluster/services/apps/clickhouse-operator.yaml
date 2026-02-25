@@ -12,6 +12,7 @@ spec:
   project: default
   source:
     repoURL: oci://ghcr.io/clickhouse/clickhouse-operator-helm
+    enableOCI: true
     targetRevision: 0.0.2
     path: .
     helm:
