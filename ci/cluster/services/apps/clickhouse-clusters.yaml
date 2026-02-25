@@ -1,11 +1,11 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: external-secrets
+  name: clickhouse-clusters
   namespace: argocd
   annotations:
     argocd.argoproj.io/manifest-generate-paths: .
-    argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-wave: "40"
     notifications.argoproj.io/subscribe.slack: internal-gha-argo
   labels:
     cluster: oke-cncf-automation
@@ -13,9 +13,9 @@ spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
-    namespace: external-secrets
+    namespace: codimd
   source:
-    path: ci/cluster/services/manifests/external-secrets
+    path: ci/cluster/services/manifests/clickhouse
     repoURL: https://github.com/cncf/automation
     targetRevision: HEAD
   syncPolicy:

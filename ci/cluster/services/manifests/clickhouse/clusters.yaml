@@ -1,0 +1,66 @@
+apiVersion: clickhouse.com/v1alpha1
+kind: ClickHouseCluster
+metadata:
+  name: sbom-cluster
+spec:
+  replicas: 3
+  shards: 2
+  keeperClusterRef:
+    name: sbom-keeper
+  dataVolumeClaimSpec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 500Gi
+  containerTemplate:
+    image:
+      repository: clickhouse/clickhouse-server
+      tag: "25.12"
+    resources:
+      requests:
+        cpu: "2"
+        memory: "8Gi"
+      limits:
+        cpu: "4"
+        memory: "16Gi"
+  settings:
+    defaultUserPassword:
+      secret:
+        name: clickhouse-password
+        key: password
+    tls:
+      enabled: true
+      required: true
+      serverCertSecret:
+        name: clickhouse-cert
+---
+apiVersion: clickhouse.com/v1alpha1
+kind: KeeperCluster
+metadata:
+  name: sbom-keeper
+spec:
+  replicas: 3
+  dataVolumeClaimSpec:
+    storageClassName: fast-ssd
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+  containerTemplate:
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
+      limits:
+        cpu: "1"
+        memory: "1Gi"
+  podTemplate:
+    topologyZoneKey: topology.kubernetes.io/zone
+  settings:
+    tls:
+      enabled: true
+      required: true
+      serverCertSecret:
+        name: keeper-cert

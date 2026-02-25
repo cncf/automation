@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: clickhouse-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "25"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oke-cncf-automation
+spec:
+  project: default
+  source:
+    repoURL: oci://ghcr.io/clickhouse/clickhouse-operator-helm
+    targetRevision: 0.0.2
+    path: .
+    helm:
+      values: |
+        watchNamespaces: ["clickhouse"]
+        certManager:
+          enable: true
+          install: false
+          issuerRef:
+            name: "letsencrypt-prod"
+            kind: "ClusterIssuer"
+        prometheus:
+          service_monitor: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: clickhouse
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
