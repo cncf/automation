@@ -25,7 +25,7 @@ spec:
         cpu: "4"
         memory: "16Gi"
     volumeMounts:
-      - mountPath: /etc/clickhouse-server/config.d/listen_host_config.xml
+      - mountPath: /etc/clickhouse-server/config.d
         subPath: listen_host_config.xml
         name: listen-host-config
         readOnly: true
@@ -67,7 +67,7 @@ spec:
         cpu: "1"
         memory: "1Gi"
     volumeMounts:
-      - mountPath: /etc/clickhouse-server/config.d/listen_host_config.xml
+      - mountPath: /etc/clickhouse-server/config.d
         subPath: listen_host_config.xml
         name: listen-host-config
         readOnly: true
