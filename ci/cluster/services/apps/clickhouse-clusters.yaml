@@ -13,7 +13,7 @@ spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
-    namespace: codimd
+    namespace: clickhouse
   source:
     path: ci/cluster/services/manifests/clickhouse
     repoURL: https://github.com/cncf/automation
