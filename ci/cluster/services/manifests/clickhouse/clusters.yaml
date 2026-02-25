@@ -24,6 +24,16 @@ spec:
       limits:
         cpu: "4"
         memory: "16Gi"
+      volumeMounts:
+      - mountPath: /etc/clickhouse-server/config.d/listen_host_config.xml
+        subPath: listen_host_config.xml
+        name: listen-host-config
+        readOnly: true
+  podTemplate:
+    volumes:
+      - name: listen-host-config
+        configMap:
+          name: listen-host-config
   settings:
     defaultUserPassword:
       secret:
@@ -56,9 +66,28 @@ spec:
       limits:
         cpu: "1"
         memory: "1Gi"
+      volumeMounts:
+      - mountPath: /etc/clickhouse-server/config.d/listen_host_config.xml
+        subPath: listen_host_config.xml
+        name: listen-host-config
+        readOnly: true
   podTemplate:
     topologyZoneKey: topology.kubernetes.io/zone
+    volumes:
+      - name: listen-host-config
+        configMap:
+          name: listen-host-config
   settings:
     tls:
       enabled: false
       required: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: listen-host-config
+data:
+  listen_host_config.xml: |
+    <clickhouse>
+        <listen_host>0.0.0.0</listen_host>
+    </clickhouse>
