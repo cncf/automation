@@ -24,7 +24,7 @@ spec:
       limits:
         cpu: "4"
         memory: "16Gi"
-      volumeMounts:
+    volumeMounts:
       - mountPath: /etc/clickhouse-server/config.d/listen_host_config.xml
         subPath: listen_host_config.xml
         name: listen-host-config
@@ -66,7 +66,7 @@ spec:
       limits:
         cpu: "1"
         memory: "1Gi"
-      volumeMounts:
+    volumeMounts:
       - mountPath: /etc/clickhouse-server/config.d/listen_host_config.xml
         subPath: listen_host_config.xml
         name: listen-host-config
