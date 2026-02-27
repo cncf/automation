@@ -134,7 +134,7 @@ additionalPrometheusRulesMap:
         rules:
           - alert: GHA Listener at High Capacity
             expr: sum(label_replace(gha_desired_runners, "runner", "$1", "pod", "(oracle-.+)-([a-z0-9]+)-listener$")) by (runner) / sum(label_replace(gha_max_runners, "runner", "$1", "pod", "(oracle-.+)-([a-z0-9]+)-listener$")) by (runner) * 100 >= 80
-            for: 5m
+            for: 10m
             labels:
               severity: warning
             annotations:
@@ -143,7 +143,7 @@ additionalPrometheusRulesMap:
 
           - alert: GHA Listener at Max Capacity
             expr: sum(label_replace(gha_desired_runners, "runner", "$1", "pod", "(oracle-.+)-([a-z0-9]+)-listener$")) by (runner) / sum(label_replace(gha_max_runners, "runner", "$1", "pod", "(oracle-.+)-([a-z0-9]+)-listener$")) by (runner) * 100 >= 99
-            for: 1m
+            for: 5m
             labels:
               severity: major
             annotations:
@@ -152,7 +152,7 @@ additionalPrometheusRulesMap:
 
           - alert: GHA Pending EphemeralRunners
             expr: sum(gha_controller_pending_ephemeral_runners) by (name) > 10
-            for: 1m
+            for: 10m
             labels:
               severity: warning
             annotations:
