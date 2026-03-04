@@ -1,9 +1,5 @@
 terraform {
-  backend "oci" {
-    bucket    = "tf-state-bucket"
-    namespace = "axtwf1hkrwcy"
-    key       = "oke-cncf-services-state/terraform.tfstate"
-  }
+  backend "oci" {}
 
   required_providers {
     oci = {
