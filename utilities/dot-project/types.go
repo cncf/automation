@@ -88,12 +88,14 @@ type LegalConfig struct {
 }
 
 // IdentityType represents a project's contributor identity agreements.
-// DCO can be used alone, or DCO + CLA together. CLA alone is not valid (DCO is the baseline).
+// DCO can be used alone, or DCO + CLA together. By default, CLA requires DCO.
+// Some projects have an exception to use CLA without DCO; set cla_only: true for those.
 type IdentityType struct {
-	HasDCO bool     `json:"has_dco" yaml:"has_dco"`                     // Whether the project uses DCO
-	HasCLA bool     `json:"has_cla" yaml:"has_cla"`                     // Whether the project uses CLA (requires DCO)
-	DCOURL *PathRef `json:"dco_url,omitempty" yaml:"dco_url,omitempty"` // Optional link to DCO document
-	CLAURL *PathRef `json:"cla_url,omitempty" yaml:"cla_url,omitempty"` // Optional link to CLA document
+	HasDCO  bool     `json:"has_dco" yaml:"has_dco"`                       // Whether the project uses DCO
+	HasCLA  bool     `json:"has_cla" yaml:"has_cla"`                       // Whether the project uses CLA (requires DCO unless cla_only is true)
+	CLAOnly bool     `json:"cla_only,omitempty" yaml:"cla_only,omitempty"` // Exception: allows CLA without DCO
+	DCOURL  *PathRef `json:"dco_url,omitempty" yaml:"dco_url,omitempty"`   // Optional link to DCO document
+	CLAURL  *PathRef `json:"cla_url,omitempty" yaml:"cla_url,omitempty"`   // Optional link to CLA document
 }
 
 type DocumentationConfig struct {

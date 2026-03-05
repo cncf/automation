@@ -78,8 +78,9 @@ legal:
     path: "LICENSE"{{ end }}
   # TODO: Set contributor identity agreements
   # identity_type:
-  #   has_dco: true   # DCO can be used alone
-  #   has_cla: false  # CLA requires DCO
+  #   has_dco: true    # DCO can be used alone
+  #   has_cla: false   # CLA requires DCO unless cla_only is true
+  #   cla_only: false  # Set to true if this project uses CLA without DCO
 {{ if .HasReadme }}
 documentation:
   readme:

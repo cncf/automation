@@ -150,12 +150,13 @@ func main() {
 			},
 			"IdentityType": {
 				Type:        "object",
-				Description: "Contributor identity agreements. DCO can be used alone or with CLA. CLA requires DCO.",
+				Description: "Contributor identity agreements. DCO can be used alone or with CLA. CLA requires DCO unless cla_only is true.",
 				Properties: map[string]JSONSchemaProperty{
-					"has_dco": {Type: "boolean", Description: "Whether the project uses DCO"},
-					"has_cla": {Type: "boolean", Description: "Whether the project uses CLA (requires DCO)"},
-					"dco_url": {Ref: "#/$defs/PathRef", Description: "Link to DCO document"},
-					"cla_url": {Ref: "#/$defs/PathRef", Description: "Link to CLA document"},
+					"has_dco":  {Type: "boolean", Description: "Whether the project uses DCO"},
+					"has_cla":  {Type: "boolean", Description: "Whether the project uses CLA (requires DCO unless cla_only is true)"},
+					"cla_only": {Type: "boolean", Description: "Exception: allows CLA without DCO for projects with special approval"},
+					"dco_url":  {Ref: "#/$defs/PathRef", Description: "Link to DCO document"},
+					"cla_url":  {Ref: "#/$defs/PathRef", Description: "Link to CLA document"},
 				},
 			},
 			"DocumentationConfig": {

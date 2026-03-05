@@ -449,8 +449,11 @@ func validateProjectStruct(project Project) []string {
 			errors = append(errors, "legal.license.path is required")
 		}
 		if project.Legal.IdentityType != nil {
-			if project.Legal.IdentityType.HasCLA && !project.Legal.IdentityType.HasDCO {
-				errors = append(errors, "legal.identity_type: has_cla requires has_dco (CLA cannot be used without DCO)")
+			if project.Legal.IdentityType.HasCLA && !project.Legal.IdentityType.HasDCO && !project.Legal.IdentityType.CLAOnly {
+				errors = append(errors, "legal.identity_type: has_cla requires has_dco (CLA cannot be used without DCO; set cla_only: true if this project has an exception)")
+			}
+			if project.Legal.IdentityType.CLAOnly && !project.Legal.IdentityType.HasCLA {
+				errors = append(errors, "legal.identity_type: cla_only requires has_cla to be true")
 			}
 			if project.Legal.IdentityType.DCOURL != nil && project.Legal.IdentityType.DCOURL.Path == "" {
 				errors = append(errors, "legal.identity_type.dco_url.path is required")
