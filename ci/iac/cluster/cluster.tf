@@ -1,7 +1,16 @@
+data "oci_containerengine_node_pool_option" "amd64" {
+  compartment_id = var.compartment_ocid
+  node_pool_option_id = "all"
+  node_pool_k8s_version = var.kubernetes_version
+  node_pool_os_arch = "X86_64"
+  node_pool_os_type = "OL8"
+}
+
 locals {
-  # it can be aquired from:
-  # oci ce node-pool-options get --node-pool-option-id all | jq '.data.sources.[] | select(."source-name" | match("Oracle-Linux-8.10-2025.*OKE-1.32.*"))'
-  oci_image_id = "ocid1.image.oc1.us-sanjose-1.aaaaaaaamq2dmjvezc4cnnk243hj7gqlvr47hgspofof4wxeuynzom7aijqq"
+  non_gpu_images = [
+    for source in data.oci_containerengine_node_pool_option.amd64.sources :
+    source if !strcontains(source.source_name, "GPU")
+  ]
 }
 
 resource "oci_containerengine_cluster" "service" {
@@ -46,7 +55,7 @@ resource "oci_containerengine_node_pool" "service_worker" {
   }
 
   node_source_details {
-    image_id    = local.oci_image_id
+    image_id    = local.non_gpu_images[0].image_id
     source_type = "image"
   }
 

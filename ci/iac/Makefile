@@ -46,7 +46,7 @@ cluster-apply: ## Create/Update Terraform resources.
 		apply $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \
 		"plan.out"
-	rm -f plan.out
+	rm -f ./cluster/plan.out
 
 cluster-destroy: ## Delete Terraform resources.
 	@:$(call check_defined, OKE_CLUSTER, cluster name)
@@ -61,4 +61,4 @@ cluster-output: ## Print Terraform output.
 
 .PHONY: clean
 clean: ## Clean up Terraform cache and local state.
-	rm -rf ./clusters/.terraform ./clusters/.terraform.lock.hcl ./clusters/plan.out
+	rm -rf ./cluster/.terraform ./cluster/.terraform.lock.hcl ./cluster/plan.out

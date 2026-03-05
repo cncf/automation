@@ -7,11 +7,21 @@ cluster_autoscaler_max = 10
 oke_node_shape         = "VM.Standard.E6.Flex"
 oke_node_memory        = 64
 oke_node_cpu           = 16
+deploy_kcp             = true
+ingress_private_ip_id  = "ocid1.privateip.oc1.us-sanjose-1.abzwuljr4i5var577r2aykc7eusqn3rpy5ciwqkvk67xpw7wmxhwdn3yw4cq"
+kcp_lb_private_ip_id   = "ocid1.privateip.oc1.us-sanjose-1.abzwuljrhuxff5dzmmwpovrwddlmh44m72b7cqgie2bvv3kkpbpq4aok2cpa"
+vcn_cidr               = "10.0.0.0/16"
+k8s_api_cidr           = "10.0.0.0/28"
+svc_cidr               = "10.0.20.0/24"
+node_cidr              = "10.0.10.0/23"
 
+# CIDR_BLOCK   : is overriden to node_cidr in networks.tf file
+# K8S_API_CIDR : is overriden to k8s_api_cidr in networks.tf file
+# INTERNET     : is overriden to "0.8.8.8/0" in networks.tf file
 svc_lb_egress_rules = [
   {
     description      = "kube-proxy access"
-    destination      = "10.0.10.0/23"
+    destination      = "NODE_CIDR"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
     stateless        = false
@@ -20,7 +30,7 @@ svc_lb_egress_rules = [
   },
   {
     description      = "NodePort service access"
-    destination      = "10.0.10.0/23"
+    destination      = "NODE_CIDR"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
     stateless        = false
@@ -33,7 +43,7 @@ svc_lb_ingress_rules = [
   {
     description = "Access port 443"
     protocol    = "6"
-    source      = "0.0.0.0/0"
+    source      = "INTERNET"
     source_type = "CIDR_BLOCK"
     stateless   = false
     tcp_max     = 443
@@ -42,7 +52,7 @@ svc_lb_ingress_rules = [
   {
     description = "Access port 80"
     protocol    = "6"
-    source      = "0.0.0.0/0"
+    source      = "INTERNET"
     source_type = "CIDR_BLOCK"
     stateless   = false
     tcp_max     = 80
@@ -51,7 +61,7 @@ svc_lb_ingress_rules = [
   {
     description = "Access port 8443"
     protocol    = "6"
-    source      = "0.0.0.0/0"
+    source      = "INTERNET"
     source_type = "CIDR_BLOCK"
     stateless   = false
     tcp_max     = 8443
@@ -62,7 +72,7 @@ svc_lb_ingress_rules = [
 k8s_api_endpoint_egress_rules = [
   {
     description      = "All traffic to worker nodes"
-    destination      = "10.0.10.0/23"
+    destination      = "NODE_CIDR"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
     stateless        = false
@@ -78,7 +88,7 @@ k8s_api_endpoint_egress_rules = [
   },
   {
     description      = "Path discovery"
-    destination      = "10.0.10.0/23"
+    destination      = "NODE_CIDR"
     destination_type = "CIDR_BLOCK"
     protocol         = "1"
     stateless        = false
@@ -91,7 +101,7 @@ k8s_api_endpoint_ingress_rules = [
   {
     description = "External access to Kubernetes API endpoint"
     protocol    = "6"
-    source      = "0.0.0.0/0"
+    source      = "INTERNET"
     source_type = "CIDR_BLOCK"
     stateless   = false
     tcp_max     = 6443
@@ -100,7 +110,7 @@ k8s_api_endpoint_ingress_rules = [
   {
     description = "Kubernetes worker to Kubernetes API endpoint communication"
     protocol    = "6"
-    source      = "10.0.10.0/23"
+    source      = "NODE_CIDR"
     source_type = "CIDR_BLOCK"
     stateless   = false
     tcp_max     = 6443
@@ -109,7 +119,7 @@ k8s_api_endpoint_ingress_rules = [
   {
     description = "Kubernetes worker to control plane communication"
     protocol    = "6"
-    source      = "10.0.10.0/23"
+    source      = "NODE_CIDR"
     source_type = "CIDR_BLOCK"
     stateless   = false
     tcp_max     = 12250
@@ -118,7 +128,7 @@ k8s_api_endpoint_ingress_rules = [
   {
     description = "Path discovery"
     protocol    = "1"
-    source      = "10.0.10.0/23"
+    source      = "NODE_CIDR"
     source_type = "CIDR_BLOCK"
     stateless   = false
     icmp_code   = 4
@@ -129,7 +139,7 @@ k8s_api_endpoint_ingress_rules = [
 node_egress_rules = [
   {
     description      = "Access to Kubernetes API Endpoint"
-    destination      = "10.0.0.0/28"
+    destination      = "K8S_API_CIDR"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
     stateless        = false
@@ -148,7 +158,7 @@ node_egress_rules = [
   },
   {
     description      = "Allow pods on one worker node to communicate with pods on other worker nodes"
-    destination      = "10.0.10.0/23"
+    destination      = "NODE_CIDR"
     destination_type = "CIDR_BLOCK"
     protocol         = "all"
     stateless        = false
@@ -162,7 +172,7 @@ node_egress_rules = [
   },
   {
     description      = "ICMP Access from Kubernetes Control Plane"
-    destination      = "0.0.0.0/0"
+    destination      = "INTERNET"
     destination_type = "CIDR_BLOCK"
     protocol         = "1"
     stateless        = false
@@ -171,7 +181,7 @@ node_egress_rules = [
   },
   {
     description      = "Kubernetes worker to control plane communication"
-    destination      = "10.0.0.0/28"
+    destination      = "K8S_API_CIDR"
     destination_type = "CIDR_BLOCK"
     protocol         = "6"
     stateless        = false
@@ -180,7 +190,7 @@ node_egress_rules = [
   },
   {
     description      = "Path discovery"
-    destination      = "10.0.0.0/28"
+    destination      = "K8S_API_CIDR"
     destination_type = "CIDR_BLOCK"
     protocol         = "1"
     stateless        = false
@@ -189,7 +199,7 @@ node_egress_rules = [
   },
   {
     description      = "Worker Nodes access to Internet"
-    destination      = "0.0.0.0/0"
+    destination      = "INTERNET"
     destination_type = "CIDR_BLOCK"
     protocol         = "all"
     stateless        = false
@@ -200,14 +210,14 @@ node_ingress_rules = [
   {
     description = "Allow pods on one worker node to communicate with pods on other worker nodes"
     protocol    = "all"
-    source      = "10.0.10.0/23"
+    source      = "NODE_CIDR"
     source_type = "CIDR_BLOCK"
     stateless   = false
   },
   {
     description = "Inbound SSH traffic to worker nodes"
     protocol    = "6"
-    source      = "0.0.0.0/0"
+    source      = "INTERNET"
     source_type = "CIDR_BLOCK"
     stateless   = false
     tcp_max     = 22
@@ -216,7 +226,7 @@ node_ingress_rules = [
   {
     description = "Path discovery"
     protocol    = "1"
-    source      = "10.0.0.0/28"
+    source      = "K8S_API_CIDR"
     source_type = "CIDR_BLOCK"
     stateless   = false
     icmp_code   = 4
@@ -225,7 +235,7 @@ node_ingress_rules = [
   {
     description = "TCP access from Kubernetes Control Plane"
     protocol    = "6"
-    source      = "10.0.0.0/28"
+    source      = "K8S_API_CIDR"
     source_type = "CIDR_BLOCK"
     stateless   = false
   },

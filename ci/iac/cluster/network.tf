@@ -1,5 +1,5 @@
 resource "oci_core_vcn" "service" {
-  cidr_block     = "10.0.0.0/16"
+  cidr_block     = var.vcn_cidr
   compartment_id = var.compartment_ocid
   display_name   = "${var.cluster_name}-vcn"
 }
@@ -62,13 +62,59 @@ resource "oci_core_route_table" "private" {
   }
 }
 
+locals {
+  INTERNET = "0.0.0.0/0"
+
+  svc_lb_egress_rules = [
+    for r in var.svc_lb_egress_rules : merge(
+      r,
+      r.destination == "NODE_CIDR"     ? { destination = var.node_cidr } : {}
+    )
+  ]
+  svc_lb_ingress_rules = [
+    for r in var.svc_lb_ingress_rules : merge(
+      r,
+      r.source == "INTERNET"      ? { source = local.INTERNET } : {}
+    )
+  ]
+  k8s_api_endpoint_egress_rules = [
+    for r in var.k8s_api_endpoint_egress_rules : merge(
+      r,
+      r.destination == "NODE_CIDR"     ? { destination = var.node_cidr } : {}
+    )
+  ]
+  k8s_api_endpoint_ingress_rules = [
+    for r in var.k8s_api_endpoint_ingress_rules : merge(
+      r,
+      r.source == "NODE_CIDR"     ? { source = var.node_cidr } : {},
+      r.source == "INTERNET"      ? { source = local.INTERNET } : {},
+    )
+  ]
+  node_egress_rules = [
+    for r in var.node_egress_rules : merge(
+      r,
+      r.destination == "NODE_CIDR"     ? { destination = var.node_cidr } : {},
+      r.destination == "INTERNET"      ? { destination = local.INTERNET } : {},
+      r.destination == "K8S_API_CIDR"  ? { destination = var.k8s_api_cidr } : {}
+    )
+  ]
+  node_ingress_rules = [
+    for r in var.node_ingress_rules : merge(
+      r,
+      r.source == "NODE_CIDR"     ? { source = var.node_cidr } : {},
+      r.source == "INTERNET"      ? { source = local.INTERNET } : {},
+      r.source == "K8S_API_CIDR"  ? { source = var.k8s_api_cidr } : {}
+    )
+  ]
+}
+
 resource "oci_core_security_list" "k8s_api_endpoint" {
   compartment_id = var.compartment_ocid
   vcn_id         = oci_core_vcn.service.id
   display_name   = "${var.cluster_name}-k8s-api-endpoint-seclist"
 
   dynamic "egress_security_rules" {
-    for_each = var.k8s_api_endpoint_egress_rules
+    for_each = local.k8s_api_endpoint_egress_rules
     content {
       description      = egress_security_rules.value.description
       destination      = egress_security_rules.value.destination
@@ -95,7 +141,7 @@ resource "oci_core_security_list" "k8s_api_endpoint" {
   }
 
   dynamic "ingress_security_rules" {
-    for_each = var.k8s_api_endpoint_ingress_rules
+    for_each = local.k8s_api_endpoint_ingress_rules
     content {
       description = ingress_security_rules.value.description
       source      = ingress_security_rules.value.source
@@ -128,7 +174,7 @@ resource "oci_core_security_list" "svc_lb" {
   display_name   = "${var.cluster_name}-svclb-seclist"
 
   dynamic "egress_security_rules" {
-    for_each = var.svc_lb_egress_rules
+    for_each = local.svc_lb_egress_rules
     content {
       description      = egress_security_rules.value.description
       destination      = egress_security_rules.value.destination
@@ -155,7 +201,7 @@ resource "oci_core_security_list" "svc_lb" {
   }
 
   dynamic "ingress_security_rules" {
-    for_each = var.svc_lb_ingress_rules
+    for_each = local.svc_lb_ingress_rules
     content {
       description = ingress_security_rules.value.description
       source      = ingress_security_rules.value.source
@@ -188,7 +234,7 @@ resource "oci_core_security_list" "node" {
   display_name   = "${var.cluster_name}-node-seclist"
 
   dynamic "egress_security_rules" {
-    for_each = var.node_egress_rules
+    for_each = local.node_egress_rules
     content {
       description      = egress_security_rules.value.description
       destination      = egress_security_rules.value.destination
@@ -215,7 +261,7 @@ resource "oci_core_security_list" "node" {
   }
 
   dynamic "ingress_security_rules" {
-    for_each = var.node_ingress_rules
+    for_each = local.node_ingress_rules
     content {
       description = ingress_security_rules.value.description
       source      = ingress_security_rules.value.source
@@ -244,7 +290,7 @@ resource "oci_core_security_list" "node" {
 
 resource "oci_core_subnet" "k8s_api_endpoint" {
   availability_domain = null
-  cidr_block          = "10.0.0.0/28"
+  cidr_block          = var.k8s_api_cidr
   compartment_id      = var.compartment_ocid
   vcn_id              = oci_core_vcn.service.id
 
@@ -255,7 +301,7 @@ resource "oci_core_subnet" "k8s_api_endpoint" {
 
 resource "oci_core_subnet" "svc_lb" {
   availability_domain = null
-  cidr_block          = "10.0.20.0/24"
+  cidr_block          = var.svc_cidr
   compartment_id      = var.compartment_ocid
   vcn_id              = oci_core_vcn.service.id
 
@@ -266,7 +312,7 @@ resource "oci_core_subnet" "svc_lb" {
 
 resource "oci_core_subnet" "node" {
   availability_domain = null
-  cidr_block          = "10.0.10.0/23"
+  cidr_block          = var.node_cidr
   compartment_id      = var.compartment_ocid
   vcn_id              = oci_core_vcn.service.id
 
@@ -281,12 +327,13 @@ resource "oci_core_public_ip" "ingress_ip" {
   compartment_id = var.compartment_ocid
   lifetime       = "RESERVED"
   display_name   = "${var.cluster_name}-ingress-ip"
-  private_ip_id  = "ocid1.privateip.oc1.us-sanjose-1.abzwuljr4i5var577r2aykc7eusqn3rpy5ciwqkvk67xpw7wmxhwdn3yw4cq"
+  private_ip_id  = var.ingress_private_ip_id
 }
 
 resource "oci_core_public_ip" "kcp_lb_ip" {
+  count          = var.deploy_kcp ? 1 : 0
   compartment_id = var.compartment_ocid
   lifetime       = "RESERVED"
   display_name   = "${var.cluster_name}-kcp-lp-ip"
-  private_ip_id  = "ocid1.privateip.oc1.us-sanjose-1.abzwuljrhuxff5dzmmwpovrwddlmh44m72b7cqgie2bvv3kkpbpq4aok2cpa"
+  private_ip_id  = var.kcp_lb_private_ip_id
 }

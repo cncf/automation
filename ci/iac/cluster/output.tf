@@ -3,6 +3,7 @@ output "cluster" {
     kubeconfig = data.oci_containerengine_cluster_kube_config.service.content
   }
   sensitive = true
+  description = "Cluster Kubeconfig"
 }
 
 output "ingress_ip" {
@@ -11,6 +12,6 @@ output "ingress_ip" {
 }
 
 output "kcp_lb_ip" {
-  value       = oci_core_public_ip.kcp_lb_ip.ip_address
+  value       = var.deploy_kcp ? oci_core_public_ip.kcp_lb_ip[0].ip_address : null
   description = "Static IP address of the KCP Front Proxy Service"
 }
