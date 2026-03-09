@@ -1,0 +1,38 @@
+name: Test KubeVirt VM Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    strategy:
+      matrix:
+        #shape: [2cpu-8gb, 4cpu-16gb, 8cpu-32gb, 16cpu-64gb, 24cpu-384gb]
+        shape: [2cpu-8gb]
+        arch: ["x86"]
+    runs-on: kubevirt-${{ matrix.shape }}-${{ matrix.arch }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Run uname to verify architecture
+        run: |
+          uname -a
+          lsb_release -a
+          id
+          cat /etc/group
+          cat /proc/cpuinfo
+
+      - name: Run a basic workload
+        run: |
+          echo "Testing Runner"
+          echo "CPU Info:"
+          lscpu
+          docker run hello-world
+
+      - name: Check local disk 
+        run: |
+         df -h /
+
+      - name: Run kind cluster
+        run: ${{ github.workspace }}/.github/scripts/test_with_kind_cluster.sh
