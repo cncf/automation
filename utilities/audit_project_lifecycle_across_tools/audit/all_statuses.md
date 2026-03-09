@@ -4,15 +4,9 @@
 
 | Project | PCC | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://github.com/cncf/artwork/blob/main/README.md) |
 |---|---|---|---|---|---|---|
-| Open Policy Agent | graduated | graduated | graduated | graduated | - | graduated |
-| metal3-io | incubating | incubating | incubating | incubating | - | incubating |
-| cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | CoHDI | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
-| Copa | sandbox | sandbox | sandbox | sandbox | - | - |
-| Hexa | sandbox | sandbox | sandbox | sandbox | - | sandbox |
-| krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
+| Copa | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | sandbox | archived | - | - | - | archived |
@@ -31,10 +25,11 @@
 | Dexfile | forming | - | - | - | - | - |
 | Gthulhu | forming | - | - | - | - | - |
 | Higress | forming | - | - | - | - | - |
-| KAI Scheduler | forming | - | - | - | - | - |
+| KAI Scheduler | forming | - | - | sandbox | sandbox | - |
 | Kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | forming | - | - | - | - | - |
 | KubeElasti | forming | sandbox | - | sandbox | sandbox | - |
+| llm-d | forming | - | - | - | - | - |
 | NMstate | forming | - | - | - | - | - |
 | OpenEverest | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - | - | - | - |
@@ -101,7 +96,7 @@
 | KubeEdge | graduated | graduated | graduated | graduated | graduated | graduated |
 | Kubernetes | graduated | graduated | graduated | graduated | graduated | graduated |
 | Linkerd | graduated | graduated | graduated | graduated | graduated | graduated |
-| Open Policy Agent | graduated | graduated | graduated | graduated | - | graduated |
+| Open Policy Agent | graduated | graduated | graduated | graduated | graduated | graduated |
 | Prometheus | graduated | graduated | graduated | graduated | graduated | graduated |
 | Rook | graduated | graduated | graduated | graduated | graduated | graduated |
 | SPIFFE | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -137,7 +132,7 @@
 | Lima | incubating | incubating | incubating | incubating | incubating | incubating |
 | LitmusChaos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Longhorn | incubating | incubating | incubating | incubating | incubating | incubating |
-| metal3-io | incubating | incubating | incubating | incubating | - | incubating |
+| metal3-io | incubating | incubating | incubating | incubating | incubating | incubating |
 | NATS | incubating | incubating | incubating | incubating | incubating | incubating |
 | Notary | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenCost | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -171,7 +166,7 @@
 | Carina | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Cartography | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Carvel | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| cdk8s | sandbox | sandbox | sandbox | sandbox | - | sandbox |
+| cdk8s | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ChaosBlade | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | CloudNativePG | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Clusternet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -179,10 +174,10 @@
 | CoHDI | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Confidential Containers | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Connect RPC | sandbox | sandbox | sandbox | sandbox | - | sandbox |
+| Connect RPC | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | container2wasm | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ContainerSSH | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Copa | sandbox | sandbox | sandbox | sandbox | - | - |
+| Copa | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Cozystack | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Dalec | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Devfile | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -195,7 +190,7 @@
 | External Secrets Operator | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | HAMi | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Headlamp | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Hexa | sandbox | sandbox | sandbox | sandbox | - | sandbox |
+| Hexa | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | HolmesGPT | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | HwameiStor | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Hyperlight | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -220,7 +215,7 @@
 | Konveyor | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Koordinator | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | kpt | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| krkn | sandbox | sandbox | sandbox | sandbox | - | sandbox |
+| krkn | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kuadrant | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kuasar | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | kube-burner | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -318,10 +313,11 @@
 | Dexfile | forming | - | - | - | - | - |
 | Gthulhu | forming | - | - | - | - | - |
 | Higress | forming | - | - | - | - | - |
-| KAI Scheduler | forming | - | - | - | - | - |
+| KAI Scheduler | forming | - | - | sandbox | sandbox | - |
 | Kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | forming | - | - | - | - | - |
 | KubeElasti | forming | sandbox | - | sandbox | sandbox | - |
+| llm-d | forming | - | - | - | - | - |
 | NMstate | forming | - | - | - | - | - |
 | OpenEverest | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - | - | - | - |
