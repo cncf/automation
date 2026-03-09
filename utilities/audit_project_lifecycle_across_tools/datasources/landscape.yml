@@ -758,6 +758,7 @@ landscape:
               Alibaba Cloud Container Registry (ACR) is a cloud-native artifacts management platform that helps your team build, manage, and ship containerized applications,
 
 
+
                also provides vulnerability analysis, global synchronization, content trust, and more functionalities out of the box.
             homepage_url: https://www.alibabacloud.com/zh/product/container-registry
             logo: alibaba-cloud-container-registry.svg
@@ -3975,6 +3976,25 @@ landscape:
               slack_url: https://cloud-native.slack.com/messages/clusterpedia
               clomonitor_name: clusterpedia
           - item:
+            name: Cozystack
+            description: >-
+              Cozystack is a free PaaS platform and framework for building private clouds and providing users/customers with managed Kubernetes,  KubeVirt-based VMs, databases as a service, NATS, message brokers, etc. with GPU support in VMs and Kubernetes clusters.
+            homepage_url: https://cozystack.io
+            repo_url: https://github.com/cozystack/cozystack
+            logo: cozystack.svg
+            project: sandbox
+            second_path:
+              - "CNAI / General Orchestration"
+            extra:
+              lfx_slug: cozystack
+              accepted: '2025-03-04'
+              dev_stats_url: https://cozystack.devstats.cncf.io/
+              summary_business_use_case: >-
+                With Cozystack managed service providers, hosting providers, data centers could offer their customers  different managed services like Kubernetes, VMs, databases to compete with hyperscalers like AWS and GCP. Banks, fintechs and other organizations use Cozystack for building clouds on bare metal to achieve digital sovereignty  and take back control on their data. AI oriented companies could use it for running AI workloads in K8s clusters and VMs as well.
+              summary_personas: Cloud Architects, Platform Engineers, DevOps Engineers, SRE Engineers, Kubernetes Architects, System Administrators, Developers.
+              summary_tags: bare metal, platform, cloud, private cloud, managed services, managed Kubernetes, KubeVirt
+              summary_use_case: Provides users with managed services and ready-to-use dev environments.
+          - item:
             name: Crossplane
             homepage_url: https://crossplane.io/
             project: graduated
@@ -4541,6 +4561,13 @@ landscape:
             twitter: https://twitter.com/StackStorm
             crunchbase: https://www.crunchbase.com/organization/stackstorm
           - item:
+            name: SuperPlane
+            description: Open source DevOps control plane for event-driven workflows.
+            homepage_url: https://superplane.com
+            repo_url: https://github.com/superplanehq/superplane
+            logo: superplane.svg
+            twitter: https://x.com/superplanehq
+          - item:
             name: Upbound (member)
             homepage_url: https://upbound.io
             logo: upbound-member.svg
@@ -4808,7 +4835,7 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/zopsmart
           - item:
             name: gRPC
-            homepage_url: https://grpc.io/
+            homepage_url: https://grpc.io
             project: incubating
             repo_url: https://github.com/grpc/grpc
             logo: grpc.svg
@@ -4830,6 +4857,7 @@ landscape:
                   type: security
                   url: https://github.com/grpc/grpc/blob/master/doc/security_audit.md
                   vendor: Cure53
+            description: A high performance, open source universal RPC framework.
           - item:
             name: Connect RPC
             description: >-
@@ -5143,6 +5171,11 @@ landscape:
             logo: apisix.svg
             twitter: https://twitter.com/ApacheAPISIX
             crunchbase: https://www.crunchbase.com/organization/apache
+          - item:
+            name: AVAP
+            homepage_url: https://avapsphere.com
+            logo: avap.svg
+            crunchbase: https://www.crunchbase.com/organization/101obex
           - item:
             name: Azure API Management
             description: >-
@@ -11419,6 +11452,14 @@ landscape:
             twitter: https://twitter.com/quickwit_inc
             crunchbase: https://www.crunchbase.com/organization/quickwit-inc
           - item:
+            name: Radar
+            description: >-
+              Open-source Kubernetes visibility tool with topology visualization, event timeline, Helm management, and built-in MCP server for AI tools.
+            homepage_url: https://github.com/skyhook-io/radar
+            repo_url: https://github.com/skyhook-io/radar
+            logo: radar.svg
+            crunchbase: https://www.crunchbase.com/organization/skyhook-io
+          - item:
             name: Replex
             description: >-
               The central source of truth for all IT infrastructure insights. Providing one central platform that uniquely combines technical and financial metrics to manage and optimize modern containerized IT infrastructure stacks successfully.
@@ -12021,6 +12062,13 @@ landscape:
             homepage_url: https://cocktail.io.kr/
             logo: cocktail.io.svg
             crunchbase: https://www.crunchbase.com/organization/acornsoft
+          - item:
+            name: Confluentis Consulting (KCSP)
+            description: >-
+              Confluentis Consulting is a technology engineering and DevOps focused consulting firm helping enterprises build scalable, cost-efficient, and resilient digital platforms. We specialize in Cloud FinOps, multi-cloud consulting, and platform engineering, enabling organizations to gain deep cost visibility, optimize Kubernetes and cloud workloads, and align engineering decisions with financial outcomes.
+            homepage_url: https://www.confluentis.co.in/
+            logo: confluentis.svg
+            crunchbase: https://www.crunchbase.com/organization/confluentis-consulting
           - item:
             name: Conoa (KCSP)
             description: >-
@@ -12695,7 +12743,7 @@ landscape:
             name: QUANTUM C&S (KCSP)
             description: >-
               Quantum C&S delivers Kubernetes consulting, deployment, and operations services, with a strong focus on AI infrastructure and mission-critical enterprise environments.
-            homepage_url: https://www.quantumcns.ai/en/quantum-kubernetes-service/
+            homepage_url: https://quantumcns.ai/en/quantumcns-services-for-kubernetes/
             logo: quantumcns.svg
             crunchbase: https://www.crunchbase.com/organization/quantum-c-s
           - item:
@@ -13674,12 +13722,6 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/intuit
             joined: '2018-02-01'
           - item:
-            name: Splunk (member)
-            homepage_url: https://www.splunk.com
-            logo: splunk.svg
-            crunchbase: https://www.crunchbase.com/organization/splunk
-            joined: '2017-10-01'
-          - item:
             name: T-Mobile (member)
             homepage_url: https://t-mobile.okta.com/login/login.htm
             logo: t-mobile.svg
@@ -13900,6 +13942,12 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/amnic
             joined: '2024-06-01'
           - item:
+            name: Amoniac OÜ (member)
+            homepage_url: https://amoniac.eu/
+            logo: amoniac.svg
+            crunchbase: https://www.crunchbase.com/organization/amoniac-ou
+            joined: '2026-03-01'             
+          - item:
             name: Ampere Computing (member)
             homepage_url: https://amperecomputing.com/
             logo: ampere-computing-member.svg
@@ -13984,6 +14032,12 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/cyber-armor
             joined: '2019-12-01'
           - item:
+            name: Arpio (member)
+            homepage_url: https://arpio.io
+            logo: arpio.svg
+            crunchbase: https://www.crunchbase.com/organization/arpio
+            joined: '2026-03-01'
+          - item:
             name: Aruba SpA (member)
             homepage_url: https://www.arubacloud.com/
             logo: aruba.svg
@@ -14044,6 +14098,12 @@ landscape:
             logo: autovia.svg
             crunchbase: https://www.crunchbase.com/organization/autovia
             joined: '2025-03-01'
+          - item:
+            name: AVAP (member)
+            homepage_url: https://avapsphere.com
+            logo: avap.svg
+            crunchbase: https://www.crunchbase.com/organization/101obex
+            joined: '2026-03-01'
           - item:
             name: Aviatrix (member)
             homepage_url: https://aviatrix.com/
@@ -14790,6 +14850,13 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/dr-droid
             joined: '2024-09-01'
           - item:
+            name: Docusign (member)
+            homepage_url: https://www.docusign.com
+            logo: docusign.svg
+            enduser: true
+            crunchbase: https://www.crunchbase.com/organization/docusign
+            joined: '2026-02-01'
+          - item:
             name: DoiT (member)
             homepage_url: https://www.doit.com
             logo: doit.svg
@@ -14951,12 +15018,6 @@ landscape:
             logo: epsio.svg
             crunchbase: https://www.crunchbase.com/organization/epsio
             joined: '2024-09-01'
-          - item:
-            name: Evonem (member)
-            homepage_url: https://evonem.com/
-            logo: evonem.svg
-            crunchbase: https://www.crunchbase.com/organization/evonem
-            joined: '2023-04-01'
           - item:
             name: Excellion Sdn Bhd (member)
             homepage_url: https://excellion.my
@@ -15416,12 +15477,6 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/kedify
             joined: '2025-01-01'
           - item:
-            name: Keep Alerting (member)
-            homepage_url: https://www.keephq.dev
-            logo: keep-alerting.svg
-            crunchbase: https://www.crunchbase.com/organization/keep-2303
-            joined: '2025-01-01'
-          - item:
             name: Kestrel AI (member)
             homepage_url: https://usekestrel.ai
             logo: kestrel.svg
@@ -15658,12 +15713,6 @@ landscape:
             enduser: true
             crunchbase: https://www.crunchbase.com/organization/mathworks
             joined: '2019-04-01'
-          - item:
-            name: MavenSolutions (member)
-            homepage_url: https://www.mavensolutions.tech
-            logo: mavensolutions.svg
-            crunchbase: https://www.crunchbase.com/organization/maven-solutions-f7b1
-            joined: '2024-11-01'
           - item:
             name: McKinsey & Company (member)
             homepage_url: https://www.mckinsey.com/
@@ -16260,6 +16309,13 @@ landscape:
             logo: quantumcns.svg
             crunchbase: https://www.crunchbase.com/organization/quantum-c-s
             joined: '2024-04-01'
+          - item:
+            name: Qube Research & Technologies (member)
+            homepage_url: https://www.qube-rt.com
+            logo: qrt.svg
+            enduser: true
+            crunchbase: https://www.crunchbase.com/organization/qube-research-technologies
+            joined: '2026-03-01'             
           - item:
             name: QueryDesk (member)
             homepage_url: https://querydesk.com
@@ -17887,7 +17943,7 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/ukg
             joined: '2019-11-01'
           - item:
-            name: Volvo (supporter)
+            name: Volvo (contributor)
             homepage_url: https://www.volvocars.com/us
             logo: volvo.svg
             crunchbase: https://www.crunchbase.com/organization/volvo-car-corporation
@@ -17898,12 +17954,6 @@ landscape:
             logo: wehkamp.svg
             crunchbase: https://www.crunchbase.com/organization/wehkamp
             joined: '2024-04-01'
-          - item:
-            name: William Hill (supporter)
-            homepage_url: https://corporate.888.com/
-            logo: william-hill.svg
-            crunchbase: https://www.crunchbase.com/organization/william-hill
-            joined: '2024-03-01'
           - item:
             name: Yahoo (supporter)
             homepage_url: https://www.yahoo.com/
