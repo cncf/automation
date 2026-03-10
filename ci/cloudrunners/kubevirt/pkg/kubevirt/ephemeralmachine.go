@@ -1,17 +1,17 @@
 package kubevirt
 
 import (
-"context"
-"fmt"
-"time"
+	"context"
+	"fmt"
+	"time"
 
-"k8s.io/apimachinery/pkg/api/errors"
-metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-"k8s.io/apimachinery/pkg/runtime/schema"
-"k8s.io/client-go/dynamic"
-"k8s.io/client-go/kubernetes"
-"k8s.io/klog/v2"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/klog/v2"
 )
 
 var vmGVR = schema.GroupVersionResource{
@@ -72,7 +72,11 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 		if err != nil {
 			if errors.IsNotFound(err) {
 				log.Info("VMI not yet created by controller, waiting...", "name", m.name)
-				time.Sleep(5 * time.Second)
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				case <-time.After(5 * time.Second):
+				}
 				continue
 			}
 			return fmt.Errorf("getting VMI status: %w", err)
@@ -85,24 +89,50 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 		case "Failed":
 			return fmt.Errorf("VMI %q entered Failed phase", m.name)
 		case "Running":
-			pods, err := m.k8s.CoreV1().Pods(m.namespace).List(ctx, metav1.ListOptions{
-LabelSelector: fmt.Sprintf("kubevirt.io/domain=%s", m.name),
-})
+			ip, err := m.waitForVMIIP(ctx)
 			if err != nil {
-				return fmt.Errorf("listing virt-launcher pods for VMI %q: %w", m.name, err)
+				return err
 			}
-			if len(pods.Items) == 0 {
-				return fmt.Errorf("no virt-launcher pod found for VMI %q", m.name)
-			}
-			m.podIP = pods.Items[0].Status.PodIP
-			if m.podIP == "" {
-				return fmt.Errorf("virt-launcher pod for VMI %q has no IP yet", m.name)
-			}
-			log.Info("VMI is running", "name", m.name, "podIP", m.podIP)
+			m.podIP = ip
+			log.Info("VMI is running", "name", m.name, "ip", m.podIP)
 			return nil
 		}
 
-		time.Sleep(5 * time.Second)
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(5 * time.Second):
+		}
+	}
+}
+
+// waitForVMIIP polls the VMI status until an IP address is reported.
+func (m *EphemeralMachine) waitForVMIIP(ctx context.Context) (string, error) {
+	log := klog.FromContext(ctx)
+
+	for {
+		result, err := m.dynamic.Resource(vmiGVR).Namespace(m.namespace).Get(ctx, m.name, metav1.GetOptions{})
+		if err != nil {
+			return "", fmt.Errorf("getting VMI %q for IP: %w", m.name, err)
+		}
+
+		interfaces, _, _ := unstructured.NestedSlice(result.Object, "status", "interfaces")
+		for _, iface := range interfaces {
+			ifaceMap, ok := iface.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			if ip, ok := ifaceMap["ipAddress"].(string); ok && ip != "" {
+				return ip, nil
+			}
+		}
+
+		log.Info("VMI has no IP yet, retrying...", "name", m.name)
+		select {
+		case <-ctx.Done():
+			return "", ctx.Err()
+		case <-time.After(3 * time.Second):
+		}
 	}
 }
 

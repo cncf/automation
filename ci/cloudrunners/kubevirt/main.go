@@ -1,22 +1,24 @@
 package main
 
 import (
-"context"
-"fmt"
-"log"
-"os"
-"strings"
-"time"
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
 
-kubevirtpkg "github.com/cncf/automation/cloudrunners/kubevirt/pkg/kubevirt"
-"github.com/cncf/automation/cloudrunners/pkg/remote"
-"github.com/spf13/cobra"
-"golang.org/x/crypto/ssh"
-"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-"k8s.io/client-go/dynamic"
-"k8s.io/client-go/kubernetes"
-"k8s.io/client-go/rest"
-"k8s.io/client-go/tools/clientcmd"
+	kubevirtpkg "github.com/cncf/automation/cloudrunners/kubevirt/pkg/kubevirt"
+	"github.com/cncf/automation/cloudrunners/pkg/remote"
+	"github.com/spf13/cobra"
+	"golang.org/x/crypto/ssh"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 var Cmd = &cobra.Command{
@@ -51,7 +53,8 @@ func main() {
 }
 
 func run(cmd *cobra.Command, argv []string) error {
-	ctx := context.Background()
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	// Build Kubernetes clients from kubeconfig or in-cluster config.
 	restConfig, err := buildRestConfig(args.kubeconfig)
@@ -270,67 +273,67 @@ func init() {
 	flags := Cmd.Flags()
 
 	flags.BoolVar(
-&args.debug,
+		&args.debug,
 		"debug",
 		false,
 		"Enable debug logging",
 	)
 	flags.StringVar(
-&args.arch,
+		&args.arch,
 		"arch",
 		"amd64",
 		"Machine architecture (amd64 or arm64)",
 	)
 	flags.StringVar(
-&args.namespace,
+		&args.namespace,
 		"namespace",
 		"machines",
 		"Kubernetes namespace in which the VirtualMachine will be created",
 	)
 	flags.StringVar(
-&args.datasource,
+		&args.datasource,
 		"datasource",
 		"",
 		"CDI DataSource name for the root disk (e.g. ubuntu-24.04-x86-gha-image). Derived from --arch and --running-environment if not set.",
 	)
 	flags.StringVar(
-&args.datasourceNamespace,
+		&args.datasourceNamespace,
 		"datasource-namespace",
 		"arc-systems",
 		"Namespace where the CDI DataSource lives",
 	)
 	flags.StringVar(
-&args.storageClassName,
+		&args.storageClassName,
 		"storage-class",
 		"oci-bv-immediate",
 		"StorageClass for the root disk PVC",
 	)
 	flags.StringVar(
-&args.diskSize,
+		&args.diskSize,
 		"disk-size",
 		"500Gi",
 		"PVC size for the root disk",
 	)
 	flags.IntVar(
-&args.cpu,
+		&args.cpu,
 		"cpu",
 		8,
 		"Number of CPU cores for the VM",
 	)
 	flags.StringVar(
-&args.memory,
+		&args.memory,
 		"memory",
 		"32Gi",
 		"Memory for the VM, e.g. 8Gi or 32Gi",
 	)
 	flags.StringVar(
-&args.runEnv,
+		&args.runEnv,
 		"running-environment",
 		"production",
 		"Running environment: production or ci",
 	)
 	flags.StringVar(
-&args.kubeconfig,
+		&args.kubeconfig,
 		"kubeconfig",
 		"",
 		"Path to kubeconfig file (uses in-cluster config or KUBECONFIG env var if not set)",
