@@ -44,3 +44,9 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      namespace: clickhouse-altinity
+      jsonPointers:
+        - /spec/template/spec/containers/0/env
