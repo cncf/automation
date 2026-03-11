@@ -16,6 +16,16 @@ spec:
     targetRevision: 0.26.0
     helm:
       values: |
+        crdHook:
+          enabled: true
+          image:
+            repository: docker.io/bitnami/kubectl
+        operator:
+          image:
+            registry: "docker.io"
+        metrics:
+          image:
+            registry: "docker.io"
         fullnameOverride: clickhouse-altinity-operator
         files:
           watch:
