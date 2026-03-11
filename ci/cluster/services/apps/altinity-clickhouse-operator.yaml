@@ -27,11 +27,13 @@ spec:
           image:
             registry: "docker.io"
         fullnameOverride: clickhouse-altinity-operator
-        files:
-          watch:
-            namespaces: ["clickhouse-altinity", "seebom"]
         serviceMonitor:
           enabled: true
+        configs:
+          files:
+            config.yaml:
+              watch:
+                namespaces: ["clickhouse-altinity", "seebom"]
   destination:
     server: https://kubernetes.default.svc
     namespace: clickhouse-altinity
