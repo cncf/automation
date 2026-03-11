@@ -16,6 +16,7 @@ spec:
     targetRevision: 0.26.0
     helm:
       values: |
+        fullnameOverride: clickhouse-altinity-operator
         files:
           watch:
             namespaces: ["clickhouse-altinity", "seebom"]
