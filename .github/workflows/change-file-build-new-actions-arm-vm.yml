@@ -11,6 +11,10 @@ on:
         - ".github/scripts/build_arm_image.sh"
   workflow_dispatch:
 
+permissions:
+  actions: read
+  contents: read
+
 jobs:
   build:
     name: Build new Actions arm64 VM
@@ -20,18 +24,20 @@ jobs:
     timeout-minutes: 180
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Change Ubuntu mirrors
-        uses: vegardit/fast-apt-mirror.sh@v1
+        uses: vegardit/fast-apt-mirror.sh@29a5ef3401107220fc3c32a0c659b6a1211f9e0f # v1.4.2
         with:
           exclude-current: true
 
       - name: Install OCI CLI
-        run: |
-          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          chmod +x install.sh
-          ./install.sh --accept-all-defaults
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          pip-install: oci-cli
 
       - name: Create Arm64 BareMetal Instance
         env:
@@ -54,26 +60,52 @@ jobs:
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
         run: |
+          set -euo pipefail
+          CREDS_FILE=$(mktemp)
+          cat > "$CREDS_FILE" <<CREDEOF
+          OCI_CLI_USER=${OCI_CLI_USER}
+          OCI_CLI_TENANCY=${OCI_CLI_TENANCY}
+          OCI_CLI_FINGERPRINT=${OCI_CLI_FINGERPRINT}
+          OCI_CLI_KEY_CONTENT=$(echo "${OCI_CLI_KEY_CONTENT}" | base64 -w0)
+          OCI_CLI_REGION=${OCI_CLI_REGION}
+          CREDEOF
+          scp -i ${{ github.workspace }}/id_rsa "$CREDS_FILE" ubuntu@$PUBLIC_IP:oci_credentials.env
           scp -i ${{ github.workspace }}/id_rsa ${{ github.workspace }}/.github/scripts/build_arm_image.sh ubuntu@$PUBLIC_IP:.
-          ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh ${{ env.OCI_CLI_USER }} ${{ env.OCI_CLI_TENANCY }} ${{ env.OCI_CLI_FINGERPRINT}} $(echo "${{ env.OCI_CLI_KEY_CONTENT }}" | base64 -w0) ${{ env.OCI_CLI_REGION }}
+          shred -u "$CREDS_FILE"
+          ssh -o ServerAliveInterval=60 -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP -- ./build_arm_image.sh
           scp -i ${{ github.workspace }}/id_rsa ubuntu@$PUBLIC_IP:/tmp/image_ocid .
         shell: bash
 
       - name: Upload image OCID
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        uses: actions/upload-artifact@v4
         with:
           name: image-ocid
           path: ./image_ocid
 
       - name: Terminate Arm64 BareMetal Instance
-        if: ${{ always() }}
+        if: always()
         env:
           OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
           OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
           OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-        run: /home/runner/bin/oci compute instance terminate --instance-id "$INSTANCE_OCID" --force
+        run: |
+          set -euo pipefail
+          if [ -n "${INSTANCE_OCID:-}" ]; then
+            oci compute instance terminate --instance-id "$INSTANCE_OCID" --force
+          else
+            echo "No INSTANCE_OCID set, skipping termination"
+          fi
+        shell: bash
+
+      - name: Cleanup SSH keys
+        if: always()
+        run: |
+          if [ -f "${{ github.workspace }}/id_rsa" ]; then
+            shred -u "${{ github.workspace }}/id_rsa" || rm -f "${{ github.workspace }}/id_rsa"
+          fi
+          rm -f "${{ github.workspace }}/id_rsa.pub"
         shell: bash
 
   run-kind-with-arc:
@@ -82,7 +114,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Start kind cluster
         run: |
@@ -135,23 +169,43 @@ jobs:
 
       - name: Wait for completion signal
         run: |
+          MAX_ITERATIONS=120
+          ITERATION=0
           while true; do
-            PENDING=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs \
-              --jq '[.jobs[] | select(.name != "run-kind-with-arc" and .status != "completed")] | length')
+            ITERATION=$((ITERATION + 1))
+            if [ "$ITERATION" -gt "$MAX_ITERATIONS" ]; then
+              echo "ERROR: Timed out after $MAX_ITERATIONS iterations"
+              exit 1
+            fi
 
-            if [[ "$PENDING" == "0" ]]; then
+            if ! RESULT=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs); then
+              echo "WARNING: gh api call failed, retrying..."
+              sleep 30
+              continue
+            fi
+
+            PENDING=$(echo "$RESULT" | jq '[.jobs[] | select(.name != "run-kind-with-arc" and .status != "completed")] | length')
+            FAILED=$(echo "$RESULT" | jq '[.jobs[] | select(.conclusion == "failure")] | length')
+
+            if [ "$FAILED" -gt 0 ]; then
+              echo "ERROR: $FAILED job(s) failed"
+              exit 1
+            fi
+
+            if [ "$PENDING" -eq 0 ]; then
               echo "All jobs completed"
               break
             fi
 
-            echo "There are $PENDING pending jobs..."
-
+            echo "There are $PENDING pending jobs (iteration $ITERATION/$MAX_ITERATIONS)..."
             sleep 30
           done
 
           kind delete cluster
         env:
           GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
 
   test-runner:
     runs-on: oci-ci-test-arm64
@@ -159,7 +213,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Update APT
         run: |
@@ -190,11 +246,13 @@ jobs:
         with:
           name: image-ocid
 
+      - name: Install OCI CLI
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          pip-install: oci-cli
+
       - name: Release
         run: |
-          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          chmod +x install.sh
-          ./install.sh --accept-all-defaults
-          export PATH=$PATH:$HOME/bin
           IMAGE_ID=$(cat image_ocid)
           oci compute image update --image-id ${IMAGE_ID} --operating-system ubuntu-24.04-arm64-gha-image --display-name ubuntu-24.04-arm64-gha-image
