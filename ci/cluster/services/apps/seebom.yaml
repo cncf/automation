@@ -12,7 +12,7 @@ spec:
   project: default
   source:
     repoURL: ghcr.io/seebom-labs/seebom/charts
-    targetRevision: 0.1.0
+    targetRevision: 0.1.1
     chart: seebom
     helm:
       values: |
@@ -30,6 +30,18 @@ spec:
             enabled: true
             secretName: clickhouse-password
             key: password
+          installation:
+            podTemplate:
+              resources:
+                requests:
+                  cpu: "2"
+                  memory: "8Gi"
+                limits:
+                  cpu: "4"
+                  memory: "16Gi"
+            volumeClaimTemplate:
+              dataStorage: 500Gi
+              logStorage: 10Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: seebom
@@ -39,3 +51,10 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      namespace: clickhouse-altinity
+      jsonPointers:
+        - /spec/template/spec/containers/0/env
