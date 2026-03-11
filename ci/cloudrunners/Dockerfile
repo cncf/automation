@@ -8,7 +8,7 @@ COPY . .
 RUN go build -o bin/cloudrunner-oci oci/main.go
 
 ### Final Stage
-FROM gcr.io/distroless/base-debian10
+FROM gcr.io/distroless/base-debian12
 
 COPY --from=0 /app/bin/cloudrunner-oci /
 
