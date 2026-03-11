@@ -84,6 +84,12 @@ variable "oke_node_cpu" {
   description = "OKE worker node CPUs"
 }
 
+variable "oke_node_boot_volume_size" {
+  type        = number
+  description = "The size of the boot volume in GBs"
+  default     = 50
+}
+
 variable "vcn_cidr" {
   type        = string
   description = "CIDR for the VCN"

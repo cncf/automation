@@ -1,19 +1,20 @@
-region                 = "us-sanjose-1"
-cluster_name           = "oke-cncf-services"
-node_pool_worker_size  = 4
-kubernetes_version     = "v1.34.1"
-cluster_autoscaler_min = 3
-cluster_autoscaler_max = 10
-oke_node_shape         = "VM.Standard.E6.Flex"
-oke_node_memory        = 64
-oke_node_cpu           = 16
-deploy_kcp             = true
-ingress_private_ip_id  = "ocid1.privateip.oc1.us-sanjose-1.abzwuljr4i5var577r2aykc7eusqn3rpy5ciwqkvk67xpw7wmxhwdn3yw4cq"
-kcp_lb_private_ip_id   = "ocid1.privateip.oc1.us-sanjose-1.abzwuljrhuxff5dzmmwpovrwddlmh44m72b7cqgie2bvv3kkpbpq4aok2cpa"
-vcn_cidr               = "10.0.0.0/16"
-k8s_api_cidr           = "10.0.0.0/28"
-svc_cidr               = "10.0.20.0/24"
-node_cidr              = "10.0.10.0/23"
+region                    = "us-sanjose-1"
+cluster_name              = "oke-cncf-services"
+node_pool_worker_size     = 5
+kubernetes_version        = "v1.34.2"
+cluster_autoscaler_min    = 3
+cluster_autoscaler_max    = 10
+oke_node_shape            = "VM.Standard.E6.Flex"
+oke_node_memory           = 64
+oke_node_cpu              = 16
+oke_node_boot_volume_size = 100
+deploy_kcp                = true
+ingress_private_ip_id     = "ocid1.privateip.oc1.us-sanjose-1.abzwuljr4i5var577r2aykc7eusqn3rpy5ciwqkvk67xpw7wmxhwdn3yw4cq"
+kcp_lb_private_ip_id      = "ocid1.privateip.oc1.us-sanjose-1.abzwuljrhuxff5dzmmwpovrwddlmh44m72b7cqgie2bvv3kkpbpq4aok2cpa"
+vcn_cidr                  = "10.0.0.0/16"
+k8s_api_cidr              = "10.0.0.0/28"
+svc_cidr                  = "10.0.20.0/24"
+node_cidr                 = "10.0.10.0/23"
 
 # CIDR_BLOCK   : is overriden to node_cidr in networks.tf file
 # K8S_API_CIDR : is overriden to k8s_api_cidr in networks.tf file

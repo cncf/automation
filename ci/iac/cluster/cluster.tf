@@ -55,8 +55,9 @@ resource "oci_containerengine_node_pool" "service_worker" {
   }
 
   node_source_details {
-    image_id    = local.non_gpu_images[0].image_id
-    source_type = "image"
+    boot_volume_size_in_gbs = var.oke_node_boot_volume_size
+    image_id                = local.non_gpu_images[0].image_id
+    source_type             = "image"
   }
 
   node_config_details {
