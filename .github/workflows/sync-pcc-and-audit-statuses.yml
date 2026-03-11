@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -60,7 +60,7 @@ jobs:
           # Ensure origin is clean
           git remote set-url origin https://github.com/${{ github.repository }}.git
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # DCO requires a "Signed-off-by" line on every commit. This enables `git commit --signoff`
