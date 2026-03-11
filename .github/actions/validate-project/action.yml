@@ -16,39 +16,48 @@ runs:
   using: 'composite'
   steps:
     - name: Set up Go
-      uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+      uses: actions/setup-go@v6
       with:
         go-version: ${{ inputs.go_version }}
 
     - name: Checkout automation tools
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      uses: actions/checkout@v6
       with:
+        persist-credentials: false
         repository: cncf/automation
         path: _cncf-automation
         sparse-checkout: utilities/dot-project
 
     - name: Build validator
       shell: bash
+      env:
+        WORKSPACE: ${{ github.workspace }}
       run: |
         cd _cncf-automation/utilities/dot-project
-        go build -o ${{ github.workspace }}/_cncf-validator ./cmd/validator
+        go build -o "${WORKSPACE}/_cncf-validator" ./cmd/validator
 
     - name: Create project list
       shell: bash
+      env:
+        WORKSPACE: ${{ github.workspace }}
+        PROJECT_FILE: ${{ inputs.project_file }}
       run: |
-        cat > _project-list.yaml << 'PROJEOF'
+        cat > _project-list.yaml << PROJEOF
         projects:
-          - url: "file://${{ github.workspace }}/${{ inputs.project_file }}"
+          - url: "file://${WORKSPACE}/${PROJECT_FILE}"
             id: "project"
         PROJEOF
 
     - name: Validate project
       shell: bash
+      env:
+        WORKSPACE: ${{ github.workspace }}
+        OUTPUT_FORMAT: ${{ inputs.output_format }}
       run: |
-        ${{ github.workspace }}/_cncf-validator \
+        "${WORKSPACE}/_cncf-validator" \
           -config _project-list.yaml \
           -maintainers "" \
-          -output ${{ inputs.output_format }}
+          -output "${OUTPUT_FORMAT}"
 
     - name: Cleanup
       shell: bash

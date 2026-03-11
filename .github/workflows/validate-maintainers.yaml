@@ -6,19 +6,23 @@ on:
       - 'utilities/dot-project/example/maintainers.yaml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@v6
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+        uses: actions/setup-go@v6
         with:
-          go-version: '1.24'
+          go-version-file: utilities/dot-project/go.mod
 
       - name: Build Validator
         run: |
@@ -27,8 +31,10 @@ jobs:
 
       - name: Get Base Maintainers File
         if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          git show origin/${{ github.base_ref }}:utilities/dot-project/example/maintainers.yaml > utilities/dot-project/example/maintainers-base.yaml || echo "No base file found"
+          git show "origin/${BASE_REF}:utilities/dot-project/example/maintainers.yaml" > utilities/dot-project/example/maintainers-base.yaml || echo "No base file found"
 
       - name: Validate Maintainers
         env:
