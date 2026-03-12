@@ -3,9 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 	"time"
+)
+
+const (
+	defaultTopFundedLimit = 5
+	maxCompareProjects    = 10
 )
 
 type projectResult struct {
@@ -176,8 +182,12 @@ func encodeResult(metric string, payload map[string]interface{}) (string, error)
 	return string(data), nil
 }
 
+func isMember(item LandscapeItem) bool {
+	return strings.Contains(strings.ToLower(item.Category), "member")
+}
+
 func isMemberTier(item LandscapeItem, tier string) bool {
-	if !strings.Contains(strings.ToLower(item.Category), "member") {
+	if !isMember(item) {
 		return false
 	}
 	if strings.EqualFold(item.MemberSubcategory, tier) {
@@ -276,6 +286,7 @@ type ProjectQuery struct {
 	AcceptedFrom   string
 	AcceptedTo     string
 	Limit          int
+	Offset         int
 }
 
 // queryProjects filters and returns projects based on various criteria
@@ -328,6 +339,7 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 
 	results := make([]projectResult, 0)
 	nameLower := strings.ToLower(q.Name)
+	skipped := 0
 
 	for _, item := range ds.Items {
 		// Filter by maturity
@@ -390,6 +402,12 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 			continue
 		}
 
+		// Apply offset — skip matching items until we've skipped enough
+		if q.Offset > 0 && skipped < q.Offset {
+			skipped++
+			continue
+		}
+
 		result := projectResult{
 			Name:        item.Name,
 			Category:    item.Category,
@@ -434,6 +452,7 @@ type MemberQuery struct {
 	JoinedFrom string
 	JoinedTo   string
 	Limit      int
+	Offset     int
 }
 
 // queryMembers filters and returns members based on tier and join dates
@@ -457,10 +476,11 @@ func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 	}
 
 	results := make([]memberResult, 0)
+	skipped := 0
 
 	for _, item := range ds.Items {
 		// Only include members
-		if !strings.Contains(strings.ToLower(item.Category), "member") {
+		if !isMember(item) {
 			continue
 		}
 
@@ -484,6 +504,12 @@ func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 			if item.JoinedAt == nil || item.JoinedAt.After(*joinToDate) {
 				continue
 			}
+		}
+
+		// Apply offset — skip matching items until we've skipped enough
+		if q.Offset > 0 && skipped < q.Offset {
+			skipped++
+			continue
 		}
 
 		result := memberResult{
@@ -767,7 +793,7 @@ func landscapeSummary(ds *Dataset) (string, error) {
 		}
 
 		// Count members (items in a category containing "member")
-		if strings.Contains(strings.ToLower(item.Category), "member") {
+		if isMember(item) {
 			totalMembers++
 			tier := item.MemberSubcategory
 			if tier == "" {
@@ -860,8 +886,12 @@ func searchLandscape(ds *Dataset, query string, limit int) (string, error) {
 		if item.Maturity != "" {
 			result.Maturity = item.Maturity
 		}
-		if strings.Contains(strings.ToLower(item.Category), "member") {
-			result.MemberSubcategory = item.MemberSubcategory
+		if isMember(item) {
+			tier := item.MemberSubcategory
+			if tier == "" {
+				tier = item.Subcategory
+			}
+			result.MemberSubcategory = tier
 		}
 
 		results = append(results, result)
@@ -892,13 +922,294 @@ type memberDetailResult struct {
 	Organization      *orgSummary       `json:"organization,omitempty"`
 }
 
+// ---------------------------------------------------------------------------
+// Analytical tools
+// ---------------------------------------------------------------------------
+
+type comparisonProject struct {
+	Name         string            `json:"name"`
+	Category     string            `json:"category"`
+	Subcategory  string            `json:"subcategory"`
+	Maturity     string            `json:"maturity,omitempty"`
+	AcceptedAt   string            `json:"accepted_at,omitempty"`
+	IncubatingAt string            `json:"incubating_at,omitempty"`
+	GraduatedAt  string            `json:"graduated_at,omitempty"`
+	HomepageURL  string            `json:"homepage_url,omitempty"`
+	OSS          bool              `json:"oss"`
+	Description  string            `json:"description,omitempty"`
+	Repositories []Repository      `json:"repositories,omitempty"`
+	Links        map[string]string `json:"links,omitempty"`
+	Organization *orgSummary       `json:"organization,omitempty"`
+}
+
+// compareProjects returns a side-by-side comparison of named projects.
+func compareProjects(ds *Dataset, names []string) (string, error) {
+	if len(names) < 2 {
+		return "", fmt.Errorf("at least 2 project names are required for comparison")
+	}
+	if len(names) > maxCompareProjects {
+		return "", fmt.Errorf("maximum %d projects can be compared at once", maxCompareProjects)
+	}
+	for _, name := range names {
+		if strings.TrimSpace(name) == "" {
+			return "", fmt.Errorf("project name cannot be empty")
+		}
+	}
+
+	results := make([]comparisonProject, 0, len(names))
+	for _, name := range names {
+		nameLower := strings.ToLower(name)
+		var found *LandscapeItem
+		for i := range ds.Items {
+			item := &ds.Items[i]
+			if item.Maturity == "" {
+				continue
+			}
+			if strings.Contains(strings.ToLower(item.Name), nameLower) {
+				found = item
+				break
+			}
+		}
+		if found == nil {
+			return "", fmt.Errorf("project not found: %s", name)
+		}
+
+		cp := comparisonProject{
+			Name:        found.Name,
+			Category:    found.Category,
+			Subcategory: found.Subcategory,
+			Maturity:    found.Maturity,
+			HomepageURL: found.HomepageURL,
+			OSS:         found.OSS,
+			Description: found.Description,
+		}
+		if found.AcceptedAt != nil {
+			cp.AcceptedAt = found.AcceptedAt.Format("2006-01-02")
+		}
+		if found.IncubatingAt != nil {
+			cp.IncubatingAt = found.IncubatingAt.Format("2006-01-02")
+		}
+		if found.GraduatedAt != nil {
+			cp.GraduatedAt = found.GraduatedAt.Format("2006-01-02")
+		}
+		if len(found.Repositories) > 0 {
+			cp.Repositories = found.Repositories
+		}
+		cp.Links = buildLinks(*found)
+		if found.CrunchbaseURL != "" {
+			if org, ok := ds.CrunchbaseOrgs[found.CrunchbaseURL]; ok {
+				cp.Organization = buildOrgSummary(org)
+			}
+		}
+		results = append(results, cp)
+	}
+
+	response := map[string]interface{}{
+		"count":    len(results),
+		"projects": results,
+	}
+	data, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+type fundingKindSummary struct {
+	Count       int   `json:"count"`
+	TotalAmount int64 `json:"total_amount"`
+}
+
+type topFundedMember struct {
+	Name        string `json:"name"`
+	Tier        string `json:"tier"`
+	TotalAmount int64  `json:"total_amount"`
+	RoundCount  int    `json:"round_count"`
+}
+
+// fundingAnalysis analyzes funding data from Crunchbase for landscape members.
+func fundingAnalysis(ds *Dataset, tier string, year int) (string, error) {
+	totalMembersAnalyzed := 0
+	totalFundingRounds := 0
+	var totalFundingAmount int64
+	roundsByKind := make(map[string]*fundingKindSummary)
+	var memberFunding []topFundedMember
+
+	for _, item := range ds.Items {
+		if !isMember(item) {
+			continue
+		}
+		if tier != "" && !isMemberTier(item, tier) {
+			continue
+		}
+		if item.CrunchbaseURL == "" {
+			continue
+		}
+		org, ok := ds.CrunchbaseOrgs[item.CrunchbaseURL]
+		if !ok {
+			continue
+		}
+
+		totalMembersAnalyzed++
+		memberRoundCount := 0
+		var memberTotal int64
+
+		for _, round := range org.FundingRounds {
+			if year > 0 && round.AnnouncedOn != nil && round.AnnouncedOn.Year() != year {
+				continue
+			}
+			if year > 0 && round.AnnouncedOn == nil {
+				continue
+			}
+
+			totalFundingRounds++
+			memberRoundCount++
+
+			amt := int64(0)
+			if round.Amount != nil {
+				amt = *round.Amount
+			}
+			totalFundingAmount += amt
+			memberTotal += amt
+
+			kind := round.Kind
+			if kind == "" {
+				kind = "unknown"
+			}
+			if _, ok := roundsByKind[kind]; !ok {
+				roundsByKind[kind] = &fundingKindSummary{}
+			}
+			roundsByKind[kind].Count++
+			roundsByKind[kind].TotalAmount += amt
+		}
+
+		if memberRoundCount > 0 {
+			memberTier := item.MemberSubcategory
+			if memberTier == "" {
+				memberTier = item.Subcategory
+			}
+			memberFunding = append(memberFunding, topFundedMember{
+				Name:        item.Name,
+				Tier:        memberTier,
+				TotalAmount: memberTotal,
+				RoundCount:  memberRoundCount,
+			})
+		}
+	}
+
+	// Sort top_funded descending by total_amount
+	sort.Slice(memberFunding, func(i, j int) bool {
+		return memberFunding[i].TotalAmount > memberFunding[j].TotalAmount
+	})
+
+	// Limit to top funded members
+	topFunded := memberFunding
+	if len(topFunded) > defaultTopFundedLimit {
+		topFunded = topFunded[:defaultTopFundedLimit]
+	}
+
+	response := map[string]interface{}{
+		"total_members_analyzed": totalMembersAnalyzed,
+		"total_funding_rounds":   totalFundingRounds,
+		"total_funding_amount":   totalFundingAmount,
+		"rounds_by_kind":         roundsByKind,
+		"top_funded":             topFunded,
+	}
+	data, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+type geoDistributionEntry struct {
+	Name       string  `json:"name"`
+	Count      int     `json:"count"`
+	Percentage float64 `json:"percentage"`
+}
+
+// geographicDistribution returns a geographic breakdown of landscape items by Crunchbase location.
+func geographicDistribution(ds *Dataset, groupBy string) (string, error) {
+	if groupBy == "" {
+		groupBy = "country"
+	}
+	switch groupBy {
+	case "country", "region", "city":
+	default:
+		return "", fmt.Errorf("invalid group_by value: %q (must be country, region, or city)", groupBy)
+	}
+
+	totalAnalyzed := 0
+	counts := make(map[string]int)
+
+	for _, item := range ds.Items {
+		if item.CrunchbaseURL == "" {
+			continue
+		}
+		org, ok := ds.CrunchbaseOrgs[item.CrunchbaseURL]
+		if !ok {
+			continue
+		}
+		totalAnalyzed++
+
+		var field string
+		switch groupBy {
+		case "country":
+			field = org.Country
+		case "region":
+			field = org.Region
+		case "city":
+			field = org.City
+		}
+		if field != "" {
+			counts[field]++
+		}
+	}
+
+	totalWithLocation := 0
+	for _, c := range counts {
+		totalWithLocation += c
+	}
+	totalWithoutLocation := totalAnalyzed - totalWithLocation
+
+	// Build sorted distribution
+	distribution := make([]geoDistributionEntry, 0, len(counts))
+	for name, count := range counts {
+		pct := 0.0
+		if totalWithLocation > 0 {
+			pct = float64(count) / float64(totalWithLocation) * 100.0
+			// Round to 1 decimal place
+			pct = math.Round(pct*10) / 10
+		}
+		distribution = append(distribution, geoDistributionEntry{
+			Name:       name,
+			Count:      count,
+			Percentage: pct,
+		})
+	}
+	sort.Slice(distribution, func(i, j int) bool {
+		return distribution[i].Count > distribution[j].Count
+	})
+
+	response := map[string]interface{}{
+		"total_with_location":    totalWithLocation,
+		"total_without_location": totalWithoutLocation,
+		"distribution":           distribution,
+	}
+	data, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
 // getMemberDetails returns detailed information about a specific member
 func getMemberDetails(ds *Dataset, name string) (string, error) {
 	nameLower := strings.ToLower(name)
 	var matches []memberDetailResult
 
 	for _, item := range ds.Items {
-		if !strings.Contains(strings.ToLower(item.Category), "member") {
+		if !isMember(item) {
 			continue
 		}
 		if !strings.Contains(strings.ToLower(item.Name), nameLower) {

@@ -14,6 +14,10 @@ import (
 	"time"
 )
 
+// serverVersion is the semantic version of the MCP server, reported in the
+// initialize handshake.
+const serverVersion = "0.2.0"
+
 // JSON-RPC structures -------------------------------------------------------
 
 type jsonRPCRequest struct {
@@ -46,6 +50,7 @@ type serverState struct {
 	loadErr error
 	cfg     LandscapeConfig
 	tools   toolCatalogData
+	src     dataSource
 }
 
 var outputMu sync.Mutex
@@ -111,6 +116,18 @@ func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
 				Name:        "search_landscape",
 				Description: fmt.Sprintf("Full-text search across all %s landscape items by name, description, category, subcategory, or homepage URL.", cfg.Name),
 			},
+			"compare_projects": {
+				Name:        "compare_projects",
+				Description: fmt.Sprintf("Side-by-side comparison of two or more %s projects.", cfg.Name),
+			},
+			"funding_analysis": {
+				Name:        "funding_analysis",
+				Description: fmt.Sprintf("Analyze funding data from Crunchbase for %s landscape members.", cfg.Name),
+			},
+			"geographic_distribution": {
+				Name:        "geographic_distribution",
+				Description: fmt.Sprintf("Geographic breakdown of %s landscape members by Crunchbase location data.", cfg.Name),
+			},
 		},
 		advertisedTools: []string{
 			"query_projects",
@@ -120,6 +137,9 @@ func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
 			"list_categories",
 			"landscape_summary",
 			"search_landscape",
+			"compare_projects",
+			"funding_analysis",
+			"geographic_distribution",
 			"project_metrics",
 			"membership_metrics",
 		},
@@ -163,6 +183,25 @@ func (s *serverState) waitForDataset(ctx context.Context) (*Dataset, error) {
 	return s.dataset, nil
 }
 
+// refreshDataset reloads the dataset from the configured data source.
+// It replaces the in-memory dataset under a write lock so that in-flight
+// requests see a consistent snapshot.
+func refreshDataset(ctx context.Context, state *serverState) {
+	log.Println("dataset refresh requested")
+	go func() {
+		ds, err := loadDataset(ctx, state.src)
+		if err != nil {
+			log.Printf("dataset refresh failed: %v", err)
+			return
+		}
+		state.mu.Lock()
+		state.dataset = ds
+		state.loadErr = nil
+		state.mu.Unlock()
+		log.Printf("dataset refreshed (%d items)", len(ds.Items))
+	}()
+}
+
 // Main ----------------------------------------------------------------------
 
 func main() {
@@ -187,11 +226,14 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	src := dataSource{
+		filePath: *dataFile,
+		url:      *dataURL,
+	}
+	state.src = src
+
 	go func() {
-		ds, err := loadDataset(ctx, dataSource{
-			filePath: *dataFile,
-			url:      *dataURL,
-		})
+		ds, err := loadDataset(ctx, src)
 		state.setDataset(ds, err)
 		if err != nil {
 			log.Printf("error loading dataset: %v", err)
@@ -236,16 +278,21 @@ func handleRequest(ctx context.Context, req *jsonRPCRequest, state *serverState)
 			Result: mustJSON(map[string]interface{}{
 				"protocolVersion": "2024-11-05",
 				"capabilities": map[string]interface{}{
-					"tools": map[string]interface{}{},
+					"tools":     map[string]interface{}{},
+					"resources": map[string]interface{}{},
+					"prompts":   map[string]interface{}{},
 				},
 				"serverInfo": map[string]string{
 					"name":    fmt.Sprintf("%s-landscape-mcp-server", strings.ToLower(state.cfg.Name)),
-					"version": "0.2.0",
+					"version": serverVersion,
 				},
 			}),
 			ID: req.ID,
 		}
 	case "notifications/initialized":
+		return nil
+	case "notifications/dataset_refreshed":
+		refreshDataset(ctx, state)
 		return nil
 	case "tools/list":
 		tools := make([]map[string]interface{}, 0, len(state.tools.advertisedTools))
@@ -269,6 +316,14 @@ func handleRequest(ctx context.Context, req *jsonRPCRequest, state *serverState)
 		}
 	case "tools/call":
 		return handleToolsCall(ctx, req, state)
+	case "resources/list":
+		return handleResourcesList(req, state)
+	case "resources/read":
+		return handleResourcesRead(ctx, req, state)
+	case "prompts/list":
+		return handlePromptsList(req, state)
+	case "prompts/get":
+		return handlePromptsGet(req, state)
 	default:
 		return errorResponse(req.ID, -32601, "Method not found", nil)
 	}
@@ -309,6 +364,12 @@ func handleToolsCall(ctx context.Context, req *jsonRPCRequest, state *serverStat
 		return handleLandscapeSummary(req.ID, dataset)
 	case "search_landscape":
 		return handleSearchLandscape(req.ID, payload.Arguments, dataset)
+	case "compare_projects":
+		return handleCompareProjects(req.ID, payload.Arguments, dataset)
+	case "funding_analysis":
+		return handleFundingAnalysis(req.ID, payload.Arguments, dataset)
+	case "geographic_distribution":
+		return handleGeographicDistribution(req.ID, payload.Arguments, dataset)
 	default:
 		// Handle metric-based tools
 		var args struct {
@@ -407,6 +468,10 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 				"type":        "integer",
 				"description": "Maximum number of results to return (default: 100)",
 			},
+			"offset": map[string]interface{}{
+				"type":        "integer",
+				"description": "Number of results to skip before returning (default: 0)",
+			},
 		}
 		return schema
 	case "query_members":
@@ -430,6 +495,10 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 			"limit": map[string]interface{}{
 				"type":        "integer",
 				"description": "Maximum number of results to return (default: 100)",
+			},
+			"offset": map[string]interface{}{
+				"type":        "integer",
+				"description": "Number of results to skip before returning (default: 0)",
 			},
 		}
 		return schema
@@ -469,6 +538,38 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 			},
 		}
 		schema["required"] = []string{"query"}
+		return schema
+	case "compare_projects":
+		schema["properties"] = map[string]interface{}{
+			"names": map[string]interface{}{
+				"type":        "array",
+				"items":       map[string]interface{}{"type": "string"},
+				"description": "Project names to compare (minimum 2)",
+				"minItems":    2,
+			},
+		}
+		schema["required"] = []string{"names"}
+		return schema
+	case "funding_analysis":
+		schema["properties"] = map[string]interface{}{
+			"tier": map[string]interface{}{
+				"type":        "string",
+				"description": "Filter by membership tier (e.g. Gold, Silver)",
+			},
+			"year": map[string]interface{}{
+				"type":        "integer",
+				"description": "Filter funding rounds to a specific year",
+			},
+		}
+		return schema
+	case "geographic_distribution":
+		schema["properties"] = map[string]interface{}{
+			"group_by": map[string]interface{}{
+				"type":        "string",
+				"description": "Group by: country (default), region, or city",
+				"enum":        []string{"country", "region", "city"},
+			},
+		}
 		return schema
 	}
 
@@ -553,6 +654,7 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 		AcceptedFrom   string `json:"accepted_from"`
 		AcceptedTo     string `json:"accepted_to"`
 		Limit          int    `json:"limit"`
+		Offset         int    `json:"offset"`
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
@@ -575,6 +677,7 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 		AcceptedFrom:   args.AcceptedFrom,
 		AcceptedTo:     args.AcceptedTo,
 		Limit:          args.Limit,
+		Offset:         args.Offset,
 	})
 	if err != nil {
 		return errorResponse(id, -32000, err.Error(), nil)
@@ -594,6 +697,7 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 		JoinedFrom string `json:"joined_from"`
 		JoinedTo   string `json:"joined_to"`
 		Limit      int    `json:"limit"`
+		Offset     int    `json:"offset"`
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
@@ -610,6 +714,7 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 		JoinedFrom: args.JoinedFrom,
 		JoinedTo:   args.JoinedTo,
 		Limit:      args.Limit,
+		Offset:     args.Offset,
 	})
 	if err != nil {
 		return errorResponse(id, -32000, err.Error(), nil)
@@ -721,5 +826,234 @@ func handleSearchLandscape(id json.RawMessage, argsRaw json.RawMessage, ds *Data
 		JSONRPC: "2.0",
 		Result:  mustJSON(map[string]interface{}{"content": []map[string]string{{"type": "text", "text": result}}}),
 		ID:      id,
+	}
+}
+
+func handleCompareProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset) *jsonRPCResponse {
+	var args struct {
+		Names []string `json:"names"`
+	}
+	if len(argsRaw) > 0 {
+		if err := json.Unmarshal(argsRaw, &args); err != nil {
+			return errorResponse(id, -32602, "Invalid arguments", nil)
+		}
+	}
+	if len(args.Names) < 2 {
+		return errorResponse(id, -32602, "at least 2 project names are required", nil)
+	}
+
+	result, err := compareProjects(ds, args.Names)
+	if err != nil {
+		return errorResponse(id, -32000, err.Error(), nil)
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"content": []map[string]string{{"type": "text", "text": result}}}),
+		ID:      id,
+	}
+}
+
+func handleFundingAnalysis(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset) *jsonRPCResponse {
+	var args struct {
+		Tier string `json:"tier"`
+		Year int    `json:"year"`
+	}
+	if len(argsRaw) > 0 {
+		if err := json.Unmarshal(argsRaw, &args); err != nil {
+			return errorResponse(id, -32602, "Invalid arguments", nil)
+		}
+	}
+
+	result, err := fundingAnalysis(ds, args.Tier, args.Year)
+	if err != nil {
+		return errorResponse(id, -32000, err.Error(), nil)
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"content": []map[string]string{{"type": "text", "text": result}}}),
+		ID:      id,
+	}
+}
+
+func handleGeographicDistribution(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset) *jsonRPCResponse {
+	var args struct {
+		GroupBy string `json:"group_by"`
+	}
+	if len(argsRaw) > 0 {
+		if err := json.Unmarshal(argsRaw, &args); err != nil {
+			return errorResponse(id, -32602, "Invalid arguments", nil)
+		}
+	}
+
+	result, err := geographicDistribution(ds, args.GroupBy)
+	if err != nil {
+		return errorResponse(id, -32000, err.Error(), nil)
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"content": []map[string]string{{"type": "text", "text": result}}}),
+		ID:      id,
+	}
+}
+
+// MCP Resources handlers ----------------------------------------------------
+
+func handleResourcesList(req *jsonRPCRequest, state *serverState) *jsonRPCResponse {
+	resources := []map[string]string{
+		{
+			"uri":         "landscape://categories",
+			"name":        fmt.Sprintf("%s Categories", state.cfg.Name),
+			"description": "Complete category and subcategory tree with item counts",
+			"mimeType":    "application/json",
+		},
+		{
+			"uri":         "landscape://summary",
+			"name":        fmt.Sprintf("%s Summary", state.cfg.Name),
+			"description": "High-level landscape statistics and overview",
+			"mimeType":    "application/json",
+		},
+	}
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"resources": resources}),
+		ID:      req.ID,
+	}
+}
+
+func handleResourcesRead(ctx context.Context, req *jsonRPCRequest, state *serverState) *jsonRPCResponse {
+	var params struct {
+		URI string `json:"uri"`
+	}
+	if err := json.Unmarshal(req.Params, &params); err != nil {
+		return errorResponse(req.ID, -32602, "Invalid params", nil)
+	}
+
+	dataset, err := state.waitForDataset(ctx)
+	if err != nil {
+		return errorResponse(req.ID, -32603, "Dataset unavailable", mustJSON(map[string]string{"error": err.Error()}))
+	}
+
+	var text string
+	switch params.URI {
+	case "landscape://categories":
+		text, err = listCategories(dataset)
+	case "landscape://summary":
+		text, err = landscapeSummary(dataset)
+	default:
+		return errorResponse(req.ID, -32602, fmt.Sprintf("Unknown resource URI: %s", params.URI), nil)
+	}
+
+	if err != nil {
+		return errorResponse(req.ID, -32000, err.Error(), nil)
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result: mustJSON(map[string]interface{}{
+			"contents": []map[string]string{
+				{
+					"uri":      params.URI,
+					"mimeType": "application/json",
+					"text":     text,
+				},
+			},
+		}),
+		ID: req.ID,
+	}
+}
+
+// MCP Prompts handlers ------------------------------------------------------
+
+func handlePromptsList(req *jsonRPCRequest, state *serverState) *jsonRPCResponse {
+	prompts := []map[string]interface{}{
+		{
+			"name":        "analyze_landscape",
+			"description": fmt.Sprintf("Analyze the current state of the %s landscape", state.cfg.Name),
+			"arguments":   []interface{}{},
+		},
+		{
+			"name":        "compare_projects",
+			"description": fmt.Sprintf("Compare specific projects in the %s landscape", state.cfg.Name),
+			"arguments": []map[string]interface{}{
+				{
+					"name":        "project_names",
+					"description": "Comma-separated list of project names to compare",
+					"required":    true,
+				},
+			},
+		},
+	}
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"prompts": prompts}),
+		ID:      req.ID,
+	}
+}
+
+func handlePromptsGet(req *jsonRPCRequest, state *serverState) *jsonRPCResponse {
+	var params struct {
+		Name      string            `json:"name"`
+		Arguments map[string]string `json:"arguments"`
+	}
+	if err := json.Unmarshal(req.Params, &params); err != nil {
+		return errorResponse(req.ID, -32602, "Invalid params", nil)
+	}
+
+	switch params.Name {
+	case "analyze_landscape":
+		return &jsonRPCResponse{
+			JSONRPC: "2.0",
+			Result: mustJSON(map[string]interface{}{
+				"description": fmt.Sprintf("Analyze the current state of the %s landscape", state.cfg.Name),
+				"messages": []map[string]interface{}{
+					{
+						"role": "user",
+						"content": map[string]string{
+							"type": "text",
+							"text": fmt.Sprintf(`Please analyze the current state of the %s landscape. Use the available tools to:
+1. Get a landscape summary using the landscape_summary tool
+2. List all categories using the list_categories tool
+3. Identify trends in project maturity levels
+4. Analyze membership distribution across tiers
+5. Provide insights and recommendations based on the data`, state.cfg.Name),
+						},
+					},
+				},
+			}),
+			ID: req.ID,
+		}
+	case "compare_projects":
+		projectNames := params.Arguments["project_names"]
+		if projectNames == "" {
+			return errorResponse(req.ID, -32602, "Missing required argument: project_names", nil)
+		}
+		return &jsonRPCResponse{
+			JSONRPC: "2.0",
+			Result: mustJSON(map[string]interface{}{
+				"description": fmt.Sprintf("Compare specific projects in the %s landscape", state.cfg.Name),
+				"messages": []map[string]interface{}{
+					{
+						"role": "user",
+						"content": map[string]string{
+							"type": "text",
+							"text": fmt.Sprintf(`Please compare the following %s projects: %s
+
+Use the compare_projects tool to get detailed information, then analyze:
+1. Maturity levels and timeline to graduation
+2. Repository activity and community health
+3. Organizational backing and funding
+4. Key similarities and differences
+5. Recommendations for each project's growth path`, state.cfg.Name, projectNames),
+						},
+					},
+				},
+			}),
+			ID: req.ID,
+		}
+	default:
+		return errorResponse(req.ID, -32602, fmt.Sprintf("Unknown prompt: %s", params.Name), nil)
 	}
 }

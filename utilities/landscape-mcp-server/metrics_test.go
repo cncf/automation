@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 	"time"
 )
@@ -167,6 +169,85 @@ func TestQueryProjects(t *testing.T) {
 			t.Errorf("expected OpenTelemetry, got %v", names)
 		}
 	})
+
+	t.Run("offset skips first results", func(t *testing.T) {
+		// Get all 3 projects without offset
+		all, err := queryProjects(ds, ProjectQuery{Limit: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		allNames := jsonProjectNames(t, all)
+		if len(allNames) < 3 {
+			t.Fatalf("expected at least 3 projects, got %d", len(allNames))
+		}
+
+		// Offset=1 should skip the first project
+		result, err := queryProjects(ds, ProjectQuery{Limit: 100, Offset: 1})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 2 {
+			t.Errorf("count = %d, want 2", count)
+		}
+		names := jsonProjectNames(t, result)
+		// The first result after offset should be the second project from the full list
+		if len(names) == 0 || names[0] != allNames[1] {
+			t.Errorf("first project after offset = %v, want %q", names, allNames[1])
+		}
+	})
+
+	t.Run("offset beyond results returns empty", func(t *testing.T) {
+		result, err := queryProjects(ds, ProjectQuery{Limit: 100, Offset: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 0 {
+			t.Errorf("count = %d, want 0", count)
+		}
+	})
+
+	t.Run("offset with limit paginates correctly", func(t *testing.T) {
+		// Get all projects
+		all, err := queryProjects(ds, ProjectQuery{Limit: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		allNames := jsonProjectNames(t, all)
+
+		// Page 1: offset=0, limit=1
+		p1, err := queryProjects(ds, ProjectQuery{Limit: 1, Offset: 0})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		p1Names := jsonProjectNames(t, p1)
+
+		// Page 2: offset=1, limit=1
+		p2, err := queryProjects(ds, ProjectQuery{Limit: 1, Offset: 1})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		p2Names := jsonProjectNames(t, p2)
+
+		// Page 3: offset=2, limit=1
+		p3, err := queryProjects(ds, ProjectQuery{Limit: 1, Offset: 2})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		p3Names := jsonProjectNames(t, p3)
+
+		// The three pages should cover all projects in order
+		if len(p1Names) != 1 || p1Names[0] != allNames[0] {
+			t.Errorf("page 1 = %v, want [%s]", p1Names, allNames[0])
+		}
+		if len(p2Names) != 1 || p2Names[0] != allNames[1] {
+			t.Errorf("page 2 = %v, want [%s]", p2Names, allNames[1])
+		}
+		if len(p3Names) != 1 || p3Names[0] != allNames[2] {
+			t.Errorf("page 3 = %v, want [%s]", p3Names, allNames[2])
+		}
+	})
 }
 
 // ---------------------------------------------------------------------------
@@ -228,6 +309,77 @@ func TestQueryMembers(t *testing.T) {
 		count := jsonInt(t, result, "count")
 		if count != 3 {
 			t.Errorf("count = %d, want 3", count)
+		}
+	})
+
+	t.Run("offset skips first results", func(t *testing.T) {
+		all, err := queryMembers(ds, MemberQuery{Limit: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		allNames := jsonMemberNames(t, all)
+		if len(allNames) < 3 {
+			t.Fatalf("expected at least 3 members, got %d", len(allNames))
+		}
+
+		result, err := queryMembers(ds, MemberQuery{Limit: 100, Offset: 1})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 2 {
+			t.Errorf("count = %d, want 2", count)
+		}
+		names := jsonMemberNames(t, result)
+		if len(names) == 0 || names[0] != allNames[1] {
+			t.Errorf("first member after offset = %v, want %q", names, allNames[1])
+		}
+	})
+
+	t.Run("offset beyond results returns empty", func(t *testing.T) {
+		result, err := queryMembers(ds, MemberQuery{Limit: 100, Offset: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 0 {
+			t.Errorf("count = %d, want 0", count)
+		}
+	})
+
+	t.Run("offset with limit paginates correctly", func(t *testing.T) {
+		all, err := queryMembers(ds, MemberQuery{Limit: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		allNames := jsonMemberNames(t, all)
+
+		p1, err := queryMembers(ds, MemberQuery{Limit: 1, Offset: 0})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		p1Names := jsonMemberNames(t, p1)
+
+		p2, err := queryMembers(ds, MemberQuery{Limit: 1, Offset: 1})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		p2Names := jsonMemberNames(t, p2)
+
+		p3, err := queryMembers(ds, MemberQuery{Limit: 1, Offset: 2})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		p3Names := jsonMemberNames(t, p3)
+
+		if len(p1Names) != 1 || p1Names[0] != allNames[0] {
+			t.Errorf("page 1 = %v, want [%s]", p1Names, allNames[0])
+		}
+		if len(p2Names) != 1 || p2Names[0] != allNames[1] {
+			t.Errorf("page 2 = %v, want [%s]", p2Names, allNames[1])
+		}
+		if len(p3Names) != 1 || p3Names[0] != allNames[2] {
+			t.Errorf("page 3 = %v, want [%s]", p3Names, allNames[2])
 		}
 	})
 }
@@ -1039,4 +1191,1086 @@ func jsonProjectNames(t *testing.T, jsonStr string) []string {
 		}
 	}
 	return names
+}
+
+func jsonMemberNames(t *testing.T, jsonStr string) []string {
+	t.Helper()
+	var m map[string]interface{}
+	if err := json.Unmarshal([]byte(jsonStr), &m); err != nil {
+		t.Fatalf("failed to parse JSON: %v", err)
+	}
+	members, ok := m["members"].([]interface{})
+	if !ok {
+		t.Fatalf("members is not an array")
+	}
+	names := make([]string, 0, len(members))
+	for _, p := range members {
+		pm, ok := p.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		if name, ok := pm["name"].(string); ok {
+			names = append(names, name)
+		}
+	}
+	return names
+}
+
+// ---------------------------------------------------------------------------
+// 6a: compareProjects tests
+// ---------------------------------------------------------------------------
+
+func TestCompareProjects(t *testing.T) {
+	ds := loadTestDataset(t)
+
+	t.Run("compare two projects", func(t *testing.T) {
+		result, err := compareProjects(ds, []string{"Kubernetes", "OpenTelemetry"})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 2 {
+			t.Errorf("count = %d, want 2", count)
+		}
+
+		var resp struct {
+			Count    int `json:"count"`
+			Projects []struct {
+				Name        string `json:"name"`
+				Maturity    string `json:"maturity"`
+				Category    string `json:"category"`
+				Subcategory string `json:"subcategory"`
+			} `json:"projects"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+		if resp.Projects[0].Name != "Kubernetes" {
+			t.Errorf("first project = %q, want %q", resp.Projects[0].Name, "Kubernetes")
+		}
+		if resp.Projects[1].Name != "OpenTelemetry" {
+			t.Errorf("second project = %q, want %q", resp.Projects[1].Name, "OpenTelemetry")
+		}
+		if resp.Projects[0].Maturity != "graduated" {
+			t.Errorf("Kubernetes maturity = %q, want %q", resp.Projects[0].Maturity, "graduated")
+		}
+		if resp.Projects[1].Maturity != "incubating" {
+			t.Errorf("OpenTelemetry maturity = %q, want %q", resp.Projects[1].Maturity, "incubating")
+		}
+	})
+
+	t.Run("compare three projects", func(t *testing.T) {
+		result, err := compareProjects(ds, []string{"Kubernetes", "OpenTelemetry", "Akri"})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 3 {
+			t.Errorf("count = %d, want 3", count)
+		}
+	})
+
+	t.Run("case-insensitive lookup", func(t *testing.T) {
+		result, err := compareProjects(ds, []string{"kubernetes", "opentelemetry"})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 2 {
+			t.Errorf("count = %d, want 2", count)
+		}
+	})
+
+	t.Run("nonexistent project returns error", func(t *testing.T) {
+		_, err := compareProjects(ds, []string{"Kubernetes", "NonExistent"})
+		if err == nil {
+			t.Fatal("expected error for nonexistent project, got nil")
+		}
+	})
+
+	t.Run("fewer than 2 names returns error", func(t *testing.T) {
+		_, err := compareProjects(ds, []string{"Kubernetes"})
+		if err == nil {
+			t.Fatal("expected error for single project, got nil")
+		}
+	})
+
+	t.Run("empty name returns error", func(t *testing.T) {
+		_, err := compareProjects(ds, []string{"", "Kubernetes"})
+		if err == nil {
+			t.Fatal("expected error for empty project name, got nil")
+		}
+	})
+
+	t.Run("more than 10 names returns error", func(t *testing.T) {
+		names := make([]string, 11)
+		for i := range names {
+			names[i] = "Kubernetes"
+		}
+		_, err := compareProjects(ds, names)
+		if err == nil {
+			t.Fatal("expected error for too many names, got nil")
+		}
+	})
+
+	t.Run("includes enriched fields", func(t *testing.T) {
+		result, err := compareProjects(ds, []string{"Kubernetes", "Akri"})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			Projects []struct {
+				Name         string            `json:"name"`
+				HomepageURL  string            `json:"homepage_url"`
+				OSS          bool              `json:"oss"`
+				Description  string            `json:"description"`
+				Repositories []Repository      `json:"repositories"`
+				Links        map[string]string `json:"links"`
+				Organization *orgSummary       `json:"organization"`
+			} `json:"projects"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+		// Kubernetes should have homepage, repos, links
+		k := resp.Projects[0]
+		if k.HomepageURL != "https://kubernetes.io/" {
+			t.Errorf("Kubernetes homepage_url = %q", k.HomepageURL)
+		}
+		if !k.OSS {
+			t.Error("expected Kubernetes oss = true")
+		}
+		if len(k.Repositories) != 2 {
+			t.Errorf("Kubernetes repositories count = %d, want 2", len(k.Repositories))
+		}
+		if k.Links == nil {
+			t.Error("expected non-nil links for Kubernetes")
+		}
+	})
+
+	t.Run("does not match members", func(t *testing.T) {
+		_, err := compareProjects(ds, []string{"Kubernetes", "TestGoldCorp"})
+		if err == nil {
+			t.Fatal("expected error since TestGoldCorp is a member, not a project")
+		}
+	})
+}
+
+// ---------------------------------------------------------------------------
+// 6b: fundingAnalysis tests
+// ---------------------------------------------------------------------------
+
+func TestFundingAnalysis(t *testing.T) {
+	ds := loadTestDataset(t)
+
+	t.Run("all members no filters", func(t *testing.T) {
+		result, err := fundingAnalysis(ds, "", 0)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalMembersAnalyzed int                        `json:"total_members_analyzed"`
+			TotalFundingRounds   int                        `json:"total_funding_rounds"`
+			TotalFundingAmount   int64                      `json:"total_funding_amount"`
+			RoundsByKind         map[string]json.RawMessage `json:"rounds_by_kind"`
+			TopFunded            []struct {
+				Name        string `json:"name"`
+				Tier        string `json:"tier"`
+				TotalAmount int64  `json:"total_amount"`
+				RoundCount  int    `json:"round_count"`
+			} `json:"top_funded"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		// 2 members have crunchbase data (TestGoldCorp, TestSilverInc)
+		if resp.TotalMembersAnalyzed != 2 {
+			t.Errorf("total_members_analyzed = %d, want 2", resp.TotalMembersAnalyzed)
+		}
+		// 3 total rounds: series_b, series_a, seed
+		if resp.TotalFundingRounds != 3 {
+			t.Errorf("total_funding_rounds = %d, want 3", resp.TotalFundingRounds)
+		}
+		// 50M + 20M + 10M = 80M
+		if resp.TotalFundingAmount != 80000000 {
+			t.Errorf("total_funding_amount = %d, want 80000000", resp.TotalFundingAmount)
+		}
+		// 3 kinds: series_a, series_b, seed
+		if len(resp.RoundsByKind) != 3 {
+			t.Errorf("rounds_by_kind count = %d, want 3", len(resp.RoundsByKind))
+		}
+		// Top funded: TestGoldCorp (70M) first, TestSilverInc (10M) second
+		if len(resp.TopFunded) != 2 {
+			t.Fatalf("top_funded count = %d, want 2", len(resp.TopFunded))
+		}
+		if resp.TopFunded[0].Name != "TestGoldCorp" {
+			t.Errorf("top_funded[0].name = %q, want %q", resp.TopFunded[0].Name, "TestGoldCorp")
+		}
+		if resp.TopFunded[0].TotalAmount != 70000000 {
+			t.Errorf("top_funded[0].total_amount = %d, want 70000000", resp.TopFunded[0].TotalAmount)
+		}
+		if resp.TopFunded[0].RoundCount != 2 {
+			t.Errorf("top_funded[0].round_count = %d, want 2", resp.TopFunded[0].RoundCount)
+		}
+		if resp.TopFunded[0].Tier != "Gold" {
+			t.Errorf("top_funded[0].tier = %q, want %q", resp.TopFunded[0].Tier, "Gold")
+		}
+		if resp.TopFunded[1].Name != "TestSilverInc" {
+			t.Errorf("top_funded[1].name = %q, want %q", resp.TopFunded[1].Name, "TestSilverInc")
+		}
+		if resp.TopFunded[1].TotalAmount != 10000000 {
+			t.Errorf("top_funded[1].total_amount = %d, want 10000000", resp.TopFunded[1].TotalAmount)
+		}
+	})
+
+	t.Run("filter by tier Gold", func(t *testing.T) {
+		result, err := fundingAnalysis(ds, "Gold", 0)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalMembersAnalyzed int   `json:"total_members_analyzed"`
+			TotalFundingRounds   int   `json:"total_funding_rounds"`
+			TotalFundingAmount   int64 `json:"total_funding_amount"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		if resp.TotalMembersAnalyzed != 1 {
+			t.Errorf("total_members_analyzed = %d, want 1", resp.TotalMembersAnalyzed)
+		}
+		if resp.TotalFundingRounds != 2 {
+			t.Errorf("total_funding_rounds = %d, want 2", resp.TotalFundingRounds)
+		}
+		// 50M + 20M = 70M
+		if resp.TotalFundingAmount != 70000000 {
+			t.Errorf("total_funding_amount = %d, want 70000000", resp.TotalFundingAmount)
+		}
+	})
+
+	t.Run("filter by year 2026", func(t *testing.T) {
+		result, err := fundingAnalysis(ds, "", 2026)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalMembersAnalyzed int   `json:"total_members_analyzed"`
+			TotalFundingRounds   int   `json:"total_funding_rounds"`
+			TotalFundingAmount   int64 `json:"total_funding_amount"`
+			TopFunded            []struct {
+				Name       string `json:"name"`
+				RoundCount int    `json:"round_count"`
+			} `json:"top_funded"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		// Both members analyzed (they have CB data), but only 2026 rounds count
+		// TestGoldCorp: series_b 2026-01-10 ($50M) — matches
+		// TestGoldCorp: series_a 2025-06-15 ($20M) — does NOT match
+		// TestSilverInc: seed 2026-02-01 ($10M) — matches
+		if resp.TotalFundingRounds != 2 {
+			t.Errorf("total_funding_rounds = %d, want 2", resp.TotalFundingRounds)
+		}
+		// 50M + 10M = 60M
+		if resp.TotalFundingAmount != 60000000 {
+			t.Errorf("total_funding_amount = %d, want 60000000", resp.TotalFundingAmount)
+		}
+	})
+
+	t.Run("filter by tier and year", func(t *testing.T) {
+		result, err := fundingAnalysis(ds, "Gold", 2026)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalMembersAnalyzed int   `json:"total_members_analyzed"`
+			TotalFundingRounds   int   `json:"total_funding_rounds"`
+			TotalFundingAmount   int64 `json:"total_funding_amount"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		if resp.TotalMembersAnalyzed != 1 {
+			t.Errorf("total_members_analyzed = %d, want 1", resp.TotalMembersAnalyzed)
+		}
+		// Only series_b from 2026 matches
+		if resp.TotalFundingRounds != 1 {
+			t.Errorf("total_funding_rounds = %d, want 1", resp.TotalFundingRounds)
+		}
+		if resp.TotalFundingAmount != 50000000 {
+			t.Errorf("total_funding_amount = %d, want 50000000", resp.TotalFundingAmount)
+		}
+	})
+
+	t.Run("tier with no crunchbase data", func(t *testing.T) {
+		result, err := fundingAnalysis(ds, "Platinum", 0)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalMembersAnalyzed int `json:"total_members_analyzed"`
+			TotalFundingRounds   int `json:"total_funding_rounds"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		if resp.TotalMembersAnalyzed != 0 {
+			t.Errorf("total_members_analyzed = %d, want 0", resp.TotalMembersAnalyzed)
+		}
+		if resp.TotalFundingRounds != 0 {
+			t.Errorf("total_funding_rounds = %d, want 0", resp.TotalFundingRounds)
+		}
+	})
+
+	t.Run("rounds_by_kind breakdown", func(t *testing.T) {
+		result, err := fundingAnalysis(ds, "", 0)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			RoundsByKind map[string]struct {
+				Count       int   `json:"count"`
+				TotalAmount int64 `json:"total_amount"`
+			} `json:"rounds_by_kind"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		seriesB, ok := resp.RoundsByKind["series_b"]
+		if !ok {
+			t.Fatal("series_b not found in rounds_by_kind")
+		}
+		if seriesB.Count != 1 || seriesB.TotalAmount != 50000000 {
+			t.Errorf("series_b = {count:%d, total:%d}, want {1, 50000000}", seriesB.Count, seriesB.TotalAmount)
+		}
+
+		seriesA, ok := resp.RoundsByKind["series_a"]
+		if !ok {
+			t.Fatal("series_a not found in rounds_by_kind")
+		}
+		if seriesA.Count != 1 || seriesA.TotalAmount != 20000000 {
+			t.Errorf("series_a = {count:%d, total:%d}, want {1, 20000000}", seriesA.Count, seriesA.TotalAmount)
+		}
+
+		seed, ok := resp.RoundsByKind["seed"]
+		if !ok {
+			t.Fatal("seed not found in rounds_by_kind")
+		}
+		if seed.Count != 1 || seed.TotalAmount != 10000000 {
+			t.Errorf("seed = {count:%d, total:%d}, want {1, 10000000}", seed.Count, seed.TotalAmount)
+		}
+	})
+}
+
+// ---------------------------------------------------------------------------
+// 6c: geographicDistribution tests
+// ---------------------------------------------------------------------------
+
+func TestGeographicDistribution(t *testing.T) {
+	ds := loadTestDataset(t)
+
+	t.Run("default group_by country", func(t *testing.T) {
+		result, err := geographicDistribution(ds, "")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalWithLocation    int `json:"total_with_location"`
+			TotalWithoutLocation int `json:"total_without_location"`
+			Distribution         []struct {
+				Name       string  `json:"name"`
+				Count      int     `json:"count"`
+				Percentage float64 `json:"percentage"`
+			} `json:"distribution"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		// TestGoldCorp has country, TestSilverInc does not
+		if resp.TotalWithLocation != 1 {
+			t.Errorf("total_with_location = %d, want 1", resp.TotalWithLocation)
+		}
+		if resp.TotalWithoutLocation != 1 {
+			t.Errorf("total_without_location = %d, want 1", resp.TotalWithoutLocation)
+		}
+		if len(resp.Distribution) != 1 {
+			t.Fatalf("distribution count = %d, want 1", len(resp.Distribution))
+		}
+		if resp.Distribution[0].Name != "United States" {
+			t.Errorf("distribution[0].name = %q, want %q", resp.Distribution[0].Name, "United States")
+		}
+		if resp.Distribution[0].Count != 1 {
+			t.Errorf("distribution[0].count = %d, want 1", resp.Distribution[0].Count)
+		}
+		if resp.Distribution[0].Percentage != 100.0 {
+			t.Errorf("distribution[0].percentage = %f, want 100.0", resp.Distribution[0].Percentage)
+		}
+	})
+
+	t.Run("group_by region", func(t *testing.T) {
+		result, err := geographicDistribution(ds, "region")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalWithLocation int `json:"total_with_location"`
+			Distribution      []struct {
+				Name string `json:"name"`
+			} `json:"distribution"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		if resp.TotalWithLocation != 1 {
+			t.Errorf("total_with_location = %d, want 1", resp.TotalWithLocation)
+		}
+		if len(resp.Distribution) != 1 {
+			t.Fatalf("distribution count = %d, want 1", len(resp.Distribution))
+		}
+		if resp.Distribution[0].Name != "North America" {
+			t.Errorf("distribution[0].name = %q, want %q", resp.Distribution[0].Name, "North America")
+		}
+	})
+
+	t.Run("group_by city", func(t *testing.T) {
+		result, err := geographicDistribution(ds, "city")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalWithLocation int `json:"total_with_location"`
+			Distribution      []struct {
+				Name string `json:"name"`
+			} `json:"distribution"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		if resp.TotalWithLocation != 1 {
+			t.Errorf("total_with_location = %d, want 1", resp.TotalWithLocation)
+		}
+		if len(resp.Distribution) != 1 {
+			t.Fatalf("distribution count = %d, want 1", len(resp.Distribution))
+		}
+		if resp.Distribution[0].Name != "San Francisco" {
+			t.Errorf("distribution[0].name = %q, want %q", resp.Distribution[0].Name, "San Francisco")
+		}
+	})
+
+	t.Run("invalid group_by returns error", func(t *testing.T) {
+		_, err := geographicDistribution(ds, "invalid")
+		if err == nil {
+			t.Fatal("expected error for invalid group_by, got nil")
+		}
+	})
+
+	t.Run("explicit country group_by", func(t *testing.T) {
+		result, err := geographicDistribution(ds, "country")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			TotalWithLocation int `json:"total_with_location"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+
+		if resp.TotalWithLocation != 1 {
+			t.Errorf("total_with_location = %d, want 1", resp.TotalWithLocation)
+		}
+	})
+}
+
+// ---------------------------------------------------------------------------
+// MCP Resources handler tests
+// ---------------------------------------------------------------------------
+
+func TestHandleResourcesList(t *testing.T) {
+	cfg := LandscapeConfig{Name: "TestLandscape", Description: "Test"}
+	state := newServerState(cfg)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "resources/list",
+		ID:      json.RawMessage(`1`),
+	}
+
+	resp := handleResourcesList(req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %s", resp.Error.Message)
+	}
+
+	var result struct {
+		Resources []struct {
+			URI         string `json:"uri"`
+			Name        string `json:"name"`
+			Description string `json:"description"`
+			MimeType    string `json:"mimeType"`
+		} `json:"resources"`
+	}
+	if err := json.Unmarshal(resp.Result, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if len(result.Resources) != 2 {
+		t.Fatalf("expected 2 resources, got %d", len(result.Resources))
+	}
+
+	// Verify categories resource
+	cat := result.Resources[0]
+	if cat.URI != "landscape://categories" {
+		t.Errorf("resource[0].uri = %q, want %q", cat.URI, "landscape://categories")
+	}
+	if cat.Name != "TestLandscape Categories" {
+		t.Errorf("resource[0].name = %q, want %q", cat.Name, "TestLandscape Categories")
+	}
+	if cat.MimeType != "application/json" {
+		t.Errorf("resource[0].mimeType = %q, want %q", cat.MimeType, "application/json")
+	}
+
+	// Verify summary resource
+	sum := result.Resources[1]
+	if sum.URI != "landscape://summary" {
+		t.Errorf("resource[1].uri = %q, want %q", sum.URI, "landscape://summary")
+	}
+	if sum.Name != "TestLandscape Summary" {
+		t.Errorf("resource[1].name = %q, want %q", sum.Name, "TestLandscape Summary")
+	}
+	if sum.MimeType != "application/json" {
+		t.Errorf("resource[1].mimeType = %q, want %q", sum.MimeType, "application/json")
+	}
+}
+
+func TestHandleResourcesReadCategories(t *testing.T) {
+	ds := loadTestDataset(t)
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+	state.setDataset(ds, nil)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "resources/read",
+		Params:  json.RawMessage(`{"uri":"landscape://categories"}`),
+		ID:      json.RawMessage(`2`),
+	}
+
+	resp := handleResourcesRead(context.Background(), req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %s", resp.Error.Message)
+	}
+
+	var result struct {
+		Contents []struct {
+			URI      string `json:"uri"`
+			MimeType string `json:"mimeType"`
+			Text     string `json:"text"`
+		} `json:"contents"`
+	}
+	if err := json.Unmarshal(resp.Result, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if len(result.Contents) != 1 {
+		t.Fatalf("expected 1 content item, got %d", len(result.Contents))
+	}
+
+	content := result.Contents[0]
+	if content.URI != "landscape://categories" {
+		t.Errorf("content.uri = %q, want %q", content.URI, "landscape://categories")
+	}
+	if content.MimeType != "application/json" {
+		t.Errorf("content.mimeType = %q, want %q", content.MimeType, "application/json")
+	}
+
+	// Verify the text is valid JSON containing categories
+	var catData struct {
+		Categories []struct {
+			Name string `json:"name"`
+		} `json:"categories"`
+	}
+	if err := json.Unmarshal([]byte(content.Text), &catData); err != nil {
+		t.Fatalf("content.text is not valid JSON: %v", err)
+	}
+	if len(catData.Categories) == 0 {
+		t.Error("expected at least one category")
+	}
+}
+
+func TestHandleResourcesReadSummary(t *testing.T) {
+	ds := loadTestDataset(t)
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+	state.setDataset(ds, nil)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "resources/read",
+		Params:  json.RawMessage(`{"uri":"landscape://summary"}`),
+		ID:      json.RawMessage(`3`),
+	}
+
+	resp := handleResourcesRead(context.Background(), req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %s", resp.Error.Message)
+	}
+
+	var result struct {
+		Contents []struct {
+			URI      string `json:"uri"`
+			MimeType string `json:"mimeType"`
+			Text     string `json:"text"`
+		} `json:"contents"`
+	}
+	if err := json.Unmarshal(resp.Result, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if len(result.Contents) != 1 {
+		t.Fatalf("expected 1 content item, got %d", len(result.Contents))
+	}
+
+	content := result.Contents[0]
+	if content.URI != "landscape://summary" {
+		t.Errorf("content.uri = %q, want %q", content.URI, "landscape://summary")
+	}
+	if content.MimeType != "application/json" {
+		t.Errorf("content.mimeType = %q, want %q", content.MimeType, "application/json")
+	}
+
+	// Verify the text is valid JSON containing summary data
+	var summaryData struct {
+		TotalItems    int `json:"total_items"`
+		TotalProjects int `json:"total_projects"`
+	}
+	if err := json.Unmarshal([]byte(content.Text), &summaryData); err != nil {
+		t.Fatalf("content.text is not valid JSON: %v", err)
+	}
+	if summaryData.TotalItems == 0 {
+		t.Error("expected total_items > 0")
+	}
+}
+
+func TestHandleResourcesReadUnknownURI(t *testing.T) {
+	ds := loadTestDataset(t)
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+	state.setDataset(ds, nil)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "resources/read",
+		Params:  json.RawMessage(`{"uri":"landscape://unknown"}`),
+		ID:      json.RawMessage(`4`),
+	}
+
+	resp := handleResourcesRead(context.Background(), req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error == nil {
+		t.Fatal("expected error for unknown URI, got success")
+	}
+	if resp.Error.Code != -32602 {
+		t.Errorf("error code = %d, want %d", resp.Error.Code, -32602)
+	}
+}
+
+func TestHandleResourcesReadInvalidParams(t *testing.T) {
+	ds := loadTestDataset(t)
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+	state.setDataset(ds, nil)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "resources/read",
+		Params:  json.RawMessage(`{invalid`),
+		ID:      json.RawMessage(`5`),
+	}
+
+	resp := handleResourcesRead(context.Background(), req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error == nil {
+		t.Fatal("expected error for invalid params, got success")
+	}
+	if resp.Error.Code != -32602 {
+		t.Errorf("error code = %d, want %d", resp.Error.Code, -32602)
+	}
+}
+
+func TestInitializeIncludesResourcesCapability(t *testing.T) {
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "initialize",
+		ID:      json.RawMessage(`1`),
+	}
+
+	resp := handleRequest(context.Background(), req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %s", resp.Error.Message)
+	}
+
+	var result struct {
+		Capabilities struct {
+			Tools     map[string]interface{} `json:"tools"`
+			Resources map[string]interface{} `json:"resources"`
+		} `json:"capabilities"`
+	}
+	if err := json.Unmarshal(resp.Result, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if result.Capabilities.Tools == nil {
+		t.Error("expected tools capability to be present")
+	}
+	if result.Capabilities.Resources == nil {
+		t.Error("expected resources capability to be present")
+	}
+}
+
+func TestResourcesDispatchViaHandleRequest(t *testing.T) {
+	ds := loadTestDataset(t)
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+	state.setDataset(ds, nil)
+
+	// Test resources/list dispatch
+	listReq := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "resources/list",
+		ID:      json.RawMessage(`10`),
+	}
+	listResp := handleRequest(context.Background(), listReq, state)
+	if listResp == nil {
+		t.Fatal("resources/list: expected response, got nil")
+	}
+	if listResp.Error != nil {
+		t.Fatalf("resources/list: unexpected error: %s", listResp.Error.Message)
+	}
+
+	// Test resources/read dispatch
+	readReq := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "resources/read",
+		Params:  json.RawMessage(`{"uri":"landscape://summary"}`),
+		ID:      json.RawMessage(`11`),
+	}
+	readResp := handleRequest(context.Background(), readReq, state)
+	if readResp == nil {
+		t.Fatal("resources/read: expected response, got nil")
+	}
+	if readResp.Error != nil {
+		t.Fatalf("resources/read: unexpected error: %s", readResp.Error.Message)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Prompts tests
+// ---------------------------------------------------------------------------
+
+func TestHandlePromptsList(t *testing.T) {
+	cfg := LandscapeConfig{Name: "TestLandscape", Description: "Test"}
+	state := newServerState(cfg)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "prompts/list",
+		ID:      json.RawMessage(`1`),
+	}
+
+	resp := handlePromptsList(req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %s", resp.Error.Message)
+	}
+
+	var result struct {
+		Prompts []struct {
+			Name        string `json:"name"`
+			Description string `json:"description"`
+			Arguments   []struct {
+				Name        string `json:"name"`
+				Description string `json:"description"`
+				Required    bool   `json:"required"`
+			} `json:"arguments"`
+		} `json:"prompts"`
+	}
+	if err := json.Unmarshal(resp.Result, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if len(result.Prompts) != 2 {
+		t.Fatalf("expected 2 prompts, got %d", len(result.Prompts))
+	}
+
+	// Verify analyze_landscape prompt
+	analyze := result.Prompts[0]
+	if analyze.Name != "analyze_landscape" {
+		t.Errorf("prompts[0].name = %q, want %q", analyze.Name, "analyze_landscape")
+	}
+	if analyze.Description != "Analyze the current state of the TestLandscape landscape" {
+		t.Errorf("prompts[0].description = %q, want %q", analyze.Description, "Analyze the current state of the TestLandscape landscape")
+	}
+	if len(analyze.Arguments) != 0 {
+		t.Errorf("prompts[0].arguments length = %d, want 0", len(analyze.Arguments))
+	}
+
+	// Verify compare_projects prompt
+	compare := result.Prompts[1]
+	if compare.Name != "compare_projects" {
+		t.Errorf("prompts[1].name = %q, want %q", compare.Name, "compare_projects")
+	}
+	if compare.Description != "Compare specific projects in the TestLandscape landscape" {
+		t.Errorf("prompts[1].description = %q, want %q", compare.Description, "Compare specific projects in the TestLandscape landscape")
+	}
+	if len(compare.Arguments) != 1 {
+		t.Fatalf("prompts[1].arguments length = %d, want 1", len(compare.Arguments))
+	}
+	if compare.Arguments[0].Name != "project_names" {
+		t.Errorf("prompts[1].arguments[0].name = %q, want %q", compare.Arguments[0].Name, "project_names")
+	}
+	if !compare.Arguments[0].Required {
+		t.Error("prompts[1].arguments[0].required should be true")
+	}
+}
+
+func TestHandlePromptsGetAnalyzeLandscape(t *testing.T) {
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "prompts/get",
+		Params:  json.RawMessage(`{"name":"analyze_landscape"}`),
+		ID:      json.RawMessage(`1`),
+	}
+
+	resp := handlePromptsGet(req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %s", resp.Error.Message)
+	}
+
+	var result struct {
+		Description string `json:"description"`
+		Messages    []struct {
+			Role    string `json:"role"`
+			Content struct {
+				Type string `json:"type"`
+				Text string `json:"text"`
+			} `json:"content"`
+		} `json:"messages"`
+	}
+	if err := json.Unmarshal(resp.Result, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if result.Description != "Analyze the current state of the CNCF landscape" {
+		t.Errorf("description = %q, want %q", result.Description, "Analyze the current state of the CNCF landscape")
+	}
+	if len(result.Messages) != 1 {
+		t.Fatalf("expected 1 message, got %d", len(result.Messages))
+	}
+	msg := result.Messages[0]
+	if msg.Role != "user" {
+		t.Errorf("message.role = %q, want %q", msg.Role, "user")
+	}
+	if msg.Content.Type != "text" {
+		t.Errorf("message.content.type = %q, want %q", msg.Content.Type, "text")
+	}
+	if !strings.Contains(msg.Content.Text, "CNCF landscape") {
+		t.Error("message text should contain 'CNCF landscape'")
+	}
+	if !strings.Contains(msg.Content.Text, "landscape_summary") {
+		t.Error("message text should reference landscape_summary tool")
+	}
+}
+
+func TestHandlePromptsGetCompareProjects(t *testing.T) {
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "prompts/get",
+		Params:  json.RawMessage(`{"name":"compare_projects","arguments":{"project_names":"Kubernetes,Envoy"}}`),
+		ID:      json.RawMessage(`2`),
+	}
+
+	resp := handlePromptsGet(req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %s", resp.Error.Message)
+	}
+
+	var result struct {
+		Description string `json:"description"`
+		Messages    []struct {
+			Role    string `json:"role"`
+			Content struct {
+				Type string `json:"type"`
+				Text string `json:"text"`
+			} `json:"content"`
+		} `json:"messages"`
+	}
+	if err := json.Unmarshal(resp.Result, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if result.Description != "Compare specific projects in the CNCF landscape" {
+		t.Errorf("description = %q, want %q", result.Description, "Compare specific projects in the CNCF landscape")
+	}
+	if len(result.Messages) != 1 {
+		t.Fatalf("expected 1 message, got %d", len(result.Messages))
+	}
+	msg := result.Messages[0]
+	if msg.Role != "user" {
+		t.Errorf("message.role = %q, want %q", msg.Role, "user")
+	}
+	if msg.Content.Type != "text" {
+		t.Errorf("message.content.type = %q, want %q", msg.Content.Type, "text")
+	}
+	if !strings.Contains(msg.Content.Text, "Kubernetes,Envoy") {
+		t.Error("message text should contain project names 'Kubernetes,Envoy'")
+	}
+	if !strings.Contains(msg.Content.Text, "compare_projects") {
+		t.Error("message text should reference compare_projects tool")
+	}
+}
+
+func TestHandlePromptsGetUnknown(t *testing.T) {
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "prompts/get",
+		Params:  json.RawMessage(`{"name":"nonexistent_prompt"}`),
+		ID:      json.RawMessage(`3`),
+	}
+
+	resp := handlePromptsGet(req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error == nil {
+		t.Fatal("expected error for unknown prompt, got success")
+	}
+	if resp.Error.Code != -32602 {
+		t.Errorf("error code = %d, want %d", resp.Error.Code, -32602)
+	}
+	if !strings.Contains(resp.Error.Message, "Unknown prompt") {
+		t.Errorf("error message = %q, want it to contain 'Unknown prompt'", resp.Error.Message)
+	}
+}
+
+func TestHandlePromptsGetMissingArgument(t *testing.T) {
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "prompts/get",
+		Params:  json.RawMessage(`{"name":"compare_projects"}`),
+		ID:      json.RawMessage(`4`),
+	}
+
+	resp := handlePromptsGet(req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error == nil {
+		t.Fatal("expected error for missing project_names argument, got success")
+	}
+	if resp.Error.Code != -32602 {
+		t.Errorf("error code = %d, want %d", resp.Error.Code, -32602)
+	}
+	if !strings.Contains(resp.Error.Message, "project_names") {
+		t.Errorf("error message = %q, want it to contain 'project_names'", resp.Error.Message)
+	}
+}
+
+func TestInitializeIncludesPromptsCapability(t *testing.T) {
+	cfg := LandscapeConfig{Name: "CNCF", Description: "Cloud Native Computing Foundation"}
+	state := newServerState(cfg)
+
+	req := &jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  "initialize",
+		ID:      json.RawMessage(`1`),
+	}
+
+	resp := handleRequest(context.Background(), req, state)
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Error != nil {
+		t.Fatalf("unexpected error: %s", resp.Error.Message)
+	}
+
+	var result struct {
+		Capabilities struct {
+			Tools     map[string]interface{} `json:"tools"`
+			Resources map[string]interface{} `json:"resources"`
+			Prompts   map[string]interface{} `json:"prompts"`
+		} `json:"capabilities"`
+	}
+	if err := json.Unmarshal(resp.Result, &result); err != nil {
+		t.Fatalf("failed to parse result: %v", err)
+	}
+
+	if result.Capabilities.Tools == nil {
+		t.Error("expected tools capability to be present")
+	}
+	if result.Capabilities.Resources == nil {
+		t.Error("expected resources capability to be present")
+	}
+	if result.Capabilities.Prompts == nil {
+		t.Error("expected prompts capability to be present")
+	}
 }
