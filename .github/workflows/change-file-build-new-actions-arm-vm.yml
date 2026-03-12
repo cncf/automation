@@ -99,15 +99,6 @@ jobs:
           fi
         shell: bash
 
-      - name: Cleanup SSH keys
-        if: always()
-        run: |
-          if [ -f "${{ github.workspace }}/id_rsa" ]; then
-            shred -u "${{ github.workspace }}/id_rsa" || rm -f "${{ github.workspace }}/id_rsa"
-          fi
-          rm -f "${{ github.workspace }}/id_rsa.pub"
-        shell: bash
-
   run-kind-with-arc:
     runs-on: ubuntu-latest
     needs: build
@@ -169,15 +160,7 @@ jobs:
 
       - name: Wait for completion signal
         run: |
-          MAX_ITERATIONS=120
-          ITERATION=0
           while true; do
-            ITERATION=$((ITERATION + 1))
-            if [ "$ITERATION" -gt "$MAX_ITERATIONS" ]; then
-              echo "ERROR: Timed out after $MAX_ITERATIONS iterations"
-              exit 1
-            fi
-
             if ! RESULT=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs); then
               echo "WARNING: gh api call failed, retrying..."
               sleep 30
@@ -197,7 +180,7 @@ jobs:
               break
             fi
 
-            echo "There are $PENDING pending jobs (iteration $ITERATION/$MAX_ITERATIONS)..."
+            echo "There are $PENDING pending jobs..."
             sleep 30
           done
 
