@@ -226,6 +226,56 @@ func TestGetProjectDetails(t *testing.T) {
 			t.Errorf("count = %d, want 1", count)
 		}
 	})
+
+	t.Run("enriched response fields", func(t *testing.T) {
+		result, err := getProjectDetails(ds, "Kubernetes")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		var resp struct {
+			Count    int `json:"count"`
+			Projects []struct {
+				Name         string            `json:"name"`
+				Description  string            `json:"description"`
+				HomepageURL  string            `json:"homepage_url"`
+				OSS          bool              `json:"oss"`
+				Repositories []Repository      `json:"repositories"`
+				Links        map[string]string `json:"links"`
+			} `json:"projects"`
+		}
+		if err := json.Unmarshal([]byte(result), &resp); err != nil {
+			t.Fatalf("failed to parse JSON: %v", err)
+		}
+		if resp.Count != 1 {
+			t.Fatalf("count = %d, want 1", resp.Count)
+		}
+		p := resp.Projects[0]
+		if p.Description == "" {
+			t.Error("expected non-empty description")
+		}
+		if p.HomepageURL != "https://kubernetes.io/" {
+			t.Errorf("homepage_url = %q, want %q", p.HomepageURL, "https://kubernetes.io/")
+		}
+		if !p.OSS {
+			t.Error("expected oss = true")
+		}
+		if len(p.Repositories) != 2 {
+			t.Errorf("repositories count = %d, want 2", len(p.Repositories))
+		}
+		if p.Links == nil {
+			t.Fatal("expected non-nil links")
+		}
+		if _, ok := p.Links["devstats"]; !ok {
+			t.Error("expected devstats link")
+		}
+		if _, ok := p.Links["blog"]; !ok {
+			t.Error("expected blog link")
+		}
+		if _, ok := p.Links["slack"]; !ok {
+			t.Error("expected slack link")
+		}
+	})
 }
 
 // ---------------------------------------------------------------------------
