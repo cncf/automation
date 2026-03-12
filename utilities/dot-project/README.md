@@ -235,12 +235,17 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Update Landscape
         uses: cncf/automation/.github/actions/landscape-update@main

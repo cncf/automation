@@ -14,40 +14,31 @@ on:
       - 'utilities/dot-project/example/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      uses: actions/checkout@v6
+      with:
+        persist-credentials: false
 
     - name: Set up Go
-      uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+      uses: actions/setup-go@v6
       with:
-        go-version: '1.24'
-
-    - name: Cache dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/go-build
-          ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+        go-version-file: utilities/dot-project/go.mod
 
     - name: Cache validation results
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: utilities/dot-project/.cache
-        key: ${{ runner.os }}-validator-cache-${{ github.run_id }}
+        key: ${{ runner.os }}-validator-cache-${{ hashFiles('utilities/dot-project/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-validator-cache-
-
-    - name: Download dependencies
-      working-directory: utilities/dot-project/
-      run: go mod download
 
     - name: Vet
       working-directory: utilities/dot-project/

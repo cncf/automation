@@ -244,11 +244,16 @@ on:
       - 'project.yaml'
       - 'maintainers.yaml'
 
+permissions:
+  contents: read
+
 jobs:
   validate-project:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - uses: cncf/automation/.github/actions/validate-project@main
         with:
@@ -257,8 +262,9 @@ jobs:
   validate-maintainers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - uses: cncf/automation/.github/actions/validate-maintainers@main
