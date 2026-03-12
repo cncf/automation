@@ -82,7 +82,13 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 			return fmt.Errorf("getting VMI status: %w", err)
 		}
 
-		phase, _, _ := unstructured.NestedString(result.Object, "status", "phase")
+		phase, found, err := unstructured.NestedString(result.Object, "status", "phase")
+		if err != nil {
+			return fmt.Errorf("reading VMI status.phase: %w", err)
+		}
+		if !found {
+			return fmt.Errorf("VMI %q is missing status.phase", m.name)
+		}
 		log.Info("waiting for VMI to be running", "name", m.name, "phase", phase)
 
 		switch phase {
