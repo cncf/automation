@@ -430,6 +430,7 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 // MemberQuery holds the parameters for querying members.
 type MemberQuery struct {
 	Tier       string
+	Category   string
 	JoinedFrom string
 	JoinedTo   string
 	Limit      int
@@ -465,6 +466,11 @@ func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 
 		// Filter by tier
 		if q.Tier != "" && !isMemberTier(item, q.Tier) {
+			continue
+		}
+
+		// Filter by category
+		if q.Category != "" && !strings.EqualFold(item.Category, q.Category) {
 			continue
 		}
 

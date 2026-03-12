@@ -387,6 +387,10 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 				"type":        "string",
 				"description": "Filter by membership tier (e.g., Gold, Silver, Platinum, End User Supporter)",
 			},
+			"category": map[string]interface{}{
+				"type":        "string",
+				"description": "Filter by category (e.g., CNCF Members)",
+			},
 			"joined_from": map[string]interface{}{
 				"type":        "string",
 				"description": "Filter members joined on or after this date (YYYY-MM-DD)",
@@ -530,6 +534,7 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset) *jsonRPCResponse {
 	var args struct {
 		Tier       string `json:"tier"`
+		Category   string `json:"category"`
 		JoinedFrom string `json:"joined_from"`
 		JoinedTo   string `json:"joined_to"`
 		Limit      int    `json:"limit"`
@@ -545,6 +550,7 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 
 	result, err := queryMembers(ds, MemberQuery{
 		Tier:       args.Tier,
+		Category:   args.Category,
 		JoinedFrom: args.JoinedFrom,
 		JoinedTo:   args.JoinedTo,
 		Limit:      args.Limit,

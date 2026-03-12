@@ -219,6 +219,17 @@ func TestQueryMembers(t *testing.T) {
 			t.Errorf("count = %d, want 1", count)
 		}
 	})
+
+	t.Run("filter by category", func(t *testing.T) {
+		result, err := queryMembers(ds, MemberQuery{Category: "CNCF Members", Limit: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 3 {
+			t.Errorf("count = %d, want 3", count)
+		}
+	})
 }
 
 // ---------------------------------------------------------------------------
