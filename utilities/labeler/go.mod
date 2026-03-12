@@ -1,10 +1,10 @@
 module labeler
 
-go 1.24.5
+go 1.25.0
 
 require (
 	github.com/google/go-github/v55 v55.0.0
-	golang.org/x/oauth2 v0.30.0
+	golang.org/x/oauth2 v0.36.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
