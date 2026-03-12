@@ -7,7 +7,7 @@ terraform {
     # Linode provider - pinned to minor version for stability
     linode = {
       source  = "linode/linode"
-      version = "~> 2.41.0"
+      version = "~> 3.9.0"
     }
     # Helm provider - pinned to minor version for stability
     helm = {
