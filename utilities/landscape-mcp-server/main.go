@@ -343,6 +343,14 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 				"type":        "string",
 				"description": "Filter by project name (case-insensitive substring match)",
 			},
+			"category": map[string]interface{}{
+				"type":        "string",
+				"description": "Filter by category (e.g., Provisioning, Runtime, Observability and Analysis)",
+			},
+			"subcategory": map[string]interface{}{
+				"type":        "string",
+				"description": "Filter by subcategory (e.g., Container Runtime, Service Mesh)",
+			},
 			"graduated_from": map[string]interface{}{
 				"type":        "string",
 				"description": "Filter projects graduated on or after this date (YYYY-MM-DD)",
@@ -476,6 +484,8 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 	var args struct {
 		Maturity       string `json:"maturity"`
 		Name           string `json:"name"`
+		Category       string `json:"category"`
+		Subcategory    string `json:"subcategory"`
 		GraduatedFrom  string `json:"graduated_from"`
 		GraduatedTo    string `json:"graduated_to"`
 		IncubatingFrom string `json:"incubating_from"`
@@ -496,6 +506,8 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 	result, err := queryProjects(ds, ProjectQuery{
 		Maturity:       args.Maturity,
 		Name:           args.Name,
+		Category:       args.Category,
+		Subcategory:    args.Subcategory,
 		GraduatedFrom:  args.GraduatedFrom,
 		GraduatedTo:    args.GraduatedTo,
 		IncubatingFrom: args.IncubatingFrom,

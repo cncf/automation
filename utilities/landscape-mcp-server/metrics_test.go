@@ -137,6 +137,36 @@ func TestQueryProjects(t *testing.T) {
 			t.Fatal("expected error for invalid date, got nil")
 		}
 	})
+
+	t.Run("filter by category", func(t *testing.T) {
+		result, err := queryProjects(ds, ProjectQuery{Category: "Provisioning", Limit: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 1 {
+			t.Errorf("count = %d, want 1", count)
+		}
+		names := jsonProjectNames(t, result)
+		if len(names) == 0 || names[0] != "Akri" {
+			t.Errorf("expected Akri, got %v", names)
+		}
+	})
+
+	t.Run("filter by subcategory", func(t *testing.T) {
+		result, err := queryProjects(ds, ProjectQuery{Subcategory: "Monitoring", Limit: 100})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		count := jsonInt(t, result, "count")
+		if count != 1 {
+			t.Errorf("count = %d, want 1", count)
+		}
+		names := jsonProjectNames(t, result)
+		if len(names) == 0 || names[0] != "OpenTelemetry" {
+			t.Errorf("expected OpenTelemetry, got %v", names)
+		}
+	})
 }
 
 // ---------------------------------------------------------------------------

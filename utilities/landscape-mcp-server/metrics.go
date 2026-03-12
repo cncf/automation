@@ -267,6 +267,8 @@ func membersJoinedByTier(ds *Dataset, tier string, year int) []string {
 type ProjectQuery struct {
 	Maturity       string
 	Name           string
+	Category       string
+	Subcategory    string
 	GraduatedFrom  string
 	GraduatedTo    string
 	IncubatingFrom string
@@ -330,6 +332,15 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 	for _, item := range ds.Items {
 		// Filter by maturity
 		if q.Maturity != "" && !strings.EqualFold(item.Maturity, q.Maturity) {
+			continue
+		}
+
+		// Filter by category
+		if q.Category != "" && !strings.EqualFold(item.Category, q.Category) {
+			continue
+		}
+		// Filter by subcategory
+		if q.Subcategory != "" && !strings.EqualFold(item.Subcategory, q.Subcategory) {
 			continue
 		}
 
