@@ -73,7 +73,7 @@ func TestQueryProjects(t *testing.T) {
 	ds := loadTestDataset(t)
 
 	t.Run("no filters returns all projects", func(t *testing.T) {
-		result, err := queryProjects(ds, "", "", "", "", "", "", "", "", 100)
+		result, err := queryProjects(ds, ProjectQuery{Limit: 100})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -84,7 +84,7 @@ func TestQueryProjects(t *testing.T) {
 	})
 
 	t.Run("filter by maturity graduated", func(t *testing.T) {
-		result, err := queryProjects(ds, "graduated", "", "", "", "", "", "", "", 100)
+		result, err := queryProjects(ds, ProjectQuery{Maturity: "graduated", Limit: 100})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -95,7 +95,7 @@ func TestQueryProjects(t *testing.T) {
 	})
 
 	t.Run("filter by name case-insensitive substring", func(t *testing.T) {
-		result, err := queryProjects(ds, "", "kube", "", "", "", "", "", "", 100)
+		result, err := queryProjects(ds, ProjectQuery{Name: "kube", Limit: 100})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -110,7 +110,7 @@ func TestQueryProjects(t *testing.T) {
 	})
 
 	t.Run("filter by graduated date range", func(t *testing.T) {
-		result, err := queryProjects(ds, "", "", "2018-01-01", "2019-01-01", "", "", "", "", 100)
+		result, err := queryProjects(ds, ProjectQuery{GraduatedFrom: "2018-01-01", GraduatedTo: "2019-01-01", Limit: 100})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -121,7 +121,7 @@ func TestQueryProjects(t *testing.T) {
 	})
 
 	t.Run("limit constrains results", func(t *testing.T) {
-		result, err := queryProjects(ds, "", "", "", "", "", "", "", "", 1)
+		result, err := queryProjects(ds, ProjectQuery{Limit: 1})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -132,7 +132,7 @@ func TestQueryProjects(t *testing.T) {
 	})
 
 	t.Run("invalid date returns error", func(t *testing.T) {
-		_, err := queryProjects(ds, "", "", "bad-date", "", "", "", "", "", 100)
+		_, err := queryProjects(ds, ProjectQuery{GraduatedFrom: "bad-date", Limit: 100})
 		if err == nil {
 			t.Fatal("expected error for invalid date, got nil")
 		}
@@ -147,7 +147,7 @@ func TestQueryMembers(t *testing.T) {
 	ds := loadTestDataset(t)
 
 	t.Run("no filters returns all members", func(t *testing.T) {
-		result, err := queryMembers(ds, "", "", "", 100)
+		result, err := queryMembers(ds, MemberQuery{Limit: 100})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -158,7 +158,7 @@ func TestQueryMembers(t *testing.T) {
 	})
 
 	t.Run("filter by tier Gold", func(t *testing.T) {
-		result, err := queryMembers(ds, "Gold", "", "", 100)
+		result, err := queryMembers(ds, MemberQuery{Tier: "Gold", Limit: 100})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -169,7 +169,7 @@ func TestQueryMembers(t *testing.T) {
 	})
 
 	t.Run("filter by joined_from", func(t *testing.T) {
-		result, err := queryMembers(ds, "", "2026-01-01", "", 100)
+		result, err := queryMembers(ds, MemberQuery{JoinedFrom: "2026-01-01", Limit: 100})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -180,7 +180,7 @@ func TestQueryMembers(t *testing.T) {
 	})
 
 	t.Run("limit constrains results", func(t *testing.T) {
-		result, err := queryMembers(ds, "", "", "", 1)
+		result, err := queryMembers(ds, MemberQuery{Limit: 1})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

@@ -104,7 +104,8 @@ func readSource(ctx context.Context, filePath, url string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		resp, err := http.DefaultClient.Do(req)
+		client := &http.Client{Timeout: 30 * time.Second}
+		resp, err := client.Do(req)
 		if err != nil {
 			return nil, err
 		}

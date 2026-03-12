@@ -8,6 +8,25 @@ import (
 	"time"
 )
 
+type projectResult struct {
+	Name         string `json:"name"`
+	Category     string `json:"category"`
+	Subcategory  string `json:"subcategory"`
+	Maturity     string `json:"maturity,omitempty"`
+	AcceptedAt   string `json:"accepted_at,omitempty"`
+	IncubatingAt string `json:"incubating_at,omitempty"`
+	GraduatedAt  string `json:"graduated_at,omitempty"`
+	JoinedAt     string `json:"joined_at,omitempty"`
+}
+
+type memberResult struct {
+	Name              string `json:"name"`
+	Category          string `json:"category"`
+	Subcategory       string `json:"subcategory"`
+	MemberSubcategory string `json:"member_subcategory,omitempty"`
+	JoinedAt          string `json:"joined_at,omitempty"`
+}
+
 func executeMetric(metric string, ds *Dataset, now time.Time) (string, error) {
 	switch metric {
 	case "incubating_project_count":
@@ -199,59 +218,61 @@ func membersJoinedByTier(ds *Dataset, tier string, year int) []string {
 	return members
 }
 
-// queryProjects filters and returns projects based on various criteria
-func queryProjects(ds *Dataset, maturity, name, graduatedFrom, graduatedTo, incubatingFrom, incubatingTo, acceptedFrom, acceptedTo string, limit int) (string, error) {
-	type projectResult struct {
-		Name         string `json:"name"`
-		Category     string `json:"category"`
-		Subcategory  string `json:"subcategory"`
-		Maturity     string `json:"maturity,omitempty"`
-		AcceptedAt   string `json:"accepted_at,omitempty"`
-		IncubatingAt string `json:"incubating_at,omitempty"`
-		GraduatedAt  string `json:"graduated_at,omitempty"`
-		JoinedAt     string `json:"joined_at,omitempty"`
-	}
+// ProjectQuery holds the parameters for querying projects.
+type ProjectQuery struct {
+	Maturity       string
+	Name           string
+	GraduatedFrom  string
+	GraduatedTo    string
+	IncubatingFrom string
+	IncubatingTo   string
+	AcceptedFrom   string
+	AcceptedTo     string
+	Limit          int
+}
 
+// queryProjects filters and returns projects based on various criteria
+func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 	// Parse date filters
 	var gradFromDate, gradToDate, incFromDate, incToDate, accFromDate, accToDate *time.Time
 
-	if graduatedFrom != "" {
-		d, err := time.Parse("2006-01-02", graduatedFrom)
+	if q.GraduatedFrom != "" {
+		d, err := time.Parse("2006-01-02", q.GraduatedFrom)
 		if err != nil {
 			return "", fmt.Errorf("invalid graduated_from date: %w", err)
 		}
 		gradFromDate = &d
 	}
-	if graduatedTo != "" {
-		d, err := time.Parse("2006-01-02", graduatedTo)
+	if q.GraduatedTo != "" {
+		d, err := time.Parse("2006-01-02", q.GraduatedTo)
 		if err != nil {
 			return "", fmt.Errorf("invalid graduated_to date: %w", err)
 		}
 		gradToDate = &d
 	}
-	if incubatingFrom != "" {
-		d, err := time.Parse("2006-01-02", incubatingFrom)
+	if q.IncubatingFrom != "" {
+		d, err := time.Parse("2006-01-02", q.IncubatingFrom)
 		if err != nil {
 			return "", fmt.Errorf("invalid incubating_from date: %w", err)
 		}
 		incFromDate = &d
 	}
-	if incubatingTo != "" {
-		d, err := time.Parse("2006-01-02", incubatingTo)
+	if q.IncubatingTo != "" {
+		d, err := time.Parse("2006-01-02", q.IncubatingTo)
 		if err != nil {
 			return "", fmt.Errorf("invalid incubating_to date: %w", err)
 		}
 		incToDate = &d
 	}
-	if acceptedFrom != "" {
-		d, err := time.Parse("2006-01-02", acceptedFrom)
+	if q.AcceptedFrom != "" {
+		d, err := time.Parse("2006-01-02", q.AcceptedFrom)
 		if err != nil {
 			return "", fmt.Errorf("invalid accepted_from date: %w", err)
 		}
 		accFromDate = &d
 	}
-	if acceptedTo != "" {
-		d, err := time.Parse("2006-01-02", acceptedTo)
+	if q.AcceptedTo != "" {
+		d, err := time.Parse("2006-01-02", q.AcceptedTo)
 		if err != nil {
 			return "", fmt.Errorf("invalid accepted_to date: %w", err)
 		}
@@ -259,16 +280,16 @@ func queryProjects(ds *Dataset, maturity, name, graduatedFrom, graduatedTo, incu
 	}
 
 	results := make([]projectResult, 0)
-	nameLower := strings.ToLower(name)
+	nameLower := strings.ToLower(q.Name)
 
 	for _, item := range ds.Items {
 		// Filter by maturity
-		if maturity != "" && !strings.EqualFold(item.Maturity, maturity) {
+		if q.Maturity != "" && !strings.EqualFold(item.Maturity, q.Maturity) {
 			continue
 		}
 
 		// Filter by name
-		if name != "" && !strings.Contains(strings.ToLower(item.Name), nameLower) {
+		if q.Name != "" && !strings.Contains(strings.ToLower(item.Name), nameLower) {
 			continue
 		}
 
@@ -333,7 +354,7 @@ func queryProjects(ds *Dataset, maturity, name, graduatedFrom, graduatedTo, incu
 		}
 
 		results = append(results, result)
-		if len(results) >= limit {
+		if len(results) >= q.Limit {
 			break
 		}
 	}
@@ -350,28 +371,28 @@ func queryProjects(ds *Dataset, maturity, name, graduatedFrom, graduatedTo, incu
 	return string(data), nil
 }
 
-// queryMembers filters and returns members based on tier and join dates
-func queryMembers(ds *Dataset, tier, joinedFrom, joinedTo string, limit int) (string, error) {
-	type memberResult struct {
-		Name              string `json:"name"`
-		Category          string `json:"category"`
-		Subcategory       string `json:"subcategory"`
-		MemberSubcategory string `json:"member_subcategory,omitempty"`
-		JoinedAt          string `json:"joined_at,omitempty"`
-	}
+// MemberQuery holds the parameters for querying members.
+type MemberQuery struct {
+	Tier       string
+	JoinedFrom string
+	JoinedTo   string
+	Limit      int
+}
 
+// queryMembers filters and returns members based on tier and join dates
+func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 	// Parse date filters
 	var joinFromDate, joinToDate *time.Time
 
-	if joinedFrom != "" {
-		d, err := time.Parse("2006-01-02", joinedFrom)
+	if q.JoinedFrom != "" {
+		d, err := time.Parse("2006-01-02", q.JoinedFrom)
 		if err != nil {
 			return "", fmt.Errorf("invalid joined_from date: %w", err)
 		}
 		joinFromDate = &d
 	}
-	if joinedTo != "" {
-		d, err := time.Parse("2006-01-02", joinedTo)
+	if q.JoinedTo != "" {
+		d, err := time.Parse("2006-01-02", q.JoinedTo)
 		if err != nil {
 			return "", fmt.Errorf("invalid joined_to date: %w", err)
 		}
@@ -387,7 +408,7 @@ func queryMembers(ds *Dataset, tier, joinedFrom, joinedTo string, limit int) (st
 		}
 
 		// Filter by tier
-		if tier != "" && !isMemberTier(item, tier) {
+		if q.Tier != "" && !isMemberTier(item, q.Tier) {
 			continue
 		}
 
@@ -414,7 +435,7 @@ func queryMembers(ds *Dataset, tier, joinedFrom, joinedTo string, limit int) (st
 		}
 
 		results = append(results, result)
-		if len(results) >= limit {
+		if len(results) >= q.Limit {
 			break
 		}
 	}
@@ -433,19 +454,8 @@ func queryMembers(ds *Dataset, tier, joinedFrom, joinedTo string, limit int) (st
 
 // getProjectDetails returns detailed information about a specific project
 func getProjectDetails(ds *Dataset, name string) (string, error) {
-	type projectDetail struct {
-		Name         string `json:"name"`
-		Category     string `json:"category"`
-		Subcategory  string `json:"subcategory"`
-		Maturity     string `json:"maturity,omitempty"`
-		AcceptedAt   string `json:"accepted_at,omitempty"`
-		IncubatingAt string `json:"incubating_at,omitempty"`
-		GraduatedAt  string `json:"graduated_at,omitempty"`
-		JoinedAt     string `json:"joined_at,omitempty"`
-	}
-
 	nameLower := strings.ToLower(name)
-	var matches []projectDetail
+	var matches []projectResult
 
 	for _, item := range ds.Items {
 		// Only include projects (items with maturity)
@@ -454,7 +464,7 @@ func getProjectDetails(ds *Dataset, name string) (string, error) {
 		}
 
 		if strings.Contains(strings.ToLower(item.Name), nameLower) {
-			detail := projectDetail{
+			detail := projectResult{
 				Name:        item.Name,
 				Category:    item.Category,
 				Subcategory: item.Subcategory,

@@ -480,11 +480,21 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 			return errorResponse(id, -32602, "Invalid arguments", nil)
 		}
 	}
-	if args.Limit == 0 {
+	if args.Limit <= 0 || args.Limit > 500 {
 		args.Limit = 100
 	}
 
-	result, err := queryProjects(ds, args.Maturity, args.Name, args.GraduatedFrom, args.GraduatedTo, args.IncubatingFrom, args.IncubatingTo, args.AcceptedFrom, args.AcceptedTo, args.Limit)
+	result, err := queryProjects(ds, ProjectQuery{
+		Maturity:       args.Maturity,
+		Name:           args.Name,
+		GraduatedFrom:  args.GraduatedFrom,
+		GraduatedTo:    args.GraduatedTo,
+		IncubatingFrom: args.IncubatingFrom,
+		IncubatingTo:   args.IncubatingTo,
+		AcceptedFrom:   args.AcceptedFrom,
+		AcceptedTo:     args.AcceptedTo,
+		Limit:          args.Limit,
+	})
 	if err != nil {
 		return errorResponse(id, -32000, err.Error(), nil)
 	}
@@ -508,11 +518,16 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 			return errorResponse(id, -32602, "Invalid arguments", nil)
 		}
 	}
-	if args.Limit == 0 {
+	if args.Limit <= 0 || args.Limit > 500 {
 		args.Limit = 100
 	}
 
-	result, err := queryMembers(ds, args.Tier, args.JoinedFrom, args.JoinedTo, args.Limit)
+	result, err := queryMembers(ds, MemberQuery{
+		Tier:       args.Tier,
+		JoinedFrom: args.JoinedFrom,
+		JoinedTo:   args.JoinedTo,
+		Limit:      args.Limit,
+	})
 	if err != nil {
 		return errorResponse(id, -32000, err.Error(), nil)
 	}
