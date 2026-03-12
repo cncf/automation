@@ -87,20 +87,6 @@ var (
 			Name:        "get_project_details",
 			Description: "Get detailed information about a specific CNCF project by name.",
 		},
-		// Legacy aggregated tool retained for compatibility with earlier clients.
-		"query_landscape": {
-			Name:        "query_landscape",
-			Description: "Run predefined analytical queries over the CNCF landscape dataset.",
-			Metrics: []string{
-				"incubating_project_count",
-				"sandbox_projects_joined_this_year",
-				"projects_graduated_last_year",
-				"gold_members_joined_this_year",
-				"silver_members_joined_this_year",
-				"silver_members_raised_last_month",
-				"gold_members_raised_this_year",
-			},
-		},
 	}
 	advertisedTools = []string{
 		"query_projects",
