@@ -9,7 +9,7 @@ COPY *.go ./
 
 RUN go build -o landscape2-mcp-server
 
-FROM alpine:3.19
+FROM alpine:3.23
 
 RUN apk add --no-cache ca-certificates
 
