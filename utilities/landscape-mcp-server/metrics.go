@@ -676,3 +676,267 @@ func getProjectDetails(ds *Dataset, name string) (string, error) {
 	}
 	return string(data), nil
 }
+
+// ---------------------------------------------------------------------------
+// Discovery tools
+// ---------------------------------------------------------------------------
+
+type categoryResult struct {
+	Name          string              `json:"name"`
+	ItemCount     int                 `json:"item_count"`
+	Subcategories []subcategoryResult `json:"subcategories"`
+}
+
+type subcategoryResult struct {
+	Name      string `json:"name"`
+	ItemCount int    `json:"item_count"`
+}
+
+// listCategories returns all categories and subcategories with item counts.
+func listCategories(ds *Dataset) (string, error) {
+	catMap := make(map[string]map[string]int) // category -> subcategory -> count
+
+	for _, item := range ds.Items {
+		if _, ok := catMap[item.Category]; !ok {
+			catMap[item.Category] = make(map[string]int)
+		}
+		catMap[item.Category][item.Subcategory]++
+	}
+
+	// Build sorted result
+	catNames := make([]string, 0, len(catMap))
+	for name := range catMap {
+		catNames = append(catNames, name)
+	}
+	sort.Strings(catNames)
+
+	categories := make([]categoryResult, 0, len(catNames))
+	for _, catName := range catNames {
+		subs := catMap[catName]
+		subNames := make([]string, 0, len(subs))
+		for subName := range subs {
+			subNames = append(subNames, subName)
+		}
+		sort.Strings(subNames)
+
+		totalCount := 0
+		subcategories := make([]subcategoryResult, 0, len(subNames))
+		for _, subName := range subNames {
+			count := subs[subName]
+			totalCount += count
+			subcategories = append(subcategories, subcategoryResult{
+				Name:      subName,
+				ItemCount: count,
+			})
+		}
+
+		categories = append(categories, categoryResult{
+			Name:          catName,
+			ItemCount:     totalCount,
+			Subcategories: subcategories,
+		})
+	}
+
+	response := map[string]interface{}{
+		"categories": categories,
+	}
+	data, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+// landscapeSummary provides a high-level statistical overview of the landscape.
+func landscapeSummary(ds *Dataset) (string, error) {
+	totalItems := len(ds.Items)
+	totalProjects := 0
+	totalMembers := 0
+	projectsByMaturity := make(map[string]int)
+	membersByTier := make(map[string]int)
+	categoriesSet := make(map[string]struct{})
+	itemsWithCB := 0
+
+	for _, item := range ds.Items {
+		categoriesSet[item.Category] = struct{}{}
+
+		// Count projects (items with non-empty maturity)
+		if item.Maturity != "" {
+			totalProjects++
+			projectsByMaturity[item.Maturity]++
+		}
+
+		// Count members (items in a category containing "member")
+		if strings.Contains(strings.ToLower(item.Category), "member") {
+			totalMembers++
+			tier := item.MemberSubcategory
+			if tier == "" {
+				tier = item.Subcategory
+			}
+			if tier != "" {
+				membersByTier[tier]++
+			}
+		}
+
+		// Count items with crunchbase data
+		if item.CrunchbaseURL != "" {
+			if _, ok := ds.CrunchbaseOrgs[item.CrunchbaseURL]; ok {
+				itemsWithCB++
+			}
+		}
+	}
+
+	response := map[string]interface{}{
+		"total_items":                totalItems,
+		"total_projects":             totalProjects,
+		"total_members":              totalMembers,
+		"projects_by_maturity":       projectsByMaturity,
+		"members_by_tier":            membersByTier,
+		"categories_count":           len(categoriesSet),
+		"items_with_crunchbase_data": itemsWithCB,
+	}
+	data, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+type searchResultItem struct {
+	Name              string   `json:"name"`
+	Category          string   `json:"category"`
+	Subcategory       string   `json:"subcategory"`
+	Maturity          string   `json:"maturity,omitempty"`
+	MemberSubcategory string   `json:"member_subcategory,omitempty"`
+	HomepageURL       string   `json:"homepage_url,omitempty"`
+	MatchFields       []string `json:"match_fields"`
+}
+
+// searchLandscape performs a case-insensitive substring search across items.
+func searchLandscape(ds *Dataset, query string, limit int) (string, error) {
+	if query == "" {
+		return "", fmt.Errorf("query parameter is required")
+	}
+	if limit <= 0 {
+		limit = 20
+	}
+	if limit > 100 {
+		limit = 100
+	}
+
+	queryLower := strings.ToLower(query)
+	results := make([]searchResultItem, 0)
+
+	for _, item := range ds.Items {
+		var matchFields []string
+
+		if strings.Contains(strings.ToLower(item.Name), queryLower) {
+			matchFields = append(matchFields, "name")
+		}
+		if strings.Contains(strings.ToLower(item.Description), queryLower) {
+			matchFields = append(matchFields, "description")
+		}
+		if strings.Contains(strings.ToLower(item.Category), queryLower) {
+			matchFields = append(matchFields, "category")
+		}
+		if strings.Contains(strings.ToLower(item.Subcategory), queryLower) {
+			matchFields = append(matchFields, "subcategory")
+		}
+		if strings.Contains(strings.ToLower(item.HomepageURL), queryLower) {
+			matchFields = append(matchFields, "homepage_url")
+		}
+
+		if len(matchFields) == 0 {
+			continue
+		}
+
+		result := searchResultItem{
+			Name:        item.Name,
+			Category:    item.Category,
+			Subcategory: item.Subcategory,
+			HomepageURL: item.HomepageURL,
+			MatchFields: matchFields,
+		}
+		if item.Maturity != "" {
+			result.Maturity = item.Maturity
+		}
+		if strings.Contains(strings.ToLower(item.Category), "member") {
+			result.MemberSubcategory = item.MemberSubcategory
+		}
+
+		results = append(results, result)
+		if len(results) >= limit {
+			break
+		}
+	}
+
+	response := map[string]interface{}{
+		"count": len(results),
+		"items": results,
+	}
+	data, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+type memberDetailResult struct {
+	Name              string            `json:"name"`
+	Category          string            `json:"category"`
+	Subcategory       string            `json:"subcategory"`
+	MemberSubcategory string            `json:"member_subcategory,omitempty"`
+	JoinedAt          string            `json:"joined_at,omitempty"`
+	HomepageURL       string            `json:"homepage_url,omitempty"`
+	Links             map[string]string `json:"links,omitempty"`
+	Organization      *orgSummary       `json:"organization,omitempty"`
+}
+
+// getMemberDetails returns detailed information about a specific member
+func getMemberDetails(ds *Dataset, name string) (string, error) {
+	nameLower := strings.ToLower(name)
+	var matches []memberDetailResult
+
+	for _, item := range ds.Items {
+		if !strings.Contains(strings.ToLower(item.Category), "member") {
+			continue
+		}
+		if !strings.Contains(strings.ToLower(item.Name), nameLower) {
+			continue
+		}
+
+		detail := memberDetailResult{
+			Name:              item.Name,
+			Category:          item.Category,
+			Subcategory:       item.Subcategory,
+			MemberSubcategory: item.MemberSubcategory,
+			HomepageURL:       item.HomepageURL,
+		}
+		if item.JoinedAt != nil {
+			detail.JoinedAt = item.JoinedAt.Format("2006-01-02")
+		}
+		// Build links
+		detail.Links = buildLinks(item)
+		// Look up Crunchbase org
+		if item.CrunchbaseURL != "" {
+			if org, ok := ds.CrunchbaseOrgs[item.CrunchbaseURL]; ok {
+				detail.Organization = buildOrgSummary(org)
+			}
+		}
+		matches = append(matches, detail)
+	}
+
+	if len(matches) == 0 {
+		return "", fmt.Errorf("no member found matching name: %s", name)
+	}
+
+	response := map[string]interface{}{
+		"count":   len(matches),
+		"members": matches,
+	}
+	data, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}

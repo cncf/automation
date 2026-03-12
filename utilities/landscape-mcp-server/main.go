@@ -95,11 +95,31 @@ func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
 				Name:        "get_project_details",
 				Description: fmt.Sprintf("Get detailed information about a specific %s project by name.", cfg.Name),
 			},
+			"get_member_details": {
+				Name:        "get_member_details",
+				Description: fmt.Sprintf("Get detailed information about a specific %s member by name.", cfg.Name),
+			},
+			"list_categories": {
+				Name:        "list_categories",
+				Description: fmt.Sprintf("List all categories and subcategories in the %s landscape with item counts.", cfg.Name),
+			},
+			"landscape_summary": {
+				Name:        "landscape_summary",
+				Description: fmt.Sprintf("Get a high-level statistical overview of the entire %s landscape.", cfg.Name),
+			},
+			"search_landscape": {
+				Name:        "search_landscape",
+				Description: fmt.Sprintf("Full-text search across all %s landscape items by name, description, category, subcategory, or homepage URL.", cfg.Name),
+			},
 		},
 		advertisedTools: []string{
 			"query_projects",
 			"query_members",
 			"get_project_details",
+			"get_member_details",
+			"list_categories",
+			"landscape_summary",
+			"search_landscape",
 			"project_metrics",
 			"membership_metrics",
 		},
@@ -281,6 +301,14 @@ func handleToolsCall(ctx context.Context, req *jsonRPCRequest, state *serverStat
 		return handleQueryMembers(req.ID, payload.Arguments, dataset)
 	case "get_project_details":
 		return handleGetProjectDetails(req.ID, payload.Arguments, dataset)
+	case "get_member_details":
+		return handleGetMemberDetails(req.ID, payload.Arguments, dataset)
+	case "list_categories":
+		return handleListCategories(req.ID, dataset)
+	case "landscape_summary":
+		return handleLandscapeSummary(req.ID, dataset)
+	case "search_landscape":
+		return handleSearchLandscape(req.ID, payload.Arguments, dataset)
 	default:
 		// Handle metric-based tools
 		var args struct {
@@ -413,6 +441,34 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 			},
 		}
 		schema["required"] = []string{"name"}
+		return schema
+	case "get_member_details":
+		schema["properties"] = map[string]interface{}{
+			"name": map[string]interface{}{
+				"type":        "string",
+				"description": "Member name to search for (case-insensitive)",
+			},
+		}
+		schema["required"] = []string{"name"}
+		return schema
+	case "list_categories":
+		// No additional properties needed
+		return schema
+	case "landscape_summary":
+		// No additional properties needed
+		return schema
+	case "search_landscape":
+		schema["properties"] = map[string]interface{}{
+			"query": map[string]interface{}{
+				"type":        "string",
+				"description": "Search term (case-insensitive substring match)",
+			},
+			"limit": map[string]interface{}{
+				"type":        "integer",
+				"description": "Maximum results (default 20, max 100)",
+			},
+		}
+		schema["required"] = []string{"query"}
 		return schema
 	}
 
@@ -580,6 +636,83 @@ func handleGetProjectDetails(id json.RawMessage, argsRaw json.RawMessage, ds *Da
 	}
 
 	result, err := getProjectDetails(ds, args.Name)
+	if err != nil {
+		return errorResponse(id, -32000, err.Error(), nil)
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"content": []map[string]string{{"type": "text", "text": result}}}),
+		ID:      id,
+	}
+}
+
+func handleGetMemberDetails(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset) *jsonRPCResponse {
+	var args struct {
+		Name string `json:"name"`
+	}
+	if len(argsRaw) > 0 {
+		if err := json.Unmarshal(argsRaw, &args); err != nil {
+			return errorResponse(id, -32602, "Invalid arguments", nil)
+		}
+	}
+	if args.Name == "" {
+		return errorResponse(id, -32602, "name parameter is required", nil)
+	}
+
+	result, err := getMemberDetails(ds, args.Name)
+	if err != nil {
+		return errorResponse(id, -32000, err.Error(), nil)
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"content": []map[string]string{{"type": "text", "text": result}}}),
+		ID:      id,
+	}
+}
+
+func handleListCategories(id json.RawMessage, ds *Dataset) *jsonRPCResponse {
+	result, err := listCategories(ds)
+	if err != nil {
+		return errorResponse(id, -32000, err.Error(), nil)
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"content": []map[string]string{{"type": "text", "text": result}}}),
+		ID:      id,
+	}
+}
+
+func handleLandscapeSummary(id json.RawMessage, ds *Dataset) *jsonRPCResponse {
+	result, err := landscapeSummary(ds)
+	if err != nil {
+		return errorResponse(id, -32000, err.Error(), nil)
+	}
+
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result:  mustJSON(map[string]interface{}{"content": []map[string]string{{"type": "text", "text": result}}}),
+		ID:      id,
+	}
+}
+
+func handleSearchLandscape(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset) *jsonRPCResponse {
+	var args struct {
+		Query string `json:"query"`
+		Limit int    `json:"limit"`
+	}
+	if len(argsRaw) > 0 {
+		if err := json.Unmarshal(argsRaw, &args); err != nil {
+			return errorResponse(id, -32602, "Invalid arguments", nil)
+		}
+	}
+	if args.Query == "" {
+		return errorResponse(id, -32602, "query parameter is required", nil)
+	}
+
+	result, err := searchLandscape(ds, args.Query, args.Limit)
 	if err != nil {
 		return errorResponse(id, -32000, err.Error(), nil)
 	}
