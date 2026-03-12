@@ -12,7 +12,7 @@ terraform {
     # Helm provider - pinned to minor version for stability
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.17.0"
+      version = "~> 3.1.1"
     }
     # Kubernetes provider - pinned to minor version for stability
     kubernetes = {
