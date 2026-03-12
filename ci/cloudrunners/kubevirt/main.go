@@ -76,10 +76,9 @@ func run(cmd *cobra.Command, argv []string) error {
 		return fmt.Errorf("creating ssh key pair: %w", err)
 	}
 
-	// cloud-init: inject the ephemeral SSH public key.
+	// cloud-init: inject the ephemeral SSH public key and disable password-based SSH.
 	userData := fmt.Sprintf(`#cloud-config
-password: ubuntu
-chpasswd: { expire: False }
+ssh_pwauth: false
 ssh_authorized_keys:
   - %s`, strings.TrimSpace(sshKeyPair.PublicKey))
 
