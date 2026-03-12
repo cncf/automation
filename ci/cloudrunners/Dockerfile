@@ -17,7 +17,6 @@ COPY --from=build /app/bin/cloudrunner-kubevirt /cloudrunner-kubevirt
 # Entrypoint script: select the right binary based on the CLOUDRUNNER_PROVIDER
 # environment variable ("oci" or "kubevirt", default: "oci").
 # All arguments are forwarded verbatim to the chosen binary.
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
