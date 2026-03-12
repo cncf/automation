@@ -44,6 +44,8 @@ type serverState struct {
 	mu      sync.RWMutex
 	dataset *Dataset
 	loadErr error
+	cfg     LandscapeConfig
+	tools   toolCatalogData
 }
 
 var outputMu sync.Mutex
@@ -54,51 +56,62 @@ type toolDefinition struct {
 	Metrics     []string
 }
 
-var (
-	toolCatalog = map[string]toolDefinition{
-		"project_metrics": {
-			Name:        "project_metrics",
-			Description: "Answer questions about CNCF project counts and progress.",
-			Metrics: []string{
-				"incubating_project_count",
-				"sandbox_projects_joined_this_year",
-				"projects_graduated_last_year",
-			},
-		},
-		"membership_metrics": {
-			Name:        "membership_metrics",
-			Description: "Answer questions about CNCF membership activity and funding.",
-			Metrics: []string{
-				"gold_members_joined_this_year",
-				"silver_members_joined_this_year",
-				"silver_members_raised_last_month",
-				"gold_members_raised_this_year",
-			},
-		},
-		"query_projects": {
-			Name:        "query_projects",
-			Description: "Query CNCF projects with flexible filtering by maturity, dates, and name. Returns detailed project information.",
-		},
-		"query_members": {
-			Name:        "query_members",
-			Description: "Query CNCF members with flexible filtering by membership tier and join dates.",
-		},
-		"get_project_details": {
-			Name:        "get_project_details",
-			Description: "Get detailed information about a specific CNCF project by name.",
-		},
-	}
-	advertisedTools = []string{
-		"query_projects",
-		"query_members",
-		"get_project_details",
-		"project_metrics",
-		"membership_metrics",
-	}
-)
+type toolCatalogData struct {
+	catalog         map[string]toolDefinition
+	advertisedTools []string
+}
 
-func newServerState() *serverState {
-	return &serverState{ready: make(chan struct{})}
+func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
+	return toolCatalogData{
+		catalog: map[string]toolDefinition{
+			"project_metrics": {
+				Name:        "project_metrics",
+				Description: fmt.Sprintf("Answer questions about %s project counts and progress.", cfg.Name),
+				Metrics: []string{
+					"incubating_project_count",
+					"sandbox_projects_joined_this_year",
+					"projects_graduated_last_year",
+				},
+			},
+			"membership_metrics": {
+				Name:        "membership_metrics",
+				Description: fmt.Sprintf("Answer questions about %s membership activity and funding.", cfg.Name),
+				Metrics: []string{
+					"gold_members_joined_this_year",
+					"silver_members_joined_this_year",
+					"silver_members_raised_last_month",
+					"gold_members_raised_this_year",
+				},
+			},
+			"query_projects": {
+				Name:        "query_projects",
+				Description: fmt.Sprintf("Query %s projects with flexible filtering by maturity, dates, and name. Returns detailed project information.", cfg.Name),
+			},
+			"query_members": {
+				Name:        "query_members",
+				Description: fmt.Sprintf("Query %s members with flexible filtering by membership tier and join dates.", cfg.Name),
+			},
+			"get_project_details": {
+				Name:        "get_project_details",
+				Description: fmt.Sprintf("Get detailed information about a specific %s project by name.", cfg.Name),
+			},
+		},
+		advertisedTools: []string{
+			"query_projects",
+			"query_members",
+			"get_project_details",
+			"project_metrics",
+			"membership_metrics",
+		},
+	}
+}
+
+func newServerState(cfg LandscapeConfig) *serverState {
+	return &serverState{
+		ready: make(chan struct{}),
+		cfg:   cfg,
+		tools: buildToolCatalog(cfg),
+	}
 }
 
 func (s *serverState) setDataset(ds *Dataset, err error) {
@@ -135,12 +148,22 @@ func (s *serverState) waitForDataset(ctx context.Context) (*Dataset, error) {
 func main() {
 	dataFile := flag.String("data-file", "", "Path to the landscape full dataset JSON file")
 	dataURL := flag.String("data-url", "https://landscape.cncf.io/data/full.json", "URL to the landscape full dataset JSON file")
+	landscapeName := flag.String("landscape-name", "", "Name of the landscape (e.g. CNCF)")
+	landscapeDesc := flag.String("landscape-description", "", "Description of the landscape")
 	flag.Parse()
+
+	cfg := defaultConfig()
+	if *landscapeName != "" {
+		cfg.Name = *landscapeName
+	}
+	if *landscapeDesc != "" {
+		cfg.Description = *landscapeDesc
+	}
 
 	log.SetOutput(os.Stderr)
 	log.SetFlags(0)
 
-	state := newServerState()
+	state := newServerState(cfg)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -196,8 +219,8 @@ func handleRequest(ctx context.Context, req *jsonRPCRequest, state *serverState)
 					"tools": map[string]interface{}{},
 				},
 				"serverInfo": map[string]string{
-					"name":    "landscape2-mcp-server-go",
-					"version": "0.1.0",
+					"name":    fmt.Sprintf("%s-landscape-mcp-server", strings.ToLower(state.cfg.Name)),
+					"version": "0.2.0",
 				},
 			}),
 			ID: req.ID,
@@ -205,9 +228,9 @@ func handleRequest(ctx context.Context, req *jsonRPCRequest, state *serverState)
 	case "notifications/initialized":
 		return nil
 	case "tools/list":
-		tools := make([]map[string]interface{}, 0, len(advertisedTools))
-		for _, name := range advertisedTools {
-			def, ok := toolCatalog[name]
+		tools := make([]map[string]interface{}, 0, len(state.tools.advertisedTools))
+		for _, name := range state.tools.advertisedTools {
+			def, ok := state.tools.catalog[name]
 			if !ok {
 				continue
 			}
@@ -240,7 +263,7 @@ func handleToolsCall(ctx context.Context, req *jsonRPCRequest, state *serverStat
 		return errorResponse(req.ID, -32602, "Invalid params", nil)
 	}
 
-	def, ok := toolCatalog[payload.Name]
+	def, ok := state.tools.catalog[payload.Name]
 	if !ok {
 		return errorResponse(req.ID, -32601, "Tool not found", nil)
 	}
