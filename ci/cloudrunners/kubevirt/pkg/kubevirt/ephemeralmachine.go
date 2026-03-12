@@ -122,14 +122,21 @@ func (m *EphemeralMachine) waitForVMIIP(ctx context.Context) (string, error) {
 			return "", fmt.Errorf("getting VMI %q for IP: %w", m.name, err)
 		}
 
-		interfaces, _, _ := unstructured.NestedSlice(result.Object, "status", "interfaces")
-		for _, iface := range interfaces {
-			ifaceMap, ok := iface.(map[string]interface{})
-			if !ok {
-				continue
-			}
-			if ip, ok := ifaceMap["ipAddress"].(string); ok && ip != "" {
-				return ip, nil
+		interfaces, found, err := unstructured.NestedSlice(result.Object, "status", "interfaces")
+		if err != nil {
+			return "", fmt.Errorf("parsing VMI %q status.interfaces: %w", m.name, err)
+		}
+		if !found {
+			log.Info("VMI status.interfaces not found yet, retrying...", "name", m.name)
+		} else {
+			for _, iface := range interfaces {
+				ifaceMap, ok := iface.(map[string]interface{})
+				if !ok {
+					continue
+				}
+				if ip, ok := ifaceMap["ipAddress"].(string); ok && ip != "" {
+					return ip, nil
+				}
 			}
 		}
 
