@@ -8,7 +8,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	golang.org/x/crypto v0.37.0
 	google.golang.org/api v0.229.0
-	k8s.io/klog/v2 v2.130.1
+	k8s.io/klog/v2 v2.140.0
 )
 
 require (
