@@ -60,7 +60,7 @@ jobs:
           # Ensure origin is clean
           git remote set-url origin https://github.com/${{ github.repository }}.git
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # DCO requires a "Signed-off-by" line on every commit. This enables `git commit --signoff`
