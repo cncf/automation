@@ -233,20 +233,32 @@ ssh_authorized_keys:
 		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
 		"sudo sysctl fs.inotify.max_user_instances=1280",
 		"sudo sysctl fs.inotify.max_user_watches=655360",
-		"export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash -x /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
+		"export PATH=$PATH:/home/ubuntu/.local/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
 	}
 
 	for _, cmd := range commands {
 		log.Println("running ssh command", "command", cmd)
 
-		expanded := strings.ReplaceAll(cmd, "${ACTIONS_RUNNER_INPUT_JITCONFIG}", os.Getenv("ACTIONS_RUNNER_INPUT_JITCONFIG"))
+		sensitive := strings.Contains(cmd, "ACTIONS_RUNNER_INPUT_JITCONFIG")
+		expanded := cmd
+		if !sensitive {
+			expanded = strings.ReplaceAll(cmd, "${ACTIONS_RUNNER_INPUT_JITCONFIG}", os.Getenv("ACTIONS_RUNNER_INPUT_JITCONFIG"))
+		}
 
 		output, err := sshClient.RunCommand(ctx, expanded)
 		if err != nil {
-			log.Println(err, "running ssh command", "command", cmd, "output", string(output[:]))
+			if sensitive {
+				log.Println(err, "running ssh command", "command", cmd)
+			} else {
+				log.Println(err, "running ssh command", "command", cmd, "output", string(output[:]))
+			}
 			return fmt.Errorf("running command %q: %w", cmd, err)
 		}
-		log.Println("command succeeded", "command", cmd, "output", string(output))
+		if sensitive {
+			log.Println("command succeeded", "command", cmd)
+		} else {
+			log.Println("command succeeded", "command", cmd, "output", string(output))
+		}
 	}
 
 	return nil
