@@ -11,7 +11,7 @@ COPY * /app/
 RUN go mod download
 
 # Build the Go binary
-RUN go build -o labeler main.go
+RUN go build -o labeler .
 
 # Use a minimal base image for the final container
 FROM gcr.io/distroless/base-debian12

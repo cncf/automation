@@ -20,12 +20,6 @@ env:
   # IMAGE_NAME maps to the Docker image name
   IMAGE_NAME: cncf/external-gha-runner
 
-  # Map current release tag to the version of booty
-  BOOTY_VERSION: $GITHUB_REF_NAME
-  # Map last repo update to the build timestamp
-  BOOTY_TIMESTAMP: ${{ github.event.repository.updated_at}}
-
-
 jobs:
   build-runner-images:
     strategy:
@@ -44,23 +38,25 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@main
+        uses: sigstore/cosign-installer@ba7bc0a3fef59531c69a25acd34668d6d3fe6f22 # v4.1.0
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -70,35 +66,34 @@ jobs:
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ matrix.base-image }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push ${{ matrix.base-image }} Docker image
         id: build-and-push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           context: ./ci/gha-runner-image/
           platforms: |
             linux/amd64
             linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.base-image }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./ci/gha-runner-image/Dockerfile
           build-args: |
             BASE_IMAGE=${{ matrix.base-image }}
 
+      # Uses the identity token to provision an ephemeral certificate
+      # against the sigstore community Fulcio instance.
       - name: Sign the published ${{ matrix.base-image }} Docker image
         if: ${{ github.event_name != 'pull_request' }}
-        env:
-          COSIGN_EXPERIMENTAL: "true"
-        # Uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance.
-        run: cosign sign -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.base-image }}
+        run: cosign sign -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
 
       - name: Output image
         id: image
@@ -108,7 +103,7 @@ jobs:
           # NOTE: The digest output from docker/build-push-action is of the
           # form "sha256:<digest>"
           echo "images=[\"${REGISTRY}/${IMAGE_NAME}:jammy\", \"${REGISTRY}/${IMAGE_NAME}:noble\"]" >> "$GITHUB_OUTPUT"
-  
+
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io
   provenance:
@@ -121,12 +116,11 @@ jobs:
       id-token: write  # For signing.
       actions: read    # For reading workflow info.
       packages: write  # For uploading attestations.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
     with:
       image: ${{ matrix.image }}
       digest: ${{ needs.build-runner-images.outputs.digest }}
       registry-username: ${{ github.actor }}
-      compile-generator: true
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -145,9 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' }}
     steps:
-      - uses: sigstore/cosign-installer@main
-        with:
-          cosign-release: 'v2.4.2'
+      - uses: sigstore/cosign-installer@ba7bc0a3fef59531c69a25acd34668d6d3fe6f22 # v4.1.0
       - env:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -155,9 +147,9 @@ jobs:
           IMAGE_DIGEST: ${{ needs.build-runner-images.outputs.digest }}
         run: |
           cosign version
-          COSIGN_EXPERIMENTAL=1 cosign verify-attestation \
-            --certificate-identity-regexp=".*" \
-            --certificate-oidc-issuer-regexp=".*" \
+          cosign verify-attestation \
+            --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+            --certificate-identity-regexp="https://github.com/cncf/automation/.*" \
             --type slsaprovenance "${{ env.IMAGE_NAME }}@${{env.IMAGE_DIGEST}}"
       # TODO (github.com/slsa-framework/slsa-verifier/issues/92):
       #       Add step to verify using slsa-verifier
