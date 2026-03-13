@@ -20,3 +20,14 @@ provider "oci" {
   fingerprint         = var.fingerprint
   config_file_profile = var.config_file_profile
 }
+
+provider "oci" {
+  alias               = "replica"
+  tenancy_ocid        = var.tenancy_ocid
+  user_ocid           = var.user_ocid
+  region              = var.replica_region
+  auth                = var.oci_auth_type
+  private_key_path    = var.private_key_path
+  fingerprint         = var.fingerprint
+  config_file_profile = var.config_file_profile
+}

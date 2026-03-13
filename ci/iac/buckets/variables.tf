@@ -26,6 +26,12 @@ variable "region" {
   default     = "us-sanjose-1"
 }
 
+variable "replica_region" {
+  type        = string
+  description = "OCI region for bucket replication."
+  default     = "us-ashburn-1"
+}
+
 variable "fingerprint" {
   type        = string
   description = "Fingerprint of the public key uploaded to the OCI user account for API authentication."

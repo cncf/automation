@@ -9,6 +9,17 @@ output "buckets" {
   description = "Map of created bucket names to their details."
 }
 
+output "replica_buckets" {
+  value = {
+    for name, bucket in oci_objectstorage_bucket.replica_buckets : name => {
+      id        = bucket.id
+      namespace = bucket.namespace
+      name      = bucket.name
+    }
+  }
+  description = "Map of replica bucket names to their details."
+}
+
 output "service_user" {
   value = {
     id   = oci_identity_user.service_user.id
