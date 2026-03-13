@@ -1,17 +1,15 @@
-# CNCF OKE Cluster Infrastructure
-
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.14 |
-| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 8.3.0 |
+| <a name="requirement_oci"></a> [oci](#requirement\_oci) | 8.5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 8.3.0 |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 8.5.0 |
 
 ## Modules
 
@@ -21,27 +19,27 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [oci_containerengine_addon.cluster_autoscaler](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/containerengine_addon) | resource |
-| [oci_containerengine_cluster.service](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/containerengine_cluster) | resource |
-| [oci_containerengine_node_pool.service_worker](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/containerengine_node_pool) | resource |
-| [oci_core_internet_gateway.service](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_internet_gateway) | resource |
-| [oci_core_nat_gateway.service](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_nat_gateway) | resource |
-| [oci_core_public_ip.ingress_ip](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_public_ip) | resource |
-| [oci_core_public_ip.kcp_lb_ip](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_public_ip) | resource |
-| [oci_core_route_table.private](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_route_table) | resource |
-| [oci_core_route_table.public](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_route_table) | resource |
-| [oci_core_security_list.k8s_api_endpoint](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_security_list) | resource |
-| [oci_core_security_list.node](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_security_list) | resource |
-| [oci_core_security_list.svc_lb](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_security_list) | resource |
-| [oci_core_service_gateway.service](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_service_gateway) | resource |
-| [oci_core_subnet.k8s_api_endpoint](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_subnet) | resource |
-| [oci_core_subnet.node](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_subnet) | resource |
-| [oci_core_subnet.svc_lb](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_subnet) | resource |
-| [oci_core_vcn.service](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/resources/core_vcn) | resource |
-| [oci_containerengine_cluster_kube_config.service](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/data-sources/containerengine_cluster_kube_config) | data source |
-| [oci_containerengine_node_pool_option.amd64](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/data-sources/containerengine_node_pool_option) | data source |
-| [oci_core_services.services](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/data-sources/core_services) | data source |
-| [oci_identity_availability_domains.availability_domains](https://registry.terraform.io/providers/oracle/oci/8.3.0/docs/data-sources/identity_availability_domains) | data source |
+| [oci_containerengine_addon.cluster_autoscaler](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/containerengine_addon) | resource |
+| [oci_containerengine_cluster.service](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/containerengine_cluster) | resource |
+| [oci_containerengine_node_pool.service_worker](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/containerengine_node_pool) | resource |
+| [oci_core_internet_gateway.service](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_internet_gateway) | resource |
+| [oci_core_nat_gateway.service](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_nat_gateway) | resource |
+| [oci_core_public_ip.ingress_ip](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_public_ip) | resource |
+| [oci_core_public_ip.kcp_lb_ip](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_public_ip) | resource |
+| [oci_core_route_table.private](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_route_table) | resource |
+| [oci_core_route_table.public](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_route_table) | resource |
+| [oci_core_security_list.k8s_api_endpoint](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_security_list) | resource |
+| [oci_core_security_list.node](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_security_list) | resource |
+| [oci_core_security_list.svc_lb](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_security_list) | resource |
+| [oci_core_service_gateway.service](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_service_gateway) | resource |
+| [oci_core_subnet.k8s_api_endpoint](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_subnet) | resource |
+| [oci_core_subnet.node](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_subnet) | resource |
+| [oci_core_subnet.svc_lb](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_subnet) | resource |
+| [oci_core_vcn.service](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/resources/core_vcn) | resource |
+| [oci_containerengine_cluster_kube_config.service](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/data-sources/containerengine_cluster_kube_config) | data source |
+| [oci_containerengine_node_pool_option.amd64](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/data-sources/containerengine_node_pool_option) | data source |
+| [oci_core_services.services](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/data-sources/core_services) | data source |
+| [oci_identity_availability_domains.availability_domains](https://registry.terraform.io/providers/oracle/oci/8.5.0/docs/data-sources/identity_availability_domains) | data source |
 
 ## Inputs
 
@@ -65,6 +63,7 @@ No modules.
 | <a name="input_node_ingress_rules"></a> [node\_ingress\_rules](#input\_node\_ingress\_rules) | Ingress security rules for the worker node security list | <pre>list(object({<br/>    description = string<br/>    source      = string<br/>    source_type = string<br/>    protocol    = string<br/>    stateless   = bool<br/>    tcp_min     = optional(number)<br/>    tcp_max     = optional(number)<br/>    icmp_type   = optional(number)<br/>    icmp_code   = optional(number)<br/>  }))</pre> | `[]` | no |
 | <a name="input_node_pool_worker_size"></a> [node\_pool\_worker\_size](#input\_node\_pool\_worker\_size) | Default number of worker nodes | `number` | n/a | yes |
 | <a name="input_oci_auth_type"></a> [oci\_auth\_type](#input\_oci\_auth\_type) | Authentication method used by the OCI provider (e.g., APIKey, InstancePrincipal, ResourcePrincipal). | `string` | `"APIKey"` | no |
+| <a name="input_oke_node_boot_volume_size"></a> [oke\_node\_boot\_volume\_size](#input\_oke\_node\_boot\_volume\_size) | The size of the boot volume in GBs | `number` | `50` | no |
 | <a name="input_oke_node_cpu"></a> [oke\_node\_cpu](#input\_oke\_node\_cpu) | OKE worker node CPUs | `number` | n/a | yes |
 | <a name="input_oke_node_memory"></a> [oke\_node\_memory](#input\_oke\_node\_memory) | OKE worker node memory in GBs | `number` | n/a | yes |
 | <a name="input_oke_node_shape"></a> [oke\_node\_shape](#input\_oke\_node\_shape) | OKE Nodepool node shape | `string` | n/a | yes |

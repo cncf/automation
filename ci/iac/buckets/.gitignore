@@ -1,0 +1,9 @@
+# Terraform folder
+.terraform
+# Make sure to not allow checking in tfvars by mistake
+*.tfvars
+!tfvars/*.tfvars
+# Environment variables are often stored in this file
+.env
+
+.terraform.lock.hcl
