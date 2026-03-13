@@ -1,15 +1,22 @@
 ### Stage One
-FROM golang:1.24-alpine AS build-golang
+FROM golang:1.26.1-alpine AS build
 
 WORKDIR /app
 
 COPY . .
 
-RUN go build -o bin/cloudrunner-oci oci/main.go
+RUN go build -o bin/cloudrunner-oci ./oci && \
+    go build -o bin/cloudrunner-kubevirt ./kubevirt
 
 ### Final Stage
-FROM gcr.io/distroless/base-debian12
+FROM alpine:3.23.3
 
-COPY --from=0 /app/bin/cloudrunner-oci /
+COPY --from=build /app/bin/cloudrunner-oci /cloudrunner-oci
+COPY --from=build /app/bin/cloudrunner-kubevirt /cloudrunner-kubevirt
 
-ENTRYPOINT [ "/cloudrunner-oci" ]
+# Entrypoint script: select the right binary based on the CLOUDRUNNER_PROVIDER
+# environment variable ("oci" or "kubevirt", default: "oci").
+# All arguments are forwarded verbatim to the chosen binary.
+COPY --chmod=0755 entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

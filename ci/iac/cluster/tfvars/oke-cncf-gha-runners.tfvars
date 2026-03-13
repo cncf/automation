@@ -63,6 +63,15 @@ svc_lb_ingress_rules = [
     stateless   = false
     tcp_max     = 8443
     tcp_min     = 8443
+  },
+  {
+    description = "Access port 22 from nodes for KubeVirt VM access"
+    protocol    = "6"
+    source      = "NODE_CIDR"
+    source_type = "CIDR_BLOCK"
+    stateless   = false
+    tcp_max     = 22
+    tcp_min     = 22
   }
 ]
 
@@ -161,13 +170,6 @@ node_egress_rules = [
     stateless        = false
   },
   {
-    description      = "Allow pods on one worker node to communicate with pods on other worker nodes"
-    destination      = "10.0.11.0/24"
-    destination_type = "CIDR_BLOCK"
-    protocol         = "all"
-    stateless        = false
-  },
-  {
     description      = "ICMP Access from Kubernetes Control Plane"
     destination      = "INTERNET"
     destination_type = "CIDR_BLOCK"
@@ -210,15 +212,6 @@ node_ingress_rules = [
     source      = "NODE_CIDR"
     source_type = "CIDR_BLOCK"
     stateless   = false
-  },
-  {
-    description = "Inbound SSH traffic to worker nodes"
-    protocol    = "6"
-    source      = "INTERNET"
-    source_type = "CIDR_BLOCK"
-    stateless   = false
-    tcp_max     = 22
-    tcp_min     = 22
   },
   {
     description = "Path discovery"
