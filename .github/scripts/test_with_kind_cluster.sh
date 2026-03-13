@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 CLUSTER_NAME="kind-test"
 KIND_CONFIG="kind-config.yaml"
