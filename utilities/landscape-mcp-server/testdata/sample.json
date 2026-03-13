@@ -1,0 +1,123 @@
+{
+  "items": [
+    {
+      "name": "Kubernetes",
+      "id": "kubernetes",
+      "description": "An open-source system for automating deployment, scaling, and management of containerized applications.",
+      "homepage_url": "https://kubernetes.io/",
+      "category": "Orchestration & Management",
+      "subcategory": "Scheduling & Orchestration",
+      "maturity": "graduated",
+      "accepted_at": "2016-03-10",
+      "incubating_at": "2016-03-10",
+      "graduated_at": "2018-03-06",
+      "oss": true,
+      "devstats_url": "https://k8s.devstats.cncf.io/",
+      "blog_url": "https://kubernetes.io/blog/",
+      "twitter_url": "https://twitter.com/kuabornetesio",
+      "slack_url": "https://slack.k8s.io/",
+      "chat_channel": "#kubernetes-users",
+      "repositories": [
+        {
+          "url": "https://github.com/kubernetes/kubernetes",
+          "primary": true
+        },
+        {
+          "url": "https://github.com/kubernetes/website",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "OpenTelemetry",
+      "category": "Observability and Analysis",
+      "subcategory": "Monitoring",
+      "maturity": "incubating",
+      "accepted_at": "2019-05-07",
+      "incubating_at": "2021-08-26"
+    },
+    {
+      "name": "Akri",
+      "category": "Provisioning",
+      "subcategory": "Automation & Configuration",
+      "maturity": "sandbox",
+      "accepted_at": "2021-09-14",
+      "audits": [
+        {
+          "date": "2023-06-15",
+          "type": "security",
+          "url": "https://example.com/akri-audit-report",
+          "vendor": "Trail of Bits"
+        }
+      ],
+      "summary": {
+        "use_case": "Akri lets you automatically discover and use leaf devices (such as IP cameras and USB devices)."
+      }
+    },
+    {
+      "name": "TestGoldCorp",
+      "category": "CNCF Members",
+      "subcategory": "Gold",
+      "member_subcategory": "Gold",
+      "joined_at": "2026-01-15",
+      "crunchbase_url": "https://www.crunchbase.com/organization/testgoldcorp"
+    },
+    {
+      "name": "TestSilverInc",
+      "category": "CNCF Members",
+      "subcategory": "Silver",
+      "member_subcategory": "Silver",
+      "joined_at": "2025-06-01",
+      "crunchbase_url": "https://www.crunchbase.com/organization/testsilverinc"
+    },
+    {
+      "name": "TestPlatinum",
+      "category": "CNCF Members",
+      "subcategory": "Platinum",
+      "member_subcategory": "Platinum",
+      "joined_at": "2020-01-01"
+    }
+  ],
+  "crunchbase_data": {
+    "https://www.crunchbase.com/organization/testgoldcorp": {
+      "name": "TestGoldCorp",
+      "description": "A leading cloud infrastructure company.",
+      "city": "San Francisco",
+      "country": "United States",
+      "region": "North America",
+      "company_type": "for_profit",
+      "num_employees_min": 501,
+      "num_employees_max": 1000,
+      "categories": ["Cloud Infrastructure", "Enterprise Software"],
+      "linkedin_url": "https://www.linkedin.com/company/testgoldcorp",
+      "twitter_url": "https://twitter.com/testgoldcorp",
+      "funding_rounds": [
+        {
+          "amount": 50000000,
+          "announced_on": "2026-01-10",
+          "kind": "series_b"
+        },
+        {
+          "amount": 20000000,
+          "announced_on": "2025-06-15",
+          "kind": "series_a"
+        }
+      ],
+      "acquisitions": [
+        {
+          "acquiree_name": "SmallStartup",
+          "announced_on": "2025-03-20"
+        }
+      ]
+    },
+    "https://www.crunchbase.com/organization/testsilverinc": {
+      "funding_rounds": [
+        {
+          "amount": 10000000,
+          "announced_on": "2026-02-01",
+          "kind": "seed"
+        }
+      ]
+    }
+  }
+}
