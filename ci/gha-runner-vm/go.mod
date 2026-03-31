@@ -4,7 +4,7 @@ go 1.24.2
 
 require (
 	github.com/google/go-github/v71 v71.0.0
-	github.com/oracle/oci-go-sdk/v65 v65.109.2
+	github.com/oracle/oci-go-sdk/v65 v65.109.3
 	github.com/spf13/cobra v1.10.2
 )
 
