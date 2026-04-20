@@ -1,22 +1,105 @@
-# Example OpenTofu/Terraform Variables File
-# Copy this file to terraform.tfvars and fill in your values
+##############################################
+# Terraform / OpenTofu Variables Example File
+##############################################
+# Copy this file to `terraform.tfvars` and update values accordingly.
 #
-# Alternatively, use environment variables:
+# You can also set sensitive values using environment variables:
 #   export TF_VAR_linode_api_token="your-token"
 #   export TF_VAR_github_token="your-github-pat"
+##############################################
 
-# Required Variables (must be set via environment or this file)
-# linode_api_token = "your-linode-api-token-here"
-# github_token     = "your-github-pat-here"
+############################
+# 🔐 Required Credentials
+############################
 
-# Optional Variables (override defaults from variables.tf)
-cluster_name        = "github-runners"
-kubernetes_version  = "1.34"
-region              = "us-east"
-node_count          = 1
-node_type           = "g6-standard-1"
-autoscaler_min      = 1
-autoscaler_max      = 3
-environment         = "dev"
+# Linode API Token (Recommended: use environment variable instead)
+# linode_api_token = "your-linode-api-token"
+
+# GitHub Personal Access Token (PAT)
+# Required scopes:
+# - repo
+# - admin:org (if managing org runners)
+# github_token = "your-github-token"
+
+############################
+# ⚙️ Cluster Configuration
+############################
+
+# Name of the Kubernetes cluster
+cluster_name = "github-runners"
+
+# Kubernetes version (check supported versions in Linode)
+kubernetes_version = "1.34"
+
+# Region where cluster will be deployed
+region = "us-east"
+
+# Environment tag (used for naming, tagging, and separation)
+environment = "dev"
+
+############################
+# 🖥️ Node Pool Configuration
+############################
+
+# Number of worker nodes (initial count)
+node_count = 1
+
+# Linode instance type
+# Examples:
+# - g6-standard-1 (small)
+# - g6-standard-2 (medium)
+# - g6-standard-4 (large)
+node_type = "g6-standard-1"
+
+############################
+# 📈 Autoscaling Configuration
+############################
+
+# Minimum number of nodes in autoscaler
+autoscaler_min = 1
+
+# Maximum number of nodes in autoscaler
+autoscaler_max = 3
+
+############################
+# 🚀 GitHub Actions Runner Config
+############################
+
+# GitHub Organization name
 github_organization = "your-org-name"
-arc_version         = "0.23.7"
+
+# ARC (Actions Runner Controller) Helm chart version
+arc_version = "0.23.7"
+
+############################
+# 🏷️ Optional Tags / Metadata
+############################
+
+# Add custom tags for cost tracking and management
+tags = [
+  "project:github-runners",
+  "env:dev",
+  "managed-by:terraform"
+]
+
+############################
+# 🔒 Security & Best Practices
+############################
+
+# NOTE:
+# - Never commit real tokens to Git
+# - Use secrets manager or environment variables in production
+# - Rotate tokens regularly
+#
+# Example:
+# export TF_VAR_linode_api_token="secure-token"
+# export TF_VAR_github_token="secure-token"
+
+############################
+# 📌 Notes
+############################
+
+# - Ensure your GitHub token has correct permissions
+# - Verify region availability before deployment
+# - Match Kubernetes version with supported Linode versions
+# - Adjust node_type based on workload requirements
