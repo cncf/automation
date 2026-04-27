@@ -123,7 +123,9 @@ func run(cmd *cobra.Command, argv []string) error {
 		m := activeMachine
 		activeMachineMu.Unlock()
 		if m != nil {
-			if err := m.Delete(context.Background()); err != nil {
+			deleteCtx, deleteCancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer deleteCancel()
+			if err := m.Delete(deleteCtx); err != nil {
 				log.Printf("failed to delete machine on signal: %v", err)
 			}
 		}
