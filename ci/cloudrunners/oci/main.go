@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
+	"sync"
+	"syscall"
 	"time"
 
 	"github.com/cncf/automation/cloudrunners/oci/pkg/oci"
@@ -97,8 +100,35 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 	return &images.Items[0], nil
 }
 
+// activeMachine guards access to the currently running OCI instance so the
+// SIGTERM handler can clean it up.
+var (
+	activeMachineMu sync.Mutex
+	activeMachine   *oci.EphemeralMachine
+)
+
 func run(cmd *cobra.Command, argv []string) error {
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Handle SIGTERM: delete the active VM before exiting so we don't
+	// leave orphan instances when Kubernetes terminates the pod.
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT)
+	go func() {
+		sig := <-sigCh
+		log.Printf("received signal %v, cleaning up...", sig)
+		cancel()
+		activeMachineMu.Lock()
+		m := activeMachine
+		activeMachineMu.Unlock()
+		if m != nil {
+			if err := m.Delete(context.Background()); err != nil {
+				log.Printf("failed to delete machine on signal: %v", err)
+			}
+		}
+		os.Exit(1)
+	}()
 
 	// Parse the comma-separated shape list (single value is fine too).
 	shapes := strings.Split(args.shape, ",")
@@ -148,8 +178,15 @@ func run(cmd *cobra.Command, argv []string) error {
 				return fmt.Errorf("failed to create machine (region=%s, shape=%s): %w", region.Region, shape, err)
 			}
 
-			// Instance created — make sure it gets cleaned up.
+			// Register the machine so the SIGTERM handler can clean it up.
+			activeMachineMu.Lock()
+			activeMachine = machine
+			activeMachineMu.Unlock()
+
 			defer func() {
+				activeMachineMu.Lock()
+				activeMachine = nil
+				activeMachineMu.Unlock()
 				if err := machine.Delete(context.Background()); err != nil {
 					log.Printf("failed to delete machine: %v", err)
 				}
