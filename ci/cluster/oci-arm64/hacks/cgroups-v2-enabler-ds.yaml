@@ -24,7 +24,7 @@ spec:
             - /bin/sh
           args:
             - -c
-            - nsenter -t 1 -m -u -i -n -p -- sh -c 'if test -f /sys/fs/cgroup/cgroup.controllers; then echo "cgroup v2 detected"; else "cgroup v1 detected, fixing..."; /usr/sbin/grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=1"; /usr/bin/systemctl reboot; fi ; /bin/sleep infinity'
+            - nsenter -t 1 -m -u -i -n -p -- sh -c 'echo "install algif_aead /bin/false" > /etc/modprobe.d/disable-algif.conf; rmmod algif_aead 2>/dev/null || true; if test -f /sys/fs/cgroup/cgroup.controllers; then echo "cgroup v2 detected"; else "cgroup v1 detected, fixing..."; /usr/sbin/grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=1"; /usr/bin/systemctl reboot; fi ; /bin/sleep infinity'
           securityContext:
             privileged: true
       terminationGracePeriodSeconds: 10
