@@ -272,8 +272,8 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 	defer sshClient.Close()
 
 	commands := []string{
-		"echo 'install algif_aead /bin/false' > /etc/modprobe.d/disable-algif.conf",
-		"rmmod algif_aead 2>/dev/null || true",
+		"sudo sh -c 'echo \"install algif_aead /bin/false\" > /etc/modprobe.d/disable-algif.conf'",
+		"sudo rmmod algif_aead 2>/dev/null || true",
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
 		"rm -rf \\$HOME",
 		"sudo chown -R 1000:1000 /etc/skel/",
