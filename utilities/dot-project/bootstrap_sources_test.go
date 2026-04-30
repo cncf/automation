@@ -9,9 +9,21 @@ import (
 )
 
 func TestFetchFromCLOMonitor(t *testing.T) {
+	// helper checks that the request carries the expected search query params
+	checkSearchParams := func(t *testing.T, r *http.Request, wantText string) {
+		t.Helper()
+		if got := r.URL.Query().Get("text"); got != wantText {
+			t.Errorf("query param text = %q, want %q", got, wantText)
+		}
+		if got := r.URL.Query().Get("foundation"); got != "cncf" {
+			t.Errorf("query param foundation = %q, want %q", got, "cncf")
+		}
+	}
+
 	t.Run("finds project by display name", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/api/projects/search" {
+				checkSearchParams(t, r, "Kubernetes")
 				results := []CLOMonitorProject{
 					{
 						Name:        "kubernetes",
@@ -63,6 +75,8 @@ func TestFetchFromCLOMonitor(t *testing.T) {
 
 	t.Run("case insensitive fuzzy match", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			checkSearchParams(t, r, "argo cd")
+			// Server returns candidates matching the query (as the real API would)
 			results := []CLOMonitorProject{
 				{Name: "argo", DisplayName: "Argo", Foundation: "cncf"},
 				{Name: "argo-cd", DisplayName: "Argo CD", Foundation: "cncf"},
@@ -86,6 +100,7 @@ func TestFetchFromCLOMonitor(t *testing.T) {
 
 	t.Run("no match returns nil", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			checkSearchParams(t, r, "nonexistent")
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode([]CLOMonitorProject{})
 		}))
@@ -100,10 +115,15 @@ func TestFetchFromCLOMonitor(t *testing.T) {
 		}
 	})
 
-	t.Run("filters by CNCF foundation", func(t *testing.T) {
+	t.Run("sends foundation=cncf query param", func(t *testing.T) {
+		// Server-side filtering is now delegated to the API via foundation=cncf.
+		// Verify the param is sent and that the client picks the best fuzzy match
+		// from whatever the server returns.
+		var gotFoundation string
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			gotFoundation = r.URL.Query().Get("foundation")
+			// Simulate server returning only CNCF results (as the real API does)
 			results := []CLOMonitorProject{
-				{Name: "test", DisplayName: "Test", Foundation: "lfai"},
 				{Name: "test-cncf", DisplayName: "Test CNCF", Foundation: "cncf"},
 			}
 			w.Header().Set("Content-Type", "application/json")
@@ -115,8 +135,11 @@ func TestFetchFromCLOMonitor(t *testing.T) {
 		if err != nil {
 			t.Fatalf("fetchFromCLOMonitor() error = %v", err)
 		}
+		if gotFoundation != "cncf" {
+			t.Errorf("foundation query param = %q, want %q", gotFoundation, "cncf")
+		}
 		if result == nil {
-			t.Fatal("expected a CNCF match")
+			t.Fatal("expected a match")
 		}
 		if result.Foundation != "cncf" {
 			t.Errorf("Foundation = %q, want %q", result.Foundation, "cncf")

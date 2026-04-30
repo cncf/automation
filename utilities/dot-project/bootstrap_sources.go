@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -19,8 +20,9 @@ const (
 	landscapeLogoBaseURL    = "https://landscape.cncf.io/logos/"
 )
 
-// fetchFromCLOMonitor queries the CLOMonitor API for a CNCF project by display name.
-// It fuzzy-matches the display_name, filtering for foundation=cncf.
+// fetchFromCLOMonitor queries the CLOMonitor search API for a CNCF project by display name.
+// It passes text and foundation=cncf as query parameters so the server filters results,
+// then fuzzy-matches the display_name among the returned candidates.
 // baseURL overrides the CLOMonitor API base (use "" for default).
 // Returns nil if no match is found.
 func fetchFromCLOMonitor(name string, client *http.Client, baseURL string) (*CLOMonitorProject, error) {
@@ -28,8 +30,12 @@ func fetchFromCLOMonitor(name string, client *http.Client, baseURL string) (*CLO
 		baseURL = defaultCLOMonitorURL
 	}
 
-	url := baseURL + cloMonitorSearchPath
-	resp, err := client.Get(url)
+	params := url.Values{}
+	params.Set("text", name)
+	params.Set("foundation", "cncf")
+	fullURL := baseURL + cloMonitorSearchPath + "?" + params.Encode()
+
+	resp, err := client.Get(fullURL)
 	if err != nil {
 		return nil, fmt.Errorf("CLOMonitor request failed: %w", err)
 	}
@@ -49,21 +55,13 @@ func fetchFromCLOMonitor(name string, client *http.Client, baseURL string) (*CLO
 		return nil, fmt.Errorf("parsing CLOMonitor response: %w", err)
 	}
 
-	// Filter to CNCF foundation only
-	var cncfProjects []CLOMonitorProject
-	for _, p := range results {
-		if strings.EqualFold(p.Foundation, "cncf") {
-			cncfProjects = append(cncfProjects, p)
-		}
-	}
-
-	if len(cncfProjects) == 0 {
+	if len(results) == 0 {
 		return nil, nil
 	}
 
-	// Fuzzy match by display name
+	// Fuzzy match by display name among the server-filtered results
 	var candidates []string
-	for _, p := range cncfProjects {
+	for _, p := range results {
 		candidates = append(candidates, p.DisplayName)
 	}
 
@@ -72,9 +70,9 @@ func fetchFromCLOMonitor(name string, client *http.Client, baseURL string) (*CLO
 		return nil, nil
 	}
 
-	for i, p := range cncfProjects {
+	for i, p := range results {
 		if p.DisplayName == best {
-			return &cncfProjects[i], nil
+			return &results[i], nil
 		}
 	}
 
@@ -233,6 +231,9 @@ type GitHubData struct {
 	// Auto-detected identity type signals
 	HasDCO bool `json:"has_dco,omitempty"`
 	HasCLA bool `json:"has_cla,omitempty"`
+
+	// Slack channel - for auto detection
+	SlackChannel string `json:"slack_channel,omitempty"`
 }
 
 // fetchFromGitHub fetches repository, organization, community profile, and
@@ -318,6 +319,23 @@ func fetchFromGitHub(org, repo, token string, client *http.Client, baseURL strin
 	result.HasDCO = hasDCO
 	result.HasCLA = hasCLA
 
+	// Fetch README and extract Slack channel
+	if resp, err := doGet(fmt.Sprintf("/repos/%s/%s/readme", org, repo)); err == nil {
+		defer resp.Body.Close()
+		if resp.StatusCode == http.StatusOK {
+			var readmeData struct {
+				DownloadURL string `json:"download_url"`
+			}
+			if err := json.NewDecoder(resp.Body).Decode(&readmeData); err == nil && readmeData.DownloadURL != "" {
+				if content, err := fetchFileContent(client, readmeData.DownloadURL); err == nil {
+					if ch := extractSlackChannel(content); ch != "" {
+						result.SlackChannel = ch
+					}
+				}
+			}
+		}
+	}
+
 	return result, nil
 }
 
@@ -374,7 +392,8 @@ var governanceFiles = []governanceFile{
 }
 
 // discoverGovernanceFiles looks for CODEOWNERS, OWNERS, MAINTAINERS in the repo root,
-// .github/ subdirectory, and the org-level .github repo.
+// .github/ subdirectory, and the org-level .github repo, then scans all repos in the
+// org to collect maintainer handles across the entire org.
 func discoverGovernanceFiles(result *GitHubData, org, repo string, doGet func(string) (*http.Response, error), client *http.Client) {
 	// Locations to search, in order of priority
 	contentPaths := []string{
@@ -406,6 +425,99 @@ func discoverGovernanceFiles(result *GitHubData, org, repo string, doGet func(st
 					if err == nil && content != "" {
 						gf.parseFunc(result, content, entry.HTMLURL)
 					}
+				}
+			}
+		}
+	}
+
+	// Scan all org repos to collect maintainer handles across the entire org.
+	scanOrgReposForGovernance(result, org, repo, doGet, client)
+}
+
+// scanOrgReposForGovernance lists all repositories in the org and searches each one
+// for governance files, skipping the primary repo root already checked by discoverGovernanceFiles.
+// Handles found across all repos are merged and deduplicated into result.Maintainers.
+func scanOrgReposForGovernance(result *GitHubData, org, primaryRepo string, doGet func(string) (*http.Response, error), client *http.Client) {
+	// Already-checked repos — skip them to avoid duplicate work
+	alreadyChecked := map[string]bool{
+		strings.ToLower(primaryRepo): true,
+		".github":                    true,
+	}
+
+	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer handles...\n", org)
+	before := len(result.Maintainers)
+
+	page := 1
+	for {
+		path := fmt.Sprintf("/orgs/%s/repos?per_page=100&page=%d", org, page)
+		resp, err := doGet(path)
+		if err != nil || resp.StatusCode != http.StatusOK {
+			if resp != nil {
+				resp.Body.Close()
+			}
+			fmt.Fprintf(os.Stderr, "  Warning: could not list repos for org %s\n", org)
+			return
+		}
+
+		var repos []struct {
+			Name string `json:"name"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&repos); err != nil {
+			resp.Body.Close()
+			return
+		}
+		resp.Body.Close()
+
+		if len(repos) == 0 {
+			return
+		}
+
+		for _, r := range repos {
+			if alreadyChecked[strings.ToLower(r.Name)] {
+				continue
+			}
+
+			fmt.Fprintf(os.Stderr, "    Checking %s/%s...\n", org, r.Name)
+			scanRepoRootForGovernance(result, org, r.Name, doGet, client)
+		}
+
+		// No more pages
+		if len(repos) < 100 {
+			break
+		}
+		page++
+	}
+
+	found := len(result.Maintainers) - before
+	if found > 0 {
+		fmt.Fprintf(os.Stderr, "  Found %d maintainer(s) across org repos\n", found)
+	}
+}
+
+// scanRepoRootForGovernance lists the root contents of a single repo and parses
+// any governance files found there.
+func scanRepoRootForGovernance(result *GitHubData, org, repo string, doGet func(string) (*http.Response, error), client *http.Client) {
+	resp, err := doGet(fmt.Sprintf("/repos/%s/%s/contents/", org, repo))
+	if err != nil || resp.StatusCode != http.StatusOK {
+		if resp != nil {
+			resp.Body.Close()
+		}
+		return
+	}
+
+	var entries []GitHubContentEntry
+	if err := json.NewDecoder(resp.Body).Decode(&entries); err != nil {
+		resp.Body.Close()
+		return
+	}
+	resp.Body.Close()
+
+	for _, entry := range entries {
+		for _, gf := range governanceFiles {
+			if strings.EqualFold(entry.Name, gf.name) && entry.Type == "file" && entry.DownloadURL != "" {
+				content, err := fetchFileContent(client, entry.DownloadURL)
+				if err == nil && content != "" {
+					gf.parseFunc(result, content, entry.HTMLURL)
 				}
 			}
 		}
@@ -797,7 +909,7 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 		result.Sources["social.twitter"] = "github"
 	}
 
-	// Slack channel: landscape extra.chat_channel > derived from extra.slack_url
+	// Slack channel: landscape extra.chat_channel > derived from extra.slack_url > GitHub README
 	if landscape != nil && landscape.ChatChannel != "" {
 		result.CNCFSlackChannel = landscape.ChatChannel
 		result.Sources["cncf_slack_channel"] = "landscape"
@@ -808,6 +920,9 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 			result.CNCFSlackChannel = "#" + parts[1]
 			result.Sources["cncf_slack_channel"] = "landscape"
 		}
+	} else if github != nil && github.SlackChannel != "" {
+		result.CNCFSlackChannel = github.SlackChannel
+		result.Sources["cncf_slack_channel"] = "github_readme"
 	}
 
 	// Accepted date from landscape extra
@@ -833,6 +948,12 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	if github != nil {
 		result.Maintainers = github.Maintainers
 		result.Reviewers = github.Reviewers
+
+		// Infer project_lead from first discovered maintainer
+		if len(github.Maintainers) > 0 && result.ProjectLead == "" {
+			result.ProjectLead = github.Maintainers[0]
+			result.Sources["project_lead"] = "github"
+		}
 
 		// Community health signals
 		if github.Community != nil {
@@ -890,7 +1011,9 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	if result.TOCIssueURL == "" {
 		result.TODOs = append(result.TODOs, "Add maturity_log entry with TOC issue URL")
 	}
-	result.TODOs = append(result.TODOs, "Set project_lead GitHub handle")
+	if result.ProjectLead == "" {
+		result.TODOs = append(result.TODOs, "Set project_lead GitHub handle")
+	}
 	if result.CNCFSlackChannel == "" {
 		result.TODOs = append(result.TODOs, "Set cncf_slack_channel")
 	}

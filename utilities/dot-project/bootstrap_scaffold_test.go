@@ -294,7 +294,7 @@ func TestWriteScaffold(t *testing.T) {
 		if !strings.Contains(valStr, "@de0fac2e4500dabe0009e67214ff5f5447ce83dd") {
 			t.Error("validate.yaml should SHA-pin actions/checkout")
 		}
-		if !strings.Contains(valStr, "@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c") {
+		if !strings.Contains(valStr, "@95d25b12337a14e4a74f690c856f6903584e839e") {
 			t.Error("validate.yaml should SHA-pin cncf/automation actions")
 		}
 		if strings.Contains(valStr, "@main") {
@@ -307,7 +307,7 @@ func TestWriteScaffold(t *testing.T) {
 		if !strings.Contains(lsStr, "LANDSCAPE_REPO_TOKEN") {
 			t.Error("update-landscape.yml should use LANDSCAPE_REPO_TOKEN secret")
 		}
-		if !strings.Contains(lsStr, "landscape-update@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c") {
+		if !strings.Contains(lsStr, "landscape-update@95d25b12337a14e4a74f690c856f6903584e839e") {
 			t.Error("update-landscape.yml should SHA-pin landscape-update action")
 		}
 		if strings.Contains(lsStr, "uses: cncf/automation/.github/workflows/") {

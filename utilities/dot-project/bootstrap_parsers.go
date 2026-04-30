@@ -107,6 +107,40 @@ var handlePattern = regexp.MustCompile(`@([a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9
 // githubURLPattern matches https://github.com/<username> in text.
 var githubURLPattern = regexp.MustCompile(`https?://github\.com/([a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?)(?:\s|$|\)|,)`)
 
+// slackChannelURLPattern matches cloud-native.slack.com/messages/<channel> URLs.
+var slackChannelURLPattern = regexp.MustCompile(`cloud-native\.slack\.com/(?:messages|archives)/#?([a-zA-Z0-9][a-zA-Z0-9_-]*)`)
+
+// slackContextPattern matches "#channel-name" near Slack-related keywords.
+// Looks for lines containing "slack" (case-insensitive) with a #channel reference.
+var slackContextPattern = regexp.MustCompile(`(?i)(?:slack|cncf).*?(#[a-z][a-z0-9_-]+)`)
+
+// extractSlackChannel extracts a CNCF Slack channel name from README content.
+// It looks for cloud-native.slack.com/messages/<channel> URLs first, then
+// falls back to #channel-name references near Slack keywords.
+// Returns a channel name with "#" prefix (e.g., "#tokenetes") or "" if not found.
+func extractSlackChannel(content string) string {
+	if content == "" {
+		return ""
+	}
+
+	// Priority 1: cloud-native.slack.com/messages/<channel> URL
+	if matches := slackChannelURLPattern.FindStringSubmatch(content); len(matches) > 1 {
+		channel := strings.TrimRight(matches[1], "/)")
+		if channel != "" {
+			return "#" + channel
+		}
+	}
+
+	// Priority 2: #channel-name near Slack keywords
+	for _, line := range strings.Split(content, "\n") {
+		if matches := slackContextPattern.FindStringSubmatch(line); len(matches) > 1 {
+			return matches[1] // already has "#" prefix
+		}
+	}
+
+	return ""
+}
+
 // parseMaintainersFile heuristically extracts GitHub handles from a MAINTAINERS file.
 // It handles multiple common formats:
 //   - @handle extraction from prose

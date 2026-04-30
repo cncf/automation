@@ -119,8 +119,10 @@ func main() {
 	}
 
 	// Phase 3.5: Search for TOC/sandbox onboarding issue (if no URL from landscape)
+	// Note: Works without a token (unauthenticated, lower rate limit) but
+	// a GITHUB_TOKEN is recommended to avoid hitting rate limits.
 	var tocURL string
-	if !*skipGH && token != "" && (landscapeData == nil || landscapeData.AnnualReviewURL == "") {
+	if !*skipGH && (landscapeData == nil || landscapeData.AnnualReviewURL == "") {
 		fmt.Fprintf(os.Stderr, "  Searching for TOC/sandbox onboarding issue...\n")
 		var err error
 		tocURL, err = projects.SearchTOCIssues(projectName, org, token, client, "")

@@ -23,15 +23,15 @@ slug: "{{ .Slug }}"
 name: "{{ .Name }}"
 description: "{{ .Description }}"
 type: "project"
-{{ if .ProjectLead }}project_lead: "{{ .ProjectLead }}"{{ else }}# TODO: Set project lead GitHub handle
+{{ if .ProjectLead }}project_lead: "{{ .ProjectLead }}"{{ if isAutoDetected .Sources "project_lead" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}# TODO: Set project lead GitHub handle
 # project_lead: "github-handle"{{ end }}
-{{ if .CNCFSlackChannel }}cncf_slack_channel: "{{ .CNCFSlackChannel }}"{{ if isAutoDetected .Sources "cncf_slack_channel" }} # AUTO-DETECTED — please verify{{ end }}{{ else }}# TODO: Set CNCF Slack channel
+{{ if .CNCFSlackChannel }}cncf_slack_channel: "{{ .CNCFSlackChannel }}"{{ if isAutoDetected .Sources "cncf_slack_channel" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}# TODO: Set CNCF Slack channel
 # cncf_slack_channel: "#{{ .Slug }}"{{ end }}
 
 maturity_log:
   - phase: "{{ or .MaturityPhase "sandbox" }}"
     date: "{{ formatTime .AcceptedDate }}"
-    {{ if .TOCIssueURL }}issue: "{{ .TOCIssueURL }}"{{ if isAutoDetected .Sources "toc_issue_url" }} # AUTO-DETECTED — please verify{{ end }}{{ else }}issue: "https://github.com/cncf/toc/issues/XXX" # TODO: Set TOC issue URL{{ end }}
+    {{ if .TOCIssueURL }}issue: "{{ .TOCIssueURL }}"{{ if isAutoDetected .Sources "toc_issue_url" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}issue: "https://github.com/cncf/toc/issues/XXX" # TODO: Set TOC issue URL{{ end }}
 
 repositories:{{ if .Repositories }}{{ range .Repositories }}
   - "{{ . }}"{{ end }}{{ else }}
@@ -166,6 +166,7 @@ on:
     paths:
       - 'project.yaml'
       - 'maintainers.yaml'
+  workflow_dispatch:
 
 jobs:
   validate-project:
@@ -175,7 +176,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-project@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c
+      - uses: cncf/automation/.github/actions/validate-project@95d25b12337a14e4a74f690c856f6903584e839e
         with:
           project_file: 'project.yaml'
 
@@ -186,7 +187,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-maintainers@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c
+      - uses: cncf/automation/.github/actions/validate-maintainers@95d25b12337a14e4a74f690c856f6903584e839e
         with:
           maintainers_file: 'maintainers.yaml'
           verify_maintainers: 'true'
@@ -346,7 +347,7 @@ jobs:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c
+        uses: cncf/automation/.github/actions/landscape-update@95d25b12337a14e4a74f690c856f6903584e839e
         with:
           project_file: 'project.yaml'
           token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}

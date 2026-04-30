@@ -13,6 +13,8 @@
 #   --dry-run             Print what would be done without making changes
 #   --skip-secrets        Skip setting repository secrets
 #   --skip-protection     Skip setting branch protection rules
+#   --skip-issue          Skip creating onboarding issue
+#   --force               Force regeneration of scaffold files (overwrites auxiliary files)
 #   --bootstrap-bin <p>   Path to bootstrap binary (default: ./bootstrap)
 #   -h, --help            Show this help message
 #
@@ -33,6 +35,8 @@ set -euo pipefail
 # Load .env from CWD if present (KEY=VALUE, skips comments and blank lines)
 if [[ -f .env ]]; then
     while IFS= read -r line || [[ -n "$line" ]]; do
+        # Strip Windows carriage returns (\r)
+        line="${line//$'\r'/}"
         # Skip blank lines and comments
         [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
         # Export only valid KEY=VALUE lines (no eval, no command substitution)
@@ -46,6 +50,8 @@ fi
 DRY_RUN=false
 SKIP_SECRETS=false
 SKIP_PROTECTION=false
+SKIP_ISSUE=false
+FORCE=false
 BOOTSTRAP_BIN="./bootstrap"
 BATCH_FILE=""
 ORG=""
@@ -72,11 +78,58 @@ while [[ $# -gt 0 ]]; do
         --dry-run)      DRY_RUN=true; shift ;;
         --skip-secrets) SKIP_SECRETS=true; shift ;;
         --skip-protection) SKIP_PROTECTION=true; shift ;;
+        --force)        FORCE=true; shift ;;
+        --skip-issue)   SKIP_ISSUE=true; shift ;;
         --bootstrap-bin) BOOTSTRAP_BIN="$2"; shift 2 ;;
         -h|--help)      usage ;;
         *)              die "Unknown option: $1" ;;
     esac
 done
+
+# ──────────────────────────────────────────────
+# Normalize GitHub URL inputs
+# ──────────────────────────────────────────────
+
+# normalize_github_url strips a full GitHub URL down to its org (and optionally repo) parts.
+# Accepts: https://github.com/org, https://github.com/org/repo, or plain "org"
+# Sets ORG (and REPO if a repo segment is present and REPO wasn't explicitly provided).
+normalize_github_url() {
+    local value="$1"
+    local field="$2"  # "org" or "repo"
+
+    # Strip trailing slashes
+    value="${value%/}"
+
+    if [[ "$value" =~ ^https?://github\.com/([^/]+)(/([^/]+))?$ ]]; then
+        local parsed_org="${BASH_REMATCH[1]}"
+        local parsed_repo="${BASH_REMATCH[3]}"
+
+        if [[ "$field" == "org" ]]; then
+            ORG="$parsed_org"
+            # If a repo segment was in the URL and --repo wasn't explicitly set, use it
+            if [[ -n "$parsed_repo" && -z "$REPO" ]]; then
+                REPO="$parsed_repo"
+                info "Extracted --repo '${REPO}' from GitHub URL"
+            fi
+            info "Extracted --org '${ORG}' from GitHub URL"
+        elif [[ "$field" == "repo" ]]; then
+            if [[ -n "$parsed_repo" ]]; then
+                REPO="$parsed_repo"
+            else
+                REPO="$parsed_org"  # URL was github.com/org, treat as repo name
+            fi
+            info "Extracted --repo '${REPO}' from GitHub URL"
+        fi
+    elif [[ "$value" =~ ^https?:// ]]; then
+        die "--${field} looks like a URL but is not a valid GitHub URL (expected https://github.com/<org>[/<repo>]): ${value}"
+    fi
+    # Otherwise it's already a plain name — no transformation needed
+}
+
+normalize_github_url "$ORG" "org"
+if [[ -n "$REPO" ]]; then
+    normalize_github_url "$REPO" "repo"
+fi
 
 # ──────────────────────────────────────────────
 # Prerequisites
@@ -114,6 +167,29 @@ check_prerequisites() {
 }
 
 # ──────────────────────────────────────────────
+# Secret management
+# ──────────────────────────────────────────────
+
+# set_secret sets a GitHub Actions secret on a repo.
+# If it fails (e.g., enterprise policy blocks API access), prints manual instructions.
+set_secret() {
+    local repo="$1"
+    local secret_name="$2"
+    local secret_value="$3"
+
+    if echo "$secret_value" | gh secret set "$secret_name" --repo "$repo" 2>/dev/null; then
+        return 0
+    fi
+
+    warn "Could not set secret $secret_name on ${repo}"
+    warn "This is likely due to an enterprise policy blocking API-based secret management."
+    warn "Set it manually:"
+    warn "  Repo:  https://github.com/${repo}/settings/secrets/actions"
+    warn "  Org:   https://github.com/organizations/${repo%%/*}/settings/secrets/actions"
+    return 1
+}
+
+# ──────────────────────────────────────────────
 # Provision a single project
 # ──────────────────────────────────────────────
 
@@ -121,6 +197,28 @@ provision_project() {
     local org="$1"
     local name="$2"
     local repo="${3:-$org}"
+
+    # Normalize org if it's a GitHub URL (e.g., https://github.com/tokenetes/tokenetes)
+    if [[ "$org" =~ ^https?://github\.com/([^/]+)(/([^/]+))?/?$ ]]; then
+        org="${BASH_REMATCH[1]}"
+        if [[ -n "${BASH_REMATCH[3]}" && ( -z "$repo" || "$repo" == "$1" ) ]]; then
+            repo="${BASH_REMATCH[3]}"
+        fi
+    elif [[ "$org" =~ ^https?:// ]]; then
+        warn "org '${org}' looks like a URL but is not a recognized GitHub URL; using as-is"
+    fi
+
+    # Normalize repo if it's a GitHub URL
+    if [[ "$repo" =~ ^https?://github\.com/([^/]+)(/([^/]+))?/?$ ]]; then
+        if [[ -n "${BASH_REMATCH[3]}" ]]; then
+            repo="${BASH_REMATCH[3]}"
+        else
+            repo="${BASH_REMATCH[1]}"
+        fi
+    elif [[ "$repo" =~ ^https?:// ]]; then
+        warn "repo '${repo}' looks like a URL but is not a recognized GitHub URL; using as-is"
+    fi
+
     local target_repo="${org}/.project"
 
     info "Provisioning: ${target_repo} (name: ${name}, primary repo: ${repo})"
@@ -162,11 +260,11 @@ provision_project() {
         :
     else
         info "  Running bootstrap..."
-        "$BOOTSTRAP_BIN" \
-            -name "$name" \
-            -github-org "$org" \
-            -github-repo "$repo" \
-            -output-dir "$tmp_dir" \
+        local bootstrap_args=(-name "$name" -github-org "$org" -github-repo "$repo" -output-dir "$tmp_dir")
+        if $FORCE; then
+            bootstrap_args+=(-force)
+        fi
+        "$BOOTSTRAP_BIN" "${bootstrap_args[@]}" \
             || die "Bootstrap failed for ${name}"
     fi
 
@@ -191,9 +289,11 @@ provision_project() {
             :
         else
             info "  Setting secrets..."
-            echo "$LANDSCAPE_REPO_TOKEN" | gh secret set LANDSCAPE_REPO_TOKEN --repo "$target_repo"
+            set_secret "$target_repo" "LANDSCAPE_REPO_TOKEN" "$LANDSCAPE_REPO_TOKEN" \
+                || warn "Could not set LANDSCAPE_REPO_TOKEN (set manually via GitHub UI)"
             if [[ -n "${LFX_AUTH_TOKEN:-}" ]]; then
-                echo "$LFX_AUTH_TOKEN" | gh secret set LFX_AUTH_TOKEN --repo "$target_repo"
+                set_secret "$target_repo" "LFX_AUTH_TOKEN" "$LFX_AUTH_TOKEN" \
+                    || warn "Could not set LFX_AUTH_TOKEN (set manually via GitHub UI)"
             else
                 warn "LFX_AUTH_TOKEN not set; skipping (maintainer verification won't work)"
             fi
@@ -235,9 +335,112 @@ PROTECTION
     info "  Done: https://github.com/${target_repo}"
     echo ""
 
+    # Step 8: Create onboarding issue if there are TODOs
+    if ! $SKIP_ISSUE; then
+        create_onboarding_issue "$org" "$name" "$tmp_dir" "$target_repo"
+    fi
+
     # Clean up trap for this iteration
     rm -rf "$tmp_dir"
     trap - EXIT
+}
+
+# ──────────────────────────────────────────────
+# Onboarding issue
+# ──────────────────────────────────────────────
+
+create_onboarding_issue() {
+    local org="$1"
+    local name="$2"
+    local tmp_dir="$3"
+    local target_repo="$4"
+
+    # Collect TODO lines from project.yaml header (lines before schema_version:)
+    local todos=()
+    if [[ -f "${tmp_dir}/project.yaml" ]]; then
+        while IFS= read -r line; do
+            [[ "$line" =~ ^schema_version: ]] && break
+            if [[ "$line" =~ "#"[[:space:]]"TODO:" ]]; then
+                # Strip leading "# TODO: " prefix
+                todos+=("${line#*TODO: }")
+            fi
+        done < "${tmp_dir}/project.yaml"
+    fi
+
+    if [[ ${#todos[@]} -eq 0 ]]; then
+        info "  No TODOs found in project.yaml — skipping onboarding issue"
+        return 0
+    fi
+
+    if dry "would create onboarding issue on ${target_repo}"; then
+        return 0
+    fi
+
+    # Fetch up to 3 org owners; fall back to maintainers.yaml handles
+    local handles=()
+    while IFS= read -r login; do
+        handles+=("$login")
+        [[ ${#handles[@]} -ge 3 ]] && break
+    done < <(gh api "orgs/${org}/members?role=admin&per_page=10" --jq '.[].login' 2>/dev/null || true)
+
+    if [[ ${#handles[@]} -eq 0 ]] && [[ -f "${tmp_dir}/maintainers.yaml" ]]; then
+        while IFS= read -r login; do
+            handles+=("${login#@}")
+            [[ ${#handles[@]} -ge 3 ]] && break
+        done < <(grep -E '^\s+-\s+github:' "${tmp_dir}/maintainers.yaml" | sed 's/.*github:[[:space:]]*//' || true)
+    fi
+
+    # Build mention string
+    local mentions=""
+    for h in "${handles[@]}"; do
+        mentions+="@${h} "
+    done
+
+    # Ensure labels exist (--force is idempotent)
+    gh label create "onboarding" --repo "$target_repo" \
+        --color "0075ca" --description "Project onboarding tasks" --force 2>/dev/null || true
+    gh label create "metadata" --repo "$target_repo" \
+        --color "e4e669" --description "Project metadata" --force 2>/dev/null || true
+
+    # Dedup: skip if open issue with same title already exists
+    local title="Onboarding: complete ${name} .project setup"
+    local existing
+    existing=$(gh issue list --repo "$target_repo" --state open \
+        --search "\"${title}\"" --json number --jq 'length' 2>/dev/null || echo "0")
+    if [[ "$existing" -gt 0 ]]; then
+        info "  Onboarding issue already exists — skipping"
+        return 0
+    fi
+
+    # Build checklist body
+    local checklist=""
+    for todo in "${todos[@]}"; do
+        checklist+="- [ ] ${todo}"$'\n'
+    done
+
+    local body
+    body=$(cat <<EOF
+Hi ${mentions}👋
+
+The \`.project\` repo has been provisioned for **${name}**. A few items still need your attention:
+
+## Checklist
+
+${checklist}
+Please open a PR against this repo to address each item. The validators will block merge until \`project.yaml\` and \`maintainers.yaml\` are complete.
+
+> This issue was auto-generated by the CNCF .project provisioning tool.
+EOF
+)
+
+    info "  Creating onboarding issue on ${target_repo}..."
+    gh issue create \
+        --repo "$target_repo" \
+        --title "$title" \
+        --body "$body" \
+        --label "onboarding" \
+        --label "metadata" \
+        || warn "Could not create onboarding issue on ${target_repo}"
 }
 
 # ──────────────────────────────────────────────

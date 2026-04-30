@@ -25,8 +25,8 @@ import py_compile
 import os
 
 files_to_check = [
-    "s:/Gsoc organisation/automation/Kubestronaut/CNCFInsertKubestronautInPeople_json.py",
-    "s:/Gsoc organisation/automation/Kubestronaut/AddNewWeeklyyKubestronautsInReceivers.py"
+    "Kubestronaut/CNCFInsertKubestronautInPeople_json.py",
+    "Kubestronaut/AddNewWeeklyyKubestronautsInReceivers.py"
 ]
 
 print("Verifying syntax...")
