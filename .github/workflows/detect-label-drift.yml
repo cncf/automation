@@ -1,0 +1,213 @@
+name: Detect Label Drift
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  detect-drift:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml requests
+
+      - name: Detect label drift
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          python3 << 'EOF'
+          import yaml
+          import requests
+          import os
+          import json
+
+          # Load labels.yaml
+          with open('.github/labels.yaml', 'r') as f:
+              config = yaml.safe_load(f)
+
+          # Extract labels from config
+          defined_labels = {}
+          for label in config.get('labels', []):
+              defined_labels[label['name']] = {
+                  'color': label.get('color', ''),
+                  'description': label.get('description', ''),
+              }
+
+          # Get labels from GitHub API
+          owner = os.getenv('REPO_OWNER')
+          repo = os.getenv('REPO_NAME')
+          token = os.getenv('GH_TOKEN')
+
+          headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}
+          url = f'https://api.github.com/repos/{owner}/{repo}/labels?per_page=100'
+
+          github_labels = {}
+          while url:
+              response = requests.get(url, headers=headers)
+              response.raise_for_status()
+              labels = response.json()
+              
+              for label in labels:
+                  github_labels[label['name']] = {
+                      'color': label['color'],
+                      'description': label['description'] or '',
+                  }
+              
+              # Check for pagination
+              url = response.links.get('next', {}).get('url')
+
+          # Compare
+          extra_labels = set(github_labels.keys()) - set(defined_labels.keys())
+          missing_labels = set(defined_labels.keys()) - set(github_labels.keys())
+          drift_labels = []
+
+          for name in defined_labels.keys() & github_labels.keys():
+              defined = defined_labels[name]
+              github = github_labels[name]
+              
+              # Normalize color (remove # if present)
+              defined_color = defined['color'].lstrip('#').upper()
+              github_color = github['color'].upper()
+              
+              if defined_color != github_color or defined['description'] != github['description']:
+                  drift_labels.append({
+                      'name': name,
+                      'expected_color': defined_color,
+                      'actual_color': github_color,
+                      'expected_description': defined['description'],
+                      'actual_description': github['description'],
+                  })
+
+          # Report
+          print("=== Label Drift Detection Report ===\n")
+
+          if extra_labels:
+              print(f"⚠ Extra labels in GitHub ({len(extra_labels)}):")
+              for label in sorted(extra_labels):
+                  print(f"  - {label}")
+              print()
+
+          if missing_labels:
+              print(f"❌ Missing labels in GitHub ({len(missing_labels)}):")
+              for label in sorted(missing_labels):
+                  print(f"  - {label}")
+              print()
+
+          if drift_labels:
+              print(f"🔄 Labels with drift ({len(drift_labels)}):")
+              for label in drift_labels:
+                  print(f"  - {label['name']}")
+                  if label['expected_color'] != label['actual_color']:
+                      print(f"    Color: {label['actual_color']} → {label['expected_color']}")
+                  if label['expected_description'] != label['actual_description']:
+                      print(f"    Description: '{label['actual_description']}' → '{label['expected_description']}'")
+              print()
+
+          # Save results to file
+          results = {
+              'extra_labels': list(extra_labels),
+              'missing_labels': list(missing_labels),
+              'drift_labels': drift_labels,
+          }
+
+          with open('/tmp/label_drift.json', 'w') as f:
+              json.dump(results, f, indent=2)
+
+          # Exit with error if drift detected
+          if extra_labels or missing_labels or drift_labels:
+              print("\n❌ Label drift detected!")
+              exit(1)
+          else:
+              print("\n✓ No label drift detected")
+          EOF
+
+      - name: Report drift as issue
+        if: failure()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('/tmp/label_drift.json', 'utf8'));
+
+            let body = '# 🔄 Label Drift Detected\n\n';
+            body += 'The repository labels have diverged from `.github/labels.yaml`.\n\n';
+
+            if (results.extra_labels.length > 0) {
+              body += `## ⚠ Extra Labels (${results.extra_labels.length})\n`;
+              body += results.extra_labels.map(l => `- \`${l}\``).join('\n') + '\n\n';
+            }
+
+            if (results.missing_labels.length > 0) {
+              body += `## ❌ Missing Labels (${results.missing_labels.length})\n`;
+              body += results.missing_labels.map(l => `- \`${l}\``).join('\n') + '\n\n';
+            }
+
+            if (results.drift_labels.length > 0) {
+              body += `## 🔄 Color/Description Drift (${results.drift_labels.length})\n`;
+              for (const label of results.drift_labels) {
+                body += `\n### \`${label.name}\`\n`;
+                if (label.expected_color !== label.actual_color) {
+                  body += `- **Color**: \`${label.actual_color}\` → \`${label.expected_color}\`\n`;
+                }
+                if (label.expected_description !== label.actual_description) {
+                  body += `- **Description**: "${label.actual_description}" → "${label.expected_description}"\n`;
+                }
+              }
+              body += '\n';
+            }
+
+            body += '## Resolution\n';
+            body += 'Run the auto-sync workflow or manually update labels in repository settings.\n';
+
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+            const driftIssue = existing.data.find(i => i.title === '🔄 Label Drift Detected - Review Required');
+            if (driftIssue) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: driftIssue.number,
+                body: body,
+                state: 'open'
+              });
+              core.info(`Updated existing drift issue #${driftIssue.number}`);
+            } else {
+              const createPayload = {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🔄 Label Drift Detected - Review Required',
+                body: body,
+              };
+              // Best-effort label assignment; labels may not exist yet
+              try {
+                createPayload.labels = ['kind/chore', 'area/ci'];
+              } catch (_) {}
+              await github.rest.issues.create(createPayload);
+            }
+
+      - name: Upload drift report
+        if: always()
+        uses: actions/upload-artifact@604373da6381d3ce0449574800a7cedc1d30e586 # v4.3.5
+        with:
+          name: label-drift-report
+          path: /tmp/label_drift.json

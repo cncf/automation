@@ -1,11 +1,13 @@
 name: Auto Label Issues and PRs
 
+# Mirrors cncf/toc/.github/workflows/labeler.yaml for triggers and payload handling,
+# but avoids PR-head checkout under pull_request_target for security.
+# Slash commands are handled only in slash-commands.yml (repository_dispatch).
+
 on:
-  issue_comment:
-    types: [created, edited]
-  pull_request_target:
-    types: [opened, edited, reopened]
   issues:
+    types: [opened, edited, reopened, transferred]
+  pull_request_target:
     types: [opened, edited, reopened]
 
 jobs:
@@ -16,16 +18,25 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
-      - name: Get changed files
+      - name: Get changed files from PR API
+        if: ${{ github.event.pull_request }}
         id: changed-files
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
-          separator: ","
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100
+            });
+            core.setOutput("all_changed_files", files.map(f => f.filename).join(","));
 
       - name: Run labeler action for PR
         if: ${{ github.event.pull_request }}
@@ -33,7 +44,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/utilities/labeler/labels.yaml
+          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/.github/labels.yaml
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.pull_request.number }}
@@ -46,8 +57,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/utilities/labeler/labels.yaml
+          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/.github/labels.yaml
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.issue.number }}
-          comment_body: ${{ github.event.comment.body }}
+          comment_body: ${{ github.event.issue.body }}

@@ -1,0 +1,172 @@
+name: Validate Label Schema
+
+on:
+  pull_request:
+    paths:
+      - '.github/labels.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/labels.yaml'
+  workflow_dispatch:
+
+jobs:
+  validate-schema:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema
+
+      - name: Validate YAML syntax
+        run: |
+          python3 << 'EOF'
+          import yaml
+          import sys
+          try:
+              with open('.github/labels.yaml', 'r') as f:
+                  data = yaml.safe_load(f)
+              print("✓ YAML syntax is valid")
+          except yaml.YAMLError as e:
+              print(f"✗ YAML syntax error: {e}")
+              sys.exit(1)
+          EOF
+
+      - name: Validate label definitions
+        run: |
+          python3 << 'EOF'
+          import yaml
+          import re
+          import sys
+
+          with open('.github/labels.yaml', 'r') as f:
+              data = yaml.safe_load(f)
+
+          if not isinstance(data, dict):
+              print("✗ labels.yaml root must be a mapping (got empty or non-dict)")
+              sys.exit(1)
+
+          errors = []
+          warnings = []
+
+          # Check required top-level keys
+          if 'labels' not in data:
+              errors.append("Missing 'labels' key in labels.yaml")
+          if 'ruleset' not in data:
+              errors.append("Missing 'ruleset' key in labels.yaml")
+
+          # Validate each label
+          labels_map = {}
+          if 'labels' in data and data['labels']:
+              for i, label in enumerate(data['labels']):
+                  label_num = i + 1
+                  if not isinstance(label, dict):
+                      errors.append(f"Label {label_num}: Not a dictionary")
+                      continue
+
+                  # Check required fields
+                  if 'name' not in label:
+                      errors.append(f"Label {label_num}: Missing 'name' field")
+                      continue
+                  if 'color' not in label:
+                      errors.append(f"Label #{label_num} ({label.get('name')}): Missing 'color' field")
+                      continue
+
+                  name = label['name']
+                  color = label['color']
+                  labels_map[name] = labels_map.get(name, 0) + 1
+                  if labels_map[name] > 1:
+                      errors.append(f"Label '{name}': Duplicate label name")
+
+                  # Validate label name format
+                  if not re.match(r'^[a-z0-9\-/]+$', name):
+                      errors.append(f"Label '{name}': Invalid name format (use lowercase, hyphens, slashes only)")
+
+                  # Validate color format (hex code)
+                  if not re.match(r'^[0-9a-fA-F]{6}$', str(color)):
+                      errors.append(f"Label '{name}': Invalid color '{color}' (must be 6-digit hex code)")
+
+                  # Validate description
+                  if 'description' not in label:
+                      warnings.append(f"Label '{name}': Missing description")
+
+          # Validate ruleset
+          if 'ruleset' in data and data['ruleset']:
+              for i, rule in enumerate(data['ruleset']):
+                  if not isinstance(rule, dict):
+                      continue
+                  
+                  rule_name = rule.get('name', f'Rule {i+1}')
+                  
+                  # Check rule has required structure
+                  if 'kind' not in rule:
+                      errors.append(f"Rule '{rule_name}': Missing 'kind' field")
+                      continue
+                  if 'spec' not in rule:
+                      errors.append(f"Rule '{rule_name}': Missing 'spec' field")
+                      continue
+
+                  # Validate 'match' rules reference existing labels
+                  if rule['kind'] == 'match':
+                      spec = rule.get('spec', {})
+                      rules = spec.get('rules', [])
+                      if isinstance(rules, list):
+                          for rule_item in rules:
+                              if isinstance(rule_item, dict):
+                                  match_list = rule_item.get('matchList', [])
+                                  for label_name in match_list:
+                                      if labels_map.get(label_name, 0) == 0:
+                                          warnings.append(f"Rule '{rule_name}': References non-existent label '{label_name}'")
+
+          # Print results
+          if errors:
+              print("✗ Schema validation FAILED:")
+              for error in errors:
+                  print(f"  ERROR: {error}")
+          else:
+              print("✓ Schema validation PASSED")
+
+          if warnings:
+              print("\n⚠ Warnings:")
+              for warning in warnings:
+                  print(f"  WARNING: {warning}")
+
+          sys.exit(1 if errors else 0)
+          EOF
+
+      - name: Validate label count
+        run: |
+          python3 << 'EOF'
+          import yaml
+          with open('.github/labels.yaml', 'r') as f:
+              data = yaml.safe_load(f)
+          label_count = len(data.get('labels', []))
+          print(f"✓ Total labels: {label_count}")
+          if label_count < 10:
+              print("⚠ Warning: Unusually low label count")
+          EOF
+
+      - name: Comment on PR with validation results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ Label schema validation failed. Please check the workflow logs for details.'
+            })

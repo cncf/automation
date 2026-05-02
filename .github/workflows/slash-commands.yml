@@ -1,0 +1,76 @@
+name: Slash Commands
+
+# Same pattern as cncf/toc/.github/workflows/slash-commands.yaml: dispatch from
+# issue_comment and process via repository_dispatch in one workflow (simpler to copy
+# to other repos). comment_body for processing uses the payload comment (like TOC).
+
+on:
+  issue_comment:
+    types: [created, edited]
+  repository_dispatch:
+    types:
+      - kind-command
+      - priority-command
+      - status-command
+      - area-command
+      - help-command
+      - remove-kind-command
+      - remove-priority-command
+      - remove-status-command
+      - remove-area-command
+      - remove-help-command
+
+permissions: {}
+
+concurrency:
+  group: slash-command-${{ github.event.issue.number || github.event.client_payload.github.payload.issue.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  dispatch-slash-command:
+    name: Dispatch Slash Command
+    if: github.event_name == 'issue_comment' && github.event.comment.body
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Dispatch slash commands
+        uses: peter-evans/slash-command-dispatch@9bdcd7914ec1b75590b790b844aa3b8eee7c683a # v5
+        with:
+          token: ${{ secrets.SLASH_COMMANDS_PAT }}
+          permission: write
+          reactions: false
+          issue-type: both
+          allow-edits: true
+          commands: |
+            kind
+            priority
+            status
+            area
+            help
+            remove-kind
+            remove-priority
+            remove-status
+            remove-area
+            remove-help
+
+  process-slash-command:
+    name: Process Slash Command
+    if: github.event_name == 'repository_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Run labeler action for issue/PR command
+        uses: ./.github/actions/labeler-action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/.github/labels.yaml
+          owner: ${{ github.event.client_payload.github.payload.repository.owner.login }}
+          repo: ${{ github.event.client_payload.github.payload.repository.name }}
+          issue_number: ${{ github.event.client_payload.github.payload.issue.number }}
+          comment_body: ${{ github.event.client_payload.github.payload.comment.body }}
+          changed_files: ""

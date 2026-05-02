@@ -1,129 +1,144 @@
 autoCreateLabels: true
-autoDeleteLabels: false
+autoDeleteLabels: true
 definitionRequired: true
 
 # Define labels, description, color
-# Support ‘previous’ for label changes over time / changes in ownership
+# Support 'previous' for label changes over time / changes in ownership
 # Apply/remove label based on condition and/or slash command
 # Apply labels based on file path
-# Treat labels as namespaced based on “path” (slash separated) 
+# Treat labels as namespaced based on "path" (slash separated) 
 
 
 labels:
 - name: dd/adopters/complete
   description: DD Adopter Interviews have been completed
-  color: 41cd40
+  color: 2DA44E
 - name: dd/adopters/in-progress
   description: DD Adopter Interviews are in progress
-  color: 61D6C3
+  color: 1F6FEB
 - name: dd/adopters/not-started
   description: Adopter interviews have not yet been started
-  color: d93f0b
+  color: D97706
 - name: dd/gov-review/complete
   description: DD Governance Review has been completed
-  color: 41cd40
+  color: 2DA44E
 - name: dd/gov-review/in-progress
   description: DD Governance Review is in progress
-  color: 61D6C3
+  color: 1F6FEB
 - name: dd/gov-review/not-started
   description: Governance Review has not yet been started
-  color: d93f0b
+  color: D97706
 - name: dd/needs-triage
   description: DD application has not been reviewed
   color: ededed
 - name: dd/sec-review/complete
   description: DD Security Review has been completed
-  color: 41cd40
+  color: 2DA44E
 - name: dd/sec-review/in-progress
   description: DD Security Review is in progress
-  color: 61D6C3
+  color: 1F6FEB
 - name: dd/sec-review/not-started
   description: Security Review has not yet been started
-  color: d93f0b
+  color: D97706
 - name: dd/status/complete
   description: DD has been completed
-  color: 41cd40
+  color: 2DA44E
 - name: dd/status/in-comment-period
   description: DD is in the public comment period
-  color: 0052cc
+  color: 1F6FEB
 - name: dd/status/in-progress
   description: DD is in progress
-  color: 61D6C3
+  color: 1F6FEB
 - name: dd/status/in-voting
   description: DD is currently in voting
-  color: 74a0f4
+  color: 1F6FEB
 - name: dd/status/ready-for-assignment
   description: DD Prerequisites complete; ready to be assigned to a TOC member.
-  color: fbca04
+  color: FBCA04
 - name: dd/status/waiting
   description: DD has been paused and will pick up at a later date
-  color: d93f01
+  color: D97706
 - name: dd/tech-review/complete
   description: DD Tech Review has been completed
-  color: 41cd40
+  color: 2DA44E
 - name: dd/tech-review/in-progress
   description: DD Tech Review is in progress
-  color: 61D6C3
+  color: 1F6FEB
 - name: dd/tech-review/not-started
   description: Tech Review has not yet been started
-  color: d93f0b
+  color: D97706
 - name: dd/triage/incomplete-application
   description: Application incomplete; must be completed for application to be marked ready
   color: b60205
 - name: dd/triage/needs-adopters
   description: Additional adopters needed for DD application to be marked ready.
   color: b60205
+- name: dd/triage/needs-security-assessment
+  description: Security assessment is required for DD application to be marked ready.
+  color: b60205
+- name: dd/triage/needs-triage
+  description: DD triage has not yet been completed.
+  color: FBCA04
 - name: gitvote
   description: ''
-  color: ededed
+  color: 6E7781
 - name: gitvote/closed
   description: ''
-  color: ededed
+  color: 6E7781
 - name: gitvote/passed
   description: ''
-  color: ededed
-- name: help wanted
+  color: 6E7781
+- name: help-wanted
   description: ''
-  color: '159818'
+  color: FBCA04
 - name: init/complete
   description: Initiative has been completed
-  color: 41cd40
+  color: 2DA44E
 - name: init/in-progress
   description: Initiative is in progress and actively being worked on
-  color: 61D6C3
+  color: 1F6FEB
 - name: init/not-started
   description: Initiative has been accepted, but not started (in the backlog)
-  color: d93f0b
+  color: D97706
 - name: init/stale
   description: Initiative is no longer actively being worked on
   color: b60205
 - name: kind/dd
   description: Project DD or item related to the DD process
-  color: 61D6C3
+  color: 8250DF
+- name: kind/bug
+  description: Bug or issue
+  color: 8250DF
+- name: kind/chore
+  description: Chore or maintenance
+  color: 8250DF
 - name: kind/docs
   description: Docs related changes or updates
-  color: 61D6C3
+  color: 8250DF
 - name: kind/enhancement
   description: General items related to enhancements or improvements.
-  color: 61D6C3
+  color: 8250DF
 - name: kind/initiative
   description: An initiative or an item related to imitative processes
-  color: 61D6C3
+  color: 8250DF
 - name: kind/meeting
   description: Item related to a meeting
-  color: 61D6C3
+  color: 8250DF
+- name: kind/question
+  description: Question or discussion
+  color: 8250DF
 - name: kind/review
   description: Item related to a governance, tech, or other review
-  color: 61D6C3
+  color: 8250DF
 - name: kind/subproject
   description: Item related to a subproject or subproject related process
-  color: 61D6C3
+  color: 8250DF
 - name: level/archived
   description: Item related to an archived level project or the archive criteria/process itself
-  color: d93f0b
+  color: D97706
 - name: level/graduation
   description: Item related to a graduation level project or the graduation criteria/process itself
-  color: 0052cc
+  color: 1F6FEB
 - name: level/incubation
   description: Item related to an incubation level project or the incubation criteria/process itself
   color: ed0e81
@@ -141,44 +156,44 @@ labels:
   color: ededed
 - name: review/governance
   description: Project Governance Review
-  color: '5319e7'
+  color: 5319e7
 - name: review/health
   description: Project Health Review
-  color: '5319e7'
+  color: 5319e7
 - name: review/security
   description: Project Security Review
-  color: '5319e7'
+  color: 5319e7
 - name: review/tech
   description: Project Tech Review
-  color: '5319e7'
+  color: 5319e7
 - name: sub/contributor-strategy-and-advocacy
   description: TOC Contributor Strategy and Advocacy SubProject
-  color: 924F23
+  color: 1D76DB
 - name: sub/mentoring
   description: TOC Mentoring Subproject
-  color: 6DCC2C
+  color: 1D76DB
 - name: sub/project-reviews
   description: TOC Project Review Subproject
-  color: '3E4469'
+  color: 1D76DB
 - name: tag/developer-experience
   description: TAG Developer Experience
-  color: c2e0c6
+  color: 0E8A8A
 - name: tag/infrastructure
   description: TAG Infrastructure
-  color: D786DA
+  color: 0E8A8A
 - name: tag/operational-resilience
   description: TAG Operational Resilience
-  color: 83075D
+  color: 0E8A8A
 - name: tag/security-and-compliance
   description: TAG Security and Compliance
-  color: 78C971
+  color: 0E8A8A
 - name: tag/workloads-foundation
   description: TAG Workloads Foundation
-  color: 6AE2DC
+  color: 0E8A8A
 - name: toc
   description: toc specific issue
   color: CF0CBE
-- name: toc/initiative/AI
+- name: toc/initiative/ai
   description: TOC Artificial Intelligence Initiative
   color: d4c5f9
 - name: triage/duplicate
@@ -189,22 +204,73 @@ labels:
   color: b60205
 - name: triage/not-planned
   description: Out of scope, or not planned to be worked on
-  color: d93f0b
+  color: D97706
 - name: triage/valid
   description: Issue or PR is valid with enough information to be actionable
-  color: 0e8a16
-- name: vote open
-  description: ''
-  color: ededed
+  color: 2DA44E
 - name: vote/closed
   description: An election that has been completed
-  color: 5c2908
+  color: 6E7781
 - name: vote/nomination
   description: A nomination or call for nominations
   color: E00EEF
 - name: vote/open
   description: An election is open
-  color: 0e8a16
+  color: 2DA44E
+- name: priority/critical
+  description: Critical priority - needs immediate attention
+  color: B62324
+- name: priority/high
+  description: High priority
+  color: FF6B35
+- name: priority/medium
+  description: Medium priority
+  color: FFA500
+- name: priority/low
+  description: Low priority
+  color: D3D3D3
+- name: status/needs-review
+  description: Needs review before proceeding
+  color: FBCA04
+- name: status/blocked
+  description: Blocked or waiting on something
+  color: b60205
+- name: status/in-progress
+  description: Currently being worked on
+  color: 1F6FEB
+- name: area/ci
+  description: CI/CD infrastructure and automation
+  color: 7057FF
+- name: area/utilities
+  description: Utilities and helper tools
+  color: 7057FF
+- name: area/cloudrunners
+  description: Cloud runner infrastructure
+  color: 7057FF
+- name: area/automation
+  description: Automation scripts and workflows
+  color: 7057FF
+- name: area/infrastructure
+  description: Infrastructure and deployment
+  color: 7057FF
+- name: area/observability
+  description: Observability, monitoring, and logging
+  color: 7057FF
+- name: area/ambassadors
+  description: CNCF Ambassadors program
+  color: 7057FF
+- name: area/kubestronaut
+  description: Kubestronaut program
+  color: 7057FF
+- name: needs-priority
+  description: Indicates an issue or PR missing a priority label
+  color: ededed
+- name: needs-area
+  description: Indicates an issue or PR missing an area label
+  color: ededed
+- name: needs-status
+  description: Indicates an issue or PR missing a status label
+  color: ededed
 
 
 
@@ -233,7 +299,7 @@ ruleset:
   actions:
   - kind: remove-label
     spec:
-      match: "help wanted"
+      match: help-wanted
 
 - name: remove-init
   kind: match
@@ -338,6 +404,33 @@ ruleset:
     spec:
       match: vote/*
 
+- name: remove-priority
+  kind: match
+  spec:
+    command: /remove-priority
+  actions:
+  - kind: remove-label
+    spec:
+      match: priority/*
+
+- name: remove-status
+  kind: match
+  spec:
+    command: /remove-status
+  actions:
+  - kind: remove-label
+    spec:
+      match: status/*
+
+- name: remove-area
+  kind: match
+  spec:
+    command: /remove-area
+  actions:
+  - kind: remove-label
+    spec:
+      match: area/*
+
 
 ##############################################################################
 # Label state rules & needs-<foo> rules
@@ -371,7 +464,37 @@ ruleset:
   actions:
   - kind: apply-label
     spec:
-      label: "help wanted"
+      label: needs-group
+
+- name: needs-priority
+  kind: label
+  spec:
+    match: priority/*
+    matchCondition: NOT
+  actions:
+  - kind: apply-label
+    spec:
+      label: needs-priority
+
+- name: needs-area
+  kind: label
+  spec:
+    match: area/*
+    matchCondition: NOT
+  actions:
+  - kind: apply-label
+    spec:
+      label: needs-area
+
+- name: needs-status
+  kind: label
+  spec:
+    match: status/*
+    matchCondition: NOT
+  actions:
+  - kind: apply-label
+    spec:
+      label: needs-status
 
 - name: apply-kind
   kind: match
@@ -380,11 +503,14 @@ ruleset:
     rules:
     - matchList:
       - needs-kind
+      - kind/bug
+      - kind/chore
       - kind/dd
       - kind/docs
       - kind/enhancement
       - kind/initiative
       - kind/meeting
+      - kind/question
       - kind/review
       - kind/subproject
   actions:
@@ -432,7 +558,7 @@ ruleset:
       - tag/developer-experience
       - tag/infrastructure
       - tag/operational-resilience
-      - tag/security-compliance
+      - tag/security-and-compliance
       - tag/workloads-foundation
   actions:
   - kind: remove-label 
@@ -473,6 +599,75 @@ ruleset:
   - kind: apply-label
     spec:
       label: sub/{{ argv.0 }}
+
+- name: apply-priority
+  kind: match
+  spec:
+    command: /priority
+    rules:
+    - matchList:
+      - needs-priority
+      - priority/critical
+      - priority/high
+      - priority/medium
+      - priority/low
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-priority
+  - kind: remove-label
+    spec:
+      match: priority/*
+  - kind: apply-label
+    spec:
+      label: priority/{{ argv.0 }}
+
+- name: apply-status
+  kind: match
+  spec:
+    command: /status
+    rules:
+    - matchList:
+      - needs-status
+      - status/needs-review
+      - status/blocked
+      - status/in-progress
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-status
+  - kind: remove-label
+    spec:
+      match: status/*
+  - kind: apply-label
+    spec:
+      label: status/{{ argv.0 }}
+
+- name: apply-area
+  kind: match
+  spec:
+    command: /area
+    rules:
+    - matchList:
+      - needs-area
+      - area/ci
+      - area/utilities
+      - area/cloudrunners
+      - area/automation
+      - area/infrastructure
+      - area/observability
+      - area/ambassadors
+      - area/kubestronaut
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-area
+  - kind: remove-label
+    spec:
+      match: area/*
+  - kind: apply-label
+    spec:
+      label: area/{{ argv.0 }}
 
 
 ##############################################################################
@@ -630,7 +825,7 @@ ruleset:
     command: /toc/initiative
     rules:
     - matchList:
-      - toc/initiative/AI
+      - toc/initiative/ai
   actions:
   - kind: apply-label
     spec:
@@ -704,7 +899,7 @@ ruleset:
   actions:
   - kind: apply-label
     spec:
-      label: "help wanted"
+      label: help-wanted
 
 
 ##############################################################################
@@ -812,3 +1007,75 @@ ruleset:
   - kind: apply-label
     spec:
       label: sub/project-reviews
+
+- name: area-ci
+  kind: filePath
+  spec:
+    matchPath: "ci/**"
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-area
+  - kind: apply-label
+    spec:
+      label: area/ci
+
+- name: area-utilities
+  kind: filePath
+  spec:
+    matchPath: "utilities/**"
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-area
+  - kind: apply-label
+    spec:
+      label: area/utilities
+
+- name: area-cloudrunners
+  kind: filePath
+  spec:
+    matchPath: "ci/cloudrunners/**"
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-area
+  - kind: apply-label
+    spec:
+      label: area/cloudrunners
+
+- name: area-ambassadors
+  kind: filePath
+  spec:
+    matchPath: "Ambassadors/**"
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-area
+  - kind: apply-label
+    spec:
+      label: area/ambassadors
+
+- name: area-kubestronaut
+  kind: filePath
+  spec:
+    matchPath: "Kubestronaut/**"
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-area
+  - kind: apply-label
+    spec:
+      label: area/kubestronaut
+
+- name: area-tests
+  kind: filePath
+  spec:
+    matchPath: "tests/**"
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-area
+  - kind: apply-label
+    spec:
+      label: area/infrastructure
