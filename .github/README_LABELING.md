@@ -167,7 +167,7 @@ Indicates which area of the codebase this affects.
 | `area/ci` | CI/CD infrastructure, workflows, automation |
 | `area/utilities` | Utility scripts, helper tools |
 | `area/cloudrunners` | Cloud runner infrastructure |
-| `area/automation` | Automation workflows and scripts |
+| `area/dot-project` | utilities/dot-project scaffolding and tooling |
 | `area/infrastructure` | Infrastructure, deployment, IaC |
 | `area/observability` | Observability, monitoring, logging |
 | `area/ambassadors` | CNCF Ambassadors program |
