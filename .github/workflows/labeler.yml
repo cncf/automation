@@ -1,11 +1,13 @@
 name: Auto Label Issues and PRs
 
+# Mirrors cncf/toc/.github/workflows/labeler.yaml: same triggers, checkout strategy,
+# changed-files source, and comment_body sources (PR/issue bodies — not issue_comment).
+# Slash commands are handled only in slash-commands.yml (repository_dispatch).
+
 on:
-  issue_comment:
-    types: [created, edited]
-  pull_request_target:
-    types: [opened, edited, reopened]
   issues:
+    types: [opened, edited, reopened, transferred]
+  pull_request_target:
     types: [opened, edited, reopened]
 
 jobs:
@@ -16,16 +18,35 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout PR head for changed-files
+        if: ${{ github.event.pull_request }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout repository for issue events
+        if: ${{ !github.event.pull_request }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
-      - name: Get changed files
+      - name: Get changed files from PR API
+        if: ${{ github.event.pull_request }}
         id: changed-files
-        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
-          separator: ","
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100
+            });
+            core.setOutput("all_changed_files", files.map(f => f.filename).join(","));
 
       - name: Run labeler action for PR
         if: ${{ github.event.pull_request }}
@@ -37,39 +58,11 @@ jobs:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.pull_request.number }}
-          comment_body: ""
+          comment_body: ${{ github.event.pull_request.body }}
           changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Run labeler action for Issue
-        if: >-
-          ${{
-            !github.event.pull_request &&
-            (
-              github.event_name != 'issue_comment' ||
-              (
-                !startsWith(github.event.comment.body, '/kind') &&
-                !startsWith(github.event.comment.body, '/priority') &&
-                !startsWith(github.event.comment.body, '/status') &&
-                !startsWith(github.event.comment.body, '/area') &&
-                !startsWith(github.event.comment.body, '/help') &&
-                !startsWith(github.event.comment.body, '/remove-kind') &&
-                !startsWith(github.event.comment.body, '/remove-priority') &&
-                !startsWith(github.event.comment.body, '/remove-status') &&
-                !startsWith(github.event.comment.body, '/remove-area') &&
-                !startsWith(github.event.comment.body, '/remove-help') &&
-                !contains(github.event.comment.body, '\n/kind') &&
-                !contains(github.event.comment.body, '\n/priority') &&
-                !contains(github.event.comment.body, '\n/status') &&
-                !contains(github.event.comment.body, '\n/area') &&
-                !contains(github.event.comment.body, '\n/help') &&
-                !contains(github.event.comment.body, '\n/remove-kind') &&
-                !contains(github.event.comment.body, '\n/remove-priority') &&
-                !contains(github.event.comment.body, '\n/remove-status') &&
-                !contains(github.event.comment.body, '\n/remove-area') &&
-                !contains(github.event.comment.body, '\n/remove-help')
-              )
-            )
-          }}
+        if: ${{ !github.event.pull_request }}
         uses: ./.github/actions/labeler-action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,4 +71,4 @@ jobs:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.issue.number }}
-          comment_body: ${{ github.event.comment.body }}
+          comment_body: ${{ github.event.issue.body }}
