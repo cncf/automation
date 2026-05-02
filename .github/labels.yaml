@@ -103,8 +103,14 @@ labels:
 - name: init/stale
   description: Initiative is no longer actively being worked on
   color: b60205
+- name: dependencies
+  description: Dependency updates or dependency-related work (e.g. modules, renovate, supply chain)
+  color: 8250DF
 - name: kind/dd
   description: Project DD or item related to the DD process
+  color: 8250DF
+- name: kind/automation
+  description: Automated or bot-driven change; CI-generated issues/PRs
   color: 8250DF
 - name: kind/bug
   description: Bug or issue
@@ -112,11 +118,23 @@ labels:
 - name: kind/chore
   description: Chore or maintenance
   color: 8250DF
+- name: kind/docker
+  description: Dockerfiles, containers, images, or container tooling
+  color: 8250DF
 - name: kind/docs
   description: Docs related changes or updates
   color: 8250DF
 - name: kind/enhancement
   description: General items related to enhancements or improvements.
+  color: 8250DF
+- name: kind/external-gha
+  description: External or third-party GitHub Actions integrations
+  color: 8250DF
+- name: kind/github-actions
+  description: This repository’s workflows, reusable actions, and GitHub Actions tooling
+  color: 8250DF
+- name: kind/go
+  description: Go code, tooling, or modules in this repository
   color: 8250DF
 - name: kind/initiative
   description: An initiative or an item related to imitative processes
@@ -247,8 +265,8 @@ labels:
 - name: area/cloudrunners
   description: Cloud runner infrastructure
   color: 7057FF
-- name: area/automation
-  description: Automation scripts and workflows
+- name: area/dot-project
+  description: utilities/dot-project scaffolding and bootstrap tooling
   color: 7057FF
 - name: area/infrastructure
   description: Infrastructure and deployment
@@ -271,6 +289,9 @@ labels:
 - name: needs-status
   description: Indicates an issue or PR missing a status label
   color: ededed
+- name: good-first-issue
+  description: Good entry point for new contributors (small scope, guidance available)
+  color: FBCA04
 
 
 
@@ -503,11 +524,16 @@ ruleset:
     rules:
     - matchList:
       - needs-kind
+      - kind/automation
       - kind/bug
       - kind/chore
       - kind/dd
+      - kind/docker
       - kind/docs
       - kind/enhancement
+      - kind/external-gha
+      - kind/github-actions
+      - kind/go
       - kind/initiative
       - kind/meeting
       - kind/question
@@ -653,7 +679,7 @@ ruleset:
       - area/ci
       - area/utilities
       - area/cloudrunners
-      - area/automation
+      - area/dot-project
       - area/infrastructure
       - area/observability
       - area/ambassadors
