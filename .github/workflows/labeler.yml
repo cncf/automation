@@ -37,7 +37,7 @@ jobs:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.pull_request.number }}
-          comment_body: ${{ github.event.pull_request.body }}
+          comment_body: ""
           changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Run labeler action for Issue
@@ -56,7 +56,17 @@ jobs:
                 !startsWith(github.event.comment.body, '/remove-priority') &&
                 !startsWith(github.event.comment.body, '/remove-status') &&
                 !startsWith(github.event.comment.body, '/remove-area') &&
-                !startsWith(github.event.comment.body, '/remove-help')
+                !startsWith(github.event.comment.body, '/remove-help') &&
+                !contains(github.event.comment.body, '\n/kind') &&
+                !contains(github.event.comment.body, '\n/priority') &&
+                !contains(github.event.comment.body, '\n/status') &&
+                !contains(github.event.comment.body, '\n/area') &&
+                !contains(github.event.comment.body, '\n/help') &&
+                !contains(github.event.comment.body, '\n/remove-kind') &&
+                !contains(github.event.comment.body, '\n/remove-priority') &&
+                !contains(github.event.comment.body, '\n/remove-status') &&
+                !contains(github.event.comment.body, '\n/remove-area') &&
+                !contains(github.event.comment.body, '\n/remove-help')
               )
             )
           }}

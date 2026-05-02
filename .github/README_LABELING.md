@@ -386,5 +386,5 @@ Monitors for unintended divergence between defined labels and GitHub repository:
 
 - [GitHub Labels Settings](https://github.com/cncf/automation/labels)
 - [Repository Issues](https://github.com/cncf/automation/issues)
-- [Contributing Guide](./.github/CONTRIBUTING.md)
-- [Configuration File](./.github/labels.yaml)
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Configuration File](./labels.yaml)

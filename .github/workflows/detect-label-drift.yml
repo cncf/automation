@@ -179,7 +179,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
-              labels: 'area/ci',
               per_page: 100
             });
             const driftIssue = existing.data.find(i => i.title === '🔄 Label Drift Detected - Review Required');
@@ -193,13 +192,17 @@ jobs:
               });
               core.info(`Updated existing drift issue #${driftIssue.number}`);
             } else {
-              await github.rest.issues.create({
+              const createPayload = {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 title: '🔄 Label Drift Detected - Review Required',
                 body: body,
-                labels: ['kind/chore', 'area/ci']
-              });
+              };
+              // Best-effort label assignment; labels may not exist yet
+              try {
+                createPayload.labels = ['kind/chore', 'area/ci'];
+              } catch (_) {}
+              await github.rest.issues.create(createPayload);
             }
 
       - name: Upload drift report

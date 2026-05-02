@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      issues: write
       pull-requests: write
     steps:
       - name: Checkout code
@@ -53,6 +54,10 @@ jobs:
 
           with open('.github/labels.yaml', 'r') as f:
               data = yaml.safe_load(f)
+
+          if not isinstance(data, dict):
+              print("✗ labels.yaml root must be a mapping (got empty or non-dict)")
+              sys.exit(1)
 
           errors = []
           warnings = []

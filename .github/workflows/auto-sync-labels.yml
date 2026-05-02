@@ -93,7 +93,7 @@ jobs:
                   if existing['color'].upper() != label_data['color'].upper() or \
                      existing['description'] != label_data['description']:
                       # Update label
-                      url = f'{base_url}/labels/{requests.utils.quote(name)}'
+                      url = f"{base_url}/labels/{requests.utils.quote(name, safe='')}"
                       payload = {
                           'color': label_data['color'],
                           'description': label_data['description'],
@@ -128,7 +128,7 @@ jobs:
           if auto_delete:
               for name in github_labels.keys():
                   if name not in defined_labels:
-                      url = f'{base_url}/labels/{requests.utils.quote(name)}'
+                      url = f"{base_url}/labels/{requests.utils.quote(name, safe='')}"
                       try:
                           response = requests.delete(url, headers=headers)
                           response.raise_for_status()
