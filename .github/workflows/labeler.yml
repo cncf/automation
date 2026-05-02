@@ -33,7 +33,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/utilities/labeler/labels.yaml
+          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/.github/labels.yaml
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.pull_request.number }}
@@ -41,12 +41,30 @@ jobs:
           changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Run labeler action for Issue
-        if: ${{ !github.event.pull_request }}
+        if: >-
+          ${{
+            !github.event.pull_request &&
+            (
+              github.event_name != 'issue_comment' ||
+              (
+                !startsWith(github.event.comment.body, '/kind') &&
+                !startsWith(github.event.comment.body, '/priority') &&
+                !startsWith(github.event.comment.body, '/status') &&
+                !startsWith(github.event.comment.body, '/area') &&
+                !startsWith(github.event.comment.body, '/help') &&
+                !startsWith(github.event.comment.body, '/remove-kind') &&
+                !startsWith(github.event.comment.body, '/remove-priority') &&
+                !startsWith(github.event.comment.body, '/remove-status') &&
+                !startsWith(github.event.comment.body, '/remove-area') &&
+                !startsWith(github.event.comment.body, '/remove-help')
+              )
+            )
+          }}
         uses: ./.github/actions/labeler-action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/utilities/labeler/labels.yaml
+          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/.github/labels.yaml
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
           issue_number: ${{ github.event.issue.number }}

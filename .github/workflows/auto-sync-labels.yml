@@ -1,0 +1,178 @@
+name: Auto-Sync Labels
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/labels.yaml'
+  workflow_dispatch:
+
+jobs:
+  sync-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@f677139bbe7f9c59b41e7462b8c0b694e3d62aca # v5.2.0
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml requests
+
+      - name: Sync labels to GitHub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          python3 << 'EOF'
+          import yaml
+          import requests
+          import os
+          import sys
+
+          # Load labels.yaml
+          with open('.github/labels.yaml', 'r') as f:
+              config = yaml.safe_load(f)
+
+          defined_labels = {}
+          for label in config.get('labels', []):
+              defined_labels[label['name']] = {
+                  'color': label.get('color', '').lstrip('#'),
+                  'description': label.get('description', ''),
+              }
+
+          # GitHub API setup
+          owner = os.getenv('REPO_OWNER')
+          repo = os.getenv('REPO_NAME')
+          token = os.getenv('GH_TOKEN')
+
+          headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}
+          base_url = f'https://api.github.com/repos/{owner}/{repo}'
+
+          # Get existing labels from GitHub
+          url = f'{base_url}/labels?per_page=100'
+          github_labels = {}
+          
+          while url:
+              response = requests.get(url, headers=headers)
+              response.raise_for_status()
+              labels = response.json()
+              
+              for label in labels:
+                  github_labels[label['name']] = {
+                      'color': label['color'],
+                      'description': label['description'] or '',
+                  }
+              
+              url = response.links.get('next', {}).get('url')
+
+          # Sync operations
+          created = []
+          updated = []
+          deleted = []
+          errors = []
+
+          # Determine if we should auto-delete
+          auto_delete = config.get('autoDeleteLabels', False)
+          auto_create = config.get('autoCreateLabels', True)
+
+          # Update or create labels
+          for name, label_data in defined_labels.items():
+              if name in github_labels:
+                  # Check if update needed
+                  existing = github_labels[name]
+                  if existing['color'].upper() != label_data['color'].upper() or \
+                     existing['description'] != label_data['description']:
+                      # Update label
+                      url = f'{base_url}/labels/{requests.utils.quote(name)}'
+                      payload = {
+                          'color': label_data['color'],
+                          'description': label_data['description'],
+                      }
+                      try:
+                          response = requests.patch(url, json=payload, headers=headers)
+                          response.raise_for_status()
+                          updated.append(name)
+                          print(f"✓ Updated: {name}")
+                      except requests.RequestException as e:
+                          errors.append(f"Failed to update {name}: {e}")
+                          print(f"✗ Failed to update {name}: {e}")
+              else:
+                  # Create new label
+                  if auto_create:
+                      url = f'{base_url}/labels'
+                      payload = {
+                          'name': name,
+                          'color': label_data['color'],
+                          'description': label_data['description'],
+                      }
+                      try:
+                          response = requests.post(url, json=payload, headers=headers)
+                          response.raise_for_status()
+                          created.append(name)
+                          print(f"✓ Created: {name}")
+                      except requests.RequestException as e:
+                          errors.append(f"Failed to create {name}: {e}")
+                          print(f"✗ Failed to create {name}: {e}")
+
+          # Delete labels not in config
+          if auto_delete:
+              for name in github_labels.keys():
+                  if name not in defined_labels:
+                      url = f'{base_url}/labels/{requests.utils.quote(name)}'
+                      try:
+                          response = requests.delete(url, headers=headers)
+                          response.raise_for_status()
+                          deleted.append(name)
+                          print(f"✓ Deleted: {name}")
+                      except requests.RequestException as e:
+                          errors.append(f"Failed to delete {name}: {e}")
+                          print(f"✗ Failed to delete {name}: {e}")
+
+          # Summary
+          print("\n=== Sync Summary ===")
+          print(f"Created: {len(created)}")
+          print(f"Updated: {len(updated)}")
+          print(f"Deleted: {len(deleted)}")
+          if errors:
+              print(f"Errors: {len(errors)}")
+              for error in errors:
+                  print(f"  - {error}")
+              sys.exit(1)
+          else:
+              print("✓ Sync completed successfully")
+          EOF
+
+      - name: Verify sync
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          python3 << 'EOF'
+          import requests
+          import os
+
+          owner = os.getenv('REPO_OWNER')
+          repo = os.getenv('REPO_NAME')
+          token = os.getenv('GH_TOKEN')
+
+          headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}
+          url = f'https://api.github.com/repos/{owner}/{repo}/labels?per_page=100'
+
+          total = 0
+          response = requests.get(url, headers=headers)
+          response.raise_for_status()
+          total = len(response.json())
+
+          print(f"✓ Repository now has {total} labels")
+          EOF

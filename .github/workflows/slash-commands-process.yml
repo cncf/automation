@@ -1,0 +1,53 @@
+name: Slash Commands Process
+
+on:
+  repository_dispatch:
+    types:
+      - kind-command
+      - priority-command
+      - status-command
+      - area-command
+      - help-command
+      - remove-kind-command
+      - remove-priority-command
+      - remove-status-command
+      - remove-area-command
+      - remove-help-command
+
+jobs:
+  process-slash-command:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Build comment body
+        id: command
+        shell: bash
+        env:
+          CMD: ${{ github.event.client_payload.slash_command.command }}
+          ARGS: ${{ github.event.client_payload.slash_command.args.unnamed.all }}
+        run: |
+          if [ -n "$ARGS" ]; then
+            echo "comment_body=/$CMD $ARGS" >> "$GITHUB_OUTPUT"
+          else
+            echo "comment_body=/$CMD" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run labeler action
+        uses: ./.github/actions/labeler-action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          labels: https://raw.githubusercontent.com/cncf/automation/refs/heads/main/.github/labels.yaml
+          owner: ${{ github.event.client_payload.github.payload.repository.owner.login }}
+          repo: ${{ github.event.client_payload.github.payload.repository.name }}
+          issue_number: ${{ github.event.client_payload.github.payload.issue.number }}
+          comment_body: ${{ steps.command.outputs.comment_body }}
+          changed_files: ""
