@@ -20,10 +20,7 @@ on:
       - remove-area-command
       - remove-help-command
 
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
+permissions: {}
 
 concurrency:
   group: slash-command-${{ github.event.issue.number || github.event.client_payload.github.payload.issue.number || github.run_id }}
@@ -34,6 +31,8 @@ jobs:
     name: Dispatch Slash Command
     if: github.event_name == 'issue_comment' && github.event.comment.body
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Dispatch slash commands
         uses: peter-evans/slash-command-dispatch@9bdcd7914ec1b75590b790b844aa3b8eee7c683a # v5
@@ -59,6 +58,10 @@ jobs:
     name: Process Slash Command
     if: github.event_name == 'repository_dispatch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
     steps:
       - name: Run labeler action for issue/PR command
         uses: ./.github/actions/labeler-action

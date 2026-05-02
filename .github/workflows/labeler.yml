@@ -1,7 +1,7 @@
 name: Auto Label Issues and PRs
 
-# Mirrors cncf/toc/.github/workflows/labeler.yaml: same triggers, checkout strategy,
-# changed-files source, and comment_body sources (PR/issue bodies — not issue_comment).
+# Mirrors cncf/toc/.github/workflows/labeler.yaml for triggers and payload handling,
+# but avoids PR-head checkout under pull_request_target for security.
 # Slash commands are handled only in slash-commands.yml (repository_dispatch).
 
 on:
@@ -18,17 +18,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR head for changed-files
-        if: ${{ github.event.pull_request }}
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Checkout repository for issue events
-        if: ${{ !github.event.pull_request }}
+      - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
