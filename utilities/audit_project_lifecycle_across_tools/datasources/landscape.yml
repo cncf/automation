@@ -2981,6 +2981,14 @@ landscape:
             logo: netapp.svg
             crunchbase: https://www.crunchbase.com/organization/netapp
           - item:
+            name: NoKV
+            description: NoKV is a native metadata service for distributed filesystems, object storage namespaces, and AI dataset workloads.
+            homepage_url: https://github.com/feichai0017/NoKV
+            repo_url: https://github.com/feichai0017/NoKV
+            logo: nokv.svg
+            second_path:
+              - "AI Native Infra / Storage"
+          - item:
             name: Nutanix Data Services for Kubernetes (NDK)
             description: Protect containerized applications with enterprise grade data services to meet compliance and regulatory requirements.
             homepage_url: https://www.nutanix.com/products/data-services-for-kubernetes
@@ -6184,13 +6192,6 @@ landscape:
             second_path:
               - "AI Agent / Knowledge Graph"
           - item:
-            name: NoKV
-            description: >-
-              NoKV is a full-stack distributed key-value storage platform written from scratch in Go, including its own LSM engine, Raft implementation, control plane, and MVCC layer.
-            homepage_url: https://github.com/feichai0017/NoKV
-            repo_url: https://github.com/feichai0017/NoKV
-            logo: nokv.svg
-          - item:
             name: NuoDB
             homepage_url: https://www.nuodb.com/
             logo: nuodb.svg
@@ -7055,6 +7056,18 @@ landscape:
         name: Application Definition & Image Build
         items:
           - item:
+            name: agentregistry
+            description: Agentregistry is a cloud-native registry for discovering, curating, and deploying MCP servers, agents, and skills across local development and Kubernetes environments.
+            homepage_url: https://aregistry.ai
+            logo: agentregistry.svg
+            repo_url: https://github.com/agentregistry-dev/agentregistry
+            crunchbase: https://www.crunchbase.com/organization/solo-io
+            extra:
+              summary_personas: Platform Engineers, DevOps Engineers, Developers
+              summary_tags: AI, Agentic AI, Cloud Native
+              summary_use_case: >-
+                agentregistry brings to cloud-native projects a trusted catalog and delivery path for MCP servers, agents, and skills. Agentregistry provides platform teams and developers one place to manage the agentic infrastructure their applications depend on.
+          - item:
             name: Alibaba Cloud Serverless Workflow
             homepage_url: https://www.alibabacloud.com/product/serverless-workflow
             logo: alibaba_fnf.svg
@@ -7636,7 +7649,7 @@ landscape:
           - item:
             name: Microcks
             homepage_url: https://microcks.io
-            project: sandbox
+            project: incubating
             repo_url: https://github.com/microcks/microcks
             logo: microcks.svg
             twitter: https://twitter.com/microcksio
@@ -7644,6 +7657,7 @@ landscape:
             extra:
               lfx_slug: microcks
               accepted: '2023-06-22'
+              incubating: '2026-05-03'
               dev_stats_url: https://microcks.devstats.cncf.io/
               artwork_url: https://github.com/cncf/artwork/blob/master/examples/sandbox_l-r.md#microcks-logos
               blog_url: https://microcks.io/blog/
@@ -11817,7 +11831,7 @@ landscape:
             name: Radar
             description: >-
               Open-source Kubernetes visibility tool with topology visualization, event timeline, Helm management, and built-in MCP server for AI tools.
-            homepage_url: https://github.com/skyhook-io/radar
+            homepage_url: https://radarhq.io
             repo_url: https://github.com/skyhook-io/radar
             logo: radar.svg
             crunchbase: https://www.crunchbase.com/organization/skyhook-io
