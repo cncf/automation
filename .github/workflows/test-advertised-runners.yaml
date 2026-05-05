@@ -1,0 +1,305 @@
+name: Test Advertised CNCF Runners
+
+on:
+#  push:
+#    branches:
+#      - main
+  workflow_dispatch:
+    inputs:
+      run_runner_tests:
+        description: Run targetability checks on discovered CNCF runners
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  discover-runners:
+    runs-on: ubuntu-latest
+    outputs:
+      default_runner_matrix: ${{ steps.discover.outputs.default_runner_matrix }}
+      default_runner_count: ${{ steps.discover.outputs.default_runner_count }}
+      grouped_runner_matrix: ${{ steps.discover.outputs.grouped_runner_matrix }}
+      grouped_runner_count: ${{ steps.discover.outputs.grouped_runner_count }}
+      should_run_runner_tests: ${{ steps.discover.outputs.should_run_runner_tests }}
+      runner_test_mode: ${{ steps.discover.outputs.runner_test_mode }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Discover advertised runner labels
+        id: discover
+        shell: bash
+        env:
+          FORCE_RUNNER_TESTS: ${{ inputs.run_runner_tests }}
+          CURRENT_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          tmp_inventory="$(mktemp)"
+
+          while IFS= read -r file; do
+            awk '
+              BEGIN {
+                kind = 0
+                name = ""
+                scale_set_name = ""
+                runner_group = ""
+              }
+              /^kind: AutoscalingRunnerSet$/ {
+                kind = 1
+              }
+              kind && $1 == "name:" && name == "" {
+                name = $2
+              }
+              kind && /actions\.github\.com\/scale-set-name:/ && scale_set_name == "" {
+                scale_set_name = $2
+              }
+              kind && /^[[:space:]]*runnerGroup:/ && runner_group == "" {
+                runner_group = $2
+                gsub(/"/, "", runner_group)
+              }
+              END {
+                if (kind && name != "" && scale_set_name == name) {
+                  printf "%s\t%s\t%s\n", name, (runner_group == "" ? "Default" : runner_group), FILENAME
+                }
+              }
+            ' "${file}" >> "${tmp_inventory}"
+          done < <(find ci -type f \( -name '*.yaml' -o -name '*.yml' \) | sort)
+
+          sort -u "${tmp_inventory}" -o "${tmp_inventory}"
+
+          if [[ ! -s "${tmp_inventory}" ]]; then
+            echo "No AutoscalingRunnerSet manifests were discovered under ci/" >&2
+            exit 1
+          fi
+
+          default_runner_matrix="$(
+            awk -F '\t' '$2 == "Default" { print $1 }' "${tmp_inventory}" \
+              | sort -u \
+              | jq -c -R -s 'split("\n") | map(select(length > 0)) | {label: .}'
+          )"
+
+          grouped_runner_matrix="$(
+            awk -F '\t' '$2 != "Default" { print }' "${tmp_inventory}" \
+              | jq -c -R -s '
+                  split("\n")
+                  | map(select(length > 0) | split("\t"))
+                  | map({group: .[1], label: .[0], manifest: .[2]})
+                  | {include: .}
+                '
+          )"
+
+          default_runner_count="$(
+            jq '.label | length' <<< "${default_runner_matrix}"
+          )"
+
+          grouped_runner_count="$(
+            jq '.include | length' <<< "${grouped_runner_matrix}"
+          )"
+
+          should_run_runner_tests="false"
+          runner_test_mode="discovery-only"
+
+          if [[ "${CURRENT_REPOSITORY}" == "cncf/automation" ]]; then
+            should_run_runner_tests="true"
+            runner_test_mode="upstream"
+          elif [[ "${FORCE_RUNNER_TESTS}" == "true" ]]; then
+            should_run_runner_tests="true"
+            runner_test_mode="explicit-opt-in"
+          fi
+
+          {
+            echo "default_runner_matrix=${default_runner_matrix}"
+            echo "default_runner_count=${default_runner_count}"
+            echo "grouped_runner_matrix=${grouped_runner_matrix}"
+            echo "grouped_runner_count=${grouped_runner_count}"
+            echo "should_run_runner_tests=${should_run_runner_tests}"
+            echo "runner_test_mode=${runner_test_mode}"
+          } >> "${GITHUB_OUTPUT}"
+
+          {
+            echo "## Discovered advertised CNCF runners"
+            echo
+            echo "Inventory source: local \`AutoscalingRunnerSet\` manifests in \`ci/\`."
+            echo
+            echo "### Default group runners"
+            echo
+            echo "| Label | Target syntax | Manifest |"
+            echo "| --- | --- | --- |"
+            awk -F '\t' '$2 == "Default" { printf "| `%s` | `runs-on: %s` | `%s` |\n", $1, $1, $3 }' "${tmp_inventory}" | sort
+            echo
+            echo "### Grouped runners"
+            echo
+            if [[ "${grouped_runner_count}" == "0" ]]; then
+              echo "No grouped runners discovered."
+            else
+              echo "| Group | Label | Target syntax | Manifest |"
+              echo "| --- | --- | --- | --- |"
+              awk -F '\t' '$2 != "Default" { printf "| `%s` | `%s` | `group: %s` + `labels: %s` | `%s` |\n", $2, $1, $2, $1, $3 }' "${tmp_inventory}" | sort
+            fi
+            echo
+            echo "### Notes"
+            echo
+            echo "- This workflow validates manifest-backed runner labels in this repository."
+            echo "- It does not query enterprise-hosted larger runners exposed only through the GitHub API."
+            echo "- Runner execution mode: \`${runner_test_mode}\`."
+            if [[ "${should_run_runner_tests}" == "true" ]]; then
+              if [[ "${runner_test_mode}" == "upstream" ]]; then
+                echo "- Runner tests are enabled automatically because this run is in \`cncf/automation\`."
+              else
+                echo "- Runner tests were enabled explicitly by the \`run_runner_tests\` workflow input."
+                echo "- On forks or repos without CNCF runner-group access, queued jobs may still fail to acquire a runner."
+              fi
+            else
+              echo "- Runner tests are skipped by default outside \`cncf/automation\`. Set \`run_runner_tests: true\` to opt in."
+            fi
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  test-default-runners:
+    name: Test default runner ${{ matrix.label }}
+    needs: discover-runners
+    if: ${{ needs.discover-runners.outputs.should_run_runner_tests == 'true' && needs.discover-runners.outputs.default_runner_count != '0' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.discover-runners.outputs.default_runner_matrix) }}
+    runs-on: ${{ matrix.label }}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Run uname to verify architecture
+        run: uname -a
+
+      - name: Run a basic workload
+        run: |
+          echo "Testing runner ${{ matrix.label }}"
+          echo "CPU Info:"
+          lscpu
+
+      - name: Run a Docker container
+        run: |
+          docker run --rm alpine echo "Docker is working on ${{ matrix.label }}"
+
+      - name: Check local disk
+        run: |
+          echo "df -h on ${{ matrix.label }}"
+          df -h /
+
+      - name: Get versions of installed tools, list supported locales
+        run: |
+          echo "::group::kmod version"
+          kmod --version
+          echo "::endgroup::"
+
+          echo "::group::zstd version"
+          zstd --version
+          echo "::endgroup::"
+
+          echo "::group::dirmngr version"
+          dirmngr --version
+          echo "::endgroup::"
+
+          echo "::group::wget version"
+          wget --version
+          echo "::endgroup::"
+
+          echo "::group::gpg version"
+          gpg --version
+          echo "::endgroup::"
+
+          echo "::group::pip version"
+          pip --version
+          echo "::endgroup::"
+
+          echo "::group::locale list"
+          locale -a
+          echo "::endgroup::"
+
+          echo "::group::make version"
+          make --version
+          echo "::endgroup::"
+
+          echo "::group::which eatmydata"
+          which eatmydata
+          echo "::endgroup::"
+
+  test-grouped-runners:
+    name: Test grouped runner ${{ matrix.group }} / ${{ matrix.label }}
+    needs: discover-runners
+    if: ${{ needs.discover-runners.outputs.should_run_runner_tests == 'true' && needs.discover-runners.outputs.grouped_runner_count != '0' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.discover-runners.outputs.grouped_runner_matrix) }}
+    runs-on:
+      group: ${{ matrix.group }}
+      labels: ${{ matrix.label }}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Run uname to verify architecture
+        run: uname -a
+
+      - name: Run a basic workload
+        run: |
+          echo "Testing runner group ${{ matrix.group }} with label ${{ matrix.label }}"
+          echo "CPU Info:"
+          lscpu
+
+      - name: Run a Docker container
+        run: |
+          docker run --rm alpine echo "Docker is working on ${{ matrix.group }} / ${{ matrix.label }}"
+
+      - name: Check local disk
+        run: |
+          echo "df -h on ${{ matrix.group }} / ${{ matrix.label }}"
+          df -h /
+
+      - name: Get versions of installed tools, list supported locales
+        run: |
+          echo "::group::kmod version"
+          kmod --version
+          echo "::endgroup::"
+
+          echo "::group::zstd version"
+          zstd --version
+          echo "::endgroup::"
+
+          echo "::group::dirmngr version"
+          dirmngr --version
+          echo "::endgroup::"
+
+          echo "::group::wget version"
+          wget --version
+          echo "::endgroup::"
+
+          echo "::group::gpg version"
+          gpg --version
+          echo "::endgroup::"
+
+          echo "::group::pip version"
+          pip --version
+          echo "::endgroup::"
+
+          echo "::group::locale list"
+          locale -a
+          echo "::endgroup::"
+
+          echo "::group::make version"
+          make --version
+          echo "::endgroup::"
+
+          echo "::group::which eatmydata"
+          which eatmydata
+          echo "::endgroup::"
