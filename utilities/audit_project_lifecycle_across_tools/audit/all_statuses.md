@@ -4,6 +4,7 @@
 
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
+| Microcks | microcks | microcks | incubating | incubating | incubating | incubating | sandbox | incubating |
 | Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | CoHDI | cohdi | cohdi | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -33,7 +34,6 @@
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
 | kube-bind | - | - | forming | - | - | - | - | - |
-| KubeElasti | - | kubeelasti | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | llm-d | - | - | forming | - | - | - | - | - |
 | NMstate | - | nmstate | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
@@ -136,6 +136,7 @@
 | LitmusChaos | litmuschaos | litmuschaos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Longhorn | longhorn | longhorn | incubating | incubating | incubating | incubating | incubating | incubating |
 | metal3-io | metal3 | metal3 | incubating | incubating | incubating | incubating | incubating | incubating |
+| Microcks | microcks | microcks | incubating | incubating | incubating | incubating | sandbox | incubating |
 | NATS | nats | nats | incubating | incubating | incubating | incubating | incubating | incubating |
 | Notary | notary | notary | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenCost | opencost | opencost | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -230,6 +231,7 @@
 | Kubean | kubean | kubean | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KubeArmor | kubearmor | kubearmor | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kubeclipper | kubeclipper | kubeclipper | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| KubeElasti | kubeelasti | kubeelasti | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KubeFleet | kubefleet | kubefleet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kuberhealthy | kuberhealthy | kuberhealthy | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kubernetes AI Toolchain Operator (KAITO) | kaito | kaito | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -244,7 +246,6 @@
 | LoxiLB | loxilb | loxilb | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Meshery | meshery | meshery | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | MetalLB | metallb | metallb | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Microcks | microcks | microcks | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ModelPack | modelpack | modelpack | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Network Service Mesh | nsm | nsm | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OAuth2 Proxy | oauth2-proxy | oauth2-proxy | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -324,7 +325,6 @@
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
 | kube-bind | - | - | forming | - | - | - | - | - |
-| KubeElasti | - | kubeelasti | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | llm-d | - | - | forming | - | - | - | - | - |
 | NMstate | - | nmstate | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
