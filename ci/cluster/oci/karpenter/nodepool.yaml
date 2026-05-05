@@ -34,6 +34,8 @@ spec:
           operator: In
           values:
             - VM.Standard.E6.Flex
+            - VM.Standard.E5.Flex
+            - VM.Standard.E4.Flex
         - key: karpenter.k8s.oracle/instance-cpu
           operator: In
           values:
