@@ -150,11 +150,41 @@ func main() {
 	var tocURL string
 	if !*skipGH && (landscapeData == nil || landscapeData.AnnualReviewURL == "") {
 		fmt.Fprintf(os.Stderr, "  Searching for TOC/sandbox onboarding issue...\n")
-		var err error
-		tocURL, err = projects.SearchTOCIssues(projectName, org, token, client, "")
-		if err != nil {
-			log.Printf("  Warning: TOC issue search failed: %v", err)
-		} else if tocURL != "" {
+
+		// Build a de-duplicated list of name variants to try, most specific first:
+		//   1. Landscape display name
+		//   2. User-supplied project name
+		//   3. GitHub org name
+		seen := map[string]bool{}
+		var tocSearchNames []string
+		for _, n := range []string{
+			func() string {
+				if landscapeData != nil {
+					return landscapeData.Name
+				}
+				return ""
+			}(),
+			projectName,
+			org,
+		} {
+			if n != "" && !seen[n] {
+				seen[n] = true
+				tocSearchNames = append(tocSearchNames, n)
+			}
+		}
+
+		var tocErr error
+		for _, sn := range tocSearchNames {
+			tocURL, tocErr = projects.SearchTOCIssues(sn, org, token, client, "")
+			if tocErr != nil {
+				log.Printf("  Warning: TOC issue search failed for %q: %v", sn, tocErr)
+				continue
+			}
+			if tocURL != "" {
+				break
+			}
+		}
+		if tocURL != "" {
 			fmt.Fprintf(os.Stderr, "  Found TOC/onboarding issue: %s\n", tocURL)
 		} else {
 			fmt.Fprintf(os.Stderr, "  No TOC/onboarding issue found\n")
