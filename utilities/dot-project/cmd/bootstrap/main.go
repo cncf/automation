@@ -87,14 +87,40 @@ func main() {
 	}
 
 	// Phase 2: Fetch from CLOMonitor
+	// Build a de-duplicated list of name variants to try, most specific first:
+	//   1. Landscape display name
+	//   2. User-supplied project name
+	//   3. GitHub org name
 	var cloProject *projects.CLOMonitorProject
 	if !*skipCLO {
 		fmt.Fprintf(os.Stderr, "  Fetching from CLOMonitor...\n")
-		var err error
-		cloProject, err = projects.FetchFromCLOMonitor(projectName, client, "")
-		if err != nil {
-			log.Printf("  Warning: CLOMonitor fetch failed: %v", err)
-		} else if cloProject != nil {
+
+		seen := map[string]bool{}
+		var cloSearchNames []string
+		landscapeName := ""
+		if landscapeData != nil {
+			landscapeName = landscapeData.Name
+		}
+		for _, n := range []string{landscapeName, projectName, org} {
+			if n != "" && !seen[n] {
+				seen[n] = true
+				cloSearchNames = append(cloSearchNames, n)
+			}
+		}
+
+		for _, sn := range cloSearchNames {
+			var err error
+			cloProject, err = projects.FetchFromCLOMonitor(sn, client, "")
+			if err != nil {
+				log.Printf("  Warning: CLOMonitor fetch failed for %q: %v", sn, err)
+				continue
+			}
+			if cloProject != nil {
+				break
+			}
+		}
+
+		if cloProject != nil {
 			fmt.Fprintf(os.Stderr, "  Found on CLOMonitor: %s (maturity: %s, score: %.0f)\n",
 				cloProject.DisplayName, cloProject.Maturity, cloProject.Score.Global)
 		} else {
