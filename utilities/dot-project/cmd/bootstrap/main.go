@@ -40,8 +40,8 @@ func main() {
 		projectName = *githubOrg
 	}
 
-	org := *githubOrg
-	repo := *githubRepo
+	org := normalizeGitHubOrg(*githubOrg)
+	repo := normalizeGitHubRepo(*githubRepo)
 	if repo == "" && org != "" {
 		repo = org // Common pattern: org name == primary repo name
 	}
@@ -291,4 +291,32 @@ func main() {
 			fmt.Fprintf(os.Stderr, "  %s: %s\n", field, source)
 		}
 	}
+}
+
+// normalizeGitHubOrg strips a full GitHub URL down to just the org name.
+// Accepts "https://github.com/org" or plain "org-name".
+func normalizeGitHubOrg(v string) string {
+	const prefix = "https://github.com/"
+	v = strings.TrimSuffix(strings.TrimSpace(v), "/")
+	if strings.HasPrefix(v, prefix) {
+		parts := strings.SplitN(strings.TrimPrefix(v, prefix), "/", 2)
+		return parts[0]
+	}
+	return v
+}
+
+// normalizeGitHubRepo strips a full GitHub URL down to just the repo name.
+// Accepts "https://github.com/org/repo", "https://github.com/org", or plain "repo".
+func normalizeGitHubRepo(v string) string {
+	const prefix = "https://github.com/"
+	v = strings.TrimSuffix(strings.TrimSpace(v), "/")
+	if strings.HasPrefix(v, prefix) {
+		parts := strings.SplitN(strings.TrimPrefix(v, prefix), "/", 2)
+		if len(parts) == 2 && parts[1] != "" {
+			return parts[1]
+		}
+		// URL was github.com/org with no repo segment — caller will default repo=org
+		return ""
+	}
+	return v
 }
