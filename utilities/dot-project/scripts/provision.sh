@@ -15,7 +15,7 @@
 #   --skip-protection     Skip setting branch protection rules
 #   --skip-issue          Skip creating onboarding issue
 #   --force               Force regeneration of scaffold files (overwrites auxiliary files)
-#   --bootstrap-bin <p>   Path to bootstrap binary (default: ./bootstrap)
+#   --bootstrap-bin <p>   Path to bootstrap binary (default: ./bin/bootstrap)
 #   -h, --help            Show this help message
 #
 # Required environment variables:
