@@ -657,11 +657,11 @@ func TestValidateProjects(t *testing.T) {
 
 		// Write project list
 		listPath := filepath.Join(dir, "projectlist.yaml")
-		writeFile(t, listPath, "projects:\n  - url: \"file://"+projPath+"\"\n")
+		writeFile(t, listPath, "projects:\n  - url: \"file://"+filepath.ToSlash(projPath)+"\"\n")
 
 		// Write config
 		cfgPath := filepath.Join(dir, "config.yaml")
-		writeFile(t, cfgPath, "project_list_url: \""+listPath+"\"\ncache_dir: \""+cacheDir+"\"\noutput_format: \"json\"\n")
+		writeFile(t, cfgPath, "project_list_url: \""+filepath.ToSlash(listPath)+"\"\ncache_dir: \""+filepath.ToSlash(cacheDir)+"\"\noutput_format: \"json\"\n")
 
 		pv, err := NewProjectValidator(cfgPath)
 		if err != nil {
@@ -691,7 +691,7 @@ func TestValidateProjects(t *testing.T) {
 		cacheDir := filepath.Join(dir, "cache")
 
 		cfgPath := filepath.Join(dir, "config.yaml")
-		writeFile(t, cfgPath, "project_list_url: \"/nonexistent/list.yaml\"\ncache_dir: \""+cacheDir+"\"\n")
+		writeFile(t, cfgPath, "project_list_url: \"/nonexistent/list.yaml\"\ncache_dir: \""+filepath.ToSlash(cacheDir)+"\"\n")
 
 		pv, err := NewProjectValidator(cfgPath)
 		if err != nil {
@@ -712,7 +712,7 @@ func TestValidateProjects(t *testing.T) {
 		writeFile(t, projPath, validProjectYAML())
 
 		listPath := filepath.Join(dir, "projectlist.yaml")
-		writeFile(t, listPath, "projects:\n  - url: \"file://"+projPath+"\"\n")
+		writeFile(t, listPath, "projects:\n  - url: \"file://"+filepath.ToSlash(projPath)+"\"\n")
 
 		pv := NewValidator(cacheDir)
 		results, err := pv.ValidateAll(listPath)
@@ -735,7 +735,7 @@ func TestValidateProjects(t *testing.T) {
 		writeFile(t, projPath, validProjectYAML())
 
 		listPath := filepath.Join(dir, "projectlist.yaml")
-		writeFile(t, listPath, "projects:\n  - url: \"file://"+projPath+"\"\n")
+		writeFile(t, listPath, "projects:\n  - url: \"file://"+filepath.ToSlash(projPath)+"\"\n")
 
 		pv := NewValidator(cacheDir)
 		pv.config.ProjectListURL = listPath
@@ -779,7 +779,7 @@ func TestNewProjectValidator(t *testing.T) {
 		dir := t.TempDir()
 		cacheDir := filepath.Join(dir, "cache")
 		cfgPath := filepath.Join(dir, "config.yaml")
-		writeFile(t, cfgPath, "project_list_url: \"list.yaml\"\ncache_dir: \""+cacheDir+"\"\n")
+		writeFile(t, cfgPath, "project_list_url: \"list.yaml\"\ncache_dir: \""+filepath.ToSlash(cacheDir)+"\"\n")
 
 		pv, err := NewProjectValidator(cfgPath)
 		if err != nil {
