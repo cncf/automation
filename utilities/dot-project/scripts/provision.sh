@@ -367,11 +367,6 @@ create_onboarding_issue() {
         done < "${tmp_dir}/project.yaml"
     fi
 
-    if [[ ${#todos[@]} -eq 0 ]]; then
-        info "  No TODOs found in project.yaml — skipping onboarding issue"
-        return 0
-    fi
-
     if dry "would create onboarding issue on ${target_repo}"; then
         return 0
     fi
@@ -417,6 +412,8 @@ create_onboarding_issue() {
     for todo in "${todos[@]}"; do
         checklist+="- [ ] ${todo}"$'\n'
     done
+    checklist+="- [ ] Ensure all project maintainers have a LFID at https://openprofile.dev/"$'\n'
+    checklist+="- [ ] Update LFID so their GitHub ID is linked to the LFID, and correct their email address and company affiliation if needed."$'\n'
 
     local body
     body=$(cat <<EOF
