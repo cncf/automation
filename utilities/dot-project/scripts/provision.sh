@@ -252,6 +252,13 @@ provision_project() {
             info "  Empty repo detected, initializing..."
             git -C "$tmp_dir" init -b main
             git -C "$tmp_dir" remote add origin "https://github.com/${target_repo}.git"
+        else
+            # Clone succeeded but the repo may be empty (no commits yet).
+            # gh repo clone exits 0 even for empty repos, leaving HEAD pointing at
+            # whatever init.defaultBranch is set to locally (often "master").
+            # Force it to "main" so the first commit and the push target match the
+            # branch protection rule that Step 6 sets on branches/main.
+            git -C "$tmp_dir" symbolic-ref HEAD refs/heads/main
         fi
     fi
 
