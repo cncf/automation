@@ -395,16 +395,23 @@ create_onboarding_issue() {
         return 0
     fi
 
+    # Resolve the currently authenticated GitHub user so we can exclude them from mentions
+    local current_user
+    current_user=$(gh api user --jq '.login' 2>/dev/null || true)
+
     # Fetch up to 3 org owners; fall back to maintainers.yaml handles
     local handles=()
     while IFS= read -r login; do
+        [[ "$login" == "$current_user" ]] && continue
         handles+=("$login")
         [[ ${#handles[@]} -ge 3 ]] && break
     done < <(gh api "orgs/${org}/members?role=admin&per_page=10" --jq '.[].login' 2>/dev/null || true)
 
     if [[ ${#handles[@]} -eq 0 ]] && [[ -f "${tmp_dir}/maintainers.yaml" ]]; then
         while IFS= read -r login; do
-            handles+=("${login#@}")
+            login="${login#@}"
+            [[ "$login" == "$current_user" ]] && continue
+            handles+=("$login")
             [[ ${#handles[@]} -ge 3 ]] && break
         done < <(grep -E '^\s+-\s+github:' "${tmp_dir}/maintainers.yaml" | sed 's/.*github:[[:space:]]*//' || true)
     fi
