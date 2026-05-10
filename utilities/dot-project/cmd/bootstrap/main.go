@@ -34,14 +34,41 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Normalize --github-org and --github-repo: accept full GitHub URLs or plain slugs.
+	// e.g. https://github.com/meshery/meshery → org="meshery", repo="meshery"
+	var org, repo string
+	if *githubOrg != "" {
+		var impliedRepo string
+		var err error
+		org, impliedRepo, err = projects.ParseGitHubURL(*githubOrg)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: --github-org: %v\n", err)
+			os.Exit(1)
+		}
+		// If the org URL contained a repo segment and --github-repo wasn't set, use it.
+		if impliedRepo != "" && *githubRepo == "" {
+			repo = impliedRepo
+		}
+	}
+	if *githubRepo != "" {
+		var repoOrg string
+		var err error
+		repoOrg, repo, err = projects.ParseGitHubURL(*githubRepo)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: --github-repo: %v\n", err)
+			os.Exit(1)
+		}
+		// URL had only one segment (github.com/repo) — the org segment is the repo name.
+		if repo == "" {
+			repo = repoOrg
+		}
+	}
+
 	// Derive defaults
 	projectName := *name
 	if projectName == "" {
-		projectName = *githubOrg
+		projectName = org
 	}
-
-	org := *githubOrg
-	repo := *githubRepo
 	if repo == "" && org != "" {
 		repo = org // Common pattern: org name == primary repo name
 	}
