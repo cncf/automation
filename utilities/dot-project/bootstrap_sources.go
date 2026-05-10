@@ -550,14 +550,16 @@ func mergeStringSlices(a, b []string) []string {
 	seen := make(map[string]bool)
 	var result []string
 	for _, s := range a {
-		if !seen[s] {
-			seen[s] = true
+		key := strings.ToLower(s)
+		if !seen[key] {
+			seen[key] = true
 			result = append(result, s)
 		}
 	}
 	for _, s := range b {
-		if !seen[s] {
-			seen[s] = true
+		key := strings.ToLower(s)
+		if !seen[key] {
+			seen[key] = true
 			result = append(result, s)
 		}
 	}
