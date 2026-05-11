@@ -1,6 +1,7 @@
 package projects
 
 import (
+	"encoding/json"
 	"regexp"
 	"sort"
 	"strings"
@@ -255,4 +256,214 @@ func parseMaintainersFile(content string) []string {
 		return nil
 	}
 	return handles
+}
+
+// packageManagerManifests maps manifest file names to their registry type.
+var packageManagerManifests = map[string]string{
+	"package.json":     "npm",
+	"cargo.toml":       "cargo",
+	"go.mod":           "go",
+	"pyproject.toml":   "pypi",
+	"setup.py":         "pypi",
+	"setup.cfg":        "pypi",
+	"chart.yaml":       "helm",
+	"pom.xml":          "maven",
+	"build.gradle":     "gradle",
+	"build.gradle.kts": "gradle",
+}
+
+// detectPackageManagerFromFilename returns the registry type if the filename
+// is a known package manager manifest, or "" if not recognized.
+// Matching is case-insensitive.
+func detectPackageManagerFromFilename(filename string) string {
+	return packageManagerManifests[strings.ToLower(filename)]
+}
+
+// packageManagerURLPatterns maps URL path patterns to (registry, identifier) extraction.
+var packageManagerURLPatterns = []struct {
+	prefix   string // URL path prefix to match (after host)
+	host     string // hostname to match
+	registry string // registry key (e.g., "docker", "npm")
+	// segments is the number of path segments after the prefix to capture as identifier
+	segments int
+}{
+	{host: "hub.docker.com", prefix: "/r/", registry: "docker", segments: 2},
+	{host: "hub.docker.com", prefix: "/u/", registry: "docker", segments: 1},
+	{host: "gallery.ecr.aws", prefix: "/", registry: "docker", segments: 1},
+	{host: "ghcr.io", prefix: "/", registry: "docker", segments: 2},
+	{host: "quay.io", prefix: "/repository/", registry: "docker", segments: 2},
+	{host: "pypi.org", prefix: "/project/", registry: "pypi", segments: 1},
+	{host: "www.npmjs.com", prefix: "/package/", registry: "npm", segments: 0},
+	{host: "npmjs.com", prefix: "/package/", registry: "npm", segments: 0},
+	{host: "crates.io", prefix: "/crates/", registry: "cargo", segments: 1},
+	{host: "rubygems.org", prefix: "/gems/", registry: "rubygems", segments: 1},
+	{host: "pkg.go.dev", prefix: "/", registry: "go", segments: 0}, // entire path is the module
+	{host: "artifacthub.io", prefix: "/packages/helm/", registry: "helm", segments: 2},
+	{host: "search.maven.org", prefix: "/artifact/", registry: "maven", segments: 2},
+}
+
+// parsePackageManagerURL parses a package manager URL and returns (registry, identifier).
+func parsePackageManagerURL(rawURL string) (registry, identifier string) {
+	rawURL = strings.TrimSpace(rawURL)
+	if rawURL == "" {
+		return "", ""
+	}
+
+	// Extract host and path
+	u := rawURL
+	// Strip scheme
+	if idx := strings.Index(u, "://"); idx >= 0 {
+		u = u[idx+3:]
+	}
+	// Split host and path
+	slashIdx := strings.Index(u, "/")
+	if slashIdx < 0 {
+		return "", ""
+	}
+	host := strings.ToLower(u[:slashIdx])
+	path := u[slashIdx:]
+	// Strip trailing slash
+	path = strings.TrimRight(path, "/")
+
+	for _, p := range packageManagerURLPatterns {
+		if host != p.host {
+			continue
+		}
+		if !strings.HasPrefix(path, p.prefix) {
+			continue
+		}
+		remainder := path[len(p.prefix):]
+		remainder = strings.TrimRight(remainder, "/")
+		if remainder == "" {
+			continue
+		}
+
+		if p.segments == 0 {
+			// Use entire remainder as identifier
+			return p.registry, remainder
+		}
+
+		parts := strings.SplitN(remainder, "/", p.segments+1)
+		if len(parts) < p.segments {
+			continue
+		}
+		id := strings.Join(parts[:p.segments], "/")
+		if id != "" {
+			return p.registry, id
+		}
+	}
+
+	return "", ""
+}
+
+// parseGoMod extracts the module path from go.mod content.
+func parseGoMod(content string) string {
+	for _, line := range strings.Split(content, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "module ") {
+			mod := strings.TrimSpace(strings.TrimPrefix(line, "module"))
+			return strings.Trim(mod, `"`)
+		}
+	}
+	return ""
+}
+
+// parsePackageJSON extracts the package name from package.json content.
+func parsePackageJSON(content string) string {
+	var pkg struct {
+		Name string `json:"name"`
+	}
+	if err := json.Unmarshal([]byte(content), &pkg); err != nil {
+		return ""
+	}
+	return pkg.Name
+}
+
+// parseCargoToml extracts the package name from Cargo.toml content.
+func parseCargoToml(content string) string {
+	inPackage := false
+	for _, line := range strings.Split(content, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "[package]" {
+			inPackage = true
+			continue
+		}
+		if strings.HasPrefix(trimmed, "[") {
+			inPackage = false
+			continue
+		}
+		if inPackage && (strings.HasPrefix(trimmed, "name ") || strings.HasPrefix(trimmed, "name=")) {
+			parts := strings.SplitN(trimmed, "=", 2)
+			if len(parts) == 2 {
+				val := strings.TrimSpace(parts[1])
+				val = strings.Trim(val, `"'`)
+				if val != "" {
+					return val
+				}
+			}
+		}
+	}
+	return ""
+}
+
+// parsePyprojectToml extracts the project name from pyproject.toml content.
+func parsePyprojectToml(content string) string {
+	inProject := false
+	for _, line := range strings.Split(content, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "[project]" || trimmed == "[tool.poetry]" {
+			inProject = true
+			continue
+		}
+		if strings.HasPrefix(trimmed, "[") {
+			inProject = false
+			continue
+		}
+		if inProject && (strings.HasPrefix(trimmed, "name ") || strings.HasPrefix(trimmed, "name=")) {
+			parts := strings.SplitN(trimmed, "=", 2)
+			if len(parts) == 2 {
+				val := strings.TrimSpace(parts[1])
+				val = strings.Trim(val, `"'`)
+				if val != "" {
+					return val
+				}
+			}
+		}
+	}
+	return ""
+}
+
+// parseHelmChart extracts the chart name from Chart.yaml content.
+func parseHelmChart(content string) string {
+	for _, line := range strings.Split(content, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "name:") {
+			val := strings.TrimSpace(strings.TrimPrefix(trimmed, "name:"))
+			val = strings.Trim(val, `"'`)
+			if val != "" {
+				return val
+			}
+		}
+	}
+	return ""
+}
+
+// parseManifestForIdentifier extracts the package identifier from manifest file content.
+// registry is the registry type (e.g., "npm", "go", "cargo").
+// Returns the identifier or "" if not found.
+func parseManifestForIdentifier(registry, content string) string {
+	switch registry {
+	case "go":
+		return parseGoMod(content)
+	case "npm":
+		return parsePackageJSON(content)
+	case "cargo":
+		return parseCargoToml(content)
+	case "pypi":
+		return parsePyprojectToml(content)
+	case "helm":
+		return parseHelmChart(content)
+	default:
+		return ""
+	}
 }

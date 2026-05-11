@@ -235,6 +235,23 @@ type GitHubData struct {
 
 	// Slack channels discovered across the org
 	SlackChannels []string `json:"slack_channels,omitempty"`
+
+	// Package managers detected from manifest files (registry → identifier)
+	PackageManagers map[string]string `json:"package_managers,omitempty"`
+}
+
+// addPackageManager adds a package manager entry to the GitHubData, skipping duplicates.
+func (g *GitHubData) addPackageManager(registry, identifier string) {
+	if registry == "" {
+		return
+	}
+	if g.PackageManagers == nil {
+		g.PackageManagers = make(map[string]string)
+	}
+	// Don't overwrite an existing entry for the same registry
+	if _, exists := g.PackageManagers[registry]; !exists {
+		g.PackageManagers[registry] = identifier
+	}
 }
 
 // fetchFromGitHub fetches repository, organization, community profile, and
@@ -416,7 +433,7 @@ func discoverGovernanceFiles(result *GitHubData, org, repo string, doGet func(st
 		fmt.Sprintf("/repos/%s/.github/contents/", org),
 	}
 
-	for _, contentPath := range contentPaths {
+	for idx, contentPath := range contentPaths {
 		resp, err := doGet(contentPath)
 		if err != nil || resp.StatusCode != http.StatusOK {
 			if resp != nil {
@@ -440,6 +457,10 @@ func discoverGovernanceFiles(result *GitHubData, org, repo string, doGet func(st
 						gf.parseFunc(result, content, entry.HTMLURL)
 					}
 				}
+			}
+			// Detect package manager manifests in the primary repo root only (idx == 0)
+			if idx == 0 && entry.Type == "file" {
+				detectAndParseManifest(result, entry, client)
 			}
 		}
 	}
@@ -545,6 +566,38 @@ func scanRepoRootForGovernance(result *GitHubData, org, repo string, doGet func(
 				result.SlackChannels = mergeStringSlices(result.SlackChannels, channels)
 			}
 		}
+		// Detect package manager manifests
+		if entry.Type == "file" {
+			detectAndParseManifest(result, entry, client)
+		}
+	}
+}
+
+// detectAndParseManifest checks if a directory entry is a known package manager
+// manifest file. If so, it downloads the file, parses it for the package
+// identifier, and adds the result to data.PackageManagers.
+// Only records entries where the identifier was successfully extracted.
+func detectAndParseManifest(data *GitHubData, entry GitHubContentEntry, client *http.Client) {
+	registry := detectPackageManagerFromFilename(entry.Name)
+	if registry == "" {
+		return
+	}
+	// Already have this registry — skip the download
+	if data.PackageManagers != nil {
+		if _, exists := data.PackageManagers[registry]; exists {
+			return
+		}
+	}
+	// Download and parse the manifest to extract the package identifier
+	if entry.DownloadURL == "" {
+		return
+	}
+	content, err := fetchFileContent(client, entry.DownloadURL)
+	if err != nil || content == "" {
+		return
+	}
+	if id := parseManifestForIdentifier(registry, content); id != "" {
+		data.addPackageManager(registry, id)
 	}
 }
 
@@ -1053,6 +1106,31 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 			result.LicenseURL = github.LicenseURL
 			result.Sources["license"] = "github"
 		}
+
+		// Package managers from GitHub manifest detection
+		if len(github.PackageManagers) > 0 {
+			if result.PackageManagers == nil {
+				result.PackageManagers = make(map[string]string)
+			}
+			for reg, id := range github.PackageManagers {
+				if _, exists := result.PackageManagers[reg]; !exists {
+					result.PackageManagers[reg] = id
+				}
+			}
+			result.Sources["package_managers"] = "github"
+		}
+	}
+
+	// Package managers from landscape extra.package_manager_url (overrides GitHub)
+	if landscape != nil && landscape.PackageManagerURL != "" {
+		reg, id := parsePackageManagerURL(landscape.PackageManagerURL)
+		if reg != "" && id != "" {
+			if result.PackageManagers == nil {
+				result.PackageManagers = make(map[string]string)
+			}
+			result.PackageManagers[reg] = id // landscape takes priority
+			result.Sources["package_managers"] = "landscape"
+		}
 	}
 
 	// Generate TODOs for missing required fields
@@ -1086,7 +1164,9 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	if !result.HasAdopters {
 		result.TODOs = append(result.TODOs, "Add adopters list (ADOPTERS.md)")
 	}
-	result.TODOs = append(result.TODOs, "Add package_managers if distributed via registries")
+	if len(result.PackageManagers) == 0 {
+		result.TODOs = append(result.TODOs, "Add package_managers if distributed via registries")
+	}
 
 	// Clean up empty social map
 	if len(result.Social) == 0 {
