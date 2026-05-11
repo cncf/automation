@@ -33,7 +33,7 @@ jobs:
         run: |
           # Delete objects with prefix "ubuntu-gha-image-" that are older than 30 days
           TIMESTAMP=$(date --date='30 days ago' "+%s000000000")
-          for REGION in us-sanjose-1 us-ashburn-1 us-phoenix-1 us-chicago-1; do
+          for REGION in us-sanjose-1 us-phoenix-1 us-chicago-1; do
             echo "Region: ${REGION}"
             for i in $(oci os object list --bucket-name ${{ env.BUCKET_NAME }} --all --end "ubuntu-gha-image-${TIMESTAMP}" --prefix "ubuntu-gha-image-" --region ${REGION} | jq -r '.data[]?.name'); do 
               echo -n "Deleting $i ... "
