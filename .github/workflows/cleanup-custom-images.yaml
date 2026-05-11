@@ -21,7 +21,8 @@ jobs:
       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
       BUCKET_NAME: bucket-20250428-1925
-      COMPARTMENT_ID: ocid1.compartment.oc1..aaaaaaaa22icap66vxktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
+      COMPARTMENT_ID: ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
+      PYTHONWARNINGS: "ignore::FutureWarning"
     steps:
       - name: Install OCI CLI
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -48,10 +49,14 @@ jobs:
         run: |
           # Delete custom images with name "ubuntu-24.04-amd64-gha-image" that are older than 60 days
           for REGION in us-sanjose-1 us-ashburn-1 us-phoenix-1 us-chicago-1; do
-            for i in $(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --all --operating-system "ubuntu-24.04-amd64-gha-image" --region ${REGION} | jq -r '.data[] | select((."time-created" | split(".")[0] | strptime("%Y-%m-%dT%H:%M:%S") | mktime) < now - 5184000) | .id'); do
-              echo -n "Deleting image $i ... "
-              oci compute image delete --image-id $i --force --region ${REGION}
-              echo "[DONE]"
+            for ARCH in amd64 arm64; do
+              echo "Region: ${REGION}, Architecture: ${ARCH}"
+              for i in $(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --all --operating-system "ubuntu-24.04-${ARCH}-gha-image" --region ${REGION} | jq -r '.data[] | select((."time-created" | split(".")[0] | strptime("%Y-%m-%dT%H:%M:%S") | mktime) < now - 5184000) | .id'); do
+                echo -n "Deleting image $i ... "
+                oci compute image delete --image-id $i --force --region ${REGION}
+                echo "[DONE]"
+              done
+              echo "------------------------------"
             done
           done
         shell: bash
