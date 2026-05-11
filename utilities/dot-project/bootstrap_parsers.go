@@ -107,38 +107,80 @@ var handlePattern = regexp.MustCompile(`@([a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9
 // githubURLPattern matches https://github.com/<username> in text.
 var githubURLPattern = regexp.MustCompile(`https?://github\.com/([a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?)(?:\s|$|\)|,)`)
 
-// slackChannelURLPattern matches cloud-native.slack.com/messages/<channel> URLs.
-var slackChannelURLPattern = regexp.MustCompile(`cloud-native\.slack\.com/(?:messages|archives)/#?([a-zA-Z0-9][a-zA-Z0-9_-]*)`)
+// slackChannelURLPattern matches cloud-native.slack.com/{messages,archives,channels}/<channel> URLs.
+var slackChannelURLPattern = regexp.MustCompile(`cloud-native\.slack\.com/(?:messages|archives|channels)/#?([a-zA-Z0-9][a-zA-Z0-9_-]*)`)
 
 // slackContextPattern matches "#channel-name" near Slack-related keywords.
 // Looks for lines containing "slack" (case-insensitive) with a #channel reference.
 var slackContextPattern = regexp.MustCompile(`(?i)(?:slack|cncf).*?(#[a-z][a-z0-9_-]+)`)
 
-// extractSlackChannel extracts a CNCF Slack channel name from README content.
-// It looks for cloud-native.slack.com/messages/<channel> URLs first, then
-// falls back to #channel-name references near Slack keywords.
+// slackChannelLinePattern matches a line like "Channel: #channel-name" or "- #channel-name" standalone.
+var slackChannelLinePattern = regexp.MustCompile(`(?i)channel\s*[:\-]\s*(#[a-z][a-z0-9_-]+)`)
+
+// extractSlackChannel extracts the first CNCF Slack channel name from content.
+// Convenience wrapper around extractSlackChannels.
 // Returns a channel name with "#" prefix (e.g., "#tokenetes") or "" if not found.
 func extractSlackChannel(content string) string {
-	if content == "" {
-		return ""
+	channels := extractSlackChannels(content)
+	if len(channels) > 0 {
+		return channels[0]
 	}
-
-	// Priority 1: cloud-native.slack.com/messages/<channel> URL
-	if matches := slackChannelURLPattern.FindStringSubmatch(content); len(matches) > 1 {
-		channel := strings.TrimRight(matches[1], "/)")
-		if channel != "" {
-			return "#" + channel
-		}
-	}
-
-	// Priority 2: #channel-name near Slack keywords
-	for _, line := range strings.Split(content, "\n") {
-		if matches := slackContextPattern.FindStringSubmatch(line); len(matches) > 1 {
-			return matches[1] // already has "#" prefix
-		}
-	}
-
 	return ""
+}
+
+// extractSlackChannels extracts all unique CNCF Slack channel names from content.
+// It looks for cloud-native.slack.com/{messages,archives,channels}/<channel> URLs,
+// then #channel-name references near Slack keywords,
+// then standalone "Channel: #name" patterns near Slack context.
+// Returns deduplicated channel names with "#" prefix, in discovery order.
+func extractSlackChannels(content string) []string {
+	if content == "" {
+		return nil
+	}
+
+	seen := make(map[string]bool)
+	var channels []string
+
+	addChannel := func(ch string) {
+		if ch != "" && !seen[ch] {
+			seen[ch] = true
+			channels = append(channels, ch)
+		}
+	}
+
+	// Priority 1: cloud-native.slack.com/{messages,archives,channels}/<channel> URL
+	if matches := slackChannelURLPattern.FindAllStringSubmatch(content, -1); len(matches) > 0 {
+		for _, m := range matches {
+			channel := strings.TrimRight(m[1], "/)")
+			if channel != "" {
+				addChannel("#" + channel)
+			}
+		}
+	}
+
+	// Priority 2: #channel-name on the same line as Slack/CNCF keywords
+	lines := strings.Split(content, "\n")
+	for _, line := range lines {
+		if matches := slackContextPattern.FindStringSubmatch(line); len(matches) > 1 {
+			addChannel(matches[1]) // already has "#" prefix
+		}
+	}
+
+	// Priority 3: "Channel: #name" pattern on a line near a Slack mention (within 3 lines)
+	for i, line := range lines {
+		if matches := slackChannelLinePattern.FindStringSubmatch(line); len(matches) > 1 {
+			start := i - 3
+			if start < 0 {
+				start = 0
+			}
+			context := strings.ToLower(strings.Join(lines[start:i+1], " "))
+			if strings.Contains(context, "slack") {
+				addChannel(matches[1])
+			}
+		}
+	}
+
+	return channels
 }
 
 // parseMaintainersFile heuristically extracts GitHub handles from a MAINTAINERS file.
