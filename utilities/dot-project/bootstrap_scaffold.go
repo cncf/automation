@@ -50,9 +50,12 @@ adopters:
 # adopters:
 #   path: "{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) "" "ADOPTERS.md" }}"{{ end }}
 
+{{ if .PackageManagers }}
+package_managers:{{ if isAutoDetected .Sources "package_managers" }} # AUTO-DETECTED — please verify{{ end }}{{ range $registry, $id := .PackageManagers }}
+  {{ $registry }}: "{{ $id }}"{{ end }}{{ else }}
 # TODO: Add package manager identifiers if your project is distributed via registries
 # package_managers:
-#   docker: "{{ .GitHubOrg }}/{{ or .GitHubRepo .Slug }}"
+#   docker: "{{ .GitHubOrg }}/{{ or .GitHubRepo .Slug }}"{{ end }}
 {{ if .Social }}
 social:{{ range $platform, $url := .Social }}
   {{ $platform }}: "{{ $url }}"{{ end }}{{ end }}

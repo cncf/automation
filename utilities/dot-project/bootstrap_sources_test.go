@@ -967,6 +967,76 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 	})
 }
 
+func TestMergeBootstrapData_PackageManagers(t *testing.T) {
+	t.Run("propagates GitHub-detected package managers", func(t *testing.T) {
+		github := &GitHubData{
+			PackageManagers: map[string]string{
+				"go":  "github.com/test-org/test-project",
+				"npm": "@test-org/test-project",
+			},
+		}
+		result := mergeBootstrapData("test-project", nil, nil, github)
+		if len(result.PackageManagers) != 2 {
+			t.Fatalf("PackageManagers len = %d, want 2", len(result.PackageManagers))
+		}
+		if result.PackageManagers["go"] != "github.com/test-org/test-project" {
+			t.Errorf("go = %q", result.PackageManagers["go"])
+		}
+		if result.PackageManagers["npm"] != "@test-org/test-project" {
+			t.Errorf("npm = %q", result.PackageManagers["npm"])
+		}
+		if result.Sources["package_managers"] != "github" {
+			t.Errorf("source = %q, want github", result.Sources["package_managers"])
+		}
+	})
+
+	t.Run("landscape URL overrides GitHub for same registry", func(t *testing.T) {
+		landscape := &LandscapeData{
+			Name:              "Test Project",
+			Maturity:          "sandbox",
+			PackageManagerURL: "https://hub.docker.com/r/test-org/test-project",
+		}
+		github := &GitHubData{
+			PackageManagers: map[string]string{
+				"docker": "old-org/old-image",
+				"go":     "github.com/test-org/test-project",
+			},
+		}
+		result := mergeBootstrapData("test-project", landscape, nil, github)
+		if result.PackageManagers["docker"] != "test-org/test-project" {
+			t.Errorf("docker = %q, want test-org/test-project (from landscape)", result.PackageManagers["docker"])
+		}
+		if result.PackageManagers["go"] != "github.com/test-org/test-project" {
+			t.Errorf("go = %q, want github.com/test-org/test-project (from github)", result.PackageManagers["go"])
+		}
+	})
+
+	t.Run("no package managers omits TODO", func(t *testing.T) {
+		github := &GitHubData{
+			PackageManagers: map[string]string{"go": "github.com/test/test"},
+		}
+		result := mergeBootstrapData("test-project", nil, nil, github)
+		for _, todo := range result.TODOs {
+			if todo == "Add package_managers if distributed via registries" {
+				t.Error("should NOT have package_managers TODO when detected")
+			}
+		}
+	})
+
+	t.Run("missing package managers has TODO", func(t *testing.T) {
+		result := mergeBootstrapData("test-project", nil, nil, nil)
+		found := false
+		for _, todo := range result.TODOs {
+			if todo == "Add package_managers if distributed via registries" {
+				found = true
+			}
+		}
+		if !found {
+			t.Error("should have package_managers TODO when none detected")
+		}
+	})
+}
+
 func TestMergeBootstrapData(t *testing.T) {
 	t.Run("merges all sources with priority", func(t *testing.T) {
 		landscape := &LandscapeData{
