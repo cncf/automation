@@ -23,6 +23,12 @@ jobs:
       BUCKET_NAME: bucket-20250428-1925
       COMPARTMENT_ID: ocid1.compartment.oc1..aaaaaaaa22icap66vxktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
     steps:
+      - name: Install OCI CLI
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          pip-install: oci-cli
+
       - name: Cleanup bucket objects
         run: |
           # Delete objects with prefix "ubuntu-gha-image-" that are older than 30 days
