@@ -7678,8 +7678,8 @@ landscape:
           - item:
             name: mirrord
             description: >-
-              mirrord is an open-source tool that lets developers run local processes in the context of their cloud environment. It provides the benefits of running your service on a cloud environment (e.g. staging) without actually going through the hassle of deploying it there, and without disrupting the environment by deploying untested code.
-            homepage_url: https://www.mirrord.dev/
+              mirrord is an open-source developer tool that runs local code as if it were a pod in a remote Kubernetes cluster, with real env vars, DNS, network, and inbound traffic. Lets engineers iterate on a single service locally while interacting with the rest of the cluster, and is also used by AI coding agents (Claude, Cursor, Codex).
+            homepage_url: https://metalbear.com/mirrord/
             repo_url: https://github.com/metalbear-co/mirrord
             logo: mirrord.svg
             crunchbase: https://www.crunchbase.com/organization/metalbear
@@ -11659,7 +11659,7 @@ landscape:
           - item:
             name: OpenTelemetry
             homepage_url: https://opentelemetry.io/
-            project: incubating
+            project: graduated
             repo_url: https://github.com/open-telemetry/community
             logo: open-telemetry.svg
             twitter: https://twitter.com/opentelemetry
@@ -11670,6 +11670,7 @@ landscape:
               lfx_slug: opentelemetry
               accepted: '2019-05-07'
               incubating: '2021-08-26'
+              graduated: '2026-05-11'
               dev_stats_url: https://opentelemetry.devstats.cncf.io/
               artwork_url: https://github.com/cncf/artwork/blob/master/examples/incubating.md#opentelemetry-logos
               slack_url: https://cloud-native.slack.com/messages/opentelemetry
@@ -12561,7 +12562,7 @@ landscape:
             name: Dina IT Solutions (KCSP)
             description: >-
               Dina IT Solutions provides consulting on cloud native technologies such as Kubernetes. We design, implement, and operate your Kubernetes solutions.
-            homepage_url: https://www.dina.ch/cloud/
+            homepage_url: https://www.dina.ch/devops-automatisation/
             logo: dina.svg
             crunchbase: https://www.crunchbase.com/organization/cisel-informatique
           - item:
@@ -12628,6 +12629,13 @@ landscape:
             homepage_url: https://www.fairwinds.com/managed-kubernetes
             logo: fairwinds.svg
             crunchbase: https://www.crunchbase.com/organization/fairwinds
+          - item:
+            name: Fongcon (KCSP)
+            description: >-
+              As an NVIDIA Elite Partner, we deliver expert Kubernetes consulting, implementation, and training services specifically optimized for GPU-accelerated platforms to ensure reliable AI workload orchestration. We empower enterprises to bridge the gap between high-performance hardware and cloud-native ecosystems through professional support and tailored operational excellence.
+            homepage_url: https://www.fongcon.com.tw/en/website/onepage
+            logo: fongcon.svg
+            crunchbase: https://www.crunchbase.com/organization/fongcon-co-ltd            
           - item:
             name: Frontier (KCSP)
             description: >-
@@ -15165,6 +15173,12 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/dg-i
             joined: '2019-04-01'
           - item:
+            name: DHH (member)
+            homepage_url: https://www.dhh.international
+            logo: dhh.svg
+            crunchbase: https://www.crunchbase.com/organization/dominion-hosting-holding
+            joined: '2026-05-01'            
+          - item:
             name: Diagrid (member)
             homepage_url: https://www.diagrid.io/
             logo: diagrid.svg
@@ -15448,6 +15462,12 @@ landscape:
             logo: flox.svg
             crunchbase: https://www.crunchbase.com/organization/flox-ea31
             joined: '2024-08-01'
+          - item:
+            name: Fongcon (member)
+            homepage_url: https://www.fongcon.com.tw/
+            logo: fongcon.svg
+            crunchbase: https://www.crunchbase.com/organization/fongcon-co-ltd
+            joined: '2026-05-01'             
           - item:
             name: Formal (member)
             homepage_url: https://www.joinformal.com
@@ -16057,8 +16077,14 @@ landscape:
             homepage_url: https://www.mathworks.com/
             logo: mathworks-member.svg
             enduser: true
-            crunchbase: https://www.crunchbase.com/organization/mathworks
+            crunchbase: https://www.crunchbase.com/organization/mathworks            
             joined: '2019-04-01'
+          - item:
+            name: Maze (member)
+            homepage_url: https://mazehq.com
+            logo: maze.svg
+            crunchbase: https://www.crunchbase.com/organization/maze-7eea
+            joined: '2026-05-01'             
           - item:
             name: McKinsey & Company (member)
             homepage_url: https://www.mckinsey.com/
@@ -16852,12 +16878,6 @@ landscape:
             logo: seal-security.svg
             crunchbase: https://www.crunchbase.com/organization/seal-security
             joined: '2025-08-01'
-          - item:
-            name: Second State (member)
-            homepage_url: https://www.secondstate.io/
-            logo: second-state.svg
-            crunchbase: https://www.crunchbase.com/organization/second-state
-            joined: '2021-08-01'
           - item:
             name: Secondfront (member)
             homepage_url: https://www.secondfront.com/
@@ -17972,12 +17992,6 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/everquote
             joined: '2019-12-01'
           - item:
-            name: Fiserv (supporter)
-            homepage_url: https://www.fiserv.com/
-            logo: fiserv.svg
-            crunchbase: https://www.crunchbase.com/organization/fiserv
-            joined: '2022-09-01'
-          - item:
             name: Form3 (supporter)
             homepage_url: https://form3.tech/
             logo: form3-supporter.svg
@@ -18222,6 +18236,12 @@ landscape:
             logo: shopify-supporter.svg
             crunchbase: https://www.crunchbase.com/organization/shopify
             joined: '2017-12-01'
+          - item:
+            name: Sky Betting & Gaming (contributor)
+            homepage_url: https://www.skybet.com/
+            logo: sky-bet.svg
+            crunchbase: https://www.crunchbase.com/organization/sky-betting-and-gaming
+            joined: '2019-10-01'            
           - item:
             name: Skyline Technology Solutions (supporter)
             homepage_url: https://www.skylinenet.net/

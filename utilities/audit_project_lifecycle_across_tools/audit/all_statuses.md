@@ -4,7 +4,7 @@
 
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
-| Microcks | microcks | microcks | incubating | incubating | incubating | incubating | sandbox | incubating |
+| OpenTelemetry | opentelemetry | opentelemetry | graduated | graduated | graduated | graduated | incubating | incubating |
 | Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | CoHDI | cohdi | cohdi | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -15,7 +15,7 @@
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | service-mesh-performance | service-mesh-performance | sandbox | archived | - | - | - | archived |
 | TrestleGRC | trestlegrc | trestlegrc | sandbox | sandbox | - | - | sandbox | - |
-| Velero | velero | velero | sandbox | - | sandbox | - | sandbox | - |
+| Velero | velero | velero | sandbox | - | sandbox | sandbox | sandbox | - |
 | <QHTTPX> | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
 | Apicurio Registry | - | - | forming | - | - | - | - | - |
@@ -34,8 +34,7 @@
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
 | kube-bind | - | - | forming | - | - | - | - | - |
-| llm-d | - | - | forming | - | - | - | - | - |
-| NMstate | - | nmstate | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
+| llm-d | - | - | forming | - | - | - | sandbox | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
@@ -101,6 +100,7 @@
 | Kyverno | kyverno | kyverno | graduated | graduated | graduated | graduated | graduated | graduated |
 | Linkerd | linkerd | linkerd | graduated | graduated | graduated | graduated | graduated | graduated |
 | Open Policy Agent | openpolicyagent | openpolicyagent | graduated | graduated | graduated | graduated | graduated | graduated |
+| OpenTelemetry | opentelemetry | opentelemetry | graduated | graduated | graduated | graduated | incubating | incubating |
 | Prometheus | prometheus | prometheus_del | graduated | graduated | graduated | graduated | graduated | graduated |
 | Rook | rook | rook | graduated | graduated | graduated | graduated | graduated | graduated |
 | SPIFFE | spiffe | spiffe | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -136,14 +136,13 @@
 | LitmusChaos | litmuschaos | litmuschaos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Longhorn | longhorn | longhorn | incubating | incubating | incubating | incubating | incubating | incubating |
 | metal3-io | metal3 | metal3 | incubating | incubating | incubating | incubating | incubating | incubating |
-| Microcks | microcks | microcks | incubating | incubating | incubating | incubating | sandbox | incubating |
+| Microcks | microcks | microcks | incubating | incubating | incubating | incubating | incubating | incubating |
 | NATS | nats | nats | incubating | incubating | incubating | incubating | incubating | incubating |
 | Notary | notary | notary | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenCost | opencost | opencost | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenFeature | openfeature | openfeature | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenFGA | openfga | openfga | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenKruise | openkruise | openkruise | incubating | incubating | incubating | incubating | incubating | incubating |
-| OpenTelemetry | opentelemetry | opentelemetry | incubating | incubating | incubating | incubating | incubating | incubating |
 | OpenYurt | openyurt | openyurt | incubating | incubating | incubating | incubating | incubating | incubating |
 | Operator Framework | operator-sdk | operator-sdk | incubating | incubating | incubating | incubating | incubating | incubating |
 | Strimzi | strimzi | strimzi | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -248,6 +247,7 @@
 | MetalLB | metallb | metallb | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ModelPack | modelpack | modelpack | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Network Service Mesh | nsm | nsm | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| NMstate | nmstate | nmstate | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OAuth2 Proxy | oauth2-proxy | oauth2-proxy | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Cluster Management | openclustermanagement | openclustermanagement | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Policy Registry (OPCR) | opcr | opcr | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -293,7 +293,7 @@
 | TrestleGRC | trestlegrc | trestlegrc | sandbox | sandbox | - | - | sandbox | - |
 | Trickster | trickster | trickster | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | urunc | urunc | urunc | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Velero | velero | velero | sandbox | - | sandbox | - | sandbox | - |
+| Velero | velero | velero | sandbox | - | sandbox | sandbox | sandbox | - |
 | Vineyard | vineyard | vineyard | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Virtual Kubelet | virtualkubelet | virtualkubelet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | VS Code Kubernetes Tools | vscodekubernetestools | vscodekubernetestools | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -325,8 +325,7 @@
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
 | kube-bind | - | - | forming | - | - | - | - | - |
-| llm-d | - | - | forming | - | - | - | - | - |
-| NMstate | - | nmstate | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
+| llm-d | - | - | forming | - | - | - | sandbox | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
