@@ -39,6 +39,7 @@
 | Kyverno | graduated | Excellent | 80 |
 | Linkerd | graduated | Excellent | 80 |
 | Open Policy Agent | graduated | Excellent | 80 |
+| OpenTelemetry | graduated | Excellent | 90 |
 | Prometheus | graduated | Excellent | 86 |
 | Rook | graduated | Excellent | 85 |
 | SPIFFE | graduated | Stable | 54 |
@@ -81,7 +82,6 @@
 | OpenFeature | incubating | Excellent | 81 |
 | OpenFGA | incubating | Excellent | 83 |
 | OpenKruise | incubating | Excellent | 80 |
-| OpenTelemetry | incubating | Excellent | 90 |
 | OpenYurt | incubating | Excellent | 80 |
 | Operator Framework | incubating | Critical | - |
 | Strimzi | incubating | Excellent | 86 |
@@ -186,6 +186,7 @@
 | MetalLB | sandbox | Excellent | 81 |
 | ModelPack | sandbox | Healthy | 72 |
 | Network Service Mesh | sandbox | Healthy | 74 |
+| NMstate | sandbox | Healthy | 79 |
 | OAuth2 Proxy | sandbox | Healthy | 75 |
 | Open Cluster Management | sandbox | Excellent | 86 |
 | Open Policy Registry (OPCR) | sandbox | Stable | 58 |
@@ -264,7 +265,6 @@
 | ksctl | forming | Excellent | 88 |
 | kube-bind | forming | Healthy | 70 |
 | llm-d | forming | Excellent | 83 |
-| NMstate | forming | Healthy | 79 |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - |
 | Schema Driven Configuration | forming | Healthy | 66 |
 | SecureBuild | forming | - | - |
