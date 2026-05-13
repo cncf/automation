@@ -208,7 +208,7 @@ jobs:
 
       - name: Upload drift report
         if: always()
-        uses: actions/upload-artifact@604373da6381d3ce0449574800a7cedc1d30e586 # v4.3.5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: label-drift-report
           path: /tmp/label_drift.json
