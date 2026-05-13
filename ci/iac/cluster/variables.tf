@@ -54,9 +54,14 @@ variable "node_pool_worker_size" {
   description = "Default number of worker nodes"
 }
 
-variable "kubernetes_version" {
+variable "control_plane_k8s_version" {
   type        = string
-  description = "Kubernetes version for OKE"
+  description = "Kubernetes version for the control plane"
+}
+
+variable "nodepool_k8s_version" {
+  type        = string
+  description = "Kubernetes version for OKE node pools"
 }
 
 variable "cluster_autoscaler_min" {

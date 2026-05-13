@@ -1,7 +1,6 @@
 region                 = "us-sanjose-1"
 cluster_name           = "oke-cncf-gha-runners"
 node_pool_worker_size  = 3
-kubernetes_version     = "v1.35.0"
 cluster_autoscaler_min = 3
 cluster_autoscaler_max = 5
 oke_node_shape         = "VM.Standard.E6.Flex"
@@ -12,6 +11,8 @@ k8s_api_cidr           = "10.0.0.0/28"
 svc_cidr               = "10.0.20.0/24"
 node_cidr              = "10.0.64.0/18"
 
+control_plane_k8s_version   = "v1.35.0"
+nodepool_k8s_version        = "v1.35.0"
 regional_service_cidr_label = "all-sjc-services-in-oracle-services-network"
 
 # CIDR_BLOCK   : is overriden to node_cidr in networks.tf file

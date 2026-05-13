@@ -1,7 +1,7 @@
 data "oci_containerengine_node_pool_option" "amd64" {
   compartment_id = var.compartment_ocid
   node_pool_option_id = "all"
-  node_pool_k8s_version = var.kubernetes_version
+  node_pool_k8s_version = var.nodepool_k8s_version
   node_pool_os_arch = "X86_64"
   node_pool_os_type = "OL8"
 }
@@ -15,7 +15,7 @@ locals {
 
 resource "oci_containerengine_cluster" "service" {
   name               = var.cluster_name
-  kubernetes_version = var.kubernetes_version
+  kubernetes_version = var.control_plane_k8s_version
 
   cluster_pod_network_options {
     cni_type = "OCI_VCN_IP_NATIVE"
@@ -44,7 +44,7 @@ resource "oci_containerengine_node_pool" "service_worker" {
   cluster_id     = oci_containerengine_cluster.service.id
   compartment_id = var.compartment_ocid
 
-  kubernetes_version = var.kubernetes_version
+  kubernetes_version = var.nodepool_k8s_version
   name               = "${var.cluster_name}-pool1"
 
   # this matches t3.2xlarge sizings.
@@ -74,9 +74,14 @@ resource "oci_containerengine_node_pool" "service_worker" {
     }
 
     node_pool_pod_network_option_details {
-      cni_type       = "OCI_VCN_IP_NATIVE"
-      pod_nsg_ids    = []
-      pod_subnet_ids = [oci_core_subnet.node.id]
+      cni_type          = "OCI_VCN_IP_NATIVE"
+      pod_nsg_ids       = []
+      pod_subnet_ids    = [oci_core_subnet.node.id]
+      max_pods_per_node = 110
     }
+  }
+
+  node_pool_cycling_details {
+    is_node_cycling_enabled = false
   }
 }

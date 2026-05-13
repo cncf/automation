@@ -307,7 +307,6 @@ spec:
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
         image: ghcr.io/cncf/external-gha-runner:noble@sha256:77edfe76bcde4867d253e162d0043f39deae1be305940c78281bd680c37dba38
-        imagePullPolicy: Always
         name: runner
         resources:
           limits:
