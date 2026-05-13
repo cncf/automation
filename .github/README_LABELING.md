@@ -74,6 +74,10 @@ Apply special labels:
 
 ```
 /help                  # Mark as help-wanted (good for contributors)
+/level archived        # Set project level (removes other level/* labels)
+/level graduation
+/level incubation
+/level sandbox
 ```
 
 ### Remove Commands
@@ -103,17 +107,36 @@ Labels are automatically applied based on the files changed in a PR:
 | `Kubestronaut/**` | `area/kubestronaut` | Kubestronaut program |
 | `tests/**` | `area/infrastructure` | Testing infrastructure |
 
-### Missing Label Indicators
-If certain required labels are missing, helper labels are automatically applied:
+### `needs-*` Helper Labels
 
-- **`needs-kind`** — Applied when a PR/issue lacks a `kind/*` label
-- **`needs-priority`** — Applied when a PR/issue lacks a `priority/*` label
-- **`needs-area`** — Applied when a PR/issue lacks an `area/*` label
-- **`needs-status`** — Applied when a PR/issue lacks a `status/*` label
-- **`needs-triage`** — Applied when a PR/issue lacks a `triage/*` label
-- **`needs-group`** — Applied when lacking `toc`, `tag/*`, or `sub/*` label
+These labels are added automatically when a required category is absent, and removed automatically when the corresponding label is present — whether applied via a `/` command, the GitHub UI, or a file-path rule.
 
-These helper labels encourage proper labeling without requiring it.
+| Helper label | Removed when |
+|---|---|
+| `needs-triage` | Any `triage/*` label is present |
+| `needs-kind` | Any `kind/*` label is present |
+| `needs-group` | Any `toc`, `tag/*`, or `sub/*` label is present |
+| `needs-priority` | Any `priority/*` label is present |
+| `needs-area` | Any `area/*` label is present |
+| `needs-status` | Any `status/*` label is present |
+| `dd/needs-triage` | Any `dd/triage/*` label is present |
+
+### Mutually Exclusive Label Groups
+
+The following label groups enforce mutual exclusivity automatically. When a label in the group is applied (by any means), conflicting labels in the same group are removed.
+
+| Group | Labels |
+|---|---|
+| `level/*` | `level/archived`, `level/graduation`, `level/incubation`, `level/sandbox` — applying one removes the others via `/level` |
+| `triage/*` | Enforced via `/triage` command |
+| `kind/*` — no, kind can be multi | n/a |
+| `priority/*` | Enforced via `/priority` command |
+| `status/*` | Enforced via `/status` command |
+| `area/*` | Enforced via `/area` command |
+| `vote/open` + `vote/closed` | Enforced via `/vote` command |
+| `init/*` | Enforced via `/init` command |
+
+In short: use `/` commands when you want explicit control, and rely on automatic labeling for baseline triage, path-based routing, and mutual exclusivity enforcement.
 
 ---
 
