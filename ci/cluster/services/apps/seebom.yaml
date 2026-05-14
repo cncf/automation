@@ -53,7 +53,7 @@ spec:
           sbomBranch: main
           sbomRepo: https://github.com/cncf/sbom.git
         s3:
-          buckets: '[{"name":"cncf-subproject-sboms","region":"us-sanjose-1"},{"name":"cncf-project-sboms","region":"us-sanjose-1"}]'
+          buckets: '[{"name":"cncf-subproject-sboms","endpoint":"axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com","region":"us-sanjose-1"},{"name":"cncf-project-sboms","endpoint":"axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com","region":"us-sanjose-1"}]'
   destination:
     server: https://kubernetes.default.svc
     namespace: seebom
