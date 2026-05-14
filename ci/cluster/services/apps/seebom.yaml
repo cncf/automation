@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: ghcr.io/seebom-labs/seebom/charts
     chart: seebom
-    targetRevision: 0.4.1
+    targetRevision: 0.4.2
     helm:
       values: |
         clickhouse:
@@ -43,7 +43,7 @@ spec:
         image:
           registry: ghcr.io
           repository: seebom-labs/seebom
-          tag: 0.4.1
+          tag: 0.4.2
         sbomSource:
           mountPath: /data/sboms
           pvcName: seebom-sbom-data
