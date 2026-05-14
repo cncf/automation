@@ -432,6 +432,18 @@ For mobile: Slack channel #envoy-mobile`,
 CNCF Slack: #project-dev`,
 			expected: []string{"#project-general", "#project-dev"},
 		},
+		{
+			name: "filters out Slack channel IDs from archives URLs",
+			content: `Join us on [Slack](https://cloud-native.slack.com/archives/C01N7PP1THC)
+or [#opentelemetry](https://cloud-native.slack.com/messages/opentelemetry)
+See also https://cloud-native.slack.com/archives/D03FAB6GN0K`,
+			expected: []string{"#opentelemetry"},
+		},
+		{
+			name:     "filters out generic #slack keyword",
+			content:  "Join our Slack community at #slack for discussions",
+			expected: nil,
+		},
 	}
 
 	for _, tt := range tests {

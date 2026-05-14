@@ -117,6 +117,10 @@ var slackContextPattern = regexp.MustCompile(`(?i)(?:slack|cncf).*?(#[a-z][a-z0-
 // slackChannelLinePattern matches a line like "Channel: #channel-name" or "- #channel-name" standalone.
 var slackChannelLinePattern = regexp.MustCompile(`(?i)channel\s*[:\-]\s*(#[a-z][a-z0-9_-]+)`)
 
+// slackChannelIDPattern matches internal Slack channel IDs like "C01N7PP1THC" or "D03FAB6GN0K".
+// These appear in /archives/ URLs and are not human-readable channel names.
+var slackChannelIDPattern = regexp.MustCompile(`^#?[A-Z][A-Z0-9]{8,}$`)
+
 // extractSlackChannel extracts the first CNCF Slack channel name from content.
 // Convenience wrapper around extractSlackChannels.
 // Returns a channel name with "#" prefix (e.g., "#tokenetes") or "" if not found.
@@ -142,10 +146,21 @@ func extractSlackChannels(content string) []string {
 	var channels []string
 
 	addChannel := func(ch string) {
-		if ch != "" && !seen[ch] {
-			seen[ch] = true
-			channels = append(channels, ch)
+		if ch == "" || seen[ch] {
+			return
 		}
+		// Skip internal Slack channel IDs (e.g., #C01N7PP1THC, #D03FAB6GN0K)
+		if slackChannelIDPattern.MatchString(ch) {
+			return
+		}
+		// Skip generic words that aren't real channel names
+		lower := strings.ToLower(ch)
+		switch lower {
+		case "#slack", "#cncf", "#channel", "#channels":
+			return
+		}
+		seen[ch] = true
+		channels = append(channels, ch)
 	}
 
 	// Priority 1: cloud-native.slack.com/{messages,archives,channels}/<channel> URL
