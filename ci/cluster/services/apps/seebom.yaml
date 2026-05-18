@@ -13,9 +13,10 @@ spec:
   source:
     repoURL: ghcr.io/seebom-labs/seebom/charts
     chart: seebom
-    targetRevision: 0.4.2
+    targetRevision: 0.4.3
     helm:
       values: |
+        cleanBatchJobs: false
         clickhouse:
           database: seebom
           host: chi-seebom-clickhouse-seebom-cluster-0-0
@@ -43,7 +44,7 @@ spec:
         image:
           registry: ghcr.io
           repository: seebom-labs/seebom
-          tag: 0.4.2
+          tag: 0.4.3
         sbomSource:
           mountPath: /data/sboms
           pvcName: seebom-sbom-data
@@ -63,3 +64,11 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: batch
+      kind: Job
+      jqPathExpressions:
+        - .status
+        - .spec.selector
+        - .spec.template.metadata.labels
