@@ -657,7 +657,7 @@ source "qemu" "img" {
   output_directory     = "build/"
   accelerator          = "kvm"
   disk_size            = "80G"
-  disk_interface       = "virtio"
+  disk_interface       = "virtio-scsi"
   format               = "raw"
   net_device           = "virtio-net"
   boot_wait            = "15s"
