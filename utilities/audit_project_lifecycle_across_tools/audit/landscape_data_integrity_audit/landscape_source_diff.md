@@ -6,8 +6,8 @@ When those two disagree, that is called out. **`landscape.yml` should be updated
 ## Summary
 
 - **CNCF landscape items in scope:** 251
-- **With at least one drift / conflict row:** 16
-- **Findings where Landscape and CLOMonitor disagree:** 13
+- **With at least one drift / conflict row:** 10
+- **Findings where Landscape and CLOMonitor disagree:** 8
 - **No PCC and no CLOMonitor match:** 5
 
 ## Differences (sorted by field)
@@ -25,13 +25,7 @@ Each row is one detected mismatch. Sorted by `Field`, then `Project`.
 | extra.dev_stats_url | OpenEverest | sandbox | — | — | https://openeverest.devstats.cncf.io/ | **No** | Landscape missing; CLOMonitor has 'https://openeverest.de… |
 | extra.lfx_slug | Prometheus | graduated | prometheus_del | prometheus | — | — | Landscape ('prometheus_del') ≠ PCC ('prometheus'). |
 | project (maturity) | Service Mesh Performance | archived | archived | sandbox | — | — | Landscape ('archived') ≠ PCC ('sandbox'). |
-| repo_url | cert-manager | graduated | https://github.com/cert-manager/cert-manager | https://github.com/jetstack/cert-manager | https://github.com/cert-manager/community | Yes | PCC ('https://github.com/jetstack/cert-manager') and CLOM… |
 | repo_url | Drasi | sandbox | http://github.com/drasi-project/drasi-platform | https://github.com/drasi-project | https://github.com/drasi-project/drasi-platform | **No** | Landscape ('http://github.com/drasi-project/drasi-platfor… |
-| repo_url | HolmesGPT | sandbox | https://github.com/HolmesGPT/holmesgpt | https://github.com/holmesgpt/ | https://github.com/robusta-dev/holmesgpt | **No** | PCC ('https://github.com/holmesgpt/') and CLOMonitor ('ht… |
-| repo_url | KAI Scheduler | sandbox | https://github.com/kai-scheduler/KAI-Scheduler | https://github.com/kai-scheduler/ | https://github.com/NVIDIA/KAI-Scheduler | **No** | PCC ('https://github.com/kai-scheduler/') and CLOMonitor … |
-| repo_url | kpt | sandbox | https://github.com/kptdev/kpt | https://github.com/kptdev | https://github.com/GoogleContainerTools/kpt | **No** | PCC ('https://github.com/kptdev') and CLOMonitor ('https:… |
-| repo_url | KubeVela | incubating | https://github.com/kubevela/kubevela | https://github.com/kubevela | https://github.com/oam-dev/kubevela | **No** | PCC ('https://github.com/kubevela') and CLOMonitor ('http… |
-| repo_url | SpinKube | sandbox | https://github.com/spinframework/spin-operator | — | https://github.com/spinkube/documentation | **No** | Landscape ('https://github.com/spinframework/spin-operato… |
 
 ## No datasource match
 
