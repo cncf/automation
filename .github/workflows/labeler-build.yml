@@ -144,6 +144,6 @@ jobs:
           cosign verify-attestation \
             --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
             --certificate-identity-regexp="https://github.com/cncf/automation/.*" \
-            --type slsaprovenance "${{ env.IMAGE_NAME }}@${{env.IMAGE_DIGEST}}"
+            --type slsaprovenance1 "${{ env.IMAGE_NAME }}@${{env.IMAGE_DIGEST}}"
       # TODO (github.com/slsa-framework/slsa-verifier/issues/92):
       #       Add step to verify using slsa-verifier
