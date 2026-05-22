@@ -4,7 +4,6 @@
 
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
-| OpenTelemetry | opentelemetry | opentelemetry | graduated | graduated | graduated | graduated | incubating | incubating |
 | Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | CoHDI | cohdi | cohdi | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -31,9 +30,9 @@
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
 | Higress | - | - | forming | sandbox | - | sandbox | sandbox | - |
+| kbind | - | - | forming | - | - | - | - | - |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| kube-bind | - | - | forming | - | - | - | - | - |
 | llm-d | - | - | forming | - | - | - | sandbox | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
@@ -100,7 +99,7 @@
 | Kyverno | kyverno | kyverno | graduated | graduated | graduated | graduated | graduated | graduated |
 | Linkerd | linkerd | linkerd | graduated | graduated | graduated | graduated | graduated | graduated |
 | Open Policy Agent | openpolicyagent | openpolicyagent | graduated | graduated | graduated | graduated | graduated | graduated |
-| OpenTelemetry | opentelemetry | opentelemetry | graduated | graduated | graduated | graduated | incubating | incubating |
+| OpenTelemetry | opentelemetry | opentelemetry | graduated | graduated | graduated | graduated | graduated | graduated |
 | Prometheus | prometheus | prometheus_del | graduated | graduated | graduated | graduated | graduated | graduated |
 | Rook | rook | rook | graduated | graduated | graduated | graduated | graduated | graduated |
 | SPIFFE | spiffe | spiffe | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -322,9 +321,9 @@
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
 | Higress | - | - | forming | sandbox | - | sandbox | sandbox | - |
+| kbind | - | - | forming | - | - | - | - | - |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| kube-bind | - | - | forming | - | - | - | - | - |
 | llm-d | - | - | forming | - | - | - | sandbox | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
