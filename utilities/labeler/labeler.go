@@ -213,6 +213,17 @@ func (l *Labeler) processMatchRule(ctx context.Context, req *LabelRequest, rule 
 }
 
 func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule Rule) error {
+	// Compile and validate the rule's match pattern once, before iterating
+	// existing labels. Doing this only inside the loop would skip validation
+	// on issues that have zero labels yet (e.g. a freshly-opened PR), which
+	// would let a malformed pattern silently fall through to
+	// foundNamespace=false and fire the rule in the wrong direction.
+	patterns, err := compilePatterns(rule.Spec.Match)
+	if err != nil {
+		return fmt.Errorf("rule %q: invalid match pattern %q: %v",
+			rule.Name, rule.Spec.Match, err)
+	}
+
 	existingLabels, _, err := l.client.ListLabelsByIssue(ctx, req.Owner, req.Repo, req.IssueNumber, nil)
 	if err != nil {
 		return fmt.Errorf("failed to fetch labels for issue: %v", err)
@@ -220,12 +231,7 @@ func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule 
 
 	foundNamespace := false
 	for _, lbl := range existingLabels {
-		matched, err := matchAnyPattern(rule.Spec.Match, lbl.GetName())
-		if err != nil {
-			return fmt.Errorf("rule %q: invalid match pattern %q: %v",
-				rule.Name, rule.Spec.Match, err)
-		}
-		if matched {
+		if matchAny(patterns, lbl.GetName()) {
 			foundNamespace = true
 			break
 		}
@@ -287,38 +293,46 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 	return nil
 }
 
-// matchAnyPattern reports whether name matches pattern, with support for a
-// single level of comma-separated brace alternation in addition to the
-// wildcards understood by path.Match.
+// compilePatterns expands and validates a rule's match pattern, returning
+// the slice of concrete path.Match patterns that should be tried for each
+// label. Supports a single level of comma-separated brace alternation
+// (e.g. "{toc,tag/*,sub/*}") in addition to the wildcards understood by
+// path.Match.
 //
-// Examples:
-//
-//	matchAnyPattern("triage/*", "triage/valid")           → true
-//	matchAnyPattern("{toc,tag/*,sub/*}", "tag/infra")     → true
-//	matchAnyPattern("{toc,tag/*,sub/*}", "needs-triage")  → false
-//
-// path.Match alone does not understand brace alternation, so without this
-// helper a pattern like "{toc,tag/*,sub/*}" only matches a literal label
-// whose name begins with "{".
+// Validation happens here rather than at match time so callers can surface
+// a malformed pattern even on issues that have no labels yet — otherwise
+// the match loop would never execute and the rule would silently fire
+// based on foundNamespace=false.
 //
 // path.Match (not filepath.Match) is used so that "/" is always treated as
-// the separator regardless of the host OS — labels are not filesystem paths
-// and "*" must not cross "/" on any platform.
-func matchAnyPattern(pattern, name string) (bool, error) {
+// the separator regardless of the host OS — labels are not filesystem
+// paths and "*" must not cross "/" on any platform.
+func compilePatterns(pattern string) ([]string, error) {
 	patterns, err := expandBraces(pattern)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
+	// path.Match reports ErrBadPattern on malformed inputs (unclosed
+	// character classes, etc.) regardless of the name argument, so a
+	// single call per expanded pattern is enough to validate it.
 	for _, p := range patterns {
-		matched, err := path.Match(p, name)
-		if err != nil {
-			return false, err
-		}
-		if matched {
-			return true, nil
+		if _, err := path.Match(p, ""); err != nil {
+			return nil, fmt.Errorf("malformed pattern %q: %v", p, err)
 		}
 	}
-	return false, nil
+	return patterns, nil
+}
+
+// matchAny reports whether name matches any of the pre-compiled patterns.
+// The patterns must already have been validated by compilePatterns; any
+// path.Match error is therefore unexpected and treated as "no match".
+func matchAny(patterns []string, name string) bool {
+	for _, p := range patterns {
+		if matched, _ := path.Match(p, name); matched {
+			return true
+		}
+	}
+	return false
 }
 
 // expandBraces expands a single, non-nested brace alternation in pattern.

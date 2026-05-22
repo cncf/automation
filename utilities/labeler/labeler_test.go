@@ -553,8 +553,13 @@ func TestLabeler_ProcessLabelRule_BracePattern(t *testing.T) {
 // TestLabeler_ProcessLabelRule_InvalidPattern verifies that a malformed
 // `match` pattern surfaces as an error instead of silently leaving
 // foundNamespace=false and causing the rule to fire in the wrong direction.
-// `[` opens a character class that is never closed, so filepath.Match
-// returns ErrBadPattern.
+// `[` opens a character class that is never closed, so path.Match returns
+// ErrBadPattern.
+//
+// Critically, the existing-labels slice here is empty: an earlier version
+// of the code validated patterns only inside the existing-labels loop,
+// which meant a freshly-opened issue with zero labels never validated and
+// would silently apply the malformed rule.
 func TestLabeler_ProcessLabelRule_InvalidPattern(t *testing.T) {
 	cfg := &LabelsYAML{
 		AutoCreate:         true,
@@ -577,7 +582,7 @@ func TestLabeler_ProcessLabelRule_InvalidPattern(t *testing.T) {
 
 	client := NewMockGitHubClient()
 	labeler := NewLabeler(client, cfg)
-	client.IssueLabels[1] = []*github.Label{{Name: stringPtr("some-label")}}
+	client.IssueLabels[1] = []*github.Label{} // intentionally empty: zero-label case
 
 	// processRules swallows per-rule errors (it only logs them), so calling
 	// processLabelRule directly is the cleanest way to assert on the error.
@@ -659,7 +664,7 @@ func TestLabeler_ProcessLabelRule_UnsupportedBracePattern(t *testing.T) {
 
 	client := NewMockGitHubClient()
 	labeler := NewLabeler(client, cfg)
-	client.IssueLabels[1] = []*github.Label{{Name: stringPtr("some-label")}}
+	client.IssueLabels[1] = []*github.Label{} // zero-label case: validation must still trigger
 
 	err := labeler.processLabelRule(context.Background(), &LabelRequest{
 		Owner: "o", Repo: "r", IssueNumber: 1,
