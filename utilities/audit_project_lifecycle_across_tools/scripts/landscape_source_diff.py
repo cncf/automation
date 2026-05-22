@@ -11,11 +11,13 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import subprocess
 import sys
 import datetime
 import re
 import urllib.request
 from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import urlparse
 
 try:
     import yaml  # type: ignore
@@ -113,7 +115,10 @@ def dates_within_tolerance(a: Any, b: Any, tolerance_days: int) -> bool:
 
 
 def is_github_url(u: Any) -> bool:
-    return normalize_url(str(u or "")).startswith("https://github.com/")
+    n = normalize_url(str(u or ""))
+    if n.startswith("http://github.com/"):
+        n = "https://github.com/" + n[len("http://github.com/") :]
+    return n.startswith("https://github.com/")
 
 
 def canonical_token(s: str) -> str:
@@ -155,6 +160,70 @@ def devstats_project_token(u: Any) -> str:
 # ---------------------------------------------------------------------------
 
 _redirect_cache: Dict[str, str] = {}
+_redirect_curl_cache: Dict[str, Optional[str]] = {}
+
+
+def github_owner_from_url(url: str) -> Optional[str]:
+    """Return GitHub org/owner (first path segment) or None if not a GitHub URL."""
+    if not url:
+        return None
+    candidate = url if "://" in url else f"https://{url}"
+    parsed = urlparse(candidate)
+    host = (parsed.netloc or "").lower()
+    if host not in {"github.com", "www.github.com"}:
+        return None
+    path = (parsed.path or "").strip("/")
+    if not path:
+        return None
+    owner = path.split("/", 1)[0].strip().lower()
+    return owner or None
+
+
+def curl_check_url(url: str, timeout: int = 20) -> Optional[str]:
+    """
+    Follow redirects with curl and return the normalized effective URL.
+
+    Returns None when curl is unavailable or the request does not succeed.
+    """
+    if url in _redirect_curl_cache:
+        return _redirect_curl_cache[url]
+
+    cmd = [
+        "curl",
+        "-L",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code} %{url_effective}",
+        "--max-time",
+        str(timeout),
+        url,
+    ]
+    final: Optional[str] = None
+    try:
+        cp = subprocess.run(
+            cmd,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        out = (cp.stdout or "").strip()
+        if cp.returncode == 0 and out:
+            parts = out.split(" ", 1)
+            code_raw = parts[0] if parts else "000"
+            effective = parts[1].strip() if len(parts) > 1 else url
+            try:
+                code = int(code_raw)
+            except ValueError:
+                code = 0
+            if 200 <= code < 400:
+                final = normalize_url(effective or url)
+    except Exception:
+        final = None
+
+    _redirect_curl_cache[url] = final
+    return final
 
 
 def resolve_final_url(url: str, timeout: int = 5) -> str:
@@ -202,6 +271,38 @@ def urls_resolve_to_same_destination(urls: List[str]) -> bool:
         return False
     resolved = {resolve_final_url(u) for u in distinct}
     return len(resolved) == 1
+
+
+def _curl_github_url(url: str, timeout: int = 20) -> str:
+    """Normalize a GitHub URL for curl (http→https) and return the request URL."""
+    if url.startswith("http://github.com"):
+        return "https://github.com" + url[18:]
+    return url
+
+
+def urls_resolve_to_same_github_org(urls: List[str], timeout: int = 20) -> bool:
+    """
+    Return True when every non-empty GitHub URL redirects to the same GitHub org.
+
+    Repo path differences are ignored; only the effective owner after redirects
+    must match. Returns False if any URL fails to resolve or is not GitHub.
+    """
+    distinct = [u for u in urls if u]
+    if len(distinct) < 2:
+        return False
+    if not all(is_github_url(u) for u in distinct):
+        return False
+
+    owners: List[str] = []
+    for raw in distinct:
+        final = curl_check_url(_curl_github_url(raw), timeout=timeout)
+        if not final:
+            return False
+        owner = github_owner_from_url(final)
+        if not owner:
+            return False
+        owners.append(owner)
+    return len(set(owners)) == 1
 
 
 def suppress_repo_mismatch_for_non_github_pcc(
@@ -524,9 +625,10 @@ def build_report() -> Dict[str, Any]:
             clo_devstats=clo_dev,
         )
         if not suppress_repo:
+            repo_urls = [u for u in [land_repo, pcc_repo, clo_repo] if u]
             f1 = compare_field("repo_url", land_repo, pcc_repo, clo_repo, normalize_repo_identity)
-            if f1 and not urls_resolve_to_same_destination(
-                [u for u in [land_repo, pcc_repo, clo_repo] if u]
+            if f1 and not urls_resolve_to_same_destination(repo_urls) and not urls_resolve_to_same_github_org(
+                repo_urls
             ):
                 findings.append(f1)
 
