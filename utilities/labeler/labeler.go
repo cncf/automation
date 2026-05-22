@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -212,6 +213,17 @@ func (l *Labeler) processMatchRule(ctx context.Context, req *LabelRequest, rule 
 }
 
 func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule Rule) error {
+	// Compile and validate the rule's match pattern once, before iterating
+	// existing labels. Doing this only inside the loop would skip validation
+	// on issues that have zero labels yet (e.g. a freshly-opened PR), which
+	// would let a malformed pattern silently fall through to
+	// foundNamespace=false and fire the rule in the wrong direction.
+	patterns, err := compilePatterns(rule.Spec.Match)
+	if err != nil {
+		return fmt.Errorf("rule %q: invalid match pattern %q: %v",
+			rule.Name, rule.Spec.Match, err)
+	}
+
 	existingLabels, _, err := l.client.ListLabelsByIssue(ctx, req.Owner, req.Repo, req.IssueNumber, nil)
 	if err != nil {
 		return fmt.Errorf("failed to fetch labels for issue: %v", err)
@@ -219,19 +231,29 @@ func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule 
 
 	foundNamespace := false
 	for _, lbl := range existingLabels {
-		matched, _ := filepath.Match(rule.Spec.Match, lbl.GetName())
-		if matched {
+		if matchAny(patterns, lbl.GetName()) {
 			foundNamespace = true
 			break
 		}
 	}
 
-	// Default logic: apply if the namespace is NOT found
-	// For "NOT" condition: apply if the namespace is NOT found (same as default)
+	// Decide whether to fire the rule's actions based on matchCondition:
+	//   "AND" → fire when the namespace IS present on the issue.
+	//   "NOT" (or unset, the default) → fire when the namespace is NOT present.
+	// Without honoring "AND" here, a rule like
+	//     match: triage/*
+	//     matchCondition: AND
+	//     actions: [remove-label: needs-triage]
+	// behaves identically to its "NOT" sibling and ends up firing in exactly
+	// the wrong situations (e.g. removing needs-triage when no triage/* is set
+	// while a fresh PR is being opened, and never removing it once one is).
 	shouldApply := !foundNamespace
+	if strings.EqualFold(rule.Spec.MatchCondition, "AND") {
+		shouldApply = foundNamespace
+	}
 
 	if l.config.Debug {
-		log.Printf("Label rule %s: foundNamespace=%v, matchCondition=%s, shouldApply=%v", 
+		log.Printf("Label rule %s: foundNamespace=%v, matchCondition=%s, shouldApply=%v",
 			rule.Name, foundNamespace, rule.Spec.MatchCondition, shouldApply)
 	}
 
@@ -269,6 +291,86 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 		}
 	}
 	return nil
+}
+
+// compilePatterns expands and validates a rule's match pattern, returning
+// the slice of concrete path.Match patterns that should be tried for each
+// label. Supports a single level of comma-separated brace alternation
+// (e.g. "{toc,tag/*,sub/*}") in addition to the wildcards understood by
+// path.Match.
+//
+// Validation happens here rather than at match time so callers can surface
+// a malformed pattern even on issues that have no labels yet — otherwise
+// the match loop would never execute and the rule would silently fire
+// based on foundNamespace=false.
+//
+// path.Match (not filepath.Match) is used so that "/" is always treated as
+// the separator regardless of the host OS — labels are not filesystem
+// paths and "*" must not cross "/" on any platform.
+func compilePatterns(pattern string) ([]string, error) {
+	patterns, err := expandBraces(pattern)
+	if err != nil {
+		return nil, err
+	}
+	// path.Match reports ErrBadPattern on malformed inputs (unclosed
+	// character classes, etc.) regardless of the name argument, so a
+	// single call per expanded pattern is enough to validate it.
+	for _, p := range patterns {
+		if _, err := path.Match(p, ""); err != nil {
+			return nil, fmt.Errorf("malformed pattern %q: %v", p, err)
+		}
+	}
+	return patterns, nil
+}
+
+// matchAny reports whether name matches any of the pre-compiled patterns.
+// The patterns must already have been validated by compilePatterns; any
+// path.Match error is therefore unexpected and treated as "no match".
+func matchAny(patterns []string, name string) bool {
+	for _, p := range patterns {
+		if matched, _ := path.Match(p, name); matched {
+			return true
+		}
+	}
+	return false
+}
+
+// expandBraces expands a single, non-nested brace alternation in pattern.
+// "{a,b/*,c}" → ["a", "b/*", "c"], "foo-{a,b}" → ["foo-a", "foo-b"].
+// Patterns without braces are returned unchanged as a single-element slice.
+//
+// Multiple brace pairs (e.g. "foo-{a,b}-{c,d}") and nested braces
+// (e.g. "{a,{b,c}}") are not supported and produce an error rather than a
+// partial expansion that would silently mis-match (e.g. "foo-{a,b}-{c,d}"
+// would expand to "foo-a-{c,d}" / "foo-b-{c,d}", and path.Match would then
+// treat "{c,d}" as literal characters).
+//
+// A mismatched '}' before any '{' is treated the same way — better to
+// surface the malformed pattern than to silently match unexpectedly.
+func expandBraces(pattern string) ([]string, error) {
+	start := strings.Index(pattern, "{")
+	end := strings.Index(pattern, "}")
+	if start == -1 && end == -1 {
+		return []string{pattern}, nil
+	}
+	if start == -1 || end < start {
+		return nil, fmt.Errorf("unbalanced braces in pattern %q", pattern)
+	}
+	inner := pattern[start+1 : end]
+	suffix := pattern[end+1:]
+	if strings.ContainsAny(inner, "{}") || strings.ContainsAny(suffix, "{}") {
+		return nil, fmt.Errorf(
+			"pattern %q has nested or multiple brace groups; only a single, non-nested {a,b,c} is supported",
+			pattern,
+		)
+	}
+	prefix := pattern[:start]
+	parts := strings.Split(inner, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		out = append(out, prefix+strings.TrimSpace(p)+suffix)
+	}
+	return out, nil
 }
 
 func (l *Labeler) renderLabel(template string, argv []string) string {
