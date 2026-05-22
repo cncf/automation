@@ -597,19 +597,81 @@ func TestLabeler_ProcessLabelRule_InvalidPattern(t *testing.T) {
 
 func TestExpandBraces(t *testing.T) {
 	cases := []struct {
-		in   string
-		want []string
+		name    string
+		in      string
+		want    []string
+		wantErr bool
 	}{
-		{"triage/*", []string{"triage/*"}},
-		{"{toc,tag/*,sub/*}", []string{"toc", "tag/*", "sub/*"}},
-		{"foo-{a,b}", []string{"foo-a", "foo-b"}},
-		{"{a, b ,c}", []string{"a", "b", "c"}}, // surrounding whitespace trimmed
+		{name: "no braces", in: "triage/*", want: []string{"triage/*"}},
+		{name: "leading brace group", in: "{toc,tag/*,sub/*}", want: []string{"toc", "tag/*", "sub/*"}},
+		{name: "prefix only", in: "foo-{a,b}", want: []string{"foo-a", "foo-b"}},
+		{name: "whitespace trimmed", in: "{a, b ,c}", want: []string{"a", "b", "c"}},
+
+		// Unsupported patterns: better to surface an error than to silently
+		// produce partial expansions that match unexpectedly.
+		{name: "multiple brace groups", in: "foo-{a,b}-{c,d}", wantErr: true},
+		{name: "nested braces", in: "{a,{b,c}}", wantErr: true},
+		{name: "unbalanced (no close)", in: "foo-{a,b", wantErr: true},
+		{name: "unbalanced (close before open)", in: "foo}-{a,b}", wantErr: true},
 	}
 	for _, tc := range cases {
-		got := expandBraces(tc.in)
-		if !slicesEqual(got, tc.want) {
-			t.Errorf("expandBraces(%q) = %v, want %v", tc.in, got, tc.want)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := expandBraces(tc.in)
+			if tc.wantErr {
+				if err == nil {
+					t.Fatalf("expandBraces(%q): expected error, got %v", tc.in, got)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("expandBraces(%q): unexpected error: %v", tc.in, err)
+			}
+			if !slicesEqual(got, tc.want) {
+				t.Errorf("expandBraces(%q) = %v, want %v", tc.in, got, tc.want)
+			}
+		})
+	}
+}
+
+// TestLabeler_ProcessLabelRule_UnsupportedBracePattern verifies that an
+// unsupported brace pattern (multiple groups, nested groups, or unbalanced
+// braces) causes processLabelRule to return an error naming the rule and
+// the pattern, rather than silently mis-matching via a partial expansion.
+func TestLabeler_ProcessLabelRule_UnsupportedBracePattern(t *testing.T) {
+	cfg := &LabelsYAML{
+		AutoCreate:         true,
+		AutoDelete:         false,
+		DefinitionRequired: true,
+		Labels: []Label{
+			{Name: "needs-group", Color: "FBCA04", Description: "Needs a group label"},
+		},
+		Ruleset: []Rule{
+			{
+				Name: "bad-brace-pattern",
+				Kind: "label",
+				Spec: RuleSpec{Match: "foo-{a,b}-{c,d}", MatchCondition: "NOT"},
+				Actions: []Action{
+					{Kind: "apply-label", Spec: ActionSpec{Label: "needs-group"}},
+				},
+			},
+		},
+	}
+
+	client := NewMockGitHubClient()
+	labeler := NewLabeler(client, cfg)
+	client.IssueLabels[1] = []*github.Label{{Name: stringPtr("some-label")}}
+
+	err := labeler.processLabelRule(context.Background(), &LabelRequest{
+		Owner: "o", Repo: "r", IssueNumber: 1,
+	}, cfg.Ruleset[0])
+	if err == nil {
+		t.Fatalf("expected an error for unsupported brace pattern, got nil")
+	}
+	if !strings.Contains(err.Error(), "bad-brace-pattern") || !strings.Contains(err.Error(), "foo-{a,b}-{c,d}") {
+		t.Errorf("error should mention rule name and bad pattern; got: %v", err)
+	}
+	if sliceContains(client.AppliedLabels[1], "needs-group") {
+		t.Errorf("rule with unsupported pattern must not apply labels; applied=%v", client.AppliedLabels[1])
 	}
 }
 

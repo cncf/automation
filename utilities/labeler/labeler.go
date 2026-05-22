@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -288,7 +289,7 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 
 // matchAnyPattern reports whether name matches pattern, with support for a
 // single level of comma-separated brace alternation in addition to the
-// wildcards understood by filepath.Match.
+// wildcards understood by path.Match.
 //
 // Examples:
 //
@@ -296,12 +297,20 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 //	matchAnyPattern("{toc,tag/*,sub/*}", "tag/infra")     → true
 //	matchAnyPattern("{toc,tag/*,sub/*}", "needs-triage")  → false
 //
-// filepath.Match itself does not understand brace alternation, so without
-// this helper a pattern like "{toc,tag/*,sub/*}" only matches a literal
-// label whose name begins with "{".
+// path.Match alone does not understand brace alternation, so without this
+// helper a pattern like "{toc,tag/*,sub/*}" only matches a literal label
+// whose name begins with "{".
+//
+// path.Match (not filepath.Match) is used so that "/" is always treated as
+// the separator regardless of the host OS — labels are not filesystem paths
+// and "*" must not cross "/" on any platform.
 func matchAnyPattern(pattern, name string) (bool, error) {
-	for _, p := range expandBraces(pattern) {
-		matched, err := filepath.Match(p, name)
+	patterns, err := expandBraces(pattern)
+	if err != nil {
+		return false, err
+	}
+	for _, p := range patterns {
+		matched, err := path.Match(p, name)
 		if err != nil {
 			return false, err
 		}
@@ -315,20 +324,39 @@ func matchAnyPattern(pattern, name string) (bool, error) {
 // expandBraces expands a single, non-nested brace alternation in pattern.
 // "{a,b/*,c}" → ["a", "b/*", "c"], "foo-{a,b}" → ["foo-a", "foo-b"].
 // Patterns without braces are returned unchanged as a single-element slice.
-func expandBraces(pattern string) []string {
+//
+// Multiple brace pairs (e.g. "foo-{a,b}-{c,d}") and nested braces
+// (e.g. "{a,{b,c}}") are not supported and produce an error rather than a
+// partial expansion that would silently mis-match (e.g. "foo-{a,b}-{c,d}"
+// would expand to "foo-a-{c,d}" / "foo-b-{c,d}", and path.Match would then
+// treat "{c,d}" as literal characters).
+//
+// A mismatched '}' before any '{' is treated the same way — better to
+// surface the malformed pattern than to silently match unexpectedly.
+func expandBraces(pattern string) ([]string, error) {
 	start := strings.Index(pattern, "{")
 	end := strings.Index(pattern, "}")
-	if start == -1 || end == -1 || end < start {
-		return []string{pattern}
+	if start == -1 && end == -1 {
+		return []string{pattern}, nil
+	}
+	if start == -1 || end < start {
+		return nil, fmt.Errorf("unbalanced braces in pattern %q", pattern)
+	}
+	inner := pattern[start+1 : end]
+	suffix := pattern[end+1:]
+	if strings.ContainsAny(inner, "{}") || strings.ContainsAny(suffix, "{}") {
+		return nil, fmt.Errorf(
+			"pattern %q has nested or multiple brace groups; only a single, non-nested {a,b,c} is supported",
+			pattern,
+		)
 	}
 	prefix := pattern[:start]
-	suffix := pattern[end+1:]
-	parts := strings.Split(pattern[start+1:end], ",")
+	parts := strings.Split(inner, ",")
 	out := make([]string, 0, len(parts))
 	for _, p := range parts {
 		out = append(out, prefix+strings.TrimSpace(p)+suffix)
 	}
-	return out
+	return out, nil
 }
 
 func (l *Labeler) renderLabel(template string, argv []string) string {
