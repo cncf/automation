@@ -550,6 +550,51 @@ func TestLabeler_ProcessLabelRule_BracePattern(t *testing.T) {
 	}
 }
 
+// TestLabeler_ProcessLabelRule_InvalidPattern verifies that a malformed
+// `match` pattern surfaces as an error instead of silently leaving
+// foundNamespace=false and causing the rule to fire in the wrong direction.
+// `[` opens a character class that is never closed, so filepath.Match
+// returns ErrBadPattern.
+func TestLabeler_ProcessLabelRule_InvalidPattern(t *testing.T) {
+	cfg := &LabelsYAML{
+		AutoCreate:         true,
+		AutoDelete:         false,
+		DefinitionRequired: true,
+		Labels: []Label{
+			{Name: "needs-triage", Color: "ededed", Description: "Needs triage"},
+		},
+		Ruleset: []Rule{
+			{
+				Name: "bad-pattern",
+				Kind: "label",
+				Spec: RuleSpec{Match: "triage/[", MatchCondition: "NOT"},
+				Actions: []Action{
+					{Kind: "apply-label", Spec: ActionSpec{Label: "needs-triage"}},
+				},
+			},
+		},
+	}
+
+	client := NewMockGitHubClient()
+	labeler := NewLabeler(client, cfg)
+	client.IssueLabels[1] = []*github.Label{{Name: stringPtr("some-label")}}
+
+	// processRules swallows per-rule errors (it only logs them), so calling
+	// processLabelRule directly is the cleanest way to assert on the error.
+	err := labeler.processLabelRule(context.Background(), &LabelRequest{
+		Owner: "o", Repo: "r", IssueNumber: 1,
+	}, cfg.Ruleset[0])
+	if err == nil {
+		t.Fatalf("expected an error for invalid match pattern, got nil")
+	}
+	if !strings.Contains(err.Error(), "bad-pattern") || !strings.Contains(err.Error(), "triage/[") {
+		t.Errorf("error should mention rule name and bad pattern; got: %v", err)
+	}
+	if sliceContains(client.AppliedLabels[1], "needs-triage") {
+		t.Errorf("rule with invalid pattern must not apply labels; applied=%v", client.AppliedLabels[1])
+	}
+}
+
 func TestExpandBraces(t *testing.T) {
 	cases := []struct {
 		in   string

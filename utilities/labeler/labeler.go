@@ -219,7 +219,11 @@ func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule 
 
 	foundNamespace := false
 	for _, lbl := range existingLabels {
-		matched, _ := matchAnyPattern(rule.Spec.Match, lbl.GetName())
+		matched, err := matchAnyPattern(rule.Spec.Match, lbl.GetName())
+		if err != nil {
+			return fmt.Errorf("rule %q: invalid match pattern %q: %v",
+				rule.Name, rule.Spec.Match, err)
+		}
 		if matched {
 			foundNamespace = true
 			break
