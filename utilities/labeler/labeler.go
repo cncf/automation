@@ -219,19 +219,30 @@ func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule 
 
 	foundNamespace := false
 	for _, lbl := range existingLabels {
-		matched, _ := filepath.Match(rule.Spec.Match, lbl.GetName())
+		matched, _ := matchAnyPattern(rule.Spec.Match, lbl.GetName())
 		if matched {
 			foundNamespace = true
 			break
 		}
 	}
 
-	// Default logic: apply if the namespace is NOT found
-	// For "NOT" condition: apply if the namespace is NOT found (same as default)
+	// Decide whether to fire the rule's actions based on matchCondition:
+	//   "AND" → fire when the namespace IS present on the issue.
+	//   "NOT" (or unset, the default) → fire when the namespace is NOT present.
+	// Without honoring "AND" here, a rule like
+	//     match: triage/*
+	//     matchCondition: AND
+	//     actions: [remove-label: needs-triage]
+	// behaves identically to its "NOT" sibling and ends up firing in exactly
+	// the wrong situations (e.g. removing needs-triage when no triage/* is set
+	// while a fresh PR is being opened, and never removing it once one is).
 	shouldApply := !foundNamespace
+	if strings.EqualFold(rule.Spec.MatchCondition, "AND") {
+		shouldApply = foundNamespace
+	}
 
 	if l.config.Debug {
-		log.Printf("Label rule %s: foundNamespace=%v, matchCondition=%s, shouldApply=%v", 
+		log.Printf("Label rule %s: foundNamespace=%v, matchCondition=%s, shouldApply=%v",
 			rule.Name, foundNamespace, rule.Spec.MatchCondition, shouldApply)
 	}
 
@@ -269,6 +280,51 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 		}
 	}
 	return nil
+}
+
+// matchAnyPattern reports whether name matches pattern, with support for a
+// single level of comma-separated brace alternation in addition to the
+// wildcards understood by filepath.Match.
+//
+// Examples:
+//
+//	matchAnyPattern("triage/*", "triage/valid")           → true
+//	matchAnyPattern("{toc,tag/*,sub/*}", "tag/infra")     → true
+//	matchAnyPattern("{toc,tag/*,sub/*}", "needs-triage")  → false
+//
+// filepath.Match itself does not understand brace alternation, so without
+// this helper a pattern like "{toc,tag/*,sub/*}" only matches a literal
+// label whose name begins with "{".
+func matchAnyPattern(pattern, name string) (bool, error) {
+	for _, p := range expandBraces(pattern) {
+		matched, err := filepath.Match(p, name)
+		if err != nil {
+			return false, err
+		}
+		if matched {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// expandBraces expands a single, non-nested brace alternation in pattern.
+// "{a,b/*,c}" → ["a", "b/*", "c"], "foo-{a,b}" → ["foo-a", "foo-b"].
+// Patterns without braces are returned unchanged as a single-element slice.
+func expandBraces(pattern string) []string {
+	start := strings.Index(pattern, "{")
+	end := strings.Index(pattern, "}")
+	if start == -1 || end == -1 || end < start {
+		return []string{pattern}
+	}
+	prefix := pattern[:start]
+	suffix := pattern[end+1:]
+	parts := strings.Split(pattern[start+1:end], ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		out = append(out, prefix+strings.TrimSpace(p)+suffix)
+	}
+	return out
 }
 
 func (l *Labeler) renderLabel(template string, argv []string) string {
