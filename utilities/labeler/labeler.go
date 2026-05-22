@@ -226,12 +226,19 @@ func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule 
 		}
 	}
 
-	// Default logic: apply if the namespace is NOT found
-	// For "NOT" condition: apply if the namespace is NOT found (same as default)
-	shouldApply := !foundNamespace
+	// Determine whether to fire the rule's actions based on matchCondition:
+	//   "NOT" (or default): apply when the namespace is NOT found
+	//   "AND":              apply when the namespace IS found
+	var shouldApply bool
+	switch strings.ToUpper(rule.Spec.MatchCondition) {
+	case "AND":
+		shouldApply = foundNamespace
+	default: // "NOT" or empty
+		shouldApply = !foundNamespace
+	}
 
 	if l.config.Debug {
-		log.Printf("Label rule %s: foundNamespace=%v, matchCondition=%s, shouldApply=%v", 
+		log.Printf("Label rule %s: foundNamespace=%v, matchCondition=%s, shouldApply=%v",
 			rule.Name, foundNamespace, rule.Spec.MatchCondition, shouldApply)
 	}
 

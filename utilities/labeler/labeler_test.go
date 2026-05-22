@@ -11,9 +11,9 @@ import (
 
 // MockGitHubClient implements GitHubClient for testing
 type MockGitHubClient struct {
-	Issues       map[int]*github.Issue
-	Labels       []*github.Label
-	IssueLabels  map[int][]*github.Label
+	Issues        map[int]*github.Issue
+	Labels        []*github.Label
+	IssueLabels   map[int][]*github.Label
 	CreatedLabels map[string]*github.Label
 	DeletedLabels []string
 	AppliedLabels map[int][]string
@@ -49,7 +49,7 @@ func (m *MockGitHubClient) AddLabelsToIssue(ctx context.Context, owner, repo str
 		m.AppliedLabels[number] = []string{}
 	}
 	m.AppliedLabels[number] = append(m.AppliedLabels[number], labels...)
-	
+
 	// Add to issue labels
 	for _, label := range labels {
 		labelObj := &github.Label{Name: &label}
@@ -63,7 +63,7 @@ func (m *MockGitHubClient) RemoveLabelForIssue(ctx context.Context, owner, repo 
 		m.RemovedLabels[number] = []string{}
 	}
 	m.RemovedLabels[number] = append(m.RemovedLabels[number], label)
-	
+
 	// Remove from issue labels
 	for i, lbl := range m.IssueLabels[number] {
 		if lbl.GetName() == label {
@@ -96,7 +96,7 @@ func (m *MockGitHubClient) EditLabel(ctx context.Context, owner, repo, name stri
 
 func (m *MockGitHubClient) DeleteLabel(ctx context.Context, owner, repo, name string) (*github.Response, error) {
 	m.DeletedLabels = append(m.DeletedLabels, name)
-	
+
 	// Remove from labels
 	for i, lbl := range m.Labels {
 		if lbl.GetName() == name {
@@ -307,7 +307,7 @@ func TestLabeler_ProcessMatchRule_TagCommand(t *testing.T) {
 
 	// Check that both needs-triage and tag/developer-experience were applied
 	appliedLabels := client.AppliedLabels[1]
-	
+
 	if !sliceContains(appliedLabels, "tag/developer-experience") {
 		t.Errorf("Expected 'tag/developer-experience' label to be applied, got: %v", appliedLabels)
 	}
@@ -399,7 +399,7 @@ func TestLabeler_ProcessMatchRule_InvalidArgument(t *testing.T) {
 	if !sliceContains(appliedLabels, "needs-triage") {
 		t.Errorf("Expected 'needs-triage' to be applied, got: %v", appliedLabels)
 	}
-	
+
 	// Should not contain any tag labels
 	for _, label := range appliedLabels {
 		if strings.HasPrefix(label, "tag/") {
@@ -555,4 +555,99 @@ func sliceContains(slice []string, item string) bool {
 		}
 	}
 	return false
+}
+
+// TestLabeler_LabelRuleANDCondition_NoLoop reproduces issue #437:
+// when no triage/* label exists, the "remove-needs-triage" rule (matchCondition: AND)
+// should NOT fire, preventing the add-then-immediately-remove loop.
+func TestLabeler_LabelRuleANDCondition_NoLoop(t *testing.T) {
+	client := NewMockGitHubClient()
+	config := &LabelsYAML{
+		AutoCreate:         true,
+		DefinitionRequired: true,
+		Debug:              true,
+		Labels: []Label{
+			{Name: "needs-triage", Color: "ededed", Description: "Needs triage"},
+			{Name: "needs-kind", Color: "ededed", Description: "Needs kind"},
+			{Name: "triage/valid", Color: "0e8a16", Description: "Valid issue"},
+			{Name: "kind/bug", Color: "8250DF", Description: "Bug"},
+		},
+		Ruleset: []Rule{
+			{
+				Name: "needs-triage",
+				Kind: "label",
+				Spec: RuleSpec{Match: "triage/*", MatchCondition: "NOT"},
+				Actions: []Action{
+					{Kind: "apply-label", Spec: ActionSpec{Label: "needs-triage"}},
+				},
+			},
+			{
+				Name: "remove-needs-triage",
+				Kind: "label",
+				Spec: RuleSpec{Match: "triage/*", MatchCondition: "AND"},
+				Actions: []Action{
+					{Kind: "remove-label", Spec: ActionSpec{Match: "needs-triage"}},
+				},
+			},
+			{
+				Name: "needs-kind",
+				Kind: "label",
+				Spec: RuleSpec{Match: "kind/*", MatchCondition: "NOT"},
+				Actions: []Action{
+					{Kind: "apply-label", Spec: ActionSpec{Label: "needs-kind"}},
+				},
+			},
+			{
+				Name: "remove-needs-kind",
+				Kind: "label",
+				Spec: RuleSpec{Match: "kind/*", MatchCondition: "AND"},
+				Actions: []Action{
+					{Kind: "remove-label", Spec: ActionSpec{Match: "needs-kind"}},
+				},
+			},
+		},
+	}
+	labeler := NewLabeler(client, config)
+
+	// Scenario 1: no namespace labels exist — needs-* should be added, NOT removed
+	req := &LabelRequest{Owner: "test", Repo: "repo", IssueNumber: 1}
+	if err := labeler.ProcessRequest(context.Background(), req); err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+
+	if !sliceContains(client.AppliedLabels[1], "needs-triage") {
+		t.Error("Expected needs-triage to be applied")
+	}
+	if !sliceContains(client.AppliedLabels[1], "needs-kind") {
+		t.Error("Expected needs-kind to be applied")
+	}
+	// The critical assertion: remove-needs-* should NOT have fired
+	if len(client.RemovedLabels[1]) > 0 {
+		t.Errorf("Expected no labels to be removed, but got: %v", client.RemovedLabels[1])
+	}
+
+	// Scenario 2: add triage/valid — now remove-needs-triage SHOULD fire
+	client2 := NewMockGitHubClient()
+	triageValid := "triage/valid"
+	needsTriage := "needs-triage"
+	needsKind := "needs-kind"
+	client2.IssueLabels[2] = []*github.Label{
+		{Name: &triageValid},
+		{Name: &needsTriage},
+		{Name: &needsKind},
+	}
+	labeler2 := NewLabeler(client2, config)
+	req2 := &LabelRequest{Owner: "test", Repo: "repo", IssueNumber: 2}
+	if err := labeler2.ProcessRequest(context.Background(), req2); err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+
+	// triage/* exists → remove-needs-triage should fire
+	if !sliceContains(client2.RemovedLabels[2], "needs-triage") {
+		t.Error("Expected needs-triage to be removed when triage/valid exists")
+	}
+	// kind/* does NOT exist → needs-kind should be added, not removed
+	if sliceContains(client2.RemovedLabels[2], "needs-kind") {
+		t.Error("Expected needs-kind NOT to be removed (no kind/* label)")
+	}
 }
