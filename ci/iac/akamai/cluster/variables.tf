@@ -58,26 +58,10 @@ variable "node_count" {
 }
 
 # Credentials and Authentication
-variable "github_token" {
-  description = "GitHub Personal Access Token for Actions Runner Controller"
-  type        = string
-  sensitive   = true
-}
-
 variable "linode_api_token" {
   description = "Linode API Token"
   type        = string
   sensitive   = true
-}
-
-variable "github_organization" {
-  description = "GitHub organization for runners"
-  type        = string
-
-  validation {
-    condition     = length(var.github_organization) > 0
-    error_message = "GitHub organization must be specified."
-  }
 }
 
 # Node Pool Configuration
@@ -109,14 +93,27 @@ variable "autoscaler_max" {
   }
 }
 
-# Actions Runner Controller Configuration
-variable "arc_version" {
-  description = "Version of Actions Runner Controller Helm chart"
+variable "vpc_subnet_cidr" {
+  description = "IPv4 CIDR block for the VPC subnet"
   type        = string
-  default     = "0.23.7"
+  default     = "10.0.0.0/24"
 
   validation {
-    condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.arc_version))
-    error_message = "ARC version must be in semantic versioning format (X.Y.Z)."
+    condition     = can(cidrhost(var.vpc_subnet_cidr, 0))
+    error_message = "VPC subnet CIDR must be a valid IPv4 CIDR block."
   }
 }
+
+variable "control_plane_acl_ipv4" {
+  description = "List of IPv4 CIDRs allowed to access the Kubernetes API server"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "control_plane_acl_ipv6" {
+  description = "List of IPv6 CIDRs allowed to access the Kubernetes API server"
+  type        = list(string)
+  default     = ["::/0"]
+}
+
+
