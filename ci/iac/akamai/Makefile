@@ -7,6 +7,19 @@ LKE_CLUSTER ?=
 
 check_defined = $(if $(value LKE_CLUSTER),,$(error LKE_CLUSTER is not set))
 
+TF_VAR_linode_api_token ?=
+AWS_ACCESS_KEY_ID	?=
+AWS_SECRET_ACCESS_KEY ?=
+
+check_linode_api_token = $(if $(value TF_VAR_linode_api_token),,$(error TF_VAR_linode_api_token is not set))
+check_aws_access_key_id = $(if $(value AWS_ACCESS_KEY_ID),,$(error AWS_ACCESS_KEY_ID is not set))
+check_aws_secret_access_key = $(if $(value AWS_SECRET_ACCESS_KEY),,$(error AWS_SECRET_ACCESS_KEY is not set))
+
+ensure-variables:
+	@:$(call check_linode_api_token, TF_VAR_linode_api_token, Linode API token)
+	@:$(call check_aws_access_key_id, AWS_ACCESS_KEY_ID, AWS access key ID)
+	@:$(call check_aws_secret_access_key, AWS_SECRET_ACCESS_KEY, AWS secret access key)
+
 ##@ Helpers:
 
 .PHONY: help
@@ -29,12 +42,14 @@ help: ## Display this help.
 ### Clusters
 cluster-init: ## Initialize Terraform's state and download necessary providers for OKE.
 	@:$(call check_defined, LKE_CLUSTER, cluster name)
+	@make ensure-variables
 	$(TF) -chdir=./cluster \
 		init \
 		-backend-config=./tfbackends/$(LKE_CLUSTER).tfbackend
 
 cluster-plan: ## Present plan for creating/updating Terraform resources.
 	@:$(call check_defined, LKE_CLUSTER, cluster name)
+	@make ensure-variables
 	$(TF) -chdir=./cluster \
 		plan $(TF_ARGS) \
 		-out=plan.out \
@@ -42,6 +57,7 @@ cluster-plan: ## Present plan for creating/updating Terraform resources.
 		-var-file=./tfvars/$(LKE_CLUSTER).tfvars
 
 cluster-apply: ## Create/Update Terraform resources.
+	@make ensure-variables
 	$(TF) -chdir=./cluster \
 		apply $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \
@@ -50,6 +66,7 @@ cluster-apply: ## Create/Update Terraform resources.
 
 cluster-destroy: ## Delete Terraform resources.
 	@:$(call check_defined, LKE_CLUSTER, cluster name)
+	@make ensure-variables
 	$(TF) -chdir=./cluster \
 		destroy $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \
