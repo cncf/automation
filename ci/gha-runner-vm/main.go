@@ -752,4 +752,6 @@ build {
 	replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
     destination = "${path.root}/../software-report.json"`
 
+	replacements[`inline           = ["pwsh -File ${var.image_folder}/SoftwareReport/Generate-SoftwareReport.ps1 -OutputDirectory ${var.image_folder}", "pwsh -File ${var.image_folder}/tests/RunAll-Tests.ps1 -OutputDirectory ${var.image_folder}"]`] = `inline           = ["source /etc/environment && pwsh -File ${var.image_folder}/SoftwareReport/Generate-SoftwareReport.ps1 -OutputDirectory ${var.image_folder}", "source /etc/environment && pwsh -File ${var.image_folder}/tests/RunAll-Tests.ps1 -OutputDirectory ${var.image_folder}"]`
+
 }
