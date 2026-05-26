@@ -8,8 +8,11 @@ case "${CLOUDRUNNER_PROVIDER:-oci}" in
   kubevirt)
     exec /cloudrunner-kubevirt "$@"
     ;;
+  linode)
+    exec /cloudrunner-linode "$@"
+    ;;
   *)
-    echo "Unknown CLOUDRUNNER_PROVIDER '${CLOUDRUNNER_PROVIDER}'. Valid values: oci, kubevirt" >&2
+    echo "Unknown CLOUDRUNNER_PROVIDER '${CLOUDRUNNER_PROVIDER}'. Valid values: oci, kubevirt, linode" >&2
     exit 1
     ;;
 esac
