@@ -145,27 +145,12 @@ func run(cmd *cobra.Command, argv []string) error {
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "awscli-exe-linux-x86_64", "awscli-exe-linux-aarch64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "aws-sam-cli-linux-x86_64", "aws-sam-cli-linux-arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "ubuntu_64bit", "ubuntu_arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-cmake.sh", "x86_64", "aarch64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pulumi.sh", "linux-x64", "linux-arm64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-dotnetcore-sdk.sh", "linux-x64", "linux-arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-firefox.sh", "linux64.tar.gz", "linux-aarch64.tar.gz")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-swift.sh", "\\$\\(lsb_release -rs\\)", "24.04-aarch64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-microsoft-edge.sh", "arch=amd64", "arch=arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-kubernetes-tools.sh", "linux-amd64", "linux-arm64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-oras-cli.sh", "linux_amd64", "linux_arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-yq.sh", "linux_amd64", "linux_arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-docker.sh", "amd64", "arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-packer.sh", "amd64", "arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-terraform.sh", "amd64", "arm64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-aliyun-cli.sh", "amd64", "arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-github-cli.sh", "amd64", "arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-java-tools.sh", "amd64", "arm64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "x64", "aarch64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-codeql-bundle.sh", "/x64", "/arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-ninja.sh", "ninja-linux.zip", "ninja-linux-aarch64.zip")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "wget .*", "wget http://launchpadlibrarian.net/723810004/libicu74_74.2-1ubuntu3_arm64.deb")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "libicu70_70.1-2_amd64.deb", "libicu74_74.2-1ubuntu3_arm64.deb")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "EXPECTED_LIBICU_SHA512=.*", "EXPECTED_LIBICU_SHA512=f5bc20c081d5dc6642a066052e69982702cf4b8638f77719567f7f30f622aae59ec1c23cb17842532c141768460369c176ad079e4ed22d6f4436f4ad86f30f79")
@@ -676,23 +661,6 @@ build {
 
 	if args.arch == "arm64" {
 		replacements[`provisioner "shell" {
-    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
-    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    scripts          = ["${path.root}/../scripts/build/install-powershell.sh"]
-  }`] = `  provisioner "shell" {
-    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
-    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    inline           = [
-      "curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.5.1/powershell-7.5.1-linux-arm64.tar.gz",
-      "mkdir -p /opt/microsoft/powershell/7",
-      "tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7",
-      "chmod +x /opt/microsoft/powershell/7/pwsh",
-      "ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh",
-      "apt install -y linux-oracle"
-    ]
-  }`
-
-		replacements[`provisioner "shell" {
     environment_vars = ["IMAGE_VERSION=${var.image_version}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]`] = `  provisioner "shell" {
     environment_vars = ["IMAGE_VERSION=${var.image_version}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "CODEQL_JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-arm64"]`
 
@@ -701,6 +669,8 @@ build {
 
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
+
+		replacements[`    "apt install -y libelf-dev",`] = `    "apt install -y libelf-dev linux-oracle",`
 	} else {
 		replacements[`provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
