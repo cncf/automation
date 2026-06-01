@@ -141,7 +141,6 @@ func run(cmd *cobra.Command, argv []string) error {
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GHCupVersion.*", "")
 
 	if args.arch == "arm64" {
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-azcopy.sh", "https://aka.ms/downloadazcopy-v10-linux", "https://github.com/Azure/azure-storage-azcopy/releases/download/v10.29.1/azcopy_linux_arm64_10.29.1.tar.gz")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
