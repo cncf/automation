@@ -688,7 +688,8 @@ build {
       "mkdir -p /opt/microsoft/powershell/7",
       "tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7",
       "chmod +x /opt/microsoft/powershell/7/pwsh",
-      "ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
+      "ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh",
+      "apt install -y linux-oracle"
     ]
   }`
 
@@ -721,7 +722,8 @@ build {
       "apt install -y --allow-downgrades nvidia-container-toolkit=$TOOLKIT_VERSION nvidia-container-toolkit-base=$TOOLKIT_VERSION libnvidia-container-tools=$TOOLKIT_VERSION",
       "apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools",
       "sed -i '/#accept-nvidia-visible-devices-as-volume-mounts/a accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml",
-      "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest"
+      "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest",
+      "apt install -y linux-oracle"
     ]
   }`
 	}
