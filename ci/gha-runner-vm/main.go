@@ -159,6 +159,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "Import-Module \\(Join-Path \\$PSScriptRoot \"SoftwareReport.Browsers.psm1\"\\) -DisableNameChecking", "")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Browsers and Drivers\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*", "")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Environment variables\n.*", "")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GeckodriverVersion.*", "")
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/tests/Browsers.Tests.ps1", "Describe \"Chrome\"(.|\n)*", "")
 		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-amd64", "linux-arm64")
 		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-x86_64", "linux-aarch64")
