@@ -41,15 +41,14 @@ help: ## Display this help.
 
 ### Clusters
 cluster-init: ## Initialize Terraform's state and download necessary providers for OKE.
-	@:$(call check_defined, LKE_CLUSTER, cluster name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./cluster \
 		init \
 		-backend-config=./tfbackends/$(LKE_CLUSTER).tfbackend
 
 cluster-plan: ## Present plan for creating/updating Terraform resources.
 	@:$(call check_defined, LKE_CLUSTER, cluster name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./cluster \
 		plan $(TF_ARGS) \
 		-out=plan.out \
@@ -57,7 +56,7 @@ cluster-plan: ## Present plan for creating/updating Terraform resources.
 		-var-file=./tfvars/$(LKE_CLUSTER).tfvars
 
 cluster-apply: ## Create/Update Terraform resources.
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./cluster \
 		apply $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \
@@ -66,7 +65,7 @@ cluster-apply: ## Create/Update Terraform resources.
 
 cluster-destroy: ## Delete Terraform resources.
 	@:$(call check_defined, LKE_CLUSTER, cluster name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./cluster \
 		destroy $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \

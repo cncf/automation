@@ -31,14 +31,15 @@ resource "linode_firewall" "cluster" {
     ipv6     = var.control_plane_acl_ipv6
   }
 
-  inbound {
-    label    = "allow-nodeport-services"
-    action   = "ACCEPT"
-    protocol = "TCP"
-    ports    = "30000-32767"
-    ipv4     = ["0.0.0.0/0"]
-    ipv6     = ["::/0"]
-  }
+  # Not needed at the moment. Allows NodePort services (30000-32767) from anywhere - adjust as needed for security
+  # inbound {
+  #   label    = "allow-nodeport-services"
+  #   action   = "ACCEPT"
+  #   protocol = "TCP"
+  #   ports    = "30000-32767"
+  #   ipv4     = ["0.0.0.0/0"]
+  #   ipv6     = ["::/0"]
+  # }
 
   inbound_policy  = "DROP"
   outbound_policy = "ACCEPT"

@@ -11,7 +11,7 @@ BUCKETS ?=
 check_defined = $(if $(value OKE_CLUSTER),,$(error OKE_CLUSTER is not set))
 check_buckets_defined = $(if $(value BUCKETS),,$(error BUCKETS is not set))
 
-TF_VAR_tenant_ocid ?=
+TF_VAR_tenancy_ocid ?=
 TF_VAR_user_ocid ?=
 TF_VAR_fingerprint ?=
 TF_VAR_private_key_path ?=
@@ -23,9 +23,9 @@ check_fingerprint = $(if $(value TF_VAR_fingerprint),,$(error TF_VAR_fingerprint
 check_private_key_path = $(if $(value TF_VAR_private_key_path),,$(error TF_VAR_private_key_path is not set))
 
 ensure-variables:
-	@:$(call check_compartment_ocid, TF_VAR_compartment_ocid, Compartment OICD)
-	@:$(call check_tenancy_ocid, TF_VAR_tenancy_ocid, Tenancy OICD)
-	@:$(call check_user_ocid, TF_VAR_user_ocid, User OICD)
+	@:$(call check_compartment_ocid, TF_VAR_compartment_ocid, Compartment OCID)
+	@:$(call check_tenancy_ocid, TF_VAR_tenancy_ocid, Tenancy OCID)
+	@:$(call check_user_ocid, TF_VAR_user_ocid, User OCID)
 	@:$(call check_fingerprint, TF_VAR_fingerprint, Fingerprint)
 	@:$(call check_private_key_path, TF_VAR_private_key_path, Private key path)
 
@@ -51,14 +51,14 @@ help: ## Display this help.
 ### Clusters
 cluster-init: ## Initialize Terraform's state and download necessary providers for OKE.
 	@:$(call check_defined, OKE_CLUSTER, cluster name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./cluster \
 		init \
 		-backend-config=./tfbackends/$(OKE_CLUSTER).tfbackend
 
 cluster-plan: ## Present plan for creating/updating Terraform resources.
 	@:$(call check_defined, OKE_CLUSTER, cluster name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./cluster \
 		plan $(TF_ARGS) \
 		-out=plan.out \
@@ -66,7 +66,7 @@ cluster-plan: ## Present plan for creating/updating Terraform resources.
 		-var-file=./tfvars/$(OKE_CLUSTER).tfvars
 
 cluster-apply: ## Create/Update Terraform resources.
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./cluster \
 		apply $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \
@@ -75,7 +75,7 @@ cluster-apply: ## Create/Update Terraform resources.
 
 cluster-destroy: ## Delete Terraform resources.
 	@:$(call check_defined, OKE_CLUSTER, cluster name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./cluster \
 		destroy $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \
@@ -88,14 +88,14 @@ cluster-output: ## Print Terraform output.
 ### Buckets
 buckets-init: ## Initialize Terraform's state and download necessary providers for buckets.
 	@:$(call check_buckets_defined, BUCKETS, bucket group name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./buckets \
 		init \
 		-backend-config=./tfbackends/$(BUCKETS).tfbackend
 
 buckets-plan: ## Present plan for creating/updating bucket resources.
 	@:$(call check_buckets_defined, BUCKETS, bucket group name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./buckets \
 		plan $(TF_ARGS) \
 		-out=plan.out \
@@ -103,7 +103,7 @@ buckets-plan: ## Present plan for creating/updating bucket resources.
 		-var-file=./tfvars/$(BUCKETS).tfvars
 
 buckets-apply: ## Create/Update bucket resources.
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./buckets \
 		apply $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \
@@ -112,7 +112,7 @@ buckets-apply: ## Create/Update bucket resources.
 
 buckets-destroy: ## Delete bucket resources.
 	@:$(call check_buckets_defined, BUCKETS, bucket group name)
-	@make ensure-variables
+	@${MAKE} ensure-variables
 	$(TF) -chdir=./buckets \
 		destroy $(TF_ARGS) \
 		-lock-timeout=$(TF_LOCK_TIMEOUT) \
