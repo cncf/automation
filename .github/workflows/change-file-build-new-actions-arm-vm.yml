@@ -249,6 +249,11 @@ jobs:
     strategy:
       matrix:
         OS_NAME: [ubuntu-24.04-arm64-gha-image, ubuntu-24.04-arm64-bm-gha-image]
+        include:
+          - OS_NAME: ubuntu-24.04-arm64-gha-image
+            LAUNCH_MODE: PARAVIRTUALIZED
+          - OS_NAME: ubuntu-24.04-arm64-bm-gha-image
+            LAUNCH_MODE: NATIVE
     steps:
       - name: Download image OCID
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -278,7 +283,7 @@ jobs:
             --display-name ${{ matrix.OS_NAME }} \
             --name ${OBJECT_NAME} \
             --operating-system-version ${IMAGE_TAG} \
-            --launch-mode PARAVIRTUALIZED \
+            --launch-mode ${{ matrix.LAUNCH_MODE }} \
             --region ${{ env.REGION }} \
             --query 'data.id' --raw-output)
           while true; do
