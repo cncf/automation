@@ -15,7 +15,7 @@
 #   --skip-protection     Skip setting branch protection rules
 #   --skip-issue          Skip creating onboarding issue
 #   --force               Force regeneration of scaffold files (overwrites auxiliary files)
-#   --bootstrap-bin <p>   Path to bootstrap binary (default: ./bootstrap)
+#   --bootstrap-bin <p>   Path to bootstrap binary (default: ./bin/bootstrap)
 #   -h, --help            Show this help message
 #
 # Required environment variables:
@@ -52,7 +52,7 @@ SKIP_SECRETS=false
 SKIP_PROTECTION=false
 SKIP_ISSUE=false
 FORCE=false
-BOOTSTRAP_BIN="./bootstrap"
+BOOTSTRAP_BIN="./bin/bootstrap"
 BATCH_FILE=""
 ORG=""
 NAME=""
@@ -150,11 +150,12 @@ check_prerequisites() {
         if [[ -f "cmd/bootstrap/main.go" ]]; then
             info "Building bootstrap binary..."
             if ! dry "would build bootstrap binary"; then
-                go build -o bootstrap ./cmd/bootstrap
-                BOOTSTRAP_BIN="./bootstrap"
+                mkdir -p bin
+                go build -o bin/bootstrap ./cmd/bootstrap
+                BOOTSTRAP_BIN="./bin/bootstrap"
             fi
         else
-            die "Bootstrap binary not found at '$BOOTSTRAP_BIN'. Build with: go build -o bootstrap ./cmd/bootstrap"
+            die "Bootstrap binary not found at '$BOOTSTRAP_BIN'. Build with: make build"
         fi
     fi
 
