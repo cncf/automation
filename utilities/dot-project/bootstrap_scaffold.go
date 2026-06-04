@@ -25,7 +25,8 @@ description: "{{ .Description }}"
 type: "project"
 {{ if .ProjectLead }}project_lead: "{{ .ProjectLead }}"{{ if isAutoDetected .Sources "project_lead" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}# TODO: Set project lead GitHub handle
 # project_lead: "github-handle"{{ end }}
-{{ if .CNCFSlackChannel }}cncf_slack_channel: "{{ .CNCFSlackChannel }}"{{ if isAutoDetected .Sources "cncf_slack_channel" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}# TODO: Set CNCF Slack channel
+{{ if .CNCFSlackChannel }}cncf_slack_channel: "{{ .CNCFSlackChannel }}"{{ if isAutoDetected .Sources "cncf_slack_channel" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ if .CNCFSlackCandidates }}
+# Also detected: {{ joinChannels .CNCFSlackCandidates }} — please verify the correct channel{{ end }}{{ else }}# TODO: Set CNCF Slack channel
 # cncf_slack_channel: "#{{ .Slug }}"{{ end }}
 
 maturity_log:
@@ -284,6 +285,13 @@ var templateFuncs = template.FuncMap{
 		}
 		_, ok := sources[key]
 		return ok
+	},
+	"joinChannels": func(channels []string) string {
+		quoted := make([]string, len(channels))
+		for i, ch := range channels {
+			quoted[i] = `"` + ch + `"`
+		}
+		return strings.Join(quoted, ", ")
 	},
 }
 

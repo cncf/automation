@@ -233,8 +233,8 @@ type GitHubData struct {
 	HasDCO bool `json:"has_dco,omitempty"`
 	HasCLA bool `json:"has_cla,omitempty"`
 
-	// Slack channel - for auto detection
-	SlackChannel string `json:"slack_channel,omitempty"`
+	// Slack channels discovered across the org
+	SlackChannels []string `json:"slack_channels,omitempty"`
 }
 
 // fetchFromGitHub fetches repository, organization, community profile, and
@@ -320,7 +320,7 @@ func fetchFromGitHub(org, repo, token string, client *http.Client, baseURL strin
 	result.HasDCO = hasDCO
 	result.HasCLA = hasCLA
 
-	// Fetch README and extract Slack channel
+	// Fetch README and extract Slack channels
 	if resp, err := doGet(fmt.Sprintf("/repos/%s/%s/readme", org, repo)); err == nil {
 		defer resp.Body.Close()
 		if resp.StatusCode == http.StatusOK {
@@ -329,9 +329,8 @@ func fetchFromGitHub(org, repo, token string, client *http.Client, baseURL strin
 			}
 			if err := json.NewDecoder(resp.Body).Decode(&readmeData); err == nil && readmeData.DownloadURL != "" {
 				if content, err := fetchFileContent(client, readmeData.DownloadURL); err == nil {
-					if ch := extractSlackChannel(content); ch != "" {
-						result.SlackChannel = ch
-					}
+					channels := extractSlackChannels(content)
+					result.SlackChannels = mergeStringSlices(result.SlackChannels, channels)
 				}
 			}
 		}
@@ -390,6 +389,20 @@ var governanceFiles = []governanceFile{
 			}
 		},
 	},
+	{
+		name: "CONTRIBUTING.md",
+		parseFunc: func(data *GitHubData, content string, _ string) {
+			channels := extractSlackChannels(content)
+			data.SlackChannels = mergeStringSlices(data.SlackChannels, channels)
+		},
+	},
+	{
+		name: "COMMUNITY.md",
+		parseFunc: func(data *GitHubData, content string, _ string) {
+			channels := extractSlackChannels(content)
+			data.SlackChannels = mergeStringSlices(data.SlackChannels, channels)
+		},
+	},
 }
 
 // discoverGovernanceFiles looks for CODEOWNERS, OWNERS, MAINTAINERS in the repo root,
@@ -445,7 +458,7 @@ func scanOrgReposForGovernance(result *GitHubData, org, primaryRepo string, doGe
 		".github":                    true,
 	}
 
-	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer handles...\n", org)
+	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer handles and Slack channels...\n", org)
 	before := len(result.Maintainers)
 
 	page := 1
@@ -496,7 +509,8 @@ func scanOrgReposForGovernance(result *GitHubData, org, primaryRepo string, doGe
 }
 
 // scanRepoRootForGovernance lists the root contents of a single repo and parses
-// any governance files found there.
+// any governance files found there. It also extracts Slack channels from the
+// repo README to discover channels across the entire org.
 func scanRepoRootForGovernance(result *GitHubData, org, repo string, doGet func(string) (*http.Response, error), client *http.Client) {
 	resp, err := doGet(fmt.Sprintf("/repos/%s/%s/contents/", org, repo))
 	if err != nil || resp.StatusCode != http.StatusOK {
@@ -520,6 +534,15 @@ func scanRepoRootForGovernance(result *GitHubData, org, repo string, doGet func(
 				if err == nil && content != "" {
 					gf.parseFunc(result, content, entry.HTMLURL)
 				}
+			}
+		}
+		// Also check README for Slack channels
+		if entry.Type == "file" && entry.DownloadURL != "" &&
+			strings.EqualFold(strings.TrimSuffix(entry.Name, ".md"), "README") {
+			content, err := fetchFileContent(client, entry.DownloadURL)
+			if err == nil && content != "" {
+				channels := extractSlackChannels(content)
+				result.SlackChannels = mergeStringSlices(result.SlackChannels, channels)
 			}
 		}
 	}
@@ -577,6 +600,26 @@ func getExtraString(extra map[string]interface{}, key string) (string, bool) {
 	}
 	s, ok := v.(string)
 	return s, ok
+}
+
+// extractChannelFromSlackURL extracts a channel name from a Slack URL.
+// Handles URLs like:
+//   - https://cloud-native.slack.com/messages/my-project
+//   - https://cloud-native.slack.com/channels/my-project
+//   - https://cloud-native.slack.com/archives/my-project
+//
+// Returns the channel name without "#" prefix, or "" if not found.
+func extractChannelFromSlackURL(slackURL string) string {
+	for _, segment := range []string{"/messages/", "/channels/", "/archives/"} {
+		parts := strings.SplitN(slackURL, segment, 2)
+		if len(parts) == 2 && parts[1] != "" {
+			channel := strings.TrimRight(parts[1], "/")
+			if channel != "" {
+				return channel
+			}
+		}
+	}
+	return ""
 }
 
 // LandscapeData represents data fetched from the CNCF landscape.
@@ -912,20 +955,39 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 		result.Sources["social.twitter"] = "github"
 	}
 
-	// Slack channel: landscape extra.chat_channel > derived from extra.slack_url > GitHub README
+	// Slack channel: landscape extra.chat_channel > derived from extra.slack_url > GitHub org-wide scan
+	// Landscape values are authoritative; GitHub-discovered channels become candidates.
 	if landscape != nil && landscape.ChatChannel != "" {
 		result.CNCFSlackChannel = landscape.ChatChannel
 		result.Sources["cncf_slack_channel"] = "landscape"
 	} else if landscape != nil && landscape.SlackURL != "" {
-		// Derive channel name from slack URL: .../messages/<channel-name>
-		parts := strings.Split(landscape.SlackURL, "/messages/")
-		if len(parts) == 2 && parts[1] != "" {
-			result.CNCFSlackChannel = "#" + parts[1]
+		// Derive channel name from slack URL: .../messages/<channel-name> or .../channels/<channel-name> or .../archives/<channel-name>
+		channel := extractChannelFromSlackURL(landscape.SlackURL)
+		if channel != "" {
+			result.CNCFSlackChannel = "#" + channel
 			result.Sources["cncf_slack_channel"] = "landscape"
 		}
-	} else if github != nil && github.SlackChannel != "" {
-		result.CNCFSlackChannel = github.SlackChannel
-		result.Sources["cncf_slack_channel"] = "github_readme"
+	}
+
+	// Collect all GitHub-discovered Slack channels
+	if github != nil && len(github.SlackChannels) > 0 {
+		if result.CNCFSlackChannel == "" {
+			// No landscape value — promote the first GitHub channel as primary
+			result.CNCFSlackChannel = github.SlackChannels[0]
+			result.Sources["cncf_slack_channel"] = "github_readme"
+			// Remaining channels become candidates
+			if len(github.SlackChannels) > 1 {
+				result.CNCFSlackCandidates = append([]string{}, github.SlackChannels[1:]...)
+			}
+		} else {
+			// Landscape provided a primary — all GitHub channels are candidates
+			// (excluding duplicates of the landscape value)
+			for _, ch := range github.SlackChannels {
+				if ch != result.CNCFSlackChannel {
+					result.CNCFSlackCandidates = append(result.CNCFSlackCandidates, ch)
+				}
+			}
+		}
 	}
 
 	// Accepted date from landscape extra
