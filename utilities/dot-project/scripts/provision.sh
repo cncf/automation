@@ -253,6 +253,13 @@ provision_project() {
             info "  Empty repo detected, initializing..."
             git -C "$tmp_dir" init -b main
             git -C "$tmp_dir" remote add origin "https://github.com/${target_repo}.git"
+        else
+            # Clone succeeded but the repo may be empty (no commits yet).
+            # gh repo clone exits 0 even for empty repos, leaving HEAD pointing at
+            # whatever init.defaultBranch is set to locally (often "master").
+            # Force it to "main" so the first commit and the push target match the
+            # branch protection rule that Step 6 sets on branches/main.
+            git -C "$tmp_dir" symbolic-ref HEAD refs/heads/main
         fi
     fi
 
@@ -368,25 +375,27 @@ create_onboarding_issue() {
         done < "${tmp_dir}/project.yaml"
     fi
 
-    if [[ ${#todos[@]} -eq 0 ]]; then
-        info "  No TODOs found in project.yaml — skipping onboarding issue"
-        return 0
-    fi
-
     if dry "would create onboarding issue on ${target_repo}"; then
         return 0
     fi
 
+    # Resolve the currently authenticated GitHub user so we can exclude them from mentions
+    local current_user
+    current_user=$(gh api user --jq '.login' 2>/dev/null || true)
+
     # Fetch up to 3 org owners; fall back to maintainers.yaml handles
     local handles=()
     while IFS= read -r login; do
+        [[ "$login" == "$current_user" ]] && continue
         handles+=("$login")
         [[ ${#handles[@]} -ge 3 ]] && break
     done < <(gh api "orgs/${org}/members?role=admin&per_page=10" --jq '.[].login' 2>/dev/null || true)
 
     if [[ ${#handles[@]} -eq 0 ]] && [[ -f "${tmp_dir}/maintainers.yaml" ]]; then
         while IFS= read -r login; do
-            handles+=("${login#@}")
+            login="${login#@}"
+            [[ "$login" == "$current_user" ]] && continue
+            handles+=("$login")
             [[ ${#handles[@]} -ge 3 ]] && break
         done < <(grep -E '^\s+-\s+github:' "${tmp_dir}/maintainers.yaml" | sed 's/.*github:[[:space:]]*//' || true)
     fi
@@ -418,6 +427,8 @@ create_onboarding_issue() {
     for todo in "${todos[@]}"; do
         checklist+="- [ ] ${todo}"$'\n'
     done
+    checklist+="- [ ] Ensure all project maintainers have a LFID at https://openprofile.dev/"$'\n'
+    checklist+="- [ ] Update LFID so their GitHub ID is linked to the LFID, and correct their email address and company affiliation if needed."$'\n'
 
     local body
     body=$(cat <<EOF
