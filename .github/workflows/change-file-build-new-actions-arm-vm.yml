@@ -369,3 +369,8 @@ jobs:
             --config-file ${OCI_CONFIG_FILE} \
             --target-uri https://iaas.us-ashburn-1.oraclecloud.com/20160918/images/${IMAGE_ID}/shapes/BM.Standard.A1.160 \
             --request-body "{\"imageId\":\"${IMAGE_ID}\",\"shape\":\"BM.Standard.A1.160\"}"
+
+          oci raw-request --http-method PUT \
+            --config-file ${OCI_CONFIG_FILE} \
+            --target-uri https://iaas.us-ashburn-1.oraclecloud.com/20160918/images/${IMAGE_ID}/shapes/BM.Standard.A4.48 \
+            --request-body "{\"imageId\":\"${IMAGE_ID}\",\"shape\":\"BM.Standard.A4.48\"}"
