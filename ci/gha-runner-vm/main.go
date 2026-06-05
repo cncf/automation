@@ -139,6 +139,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	installRunnerPackage(baseDir)
 
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GHCupVersion.*", "")
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-FastlaneVersion.*", "")
 
 	if args.arch == "arm64" {
 		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
