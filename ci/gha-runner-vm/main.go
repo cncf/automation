@@ -673,10 +673,32 @@ build {
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
 
-		replacements[`    "apt install -y libelf-dev",`] = `    "apt install -y libelf-dev linux-oracle",
+		replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
+				"${path.root}/../scripts/build/install-runner-package.sh",`
+
+		replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
+		provisioner "shell" {
+			execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+				inline = ["touch /etc/waagent.conf"]
+		}`
+
+		replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+      "sleep 30",
+      "export HISTSIZE=0 && sync",
+      "usermod -aG docker ubuntu",
+      "apt install -y libelf-dev linux-oracle",
       "echo 'MODULES=most' > /etc/initramfs-tools/conf.d/modules.conf",
       "echo 'RESUME=none' >> /etc/initramfs-tools/conf.d/modules.conf",
-      "update-initramfs -u -k all",`
+      "update-initramfs -u -k all",
+      "apt-get clean",
+      "rm -rf /var/lib/apt/lists/*"
+    ]`
+		// At this point this is the only Ubuntu-specific hard coded blocks we have left.
+		replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
+			destination = "${path.root}/../Ubuntu2404-Readme.md"`
+
+		replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
+			destination = "${path.root}/../software-report.json"`
 	} else {
 		replacements[`provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
@@ -698,34 +720,33 @@ build {
       "apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools",
       "sed -i '/#accept-nvidia-visible-devices-as-volume-mounts/a accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml",
       "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest",
-      "apt install -y linux-oracle"
+      "apt install -y linux-oracle",
     ]
   }`
+
+		replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
+				"${path.root}/../scripts/build/install-runner-package.sh",`
+
+		replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
+		provisioner "shell" {
+			execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+				inline = ["touch /etc/waagent.conf"]
+		}`
+
+		replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+				"sleep 30",
+				"export HISTSIZE=0 && sync",
+				"usermod -aG docker ubuntu",
+				"apt install -y libelf-dev",
+				"apt-get clean",
+				"rm -rf /var/lib/apt/lists/*"
+			]`
+
+		// At this point this is the only Ubuntu-specific hard coded blocks we have left.
+		replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
+			destination = "${path.root}/../Ubuntu2404-Readme.md"`
+
+		replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
+			destination = "${path.root}/../software-report.json"`
 	}
-
-	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
-      "${path.root}/../scripts/build/install-runner-package.sh",`
-
-	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
-	provisioner "shell" {
-	  execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-      inline = ["touch /etc/waagent.conf"]
-	}`
-
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
-      "sleep 30",
-      "export HISTSIZE=0 && sync",
-      "usermod -aG docker ubuntu",
-      "apt install -y libelf-dev",
-      "apt-get clean",
-      "rm -rf /var/lib/apt/lists/*"
-    ]`
-
-	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
-	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
-    destination = "${path.root}/../Ubuntu2404-Readme.md"`
-
-	replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
-    destination = "${path.root}/../software-report.json"`
-
 }
