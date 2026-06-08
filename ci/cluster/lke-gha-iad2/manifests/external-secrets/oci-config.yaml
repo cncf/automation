@@ -1,0 +1,20 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: oci-config
+  namespace: arc-systems
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: oci-secret-store
+  target:
+    name: oci-config
+    creationPolicy: Owner
+    template:
+      data:
+        config: "{{ .config | toString }}"
+  data:
+  - secretKey: config
+    remoteRef:
+      key: oci-config

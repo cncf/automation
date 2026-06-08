@@ -1,0 +1,21 @@
+metrics:
+  controllerManagerAddr: ":8080"
+  listenerAddr: ":8080"
+  listenerEndpoint: "/metrics"
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: /metrics
+  prometheus.io/port: "8080"
+
+flags:
+  watchSingleNamespace: "arc-systems"
+  runnerMaxConcurrentReconciles: 10
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 512Mi
