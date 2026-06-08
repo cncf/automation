@@ -441,7 +441,7 @@ spec:
               resources:
                 requests:
                   storage: 50Gi
-              storageClassName: oci-bv
+              storageClassName: linode-block-storage
         name: work
       - ephemeral:
           volumeClaimTemplate:
@@ -451,7 +451,7 @@ spec:
               resources:
                 requests:
                   storage: 10Gi
-              storageClassName: oci-bv
+              storageClassName: linode-block-storage
         name: overlay
       # tolerations:
       # - key: "cncf.io/gha-runner"

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: github-vm-runners
+  name: github-container-runners
   namespace: argocd
   annotations:
     argocd.argoproj.io/manifest-generate-paths: .
