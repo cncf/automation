@@ -4,6 +4,8 @@ set -euo pipefail
 CLUSTER_NAME="kind-test"
 KIND_CONFIG="kind-config.yaml"
 
+export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin
+
 sudo sysctl fs.inotify.max_user_instances=1280
 sudo sysctl fs.inotify.max_user_watches=655360
 

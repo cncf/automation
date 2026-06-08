@@ -114,4 +114,4 @@ USER runner
 RUN pip3 install --user launchable~=1.0
 
 RUN export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin && \
-    go install sigs.k8s.io/kind@v0.30.0
+    go install sigs.k8s.io/kind@v0.32.0
