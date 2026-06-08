@@ -687,7 +687,8 @@ build {
       "sleep 30",
       "export HISTSIZE=0 && sync",
       "usermod -aG docker ubuntu",
-      "apt install -y libelf-dev linux-oracle",
+      "apt install -y libelf-dev linux-oracle open-iscsi",
+      "echo 'ISCSI_AUTO=true' > /etc/iscsi/iscsi.initramfs",
       "echo 'MODULES=most' > /etc/initramfs-tools/conf.d/modules.conf",
       "echo 'RESUME=none' >> /etc/initramfs-tools/conf.d/modules.conf",
       "update-initramfs -u -k all",
@@ -721,7 +722,6 @@ build {
       "apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools",
       "sed -i '/#accept-nvidia-visible-devices-as-volume-mounts/a accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml",
       "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest",
-      "apt install -y linux-oracle",
     ]
   }`
 
