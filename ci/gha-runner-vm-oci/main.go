@@ -59,7 +59,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	varsFile := "variable.ubuntu.pkr.hcl"
 	filename := ""
 	varsFilename := ""
-	imageName := fmt.Sprintf("%s-%s-%s-bm-gha-image", args.os, args.osVersion, args.arch)
+	imageName := fmt.Sprintf("%s-%s-%s-gha-image", args.os, args.osVersion, args.arch)
 
 	githubClient := github.NewClient(nil)
 	releases, _, err := githubClient.Repositories.ListReleases(context.Background(), "actions", "runner-images", nil)
@@ -120,14 +120,13 @@ func run(cmd *cobra.Command, argv []string) error {
   subnet_ocid          = "%s"%s
   image_name           = "%s"
   instance_name        = "packer-build"
-  disk_size            = 200
   ssh_username         = "ubuntu"
   communicator         = "ssh"
-	image_launch_mode	   = "PARAVIRTUALIZED"
-	shape_config {
-		ocpus = 16
-		memory_in_gbs = 64
-	}
+  image_launch_mode	   = "PARAVIRTUALIZED"
+  shape_config {
+    ocpus = 16
+    memory_in_gbs = 64
+  }
 }`, args.availabilityDomain, args.baseImageOCID, args.compartmentId, args.ociShape, args.subnetOCID, regionLine, imageName)
 
 	for key, value := range replacements {
@@ -308,18 +307,6 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 	}
 
 	return true, nil
-}
-
-func updatePackerConfig(baseDir string, filename string, searchString string, replaceString string) (string, error) {
-	scriptName := baseDir + filename
-	err := replaceInFileRegex(scriptName, map[*regexp.Regexp]string{
-		regexp.MustCompile(searchString): replaceString,
-	})
-	if err != nil {
-		log.Fatalf("Failed to patch %s: %v", filename, err)
-		return "", err
-	}
-	return "", nil
 }
 
 func extractPackerFileFromURL(url string, path string) (string, error) {
