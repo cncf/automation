@@ -191,7 +191,7 @@ jobs:
             --compartment-id ${{ env.COMPARTMENT_ID }} --all \
             --operating-system "Canonical Ubuntu" \
             --operating-system-version "24.04" | jq -r '.data[] | select(."display-name" | contains("Canonical-Ubuntu-24.04-aarch64")) | .id' | head -1)
-          
+
           export PATH=$PATH:$HOME/bin && \
           export PACKER_PLUGIN_PATH=/home/ubuntu/.config/packer/plugins && \
           cd ci/gha-runner-vm-oci && \
