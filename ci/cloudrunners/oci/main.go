@@ -83,7 +83,6 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 		osname = fmt.Sprintf("rc-ubuntu-24.04-%s-gha-image", arch)
 	}
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
-		DisplayName: 		 common.String(osname),
 		CompartmentId:   common.String(compartmentId),
 		OperatingSystem: common.String(osname),
 		SortBy:          core.ListImagesSortByTimecreated,
