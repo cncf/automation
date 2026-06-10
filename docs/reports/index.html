@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNCF Project Health Dashboard</title>
+  <title>CNCF Project Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="cncf-icon-color.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -69,15 +71,19 @@
     .logo-mark {
       width: 36px;
       height: 36px;
-      background: linear-gradient(135deg, var(--accent), #0099ff);
-      border-radius: 8px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.5px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .logo-mark img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
     }
 
     .logo-text {
@@ -129,7 +135,28 @@
       border-bottom: 1px solid var(--border);
       background: #ffffff;
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .nav-group {
+      display: flex;
+      align-items: center;
       gap: 0;
+      min-width: 0;
+    }
+
+    .nav-group.primary {
+      flex: 1 1 420px;
+      flex-wrap: wrap;
+    }
+
+    .nav-group.secondary {
+      flex: 0 1 auto;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .nav-tab {
@@ -274,6 +301,47 @@
     .kpi-desc {
       font-size: 12px;
       color: var(--text-muted);
+    }
+
+    .kpi-split {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .kpi-split-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .kpi-split-row:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .kpi-split-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .kpi-split-value {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .kpi-split-value.created {
+      color: #dc2626;
+    }
+
+    .kpi-split-value.resolved {
+      color: #16a34a;
     }
 
     /* ── CHART GRID ── */
@@ -647,6 +715,56 @@
       .onboarding-summary { grid-template-columns: repeat(2, 1fr); }
     }
 
+    @media (max-width: 640px) {
+      header {
+        height: auto;
+        min-height: 64px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      nav {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        gap: 8px;
+      }
+
+      .nav-group {
+        width: 100%;
+      }
+
+      .nav-group.primary {
+        flex-basis: 100%;
+      }
+
+      .nav-group.secondary {
+        justify-content: flex-start;
+      }
+
+      .nav-tab,
+      .nav-ext-link {
+        padding: 12px 14px;
+      }
+
+      .nav-tab {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 132px;
+        text-align: center;
+      }
+
+      .nav-ext-link {
+        flex: 0 1 auto;
+      }
+    }
+
     /* No data row */
     .no-data-row td {
       text-align: center;
@@ -660,9 +778,9 @@
 
 <header>
   <div class="logo">
-    <div class="logo-mark">CN</div>
+    <div class="logo-mark"><img src="cncf-icon-color.svg" alt="CNCF logo"></div>
     <div>
-      <div class="logo-text">CNCF / Project Health and Maintainer Support</div>
+      <div class="logo-text">CNCF</div>
       <div class="logo-sub">Staff Operations Dashboard</div>
     </div>
   </div>
@@ -673,12 +791,18 @@
 </header>
 
 <nav>
-  <button type="button" class="nav-tab active" data-page="overview">Overview</button>
-  <button type="button" class="nav-tab" data-page="pipeline">Pipeline</button>
-  <button type="button" class="nav-tab" data-page="onboarding">Onboarding</button>
-  <button type="button" class="nav-tab" data-page="servicedesk">Service Desk</button>
-  <button type="button" class="nav-tab" data-page="satisfaction">Satisfaction</button>
-  <a class="nav-ext-link" href="https://www.cncf.io/project-metrics/" target="_blank" rel="noopener noreferrer">Metrics <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+  <div class="nav-group primary">
+    <button type="button" class="nav-tab active" data-page="overview">Overview</button>
+    <button type="button" class="nav-tab" data-page="pipeline">Pipeline</button>
+    <button type="button" class="nav-tab" data-page="onboarding">Onboarding</button>
+    <button type="button" class="nav-tab" data-page="servicedesk">Service Desk</button>
+    <button type="button" class="nav-tab" data-page="satisfaction">Satisfaction</button>
+  </div>
+  <div class="nav-group secondary">
+    <a class="nav-ext-link" href="https://www.cncf.io/project-metrics/" target="_blank" rel="noopener noreferrer">Project Metrics <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+    <a class="nav-ext-link" href="https://gitjobs.dev/stats" target="_blank" rel="noopener noreferrer">GitJobs Stats <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+    <a class="nav-ext-link" href="https://ocgroups.dev/stats" target="_blank" rel="noopener noreferrer">OCG Stats <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+  </div>
 </nav>
 
 <main>
@@ -721,7 +845,7 @@
       <div class="kpi-card blue">
         <div class="kpi-label">Total Projects</div>
         <div class="kpi-value" id="kpi-total">270</div>
-        <div class="kpi-desc">Active + archived</div>
+        <div class="kpi-desc">Active + archived. Not all new projects are on the landscape</div>
       </div>
       <div class="kpi-card green">
         <div class="kpi-label">Onboarding</div>
@@ -1079,6 +1203,7 @@
       <div class="section-title">Service Desk <strong>Ticket Resolutions</strong></div>
       <div class="section-subtitle">Monthly tickets created vs. resolved</div>
     </div>
+    <div class="kpi-grid" id="serviceDeskYearlyKpis"></div>
     <div class="chart-card">
       <div class="chart-container tall">
         <canvas id="serviceDeskChart"></canvas>
@@ -1089,7 +1214,7 @@
 </main>
 
 <footer>
-  <span>CNCF Staff Operations · Data from cncf/toc · cncf/sandbox · landscape.yml</span>
+  <span>CNCF Staff Operations Dashboard · Data from cncf/toc · cncf/sandbox · landscape.yml</span>
   <span id="footerDate">Generated: 2026-04-10 19:04:32 UTC</span>
 </footer>
 
@@ -1650,6 +1775,7 @@ async function loadDashboard() {
 
   // Init charts and table (use populated globals; fall back to empty if load failed)
   initCharts();
+  renderServiceDeskYearlyKpis();
   initServiceDeskChart();
   initSatisfactionChart();
   renderTable();
@@ -1695,27 +1821,33 @@ function initSatisfactionChart() {
         {
           label: 'Overall Satisfaction',
           data: satisfactionData.map(d => d.overall_satisfaction),
-          backgroundColor: '#6baed6cc',
-          borderColor: '#6baed6',
+          backgroundColor: COLORS.green + 'cc',
+          borderColor: COLORS.green,
           borderWidth: 1,
+          barThickness: 10,
+          maxBarThickness: 10,
           borderRadius: 3,
           skipNull: true
         },
         {
           label: 'Response Time Satisfaction',
           data: satisfactionData.map(d => d.response_time_satisfaction),
-          backgroundColor: COLORS.red + 'cc',
-          borderColor: COLORS.red,
+          backgroundColor: COLORS.blue + 'cc',
+          borderColor: COLORS.blue,
           borderWidth: 1,
+          barThickness: 10,
+          maxBarThickness: 10,
           borderRadius: 3,
           skipNull: true
         },
         {
           label: 'Would Recommend CNCF',
           data: satisfactionData.map(d => d.would_recommend),
-          backgroundColor: '#f6d860cc',
-          borderColor: '#d4a900',
+          backgroundColor: COLORS.purple + 'cc',
+          borderColor: COLORS.purple,
           borderWidth: 1,
+          barThickness: 10,
+          maxBarThickness: 10,
           borderRadius: 3,
           skipNull: true
         }
@@ -1802,6 +1934,44 @@ function initServiceDeskChart() {
       }
     }
   });
+}
+
+function renderServiceDeskYearlyKpis() {
+  const container = document.getElementById('serviceDeskYearlyKpis');
+  const yearlyTotals = serviceDeskData.reduce((acc, entry) => {
+    const year = String(entry.date || '').slice(0, 4);
+    if (!/^\d{4}$/.test(year)) return acc;
+
+    if (!acc[year]) {
+      acc[year] = { created: 0, resolved: 0 };
+    }
+
+    acc[year].created += Number(entry.created) || 0;
+    acc[year].resolved += Number(entry.resolved) || 0;
+    return acc;
+  }, {});
+
+  const years = Object.keys(yearlyTotals).sort((left, right) => left.localeCompare(right));
+
+  container.innerHTML = years.map((year) => {
+    const totals = yearlyTotals[year];
+    return `
+      <div class="kpi-card">
+        <div class="kpi-label">${year}</div>
+        <div class="kpi-desc">Annual service desk totals</div>
+        <div class="kpi-split">
+          <div class="kpi-split-row">
+            <span class="kpi-split-label">Created</span>
+            <span class="kpi-split-value created">${totals.created}</span>
+          </div>
+          <div class="kpi-split-row">
+            <span class="kpi-split-label">Resolved</span>
+            <span class="kpi-split-value resolved">${totals.resolved}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 </script>
 </body>
