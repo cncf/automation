@@ -498,7 +498,7 @@ func init() {
 	flags.StringVar(
 		&args.subnetOCID,
 		"subnet-ocid",
-		"ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q",
+		"ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq",
 		"OCI subnet OCID for the build instance",
 	)
 
