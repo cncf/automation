@@ -13,7 +13,7 @@ permissions:
 jobs:
   build:
     name: Cleanup bucket objects
-    runs-on: oracle-2cpu-8gb-x86-64
+    runs-on: cncf-c-ubuntu-2-8-x86
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
