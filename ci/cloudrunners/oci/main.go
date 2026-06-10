@@ -83,6 +83,7 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 		osname = fmt.Sprintf("rc-ubuntu-24.04-%s-gha-image", arch)
 	}
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
+		DisplayName: 		 common.String(osname),
 		CompartmentId:   common.String(compartmentId),
 		OperatingSystem: common.String(osname),
 		SortBy:          core.ListImagesSortByTimecreated,
@@ -277,11 +278,11 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
 		"rm -rf \\$HOME",
 		"sudo chown -R 1000:1000 /etc/skel/",
-		"mv /etc/skel/.cargo /home/ubuntu/",
-		"mv /etc/skel/.nvm /home/ubuntu/",
-		"mv /etc/skel/.rustup /home/ubuntu/",
-		"mv /etc/skel/.dotnet /home/ubuntu/",
-		"mv /etc/skel/.composer /home/ubuntu/",
+		"sudo mv /etc/skel/.cargo /home/ubuntu/",
+		"sudo mv /etc/skel/.nvm /home/ubuntu/",
+		"sudo mv /etc/skel/.rustup /home/ubuntu/",
+		"sudo mv /etc/skel/.dotnet /home/ubuntu/",
+		"sudo mv /etc/skel/.composer /home/ubuntu/",
 		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
 		"sudo sysctl fs.inotify.max_user_instances=1280",
 		"sudo sysctl fs.inotify.max_user_watches=655360",
