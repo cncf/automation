@@ -587,3 +587,62 @@ func TestGenerateProjectYAML_AutoDetected(t *testing.T) {
 		}
 	})
 }
+
+func TestGenerateProjectYAML_PackageManagers(t *testing.T) {
+	t.Run("renders auto-detected package managers", func(t *testing.T) {
+		result := &BootstrapResult{
+			Slug:        "test-project",
+			Name:        "Test Project",
+			Description: "A test",
+			GitHubOrg:   "test-org",
+			GitHubRepo:  "test-project",
+			PackageManagers: map[string]string{
+				"go":     "github.com/test-org/test-project",
+				"docker": "test-org/test-project",
+			},
+			Sources: map[string]string{"package_managers": "github"},
+		}
+
+		output, err := GenerateProjectYAML(result)
+		if err != nil {
+			t.Fatalf("error = %v", err)
+		}
+		yamlStr := string(output)
+
+		if !strings.Contains(yamlStr, "package_managers:") {
+			t.Error("should contain package_managers section")
+		}
+		if !strings.Contains(yamlStr, "AUTO-DETECTED") {
+			t.Error("should contain AUTO-DETECTED comment")
+		}
+		if !strings.Contains(yamlStr, `go: "github.com/test-org/test-project"`) {
+			t.Errorf("should contain go entry, got:\n%s", yamlStr)
+		}
+		if !strings.Contains(yamlStr, `docker: "test-org/test-project"`) {
+			t.Errorf("should contain docker entry, got:\n%s", yamlStr)
+		}
+	})
+
+	t.Run("renders TODO when no package managers detected", func(t *testing.T) {
+		result := &BootstrapResult{
+			Slug:        "test-project",
+			Name:        "Test Project",
+			Description: "A test",
+			GitHubOrg:   "test-org",
+			GitHubRepo:  "test-project",
+		}
+
+		output, err := GenerateProjectYAML(result)
+		if err != nil {
+			t.Fatalf("error = %v", err)
+		}
+		yamlStr := string(output)
+
+		if !strings.Contains(yamlStr, "# TODO: Add package manager") {
+			t.Error("should contain TODO comment when no package managers")
+		}
+		if !strings.Contains(yamlStr, "# package_managers:") {
+			t.Error("should contain commented out package_managers")
+		}
+	})
+}

@@ -68,6 +68,9 @@ type BootstrapResult struct {
 	HasAdopters      bool   `json:"has_adopters,omitempty" yaml:"has_adopters,omitempty"`
 	IdentityTypeHint string `json:"identity_type_hint,omitempty" yaml:"identity_type_hint,omitempty"` // "dco", "dco+cla", "cla", or ""
 
+	// Auto-detected package managers (registry → identifier, e.g., "docker" → "envoyproxy/envoy")
+	PackageManagers map[string]string `json:"package_managers,omitempty" yaml:"package_managers,omitempty"`
+
 	// Auto-detected fields (from landscape extra and GitHub analysis)
 	TOCIssueURL string `json:"toc_issue_url,omitempty" yaml:"toc_issue_url,omitempty"`
 	HasDCO      bool   `json:"has_dco,omitempty" yaml:"has_dco,omitempty"`

@@ -235,6 +235,23 @@ type GitHubData struct {
 
 	// Slack channels discovered across the org
 	SlackChannels []string `json:"slack_channels,omitempty"`
+
+	// Package managers detected from manifest files (registry → identifier)
+	PackageManagers map[string]string `json:"package_managers,omitempty"`
+}
+
+// addPackageManager adds a package manager entry to the GitHubData, skipping duplicates.
+func (g *GitHubData) addPackageManager(registry, identifier string) {
+	if registry == "" {
+		return
+	}
+	if g.PackageManagers == nil {
+		g.PackageManagers = make(map[string]string)
+	}
+	// Don't overwrite an existing entry for the same registry
+	if _, exists := g.PackageManagers[registry]; !exists {
+		g.PackageManagers[registry] = identifier
+	}
 }
 
 // fetchFromGitHub fetches repository, organization, community profile, and
@@ -320,7 +337,7 @@ func fetchFromGitHub(org, repo, token string, client *http.Client, baseURL strin
 	result.HasDCO = hasDCO
 	result.HasCLA = hasCLA
 
-	// Fetch README and extract Slack channels
+	// Fetch README and extract Slack channel
 	if resp, err := doGet(fmt.Sprintf("/repos/%s/%s/readme", org, repo)); err == nil {
 		defer resp.Body.Close()
 		if resp.StatusCode == http.StatusOK {
@@ -389,20 +406,6 @@ var governanceFiles = []governanceFile{
 			}
 		},
 	},
-	{
-		name: "CONTRIBUTING.md",
-		parseFunc: func(data *GitHubData, content string, _ string) {
-			channels := extractSlackChannels(content)
-			data.SlackChannels = mergeStringSlices(data.SlackChannels, channels)
-		},
-	},
-	{
-		name: "COMMUNITY.md",
-		parseFunc: func(data *GitHubData, content string, _ string) {
-			channels := extractSlackChannels(content)
-			data.SlackChannels = mergeStringSlices(data.SlackChannels, channels)
-		},
-	},
 }
 
 // discoverGovernanceFiles looks for CODEOWNERS, OWNERS, MAINTAINERS in the repo root,
@@ -458,7 +461,7 @@ func scanOrgReposForGovernance(result *GitHubData, org, primaryRepo string, doGe
 		".github":                    true,
 	}
 
-	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer handles and Slack channels...\n", org)
+	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer handles...\n", org)
 	before := len(result.Maintainers)
 
 	page := 1
@@ -509,8 +512,7 @@ func scanOrgReposForGovernance(result *GitHubData, org, primaryRepo string, doGe
 }
 
 // scanRepoRootForGovernance lists the root contents of a single repo and parses
-// any governance files found there. It also extracts Slack channels from the
-// repo README to discover channels across the entire org.
+// any governance files found there.
 func scanRepoRootForGovernance(result *GitHubData, org, repo string, doGet func(string) (*http.Response, error), client *http.Client) {
 	resp, err := doGet(fmt.Sprintf("/repos/%s/%s/contents/", org, repo))
 	if err != nil || resp.StatusCode != http.StatusOK {
@@ -534,15 +536,6 @@ func scanRepoRootForGovernance(result *GitHubData, org, repo string, doGet func(
 				if err == nil && content != "" {
 					gf.parseFunc(result, content, entry.HTMLURL)
 				}
-			}
-		}
-		// Also check README for Slack channels
-		if entry.Type == "file" && entry.DownloadURL != "" &&
-			strings.EqualFold(strings.TrimSuffix(entry.Name, ".md"), "README") {
-			content, err := fetchFileContent(client, entry.DownloadURL)
-			if err == nil && content != "" {
-				channels := extractSlackChannels(content)
-				result.SlackChannels = mergeStringSlices(result.SlackChannels, channels)
 			}
 		}
 	}
@@ -573,16 +566,14 @@ func mergeStringSlices(a, b []string) []string {
 	seen := make(map[string]bool)
 	var result []string
 	for _, s := range a {
-		key := strings.ToLower(s)
-		if !seen[key] {
-			seen[key] = true
+		if !seen[s] {
+			seen[s] = true
 			result = append(result, s)
 		}
 	}
 	for _, s := range b {
-		key := strings.ToLower(s)
-		if !seen[key] {
-			seen[key] = true
+		if !seen[s] {
+			seen[s] = true
 			result = append(result, s)
 		}
 	}
@@ -603,12 +594,7 @@ func getExtraString(extra map[string]interface{}, key string) (string, bool) {
 }
 
 // extractChannelFromSlackURL extracts a channel name from a Slack URL.
-// Handles URLs like:
-//   - https://cloud-native.slack.com/messages/my-project
-//   - https://cloud-native.slack.com/channels/my-project
-//   - https://cloud-native.slack.com/archives/my-project
-//
-// Returns the channel name without "#" prefix, or "" if not found.
+// Supports .../messages/<channel>, .../channels/<channel>, .../archives/<channel>.
 func extractChannelFromSlackURL(slackURL string) string {
 	for _, segment := range []string{"/messages/", "/channels/", "/archives/"} {
 		parts := strings.SplitN(slackURL, segment, 2)
@@ -1055,6 +1041,31 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 			result.LicenseURL = github.LicenseURL
 			result.Sources["license"] = "github"
 		}
+
+		// Package managers from GitHub manifest detection
+		if len(github.PackageManagers) > 0 {
+			if result.PackageManagers == nil {
+				result.PackageManagers = make(map[string]string)
+			}
+			for reg, id := range github.PackageManagers {
+				if _, exists := result.PackageManagers[reg]; !exists {
+					result.PackageManagers[reg] = id
+				}
+			}
+			result.Sources["package_managers"] = "github"
+		}
+	}
+
+	// Package managers from landscape extra.package_manager_url (overrides GitHub)
+	if landscape != nil && landscape.PackageManagerURL != "" {
+		reg, id := parsePackageManagerURL(landscape.PackageManagerURL)
+		if reg != "" && id != "" {
+			if result.PackageManagers == nil {
+				result.PackageManagers = make(map[string]string)
+			}
+			result.PackageManagers[reg] = id // landscape takes priority
+			result.Sources["package_managers"] = "landscape"
+		}
 	}
 
 	// Generate TODOs for missing required fields
@@ -1088,7 +1099,9 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	if !result.HasAdopters {
 		result.TODOs = append(result.TODOs, "Add adopters list (ADOPTERS.md)")
 	}
-	result.TODOs = append(result.TODOs, "Add package_managers if distributed via registries")
+	if len(result.PackageManagers) == 0 {
+		result.TODOs = append(result.TODOs, "Add package_managers if distributed via registries")
+	}
 
 	// Clean up empty social map
 	if len(result.Social) == 0 {
