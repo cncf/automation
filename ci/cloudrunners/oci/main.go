@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -85,8 +86,6 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
 		CompartmentId:   common.String(compartmentId),
 		OperatingSystem: common.String(osname),
-		SortBy:          core.ListImagesSortByTimecreated,
-		SortOrder:       core.ListImagesSortOrderDesc,
 		LifecycleState:  core.ImageLifecycleStateAvailable,
 	})
 	if err != nil {
@@ -95,6 +94,9 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 	if len(images.Items) == 0 {
 		return nil, fmt.Errorf("no images found for %s", osname)
 	}
+	sort.Slice(images.Items, func(i, j int) bool {
+		return images.Items[i].TimeCreated.Time.After(images.Items[j].TimeCreated.Time)
+	})
 	selected := &images.Items[0]
 	log.Printf("findImage: found %d images for %s, selected %s (created %s, version %s)",
 		len(images.Items), osname, *selected.DisplayName, selected.TimeCreated.String(), *selected.OperatingSystemVersion)
