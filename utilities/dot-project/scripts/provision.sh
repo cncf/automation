@@ -46,6 +46,19 @@ if [[ -f .env ]]; then
     done < .env
 fi
 
+# Always prefer the gh CLI's live token over any static value in .env.
+# gh auth token returns the active keyring token, which is always valid and
+# has the correct scopes.  This prevents stale GITHUB_TOKEN values in .env
+# from overriding a freshly-authenticated session.
+if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
+    _gh_token=$(gh auth token 2>/dev/null || true)
+    if [[ -n "$_gh_token" ]]; then
+        export GITHUB_TOKEN="$_gh_token"
+    fi
+    unset _gh_token
+fi
+
+
 # Defaults
 DRY_RUN=false
 SKIP_SECRETS=false
@@ -90,6 +103,21 @@ done
 # Normalize GitHub URL inputs
 # ──────────────────────────────────────────────
 
+# parse_github_url <value>
+# Echoes "ORG REPO" extracted from a GitHub URL, or "VALUE " for a plain slug.
+# Returns 1 and prints an error if the value looks like a non-GitHub URL.
+parse_github_url() {
+    local value="${1%/}"  # strip trailing slash
+    if [[ "$value" =~ ^https?://github\.com/([^/]+)(/([^/]+))?/?$ ]]; then
+        echo "${BASH_REMATCH[1]} ${BASH_REMATCH[3]}"
+    elif [[ "$value" =~ ^https?:// ]]; then
+        echo "ERROR: not a valid GitHub URL (expected https://github.com/<org>[/<repo>]): ${value}" >&2
+        return 1
+    else
+        echo "$value "
+    fi
+}
+
 # normalize_github_url strips a full GitHub URL down to its org (and optionally repo) parts.
 # Accepts: https://github.com/org, https://github.com/org/repo, or plain "org"
 # Sets ORG (and REPO if a repo segment is present and REPO wasn't explicitly provided).
@@ -97,33 +125,24 @@ normalize_github_url() {
     local value="$1"
     local field="$2"  # "org" or "repo"
 
-    # Strip trailing slashes
-    value="${value%/}"
+    # Only act on values that look like URLs
+    [[ "$value" =~ ^https?:// ]] || return 0
 
-    if [[ "$value" =~ ^https?://github\.com/([^/]+)(/([^/]+))?$ ]]; then
-        local parsed_org="${BASH_REMATCH[1]}"
-        local parsed_repo="${BASH_REMATCH[3]}"
+    local parsed_org parsed_repo
+    read -r parsed_org parsed_repo <<< "$(parse_github_url "$value")" \
+        || die "--${field} is not a valid GitHub URL: ${value}"
 
-        if [[ "$field" == "org" ]]; then
-            ORG="$parsed_org"
-            # If a repo segment was in the URL and --repo wasn't explicitly set, use it
-            if [[ -n "$parsed_repo" && -z "$REPO" ]]; then
-                REPO="$parsed_repo"
-                info "Extracted --repo '${REPO}' from GitHub URL"
-            fi
-            info "Extracted --org '${ORG}' from GitHub URL"
-        elif [[ "$field" == "repo" ]]; then
-            if [[ -n "$parsed_repo" ]]; then
-                REPO="$parsed_repo"
-            else
-                REPO="$parsed_org"  # URL was github.com/org, treat as repo name
-            fi
+    if [[ "$field" == "org" ]]; then
+        ORG="$parsed_org"
+        if [[ -n "$parsed_repo" && -z "$REPO" ]]; then
+            REPO="$parsed_repo"
             info "Extracted --repo '${REPO}' from GitHub URL"
         fi
-    elif [[ "$value" =~ ^https?:// ]]; then
-        die "--${field} looks like a URL but is not a valid GitHub URL (expected https://github.com/<org>[/<repo>]): ${value}"
+        info "Extracted --org '${ORG}' from GitHub URL"
+    elif [[ "$field" == "repo" ]]; then
+        REPO="${parsed_repo:-$parsed_org}"
+        info "Extracted --repo '${REPO}' from GitHub URL"
     fi
-    # Otherwise it's already a plain name — no transformation needed
 }
 
 normalize_github_url "$ORG" "org"
@@ -199,25 +218,22 @@ provision_project() {
     local name="$2"
     local repo="${3:-$org}"
 
-    # Normalize org if it's a GitHub URL (e.g., https://github.com/tokenetes/tokenetes)
-    if [[ "$org" =~ ^https?://github\.com/([^/]+)(/([^/]+))?/?$ ]]; then
-        org="${BASH_REMATCH[1]}"
-        if [[ -n "${BASH_REMATCH[3]}" && ( -z "$repo" || "$repo" == "$1" ) ]]; then
-            repo="${BASH_REMATCH[3]}"
+    # Normalize org and repo — accept full GitHub URLs or plain slugs.
+    if [[ "$org" =~ ^https?:// ]]; then
+        local parsed_org parsed_repo
+        read -r parsed_org parsed_repo <<< "$(parse_github_url "$org")" \
+            || { warn "org '${org}' is not a valid GitHub URL; using as-is"; parsed_org="$org"; parsed_repo=""; }
+        if [[ -z "$repo" || "$repo" == "$1" ]] && [[ -n "$parsed_repo" ]]; then
+            repo="$parsed_repo"
         fi
-    elif [[ "$org" =~ ^https?:// ]]; then
-        warn "org '${org}' looks like a URL but is not a recognized GitHub URL; using as-is"
+        org="$parsed_org"
     fi
 
-    # Normalize repo if it's a GitHub URL
-    if [[ "$repo" =~ ^https?://github\.com/([^/]+)(/([^/]+))?/?$ ]]; then
-        if [[ -n "${BASH_REMATCH[3]}" ]]; then
-            repo="${BASH_REMATCH[3]}"
-        else
-            repo="${BASH_REMATCH[1]}"
-        fi
-    elif [[ "$repo" =~ ^https?:// ]]; then
-        warn "repo '${repo}' looks like a URL but is not a recognized GitHub URL; using as-is"
+    if [[ "$repo" =~ ^https?:// ]]; then
+        local parsed_org parsed_repo
+        read -r parsed_org parsed_repo <<< "$(parse_github_url "$repo")" \
+            || { warn "repo '${repo}' is not a valid GitHub URL; using as-is"; }
+        repo="${parsed_repo:-$parsed_org}"
     fi
 
     local target_repo="${org}/.project"
