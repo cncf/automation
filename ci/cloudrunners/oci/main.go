@@ -87,7 +87,6 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 		OperatingSystem: common.String(osname),
 		SortBy:          core.ListImagesSortByTimecreated,
 		SortOrder:       core.ListImagesSortOrderDesc,
-		Limit:           common.Int(1),
 		LifecycleState:  core.ImageLifecycleStateAvailable,
 	})
 	if err != nil {
@@ -96,7 +95,10 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 	if len(images.Items) == 0 {
 		return nil, fmt.Errorf("no images found for %s", osname)
 	}
-	return &images.Items[0], nil
+	selected := &images.Items[0]
+	log.Printf("findImage: found %d images for %s, selected %s (created %s, version %s)",
+		len(images.Items), osname, *selected.DisplayName, selected.TimeCreated.String(), *selected.OperatingSystemVersion)
+	return selected, nil
 }
 
 func run(cmd *cobra.Command, argv []string) error {

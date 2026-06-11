@@ -120,6 +120,7 @@ func run(cmd *cobra.Command, argv []string) error {
   subnet_ocid          = "%s"%s
   image_name           = "%s"
   instance_name        = "packer-build"
+  disk_size            = 80
   ssh_username         = "ubuntu"
   communicator         = "ssh"
   image_launch_mode	   = "PARAVIRTUALIZED"
@@ -276,7 +277,7 @@ func getImageState(imageID string) (string, error) {
 }
 
 func imageExists(imageName, imageVersion string) (bool, error) {
-	command := exec.Command("oci", "compute", "image", "list", "--compartment-id", args.compartmentId, "--operating-system", imageName, "--operating-system-version", imageVersion)
+	command := exec.Command("oci", "compute", "image", "list", "--compartment-id", args.compartmentId, "--operating-system", imageName, "--operating-system-version", imageVersion, "--region", args.ociRegion)
 	output, err := command.CombinedOutput()
 
 	if err != nil {
