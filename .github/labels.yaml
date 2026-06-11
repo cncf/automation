@@ -467,6 +467,16 @@ ruleset:
     spec:
       label: needs-triage
 
+- name: remove-needs-triage
+  kind: label
+  spec:
+    match: triage/*
+    matchCondition: AND
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-triage
+
 - name: needs-kind
   kind: label
   spec:
@@ -476,6 +486,16 @@ ruleset:
   - kind: apply-label
     spec:
       label: needs-kind
+
+- name: remove-needs-kind
+  kind: label
+  spec:
+    match: kind/*
+    matchCondition: AND
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-kind
 
 - name: needs-group
   kind: label
@@ -487,6 +507,16 @@ ruleset:
     spec:
       label: needs-group
 
+- name: remove-needs-group
+  kind: label
+  spec:
+    match: "{toc,tag/*,sub/*}"
+    matchCondition: AND
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-group
+
 - name: needs-priority
   kind: label
   spec:
@@ -496,6 +526,16 @@ ruleset:
   - kind: apply-label
     spec:
       label: needs-priority
+
+- name: remove-needs-priority
+  kind: label
+  spec:
+    match: priority/*
+    matchCondition: AND
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-priority
 
 - name: needs-area
   kind: label
@@ -507,6 +547,16 @@ ruleset:
     spec:
       label: needs-area
 
+- name: remove-needs-area
+  kind: label
+  spec:
+    match: area/*
+    matchCondition: AND
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-area
+
 - name: needs-status
   kind: label
   spec:
@@ -516,6 +566,16 @@ ruleset:
   - kind: apply-label
     spec:
       label: needs-status
+
+- name: remove-needs-status
+  kind: label
+  spec:
+    match: status/*
+    matchCondition: AND
+  actions:
+  - kind: remove-label
+    spec:
+      match: needs-status
 
 - name: apply-kind
   kind: match
@@ -694,6 +754,34 @@ ruleset:
   - kind: apply-label
     spec:
       label: area/{{ argv.0 }}
+
+- name: apply-level
+  kind: match
+  spec:
+    command: /level
+    rules:
+    - matchList:
+      - level/archived
+      - level/graduation
+      - level/incubation
+      - level/sandbox
+  actions:
+  - kind: remove-label
+    spec:
+      match: level/*
+  - kind: apply-label
+    spec:
+      label: level/{{ argv.0 }}
+
+- name: remove-dd-needs-triage
+  kind: label
+  spec:
+    match: dd/triage/*
+    matchCondition: AND
+  actions:
+  - kind: remove-label
+    spec:
+      match: dd/needs-triage
 
 
 ##############################################################################

@@ -375,6 +375,311 @@ func TestLabeler_ProcessLabelRule_HasTriageLabel(t *testing.T) {
 	}
 }
 
+// TestLabeler_ProcessLabelRule_RemoveWithMatchConditionAND exercises the
+// regression where a label rule with `matchCondition: AND` was treated like
+// `NOT` and fired in exactly the wrong situations. See cncf/toc#2164 for the
+// user-visible symptom: a freshly-opened PR would have `needs-triage`,
+// `needs-kind`, and `needs-group` added and immediately removed in the same
+// workflow run, and a manually-applied `triage/*`/`kind/*`/group label would
+// never auto-clear its paired `needs-*` label.
+func TestLabeler_ProcessLabelRule_RemoveWithMatchConditionAND(t *testing.T) {
+	// Minimal config that pairs a NOT rule (apply needs-triage when no
+	// triage/* exists) with an AND rule (remove needs-triage when one does).
+	cfg := &LabelsYAML{
+		AutoCreate:         true,
+		AutoDelete:         false,
+		DefinitionRequired: true,
+		Labels: []Label{
+			{Name: "needs-triage", Color: "ededed", Description: "Needs triage"},
+			{Name: "triage/valid", Color: "0e8a16", Description: "Valid issue"},
+		},
+		Ruleset: []Rule{
+			{
+				Name: "needs-triage",
+				Kind: "label",
+				Spec: RuleSpec{Match: "triage/*", MatchCondition: "NOT"},
+				Actions: []Action{
+					{Kind: "apply-label", Spec: ActionSpec{Label: "needs-triage"}},
+				},
+			},
+			{
+				Name: "remove-needs-triage",
+				Kind: "label",
+				Spec: RuleSpec{Match: "triage/*", MatchCondition: "AND"},
+				Actions: []Action{
+					{Kind: "remove-label", Spec: ActionSpec{Match: "needs-triage"}},
+				},
+			},
+		},
+	}
+
+	t.Run("no triage/* present: only NOT rule fires", func(t *testing.T) {
+		client := NewMockGitHubClient()
+		labeler := NewLabeler(client, cfg)
+		client.IssueLabels[1] = []*github.Label{}
+
+		err := labeler.ProcessRequest(context.Background(), &LabelRequest{
+			Owner: "o", Repo: "r", IssueNumber: 1,
+		})
+		if err != nil {
+			t.Fatalf("ProcessRequest failed: %v", err)
+		}
+
+		if !sliceContains(client.AppliedLabels[1], "needs-triage") {
+			t.Errorf("expected needs-triage to be applied, got applied=%v", client.AppliedLabels[1])
+		}
+		if sliceContains(client.RemovedLabels[1], "needs-triage") {
+			t.Errorf("AND rule must not fire when no triage/* is present; removed=%v", client.RemovedLabels[1])
+		}
+	})
+
+	t.Run("triage/* present: only AND rule fires", func(t *testing.T) {
+		client := NewMockGitHubClient()
+		labeler := NewLabeler(client, cfg)
+		client.IssueLabels[2] = []*github.Label{
+			{Name: stringPtr("needs-triage")},
+			{Name: stringPtr("triage/valid")},
+		}
+
+		err := labeler.ProcessRequest(context.Background(), &LabelRequest{
+			Owner: "o", Repo: "r", IssueNumber: 2,
+		})
+		if err != nil {
+			t.Fatalf("ProcessRequest failed: %v", err)
+		}
+
+		if sliceContains(client.AppliedLabels[2], "needs-triage") {
+			t.Errorf("NOT rule must not fire when triage/* is present; applied=%v", client.AppliedLabels[2])
+		}
+		if !sliceContains(client.RemovedLabels[2], "needs-triage") {
+			t.Errorf("expected AND rule to remove needs-triage, got removed=%v", client.RemovedLabels[2])
+		}
+	})
+}
+
+// TestLabeler_ProcessLabelRule_BracePattern verifies that label-rule
+// `match` values can use brace alternation like `{toc,tag/*,sub/*}`.
+// filepath.Match alone does not understand braces, so before this fix a
+// pattern with braces only matched a literal label starting with "{".
+func TestLabeler_ProcessLabelRule_BracePattern(t *testing.T) {
+	cfg := &LabelsYAML{
+		AutoCreate:         true,
+		AutoDelete:         false,
+		DefinitionRequired: true,
+		Labels: []Label{
+			{Name: "needs-group", Color: "FBCA04", Description: "Needs a group label"},
+			{Name: "toc", Color: "C13B8A", Description: "TOC specific issue"},
+			{Name: "tag/infrastructure", Color: "0E8A8A", Description: "TAG Infrastructure"},
+			{Name: "sub/mentoring", Color: "1D76DB", Description: "TOC Mentoring Subproject"},
+		},
+		Ruleset: []Rule{
+			{
+				Name: "needs-group",
+				Kind: "label",
+				Spec: RuleSpec{Match: "{toc,tag/*,sub/*}", MatchCondition: "NOT"},
+				Actions: []Action{
+					{Kind: "apply-label", Spec: ActionSpec{Label: "needs-group"}},
+				},
+			},
+			{
+				Name: "remove-needs-group",
+				Kind: "label",
+				Spec: RuleSpec{Match: "{toc,tag/*,sub/*}", MatchCondition: "AND"},
+				Actions: []Action{
+					{Kind: "remove-label", Spec: ActionSpec{Match: "needs-group"}},
+				},
+			},
+		},
+	}
+
+	cases := []struct {
+		name        string
+		existing    []*github.Label
+		wantApply   bool
+		wantRemove  bool
+	}{
+		{
+			name:       "no group label → needs-group applied",
+			existing:   []*github.Label{},
+			wantApply:  true,
+			wantRemove: false,
+		},
+		{
+			name:       "toc present → needs-group removed",
+			existing:   []*github.Label{{Name: stringPtr("needs-group")}, {Name: stringPtr("toc")}},
+			wantApply:  false,
+			wantRemove: true,
+		},
+		{
+			name:       "tag/* present → needs-group removed",
+			existing:   []*github.Label{{Name: stringPtr("needs-group")}, {Name: stringPtr("tag/infrastructure")}},
+			wantApply:  false,
+			wantRemove: true,
+		},
+		{
+			name:       "sub/* present → needs-group removed",
+			existing:   []*github.Label{{Name: stringPtr("needs-group")}, {Name: stringPtr("sub/mentoring")}},
+			wantApply:  false,
+			wantRemove: true,
+		},
+	}
+
+	for i, tc := range cases {
+		issueNum := i + 1
+		t.Run(tc.name, func(t *testing.T) {
+			client := NewMockGitHubClient()
+			labeler := NewLabeler(client, cfg)
+			client.IssueLabels[issueNum] = tc.existing
+
+			err := labeler.ProcessRequest(context.Background(), &LabelRequest{
+				Owner: "o", Repo: "r", IssueNumber: issueNum,
+			})
+			if err != nil {
+				t.Fatalf("ProcessRequest failed: %v", err)
+			}
+
+			gotApply := sliceContains(client.AppliedLabels[issueNum], "needs-group")
+			gotRemove := sliceContains(client.RemovedLabels[issueNum], "needs-group")
+			if gotApply != tc.wantApply {
+				t.Errorf("apply needs-group: got %v want %v (applied=%v)", gotApply, tc.wantApply, client.AppliedLabels[issueNum])
+			}
+			if gotRemove != tc.wantRemove {
+				t.Errorf("remove needs-group: got %v want %v (removed=%v)", gotRemove, tc.wantRemove, client.RemovedLabels[issueNum])
+			}
+		})
+	}
+}
+
+// TestLabeler_ProcessLabelRule_InvalidPattern verifies that a malformed
+// `match` pattern surfaces as an error instead of silently leaving
+// foundNamespace=false and causing the rule to fire in the wrong direction.
+// `[` opens a character class that is never closed, so path.Match returns
+// ErrBadPattern.
+//
+// Critically, the existing-labels slice here is empty: an earlier version
+// of the code validated patterns only inside the existing-labels loop,
+// which meant a freshly-opened issue with zero labels never validated and
+// would silently apply the malformed rule.
+func TestLabeler_ProcessLabelRule_InvalidPattern(t *testing.T) {
+	cfg := &LabelsYAML{
+		AutoCreate:         true,
+		AutoDelete:         false,
+		DefinitionRequired: true,
+		Labels: []Label{
+			{Name: "needs-triage", Color: "ededed", Description: "Needs triage"},
+		},
+		Ruleset: []Rule{
+			{
+				Name: "bad-pattern",
+				Kind: "label",
+				Spec: RuleSpec{Match: "triage/[", MatchCondition: "NOT"},
+				Actions: []Action{
+					{Kind: "apply-label", Spec: ActionSpec{Label: "needs-triage"}},
+				},
+			},
+		},
+	}
+
+	client := NewMockGitHubClient()
+	labeler := NewLabeler(client, cfg)
+	client.IssueLabels[1] = []*github.Label{} // intentionally empty: zero-label case
+
+	// processRules swallows per-rule errors (it only logs them), so calling
+	// processLabelRule directly is the cleanest way to assert on the error.
+	err := labeler.processLabelRule(context.Background(), &LabelRequest{
+		Owner: "o", Repo: "r", IssueNumber: 1,
+	}, cfg.Ruleset[0])
+	if err == nil {
+		t.Fatalf("expected an error for invalid match pattern, got nil")
+	}
+	if !strings.Contains(err.Error(), "bad-pattern") || !strings.Contains(err.Error(), "triage/[") {
+		t.Errorf("error should mention rule name and bad pattern; got: %v", err)
+	}
+	if sliceContains(client.AppliedLabels[1], "needs-triage") {
+		t.Errorf("rule with invalid pattern must not apply labels; applied=%v", client.AppliedLabels[1])
+	}
+}
+
+func TestExpandBraces(t *testing.T) {
+	cases := []struct {
+		name    string
+		in      string
+		want    []string
+		wantErr bool
+	}{
+		{name: "no braces", in: "triage/*", want: []string{"triage/*"}},
+		{name: "leading brace group", in: "{toc,tag/*,sub/*}", want: []string{"toc", "tag/*", "sub/*"}},
+		{name: "prefix only", in: "foo-{a,b}", want: []string{"foo-a", "foo-b"}},
+		{name: "whitespace trimmed", in: "{a, b ,c}", want: []string{"a", "b", "c"}},
+
+		// Unsupported patterns: better to surface an error than to silently
+		// produce partial expansions that match unexpectedly.
+		{name: "multiple brace groups", in: "foo-{a,b}-{c,d}", wantErr: true},
+		{name: "nested braces", in: "{a,{b,c}}", wantErr: true},
+		{name: "unbalanced (no close)", in: "foo-{a,b", wantErr: true},
+		{name: "unbalanced (close before open)", in: "foo}-{a,b}", wantErr: true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := expandBraces(tc.in)
+			if tc.wantErr {
+				if err == nil {
+					t.Fatalf("expandBraces(%q): expected error, got %v", tc.in, got)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("expandBraces(%q): unexpected error: %v", tc.in, err)
+			}
+			if !slicesEqual(got, tc.want) {
+				t.Errorf("expandBraces(%q) = %v, want %v", tc.in, got, tc.want)
+			}
+		})
+	}
+}
+
+// TestLabeler_ProcessLabelRule_UnsupportedBracePattern verifies that an
+// unsupported brace pattern (multiple groups, nested groups, or unbalanced
+// braces) causes processLabelRule to return an error naming the rule and
+// the pattern, rather than silently mis-matching via a partial expansion.
+func TestLabeler_ProcessLabelRule_UnsupportedBracePattern(t *testing.T) {
+	cfg := &LabelsYAML{
+		AutoCreate:         true,
+		AutoDelete:         false,
+		DefinitionRequired: true,
+		Labels: []Label{
+			{Name: "needs-group", Color: "FBCA04", Description: "Needs a group label"},
+		},
+		Ruleset: []Rule{
+			{
+				Name: "bad-brace-pattern",
+				Kind: "label",
+				Spec: RuleSpec{Match: "foo-{a,b}-{c,d}", MatchCondition: "NOT"},
+				Actions: []Action{
+					{Kind: "apply-label", Spec: ActionSpec{Label: "needs-group"}},
+				},
+			},
+		},
+	}
+
+	client := NewMockGitHubClient()
+	labeler := NewLabeler(client, cfg)
+	client.IssueLabels[1] = []*github.Label{} // zero-label case: validation must still trigger
+
+	err := labeler.processLabelRule(context.Background(), &LabelRequest{
+		Owner: "o", Repo: "r", IssueNumber: 1,
+	}, cfg.Ruleset[0])
+	if err == nil {
+		t.Fatalf("expected an error for unsupported brace pattern, got nil")
+	}
+	if !strings.Contains(err.Error(), "bad-brace-pattern") || !strings.Contains(err.Error(), "foo-{a,b}-{c,d}") {
+		t.Errorf("error should mention rule name and bad pattern; got: %v", err)
+	}
+	if sliceContains(client.AppliedLabels[1], "needs-group") {
+		t.Errorf("rule with unsupported pattern must not apply labels; applied=%v", client.AppliedLabels[1])
+	}
+}
+
 func TestLabeler_ProcessMatchRule_InvalidArgument(t *testing.T) {
 	client := NewMockGitHubClient()
 	config := createTestConfig()

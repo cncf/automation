@@ -41,6 +41,9 @@ type BootstrapResult struct {
 	ProjectLead      string `json:"project_lead,omitempty" yaml:"project_lead,omitempty"`
 	CNCFSlackChannel string `json:"cncf_slack_channel,omitempty" yaml:"cncf_slack_channel,omitempty"`
 
+	// Additional Slack channels detected across the org
+	CNCFSlackCandidates []string `json:"cncf_slack_candidates,omitempty" yaml:"cncf_slack_candidates,omitempty"`
+
 	// Maintainers discovered from CODEOWNERS/OWNERS/MAINTAINERS files
 	Maintainers []string `json:"maintainers,omitempty" yaml:"maintainers,omitempty"`
 	Reviewers   []string `json:"reviewers,omitempty" yaml:"reviewers,omitempty"`

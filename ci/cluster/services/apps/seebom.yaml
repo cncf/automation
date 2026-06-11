@@ -1,0 +1,74 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: seebom
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "25"
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: oke-cncf-automation
+spec:
+  project: default
+  source:
+    repoURL: ghcr.io/seebom-labs/seebom/charts
+    chart: seebom
+    targetRevision: 0.4.3
+    helm:
+      values: |
+        cleanBatchJobs: false
+        clickhouse:
+          database: seebom
+          host: chi-seebom-clickhouse-seebom-cluster-0-0
+          installation:
+            podTemplate:
+              containerImage: docker.io/clickhouse/clickhouse-server:24.8
+              resources:
+                limits:
+                  cpu: "4"
+                  memory: 16Gi
+                requests:
+                  cpu: "2"
+                  memory: 8Gi
+            volumeClaimTemplate:
+              dataStorage: 500Gi
+              logStorage: 10Gi
+          port: 9000
+          user: default
+          userPasswordSecret:
+            enabled: true
+            key: password
+            secretName: clickhouse-password
+        gitSync:
+          enabled: false
+        image:
+          registry: ghcr.io
+          repository: seebom-labs/seebom
+          tag: 0.4.3
+        sbomSource:
+          mountPath: /data/sboms
+          pvcName: seebom-sbom-data
+          storageSize: 20Gi
+        seedJob:
+          cncfExceptionsURL: https://raw.githubusercontent.com/cncf/foundation/main/license-exceptions/exceptions.json
+          sbomBranch: main
+          sbomRepo: https://github.com/cncf/sbom.git
+        s3:
+          buckets: '[{"name":"cncf-subproject-sboms","endpoint":"axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com","region":"us-sanjose-1"},{"name":"cncf-project-sboms","endpoint":"axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com","region":"us-sanjose-1"}]'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: seebom
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: batch
+      kind: Job
+      jqPathExpressions:
+        - .status
+        - .spec.selector
+        - .spec.template.metadata.labels

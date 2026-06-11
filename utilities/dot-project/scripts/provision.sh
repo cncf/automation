@@ -15,7 +15,7 @@
 #   --skip-protection     Skip setting branch protection rules
 #   --skip-issue          Skip creating onboarding issue
 #   --force               Force regeneration of scaffold files (overwrites auxiliary files)
-#   --bootstrap-bin <p>   Path to bootstrap binary (default: ./bootstrap)
+#   --bootstrap-bin <p>   Path to bootstrap binary (default: ./bin/bootstrap)
 #   -h, --help            Show this help message
 #
 # Required environment variables:
@@ -65,7 +65,7 @@ SKIP_SECRETS=false
 SKIP_PROTECTION=false
 SKIP_ISSUE=false
 FORCE=false
-BOOTSTRAP_BIN="./bootstrap"
+BOOTSTRAP_BIN="./bin/bootstrap"
 BATCH_FILE=""
 ORG=""
 NAME=""
@@ -169,11 +169,12 @@ check_prerequisites() {
         if [[ -f "cmd/bootstrap/main.go" ]]; then
             info "Building bootstrap binary..."
             if ! dry "would build bootstrap binary"; then
-                go build -o bootstrap ./cmd/bootstrap
-                BOOTSTRAP_BIN="./bootstrap"
+                mkdir -p bin
+                go build -o bin/bootstrap ./cmd/bootstrap
+                BOOTSTRAP_BIN="./bin/bootstrap"
             fi
         else
-            die "Bootstrap binary not found at '$BOOTSTRAP_BIN'. Build with: go build -o bootstrap ./cmd/bootstrap"
+            die "Bootstrap binary not found at '$BOOTSTRAP_BIN'. Build with: make build"
         fi
     fi
 
@@ -268,6 +269,13 @@ provision_project() {
             info "  Empty repo detected, initializing..."
             git -C "$tmp_dir" init -b main
             git -C "$tmp_dir" remote add origin "https://github.com/${target_repo}.git"
+        else
+            # Clone succeeded but the repo may be empty (no commits yet).
+            # gh repo clone exits 0 even for empty repos, leaving HEAD pointing at
+            # whatever init.defaultBranch is set to locally (often "master").
+            # Force it to "main" so the first commit and the push target match the
+            # branch protection rule that Step 6 sets on branches/main.
+            git -C "$tmp_dir" symbolic-ref HEAD refs/heads/main
         fi
     fi
 
@@ -383,25 +391,27 @@ create_onboarding_issue() {
         done < "${tmp_dir}/project.yaml"
     fi
 
-    if [[ ${#todos[@]} -eq 0 ]]; then
-        info "  No TODOs found in project.yaml — skipping onboarding issue"
-        return 0
-    fi
-
     if dry "would create onboarding issue on ${target_repo}"; then
         return 0
     fi
 
+    # Resolve the currently authenticated GitHub user so we can exclude them from mentions
+    local current_user
+    current_user=$(gh api user --jq '.login' 2>/dev/null || true)
+
     # Fetch up to 3 org owners; fall back to maintainers.yaml handles
     local handles=()
     while IFS= read -r login; do
+        [[ "$login" == "$current_user" ]] && continue
         handles+=("$login")
         [[ ${#handles[@]} -ge 3 ]] && break
     done < <(gh api "orgs/${org}/members?role=admin&per_page=10" --jq '.[].login' 2>/dev/null || true)
 
     if [[ ${#handles[@]} -eq 0 ]] && [[ -f "${tmp_dir}/maintainers.yaml" ]]; then
         while IFS= read -r login; do
-            handles+=("${login#@}")
+            login="${login#@}"
+            [[ "$login" == "$current_user" ]] && continue
+            handles+=("$login")
             [[ ${#handles[@]} -ge 3 ]] && break
         done < <(grep -E '^\s+-\s+github:' "${tmp_dir}/maintainers.yaml" | sed 's/.*github:[[:space:]]*//' || true)
     fi
@@ -433,17 +443,28 @@ create_onboarding_issue() {
     for todo in "${todos[@]}"; do
         checklist+="- [ ] ${todo}"$'\n'
     done
+    checklist+="- [ ] Ensure all project maintainers have a LFID at https://openprofile.dev/"$'\n'
+    checklist+="- [ ] Update LFID so their GitHub ID is linked to the LFID, and correct their email address and company affiliation if needed."$'\n'
 
     local body
     body=$(cat <<EOF
 Hi ${mentions}👋
 
-The \`.project\` repo has been provisioned for **${name}**. A few items still need your attention:
+\`.project\` (dot-project) is a CNCF initiative to centralize and automate metadata management for all CNCF projects. It lives in the [cncf/automation](https://github.com/cncf/automation/tree/main/utilities/dot-project) repo, and the CNCF automation team is rolling it out to Sandbox projects first.
+
+\`${target_repo}\` was provisioned automatically. The tool collects project metadata from public sources (CNCF landscape, CLOMonitor, GitHub governance files) and populates the repo with it. Since this is best-effort automation, some fields need your verification.
+
+Two things need your attention:
 
 ## Checklist
 
 ${checklist}
 Please open a PR against this repo to address each item. The validators will block merge until \`project.yaml\` and \`maintainers.yaml\` are complete.
+> These fields could not be auto-detected and must be filled in manually. Please open a PR against this repo to address each item. The validators will block merge until \`project.yaml\` and \`maintainers.yaml\` are complete.
+
+## Inline TODOs in YAML files
+
+Some fields **were** auto-detected but are marked \`# TODO: AUTO-DETECTED — please verify\` directly in \`maintainers.yaml\` and \`project.yaml\`. These are best-effort guesses (e.g. \`project_lead\`, \`cncf_slack_channel\`, TOC issue URL) and should be confirmed or corrected before closing this issue. They won't appear in the checklist above.
 
 > This issue was auto-generated by the CNCF .project provisioning tool.
 EOF

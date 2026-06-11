@@ -98,17 +98,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "https://github.com/kptdev/kpt",
-          "pcc": "https://github.com/kptdev",
-          "clomonitor": "https://github.com/GoogleContainerTools/kpt",
-          "pcc_clomonitor_agree": false,
-          "landscape_clomonitor_agree": false,
-          "message": "PCC ('https://github.com/kptdev') and CLOMonitor ('https://github.com/GoogleContainerTools/kpt') disagree. Landscape ('https://github.com/kptdev/kpt') ≠ CLOMonitor ('https://github.com/GoogleContainerTools/kpt')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "Kubean",
@@ -168,8 +158,8 @@
       "name": "NMstate",
       "path": "Provisioning / Automation & Configuration",
       "maturity": "sandbox",
-      "match_note": "clomonitor_name",
-      "matched_pcc": false,
+      "match_note": "clomonitor_name+lfx_slug",
+      "matched_pcc": true,
       "matched_clomonitor": true,
       "findings": []
     },
@@ -307,17 +297,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "https://github.com/cert-manager/cert-manager",
-          "pcc": "https://github.com/jetstack/cert-manager",
-          "clomonitor": "https://github.com/cert-manager/community",
-          "pcc_clomonitor_agree": false,
-          "landscape_clomonitor_agree": true,
-          "message": "PCC ('https://github.com/jetstack/cert-manager') and CLOMonitor ('https://github.com/cert-manager/community') disagree. Landscape ('https://github.com/cert-manager/cert-manager') ≠ PCC ('https://github.com/jetstack/cert-manager')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "Confidential Containers",
@@ -1120,17 +1100,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "https://github.com/kai-scheduler/KAI-Scheduler",
-          "pcc": "https://github.com/kai-scheduler/",
-          "clomonitor": "https://github.com/NVIDIA/KAI-Scheduler",
-          "pcc_clomonitor_agree": false,
-          "landscape_clomonitor_agree": false,
-          "message": "PCC ('https://github.com/kai-scheduler/') and CLOMonitor ('https://github.com/NVIDIA/KAI-Scheduler') disagree. Landscape ('https://github.com/kai-scheduler/KAI-Scheduler') ≠ CLOMonitor ('https://github.com/NVIDIA/KAI-Scheduler')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "Knative",
@@ -1773,17 +1743,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "https://github.com/kubevela/kubevela",
-          "pcc": "https://github.com/kubevela",
-          "clomonitor": "https://github.com/oam-dev/kubevela",
-          "pcc_clomonitor_agree": false,
-          "landscape_clomonitor_agree": false,
-          "message": "PCC ('https://github.com/kubevela') and CLOMonitor ('https://github.com/oam-dev/kubevela') disagree. Landscape ('https://github.com/kubevela/kubevela') ≠ CLOMonitor ('https://github.com/oam-dev/kubevela')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "KubeVirt",
@@ -2170,17 +2130,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "https://github.com/HolmesGPT/holmesgpt",
-          "pcc": "https://github.com/holmesgpt/",
-          "clomonitor": "https://github.com/robusta-dev/holmesgpt",
-          "pcc_clomonitor_agree": false,
-          "landscape_clomonitor_agree": false,
-          "message": "PCC ('https://github.com/holmesgpt/') and CLOMonitor ('https://github.com/robusta-dev/holmesgpt') disagree. Landscape ('https://github.com/HolmesGPT/holmesgpt') ≠ CLOMonitor ('https://github.com/robusta-dev/holmesgpt')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "Inspektor Gadget",
@@ -2257,7 +2207,7 @@
     {
       "name": "OpenTelemetry",
       "path": "Observability and Analysis / Observability",
-      "maturity": "incubating",
+      "maturity": "graduated",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -2352,17 +2302,7 @@
       "match_note": "clomonitor_name",
       "matched_pcc": false,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "https://github.com/spinframework/spin-operator",
-          "pcc": null,
-          "clomonitor": "https://github.com/spinkube/documentation",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('https://github.com/spinframework/spin-operator') ≠ CLOMonitor ('https://github.com/spinkube/documentation')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "container2wasm",

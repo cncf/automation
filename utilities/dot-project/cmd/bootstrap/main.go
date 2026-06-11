@@ -114,14 +114,40 @@ func main() {
 	}
 
 	// Phase 2: Fetch from CLOMonitor
+	// Build a de-duplicated list of name variants to try, most specific first:
+	//   1. Landscape display name
+	//   2. User-supplied project name
+	//   3. GitHub org name
 	var cloProject *projects.CLOMonitorProject
 	if !*skipCLO {
 		fmt.Fprintf(os.Stderr, "  Fetching from CLOMonitor...\n")
-		var err error
-		cloProject, err = projects.FetchFromCLOMonitor(projectName, client, "")
-		if err != nil {
-			log.Printf("  Warning: CLOMonitor fetch failed: %v", err)
-		} else if cloProject != nil {
+
+		seen := map[string]bool{}
+		var cloSearchNames []string
+		landscapeName := ""
+		if landscapeData != nil {
+			landscapeName = landscapeData.Name
+		}
+		for _, n := range []string{landscapeName, projectName, org} {
+			if n != "" && !seen[n] {
+				seen[n] = true
+				cloSearchNames = append(cloSearchNames, n)
+			}
+		}
+
+		for _, sn := range cloSearchNames {
+			var err error
+			cloProject, err = projects.FetchFromCLOMonitor(sn, client, "")
+			if err != nil {
+				log.Printf("  Warning: CLOMonitor fetch failed for %q: %v", sn, err)
+				continue
+			}
+			if cloProject != nil {
+				break
+			}
+		}
+
+		if cloProject != nil {
 			fmt.Fprintf(os.Stderr, "  Found on CLOMonitor: %s (maturity: %s, score: %.0f)\n",
 				cloProject.DisplayName, cloProject.Maturity, cloProject.Score.Global)
 		} else {
@@ -151,11 +177,41 @@ func main() {
 	var tocURL string
 	if !*skipGH && (landscapeData == nil || landscapeData.AnnualReviewURL == "") {
 		fmt.Fprintf(os.Stderr, "  Searching for TOC/sandbox onboarding issue...\n")
-		var err error
-		tocURL, err = projects.SearchTOCIssues(projectName, org, token, client, "")
-		if err != nil {
-			log.Printf("  Warning: TOC issue search failed: %v", err)
-		} else if tocURL != "" {
+
+		// Build a de-duplicated list of name variants to try, most specific first:
+		//   1. Landscape display name
+		//   2. User-supplied project name
+		//   3. GitHub org name
+		seen := map[string]bool{}
+		var tocSearchNames []string
+		for _, n := range []string{
+			func() string {
+				if landscapeData != nil {
+					return landscapeData.Name
+				}
+				return ""
+			}(),
+			projectName,
+			org,
+		} {
+			if n != "" && !seen[n] {
+				seen[n] = true
+				tocSearchNames = append(tocSearchNames, n)
+			}
+		}
+
+		var tocErr error
+		for _, sn := range tocSearchNames {
+			tocURL, tocErr = projects.SearchTOCIssues(sn, org, token, client, "")
+			if tocErr != nil {
+				log.Printf("  Warning: TOC issue search failed for %q: %v", sn, tocErr)
+				continue
+			}
+			if tocURL != "" {
+				break
+			}
+		}
+		if tocURL != "" {
 			fmt.Fprintf(os.Stderr, "  Found TOC/onboarding issue: %s\n", tocURL)
 		} else {
 			fmt.Fprintf(os.Stderr, "  No TOC/onboarding issue found\n")
@@ -262,4 +318,32 @@ func main() {
 			fmt.Fprintf(os.Stderr, "  %s: %s\n", field, source)
 		}
 	}
+}
+
+// normalizeGitHubOrg strips a full GitHub URL down to just the org name.
+// Accepts "https://github.com/org" or plain "org-name".
+func normalizeGitHubOrg(v string) string {
+	const prefix = "https://github.com/"
+	v = strings.TrimSuffix(strings.TrimSpace(v), "/")
+	if strings.HasPrefix(v, prefix) {
+		parts := strings.SplitN(strings.TrimPrefix(v, prefix), "/", 2)
+		return parts[0]
+	}
+	return v
+}
+
+// normalizeGitHubRepo strips a full GitHub URL down to just the repo name.
+// Accepts "https://github.com/org/repo", "https://github.com/org", or plain "repo".
+func normalizeGitHubRepo(v string) string {
+	const prefix = "https://github.com/"
+	v = strings.TrimSuffix(strings.TrimSpace(v), "/")
+	if strings.HasPrefix(v, prefix) {
+		parts := strings.SplitN(strings.TrimPrefix(v, prefix), "/", 2)
+		if len(parts) == 2 && parts[1] != "" {
+			return parts[1]
+		}
+		// URL was github.com/org with no repo segment — caller will default repo=org
+		return ""
+	}
+	return v
 }

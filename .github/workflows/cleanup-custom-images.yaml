@@ -1,0 +1,62 @@
+name: Cleanup Custom Images on OCI
+
+on:
+  schedule:
+    # Weekly, Sunday 03:00 UTC
+    - cron: "0 3 * * 0"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  build:
+    name: Cleanup bucket objects
+    runs-on: cncf-c-ubuntu-2-8-x86
+    env:
+      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+      BUCKET_NAME: bucket-20250428-1925
+      COMPARTMENT_ID: ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
+      PYTHONWARNINGS: "ignore::FutureWarning"
+    steps:
+      - name: Install OCI CLI
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.13'
+          pip-install: oci-cli
+
+      - name: Cleanup bucket objects
+        run: |
+          # Delete objects with prefix "ubuntu-gha-image-" that are older than 30 days
+          TIMESTAMP=$(date --date='30 days ago' "+%s000000000")
+          for REGION in us-sanjose-1 us-phoenix-1 us-chicago-1; do
+            echo "Region: ${REGION}"
+            for i in $(oci os object list --bucket-name ${{ env.BUCKET_NAME }} --all --end "ubuntu-gha-image-${TIMESTAMP}" --prefix "ubuntu-gha-image-" --region ${REGION} | jq -r '.data[]?.name'); do 
+              echo -n "Deleting $i ... "
+              oci os object delete --bucket-name ${{ env.BUCKET_NAME }} --object-name $i --force --region ${REGION}
+              echo "[DONE]"
+            done
+            echo "------------------------------"
+          done
+        shell: bash
+
+      - name: Cleanup custom images
+        run: |
+          # Delete custom images with name "ubuntu-24.04-amd64-gha-image" that are older than 60 days
+          for REGION in us-sanjose-1 us-ashburn-1 us-phoenix-1 us-chicago-1; do
+            for ARCH in amd64 arm64; do
+              echo "Region: ${REGION}, Architecture: ${ARCH}"
+              for i in $(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --all --operating-system "ubuntu-24.04-${ARCH}-gha-image" --region ${REGION} | jq -r '.data[] | select((."time-created" | split(".")[0] | strptime("%Y-%m-%dT%H:%M:%S") | mktime) < now - 5184000) | .id'); do
+                echo -n "Deleting image $i ... "
+                oci compute image delete --image-id $i --force --region ${REGION}
+                echo "[DONE]"
+              done
+              echo "------------------------------"
+            done
+          done
+        shell: bash

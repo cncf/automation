@@ -7,4 +7,3 @@ This report includes only non-aligned (anomalous) PCC vs Landscape rows.
 
 | Project | Maturity | PCC URL | PCC | Landscape URL | Landscape | Org match | Same final destination | Result | Note |
 |---|---|---|---|---|---|---|---|---|---|
-| SpinKube | sandbox | — | ❌ missing | https://github.com/spinframework/spin-operator | ✅ 200 | No | N/A | Missing URL | One side is missing. |

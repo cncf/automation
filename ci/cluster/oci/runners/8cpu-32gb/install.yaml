@@ -6,10 +6,10 @@ metadata:
   name: oracle-8cpu-32gb-x86-64-gha-rs-no-permission
   namespace: arc-systems
   labels:
-    helm.sh/chart: gha-rs-0.11.0
+    helm.sh/chart: gha-rs-0.14.1
     app.kubernetes.io/name: oracle-8cpu-32gb-x86-64
     app.kubernetes.io/instance: oracle-8cpu-32gb-x86-64
-    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
     actions.github.com/scale-set-name: oracle-8cpu-32gb-x86-64
@@ -24,10 +24,10 @@ metadata:
   name: oracle-8cpu-32gb-x86-64-gha-rs-manager
   namespace: arc-systems
   labels:
-    helm.sh/chart: gha-rs-0.11.0
+    helm.sh/chart: gha-rs-0.14.1
     app.kubernetes.io/name: oracle-8cpu-32gb-x86-64
     app.kubernetes.io/instance: oracle-8cpu-32gb-x86-64
-    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
     actions.github.com/scale-set-name: oracle-8cpu-32gb-x86-64
@@ -100,10 +100,10 @@ metadata:
   name: oracle-8cpu-32gb-x86-64-gha-rs-manager
   namespace: arc-systems
   labels:
-    helm.sh/chart: gha-rs-0.11.0
+    helm.sh/chart: gha-rs-0.14.1
     app.kubernetes.io/name: oracle-8cpu-32gb-x86-64
     app.kubernetes.io/instance: oracle-8cpu-32gb-x86-64
-    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
     actions.github.com/scale-set-name: oracle-8cpu-32gb-x86-64
@@ -130,10 +130,10 @@ metadata:
   namespace: arc-systems
   labels:
     app.kubernetes.io/component: "autoscaling-runner-set"
-    helm.sh/chart: gha-rs-0.11.0
+    helm.sh/chart: gha-rs-0.14.1
     app.kubernetes.io/name: oracle-8cpu-32gb-x86-64
     app.kubernetes.io/instance: oracle-8cpu-32gb-x86-64
-    app.kubernetes.io/version: "0.11.0"
+    app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
     actions.github.com/scale-set-name: oracle-8cpu-32gb-x86-64
@@ -307,8 +307,7 @@ spec:
           value: unix:///var/run/docker.sock
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:77edfe76bcde4867d253e162d0043f39deae1be305940c78281bd680c37dba38
-        imagePullPolicy: Always
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:53aa8b461bbd06424e50c55c9055f312ac55040bc91a02a8e81cf60791d37473
         name: runner
         resources:
           limits:
@@ -389,7 +388,7 @@ spec:
         - -R
         - "1777"
         - /tmp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:77edfe76bcde4867d253e162d0043f39deae1be305940c78281bd680c37dba38
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:53aa8b461bbd06424e50c55c9055f312ac55040bc91a02a8e81cf60791d37473
         name: chowner
         securityContext:
           capabilities:
@@ -411,7 +410,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:77edfe76bcde4867d253e162d0043f39deae1be305940c78281bd680c37dba38
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:53aa8b461bbd06424e50c55c9055f312ac55040bc91a02a8e81cf60791d37473
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
