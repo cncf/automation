@@ -346,9 +346,8 @@ func fetchFromGitHub(org, repo, token string, client *http.Client, baseURL strin
 			}
 			if err := json.NewDecoder(resp.Body).Decode(&readmeData); err == nil && readmeData.DownloadURL != "" {
 				if content, err := fetchFileContent(client, readmeData.DownloadURL); err == nil {
-					if ch := extractSlackChannel(content); ch != "" {
-						result.SlackChannel = ch
-					}
+					channels := extractSlackChannels(content)
+					result.SlackChannels = mergeStringSlices(result.SlackChannels, channels)
 				}
 			}
 		}
@@ -592,6 +591,21 @@ func getExtraString(extra map[string]interface{}, key string) (string, bool) {
 	}
 	s, ok := v.(string)
 	return s, ok
+}
+
+// extractChannelFromSlackURL extracts a channel name from a Slack URL.
+// Supports .../messages/<channel>, .../channels/<channel>, .../archives/<channel>.
+func extractChannelFromSlackURL(slackURL string) string {
+	for _, segment := range []string{"/messages/", "/channels/", "/archives/"} {
+		parts := strings.SplitN(slackURL, segment, 2)
+		if len(parts) == 2 && parts[1] != "" {
+			channel := strings.TrimRight(parts[1], "/")
+			if channel != "" {
+				return channel
+			}
+		}
+	}
+	return ""
 }
 
 // LandscapeData represents data fetched from the CNCF landscape.
@@ -927,20 +941,39 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 		result.Sources["social.twitter"] = "github"
 	}
 
-	// Slack channel: landscape extra.chat_channel > derived from extra.slack_url > GitHub README
+	// Slack channel: landscape extra.chat_channel > derived from extra.slack_url > GitHub org-wide scan
+	// Landscape values are authoritative; GitHub-discovered channels become candidates.
 	if landscape != nil && landscape.ChatChannel != "" {
 		result.CNCFSlackChannel = landscape.ChatChannel
 		result.Sources["cncf_slack_channel"] = "landscape"
 	} else if landscape != nil && landscape.SlackURL != "" {
-		// Derive channel name from slack URL: .../messages/<channel-name>
-		parts := strings.Split(landscape.SlackURL, "/messages/")
-		if len(parts) == 2 && parts[1] != "" {
-			result.CNCFSlackChannel = "#" + parts[1]
+		// Derive channel name from slack URL: .../messages/<channel-name> or .../channels/<channel-name> or .../archives/<channel-name>
+		channel := extractChannelFromSlackURL(landscape.SlackURL)
+		if channel != "" {
+			result.CNCFSlackChannel = "#" + channel
 			result.Sources["cncf_slack_channel"] = "landscape"
 		}
-	} else if github != nil && github.SlackChannel != "" {
-		result.CNCFSlackChannel = github.SlackChannel
-		result.Sources["cncf_slack_channel"] = "github_readme"
+	}
+
+	// Collect all GitHub-discovered Slack channels
+	if github != nil && len(github.SlackChannels) > 0 {
+		if result.CNCFSlackChannel == "" {
+			// No landscape value — promote the first GitHub channel as primary
+			result.CNCFSlackChannel = github.SlackChannels[0]
+			result.Sources["cncf_slack_channel"] = "github_readme"
+			// Remaining channels become candidates
+			if len(github.SlackChannels) > 1 {
+				result.CNCFSlackCandidates = append([]string{}, github.SlackChannels[1:]...)
+			}
+		} else {
+			// Landscape provided a primary — all GitHub channels are candidates
+			// (excluding duplicates of the landscape value)
+			for _, ch := range github.SlackChannels {
+				if ch != result.CNCFSlackChannel {
+					result.CNCFSlackCandidates = append(result.CNCFSlackCandidates, ch)
+				}
+			}
+		}
 	}
 
 	// Accepted date from landscape extra
@@ -1008,6 +1041,31 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 			result.LicenseURL = github.LicenseURL
 			result.Sources["license"] = "github"
 		}
+
+		// Package managers from GitHub manifest detection
+		if len(github.PackageManagers) > 0 {
+			if result.PackageManagers == nil {
+				result.PackageManagers = make(map[string]string)
+			}
+			for reg, id := range github.PackageManagers {
+				if _, exists := result.PackageManagers[reg]; !exists {
+					result.PackageManagers[reg] = id
+				}
+			}
+			result.Sources["package_managers"] = "github"
+		}
+	}
+
+	// Package managers from landscape extra.package_manager_url (overrides GitHub)
+	if landscape != nil && landscape.PackageManagerURL != "" {
+		reg, id := parsePackageManagerURL(landscape.PackageManagerURL)
+		if reg != "" && id != "" {
+			if result.PackageManagers == nil {
+				result.PackageManagers = make(map[string]string)
+			}
+			result.PackageManagers[reg] = id // landscape takes priority
+			result.Sources["package_managers"] = "landscape"
+		}
 	}
 
 	// Generate TODOs for missing required fields
@@ -1041,7 +1099,9 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	if !result.HasAdopters {
 		result.TODOs = append(result.TODOs, "Add adopters list (ADOPTERS.md)")
 	}
-	result.TODOs = append(result.TODOs, "Add package_managers if distributed via registries")
+	if len(result.PackageManagers) == 0 {
+		result.TODOs = append(result.TODOs, "Add package_managers if distributed via registries")
+	}
 
 	// Clean up empty social map
 	if len(result.Social) == 0 {
