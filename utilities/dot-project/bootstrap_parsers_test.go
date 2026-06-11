@@ -304,6 +304,164 @@ Alice Smith (@alice) - Also lead`,
 	}
 }
 
+func TestExtractSlackChannel(t *testing.T) {
+	tests := []struct {
+		name     string
+		content  string
+		expected string
+	}{
+		{
+			name:     "empty content",
+			content:  "",
+			expected: "",
+		},
+		{
+			name:     "messages URL",
+			content:  "Join us at https://cloud-native.slack.com/messages/my-project",
+			expected: "#my-project",
+		},
+		{
+			name:     "archives URL",
+			content:  "Join us at https://cloud-native.slack.com/archives/my-project",
+			expected: "#my-project",
+		},
+		{
+			name:     "channels URL",
+			content:  "Join us at https://cloud-native.slack.com/channels/my-project",
+			expected: "#my-project",
+		},
+		{
+			name:     "channels URL in markdown link",
+			content:  "[#my-project](https://cloud-native.slack.com/channels/my-project)",
+			expected: "#my-project",
+		},
+		{
+			name:     "channels URL with trailing slash",
+			content:  "https://cloud-native.slack.com/channels/my-project/",
+			expected: "#my-project",
+		},
+		{
+			name:     "hash channel on same line as Slack keyword",
+			content:  "Slack: #my-project",
+			expected: "#my-project",
+		},
+		{
+			name:     "hash channel on same line as CNCF keyword",
+			content:  "CNCF Slack channel: #my-project",
+			expected: "#my-project",
+		},
+		{
+			name: "channel on separate line near Slack mention",
+			content: `## Community
+Join our Slack workspace
+Channel: #my-project`,
+			expected: "#my-project",
+		},
+		{
+			name: "channel on line 3 lines after Slack mention",
+			content: `Join us on Slack:
+Some info
+More info
+Channel: #my-project`,
+			expected: "#my-project",
+		},
+		{
+			name:     "no slack reference at all",
+			content:  "This project is great!",
+			expected: "",
+		},
+		{
+			name: "channel too far from Slack mention",
+			content: `Join us on Slack
+line1
+line2
+line3
+line4
+Channel: #my-project`,
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := extractSlackChannel(tt.content)
+			if got != tt.expected {
+				t.Errorf("extractSlackChannel() = %q, want %q", got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestExtractSlackChannels(t *testing.T) {
+	tests := []struct {
+		name     string
+		content  string
+		expected []string
+	}{
+		{
+			name:     "empty content",
+			content:  "",
+			expected: nil,
+		},
+		{
+			name:     "single channel from URL",
+			content:  "Join us at https://cloud-native.slack.com/messages/my-project",
+			expected: []string{"#my-project"},
+		},
+		{
+			name: "multiple channels from URLs",
+			content: `Join [#envoy](https://cloud-native.slack.com/channels/envoy) or
+[#envoy-dev](https://cloud-native.slack.com/channels/envoy-dev) for development discussions.`,
+			expected: []string{"#envoy", "#envoy-dev"},
+		},
+		{
+			name: "deduplicates same channel from URL and context",
+			content: `Slack: #my-project
+More info at https://cloud-native.slack.com/messages/my-project`,
+			expected: []string{"#my-project"},
+		},
+		{
+			name: "mixed URL and keyword sources",
+			content: `Join [#envoy](https://cloud-native.slack.com/channels/envoy)
+For mobile: Slack channel #envoy-mobile`,
+			expected: []string{"#envoy", "#envoy-mobile"},
+		},
+		{
+			name: "multiple keyword-based channels",
+			content: `Slack: #project-general
+CNCF Slack: #project-dev`,
+			expected: []string{"#project-general", "#project-dev"},
+		},
+		{
+			name: "filters out Slack channel IDs from archives URLs",
+			content: `Join us on [Slack](https://cloud-native.slack.com/archives/C01N7PP1THC)
+or [#opentelemetry](https://cloud-native.slack.com/messages/opentelemetry)
+See also https://cloud-native.slack.com/archives/D03FAB6GN0K`,
+			expected: []string{"#opentelemetry"},
+		},
+		{
+			name:     "filters out generic #slack keyword",
+			content:  "Join our Slack community at #slack for discussions",
+			expected: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := extractSlackChannels(tt.content)
+			if len(got) != len(tt.expected) {
+				t.Fatalf("extractSlackChannels() returned %d channels, want %d\ngot:  %v\nwant: %v",
+					len(got), len(tt.expected), got, tt.expected)
+			}
+			for i, ch := range got {
+				if ch != tt.expected[i] {
+					t.Errorf("extractSlackChannels()[%d] = %q, want %q", i, ch, tt.expected[i])
+				}
+			}
+		})
+	}
+}
+
 func TestParsePackageManagerURL(t *testing.T) {
 	tests := []struct {
 		name         string

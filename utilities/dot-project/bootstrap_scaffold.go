@@ -25,7 +25,8 @@ description: "{{ .Description }}"
 type: "project"
 {{ if .ProjectLead }}project_lead: "{{ .ProjectLead }}"{{ if isAutoDetected .Sources "project_lead" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}# TODO: Set project lead GitHub handle
 # project_lead: "github-handle"{{ end }}
-{{ if .CNCFSlackChannel }}cncf_slack_channel: "{{ .CNCFSlackChannel }}"{{ if isAutoDetected .Sources "cncf_slack_channel" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}# TODO: Set CNCF Slack channel
+{{ if .CNCFSlackChannel }}cncf_slack_channel: "{{ .CNCFSlackChannel }}"{{ if isAutoDetected .Sources "cncf_slack_channel" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ if .CNCFSlackCandidates }}
+# Also detected: {{ joinChannels .CNCFSlackCandidates }} — please verify the correct channel{{ end }}{{ else }}# TODO: Set CNCF Slack channel
 # cncf_slack_channel: "#{{ .Slug }}"{{ end }}
 
 maturity_log:
@@ -118,11 +119,34 @@ maintainers:
 `
 
 // readmeTemplate generates the README.md for the .project directory.
-const readmeTemplate = `# {{ .Name }} ` + "`.project`" + ` Directory
+const readmeTemplate = `# {{ .Name }} ` + "`.project`" + `
 
-This directory contains the [CNCF ` + "`.project`" + ` metadata](https://github.com/cncf/automation/tree/main/utilities/dot-project) for the [{{ .Name }}]({{ or .Website (printf "https://github.com/%s/%s" .GitHubOrg (or .GitHubRepo .Slug)) }}) project.
+` + "`.project`" + ` (dot-project) is a CNCF initiative to centralize and automate metadata management for all CNCF projects.
+This repository holds the canonical metadata for [{{ .Name }}]({{ or .Website (printf "https://github.com/%s/%s" .GitHubOrg (or .GitHubRepo .Slug)) }}) and is maintained by the CNCF automation tooling.
 
-For documentation on the ` + "`.project`" + ` directory structure, schema, and tooling, see the [CNCF Automation repository](https://github.com/cncf/automation).
+## What's in this repo
+
+| File | Purpose |
+|------|---------|
+| ` + "`project.yaml`" + ` | Canonical project metadata (name, maturity, repositories, governance links, …) |
+| ` + "`maintainers.yaml`" + ` | Maintainer and reviewer roster used for drift detection and mailing-list sync |
+| ` + "`CODEOWNERS`" + ` | Ensures PRs to this repo require maintainer approval |
+| ` + "`.github/workflows/validate.yaml`" + ` | CI — validates ` + "`project.yaml`" + ` and ` + "`maintainers.yaml`" + ` on every PR |
+| ` + "`.github/workflows/update-landscape.yml`" + ` | Automatically proposes landscape updates when ` + "`project.yaml`" + ` changes |
+
+## Keeping metadata up to date
+
+Open a pull request against this repository to update any metadata field.
+The validate workflow will check schema correctness and block merge if validation fails.
+
+> **Note:** This repository was bootstrapped automatically from public sources (CNCF landscape, CLOMonitor, GitHub governance files).
+> Some fields are best-effort guesses marked with ` + "`# TODO: AUTO-DETECTED — please verify`" + ` in the YAML files and should be confirmed by the project maintainers.
+
+## Resources
+
+- [` + "`.project`" + ` documentation](https://github.com/cncf/automation/tree/main/utilities/dot-project)
+- [Schema reference](https://github.com/cncf/automation/blob/main/utilities/dot-project/SCHEMA.md)
+- [CNCF Automation repository](https://github.com/cncf/automation)
 `
 
 // securityMDTemplate generates the SECURITY.md for the .project directory.
@@ -264,6 +288,13 @@ var templateFuncs = template.FuncMap{
 		}
 		_, ok := sources[key]
 		return ok
+	},
+	"joinChannels": func(channels []string) string {
+		quoted := make([]string, len(channels))
+		for i, ch := range channels {
+			quoted[i] = `"` + ch + `"`
+		}
+		return strings.Join(quoted, ", ")
 	},
 }
 

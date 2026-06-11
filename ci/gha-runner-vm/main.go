@@ -138,49 +138,34 @@ func run(cmd *cobra.Command, argv []string) error {
 	baseDir := strings.Split(filename, "/")[0]
 	installRunnerPackage(baseDir)
 
-	//temp for the maven error, probably will be fixed on the next action-runner release
-	replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"maven\": \"3.9.13\"", "\"maven\": \"3.9.14\"")
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GHCupVersion.*", "")
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-FastlaneVersion.*", "")
 
 	if args.arch == "arm64" {
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-azcopy.sh", "https://aka.ms/downloadazcopy-v10-linux", "https://github.com/Azure/azure-storage-azcopy/releases/download/v10.29.1/azcopy_linux_arm64_10.29.1.tar.gz")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "awscli-exe-linux-x86_64", "awscli-exe-linux-aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "aws-sam-cli-linux-x86_64", "aws-sam-cli-linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-aws-tools.sh", "ubuntu_64bit", "ubuntu_arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-cmake.sh", "x86_64", "aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-pulumi.sh", "linux-x64", "linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-dotnetcore-sdk.sh", "linux-x64", "linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-firefox.sh", "linux64.tar.gz", "linux-aarch64.tar.gz")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-swift.sh", "\\$\\(lsb_release -rs\\)", "24.04-aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-microsoft-edge.sh", "arch=amd64", "arch=arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-kubernetes-tools.sh", "linux-amd64", "linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-oras-cli.sh", "linux_amd64", "linux_arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-yq.sh", "linux_amd64", "linux_arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-docker.sh", "amd64", "arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-packer.sh", "amd64", "arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-terraform.sh", "amd64", "arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-aliyun-cli.sh", "amd64", "arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-github-cli.sh", "amd64", "arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-java-tools.sh", "amd64", "arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "x64", "aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-codeql-bundle.sh", "/x64", "/arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/install-ninja.sh", "ninja-linux.zip", "ninja-linux-aarch64.zip")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "wget .*", "wget http://launchpadlibrarian.net/723810004/libicu74_74.2-1ubuntu3_arm64.deb")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "libicu70_70.1-2_amd64.deb", "libicu74_74.2-1ubuntu3_arm64.deb")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "EXPECTED_LIBICU_SHA512=.*", "EXPECTED_LIBICU_SHA512=f5bc20c081d5dc6642a066052e69982702cf4b8638f77719567f7f30f622aae59ec1c23cb17842532c141768460369c176ad079e4ed22d6f4436f4ad86f30f79")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/SoftwareReport.CachedTools.psm1", "x64", "aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/SoftwareReport.Tools.psm1", "x64", "arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "Import-Module \\(Join-Path \\$PSScriptRoot \"SoftwareReport.Browsers.psm1\"\\) -DisableNameChecking", "")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Browsers and Drivers\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*", "")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Environment variables\n.*", "")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/scripts/tests/Browsers.Tests.ps1", "Describe \"Chrome\"(.|\n)*", "")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-amd64", "linux-arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-x86_64", "linux-aarch64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "x64", "arm64")
-		replaceArmPackageLinks(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"PyPy\",\n            \"arch\": \"arm64\"", "\"PyPy\",\n            \"arch\": \"aarch64\"")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-dotnetcore-sdk.sh", "linux-x64", "linux-arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-microsoft-edge.sh", "arch=amd64", "arch=arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-oras-cli.sh", "linux_amd64", "linux_arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-aliyun-cli.sh", "amd64", "arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "x64", "aarch64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-codeql-bundle.sh", "/x64", "/arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "wget .*", "wget http://launchpadlibrarian.net/723810004/libicu74_74.2-1ubuntu3_arm64.deb")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "libicu70_70.1-2_amd64.deb", "libicu74_74.2-1ubuntu3_arm64.deb")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "EXPECTED_LIBICU_SHA512=.*", "EXPECTED_LIBICU_SHA512=f5bc20c081d5dc6642a066052e69982702cf4b8638f77719567f7f30f622aae59ec1c23cb17842532c141768460369c176ad079e4ed22d6f4436f4ad86f30f79")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/SoftwareReport.CachedTools.psm1", "x64", "aarch64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/SoftwareReport.Tools.psm1", "x64", "arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "Import-Module \\(Join-Path \\$PSScriptRoot \"SoftwareReport.Browsers.psm1\"\\) -DisableNameChecking", "")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Browsers and Drivers\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*", "")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Environment variables\n.*", "")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GeckodriverVersion.*", "")
+		updatePackerConfig(baseDir, "/images/ubuntu/scripts/tests/Browsers.Tests.ps1", "Describe \"Chrome\"(.|\n)*", "")
+		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-amd64", "linux-arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-x86_64", "linux-aarch64")
+		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "x64", "arm64")
+		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"PyPy\",\n            \"arch\": \"arm64\"", "\"PyPy\",\n            \"arch\": \"aarch64\"")
 	}
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
@@ -259,6 +244,8 @@ func run(cmd *cobra.Command, argv []string) error {
 	if args.arch == "arm64" {
 		// Add VM.Standard.A1.Flex, VM.Standard.A2.Flex, VM.Standard.A4.Flex
 		addListArm := []string{
+			"BM.Standard.A1.160",
+			"BM.Standard.A4.48",
 			"VM.Standard.A1.Flex",
 			"VM.Standard.A2.Flex",
 			"VM.Standard.A4.Flex",
@@ -322,7 +309,7 @@ func run(cmd *cobra.Command, argv []string) error {
 		// Update image capabilities
 		// I'm so sorry, the capability-update.json is embedded to the command here, I tried all sort of things before this. To make a change, you can run:
 		// cat capability-update.json | jq -c | jq -R '@json' | sed 's|\\\\\\|\\|g'
-		command = exec.Command("oci", "raw-request", "--config-file", ociConfigFile, "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "{\"schemaData\":{\"Compute.Firmware\":{\"values\":[\"BIOS\",\"UEFI_64\"],\"defaultValue\":\"UEFI_64\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Compute.LaunchMode\":{\"values\":[\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Compute.AMD_SecureEncryptedVirtualization\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Compute.SecureBoot\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Network.AttachmentType\":{\"values\":[\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Network.IPv6Only\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.BootVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.LocalDataVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.RemoteDataVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.ConsistentVolumeNaming\":{\"defaultValue\":\"true\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.Iscsi.MultipathDeviceSupported\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.ParaVirtualization.EncryptionInTransit\":{\"defaultValue\":\"true\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.ParaVirtualization.AttachmentVersion\":{\"values\":[\"1\",\"2\"],\"defaultValue\":\"2\",\"source\":\"IMAGE\",\"descriptorType\":\"enuminteger\"}},\"imageId\":\""+imageID+"\",\"compartmentId\":\""+args.compartmentId+"\",\"computeGlobalImageCapabilitySchemaVersionName\":\"a3c588d1-282b-4937-9928-2570b5133968\"}")
+		command = exec.Command("oci", "raw-request", "--config-file", ociConfigFile, "--http-method", "POST", "--target-uri", "https://iaas.us-sanjose-1.oraclecloud.com/20160918/computeImageCapabilitySchemas", "--request-body", "{\"schemaData\":{\"Compute.Firmware\":{\"values\":[\"BIOS\",\"UEFI_64\"],\"defaultValue\":\"UEFI_64\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Compute.LaunchMode\":{\"values\":[\"NATIVE\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Compute.AMD_SecureEncryptedVirtualization\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Compute.SecureBoot\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Network.AttachmentType\":{\"values\":[\"NATIVE\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Network.IPv6Only\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.BootVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.LocalDataVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.RemoteDataVolumeType\":{\"values\":[\"ISCSI\",\"PARAVIRTUALIZED\"],\"defaultValue\":\"PARAVIRTUALIZED\",\"source\":\"IMAGE\",\"descriptorType\":\"enumstring\"},\"Storage.ConsistentVolumeNaming\":{\"defaultValue\":\"true\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.Iscsi.MultipathDeviceSupported\":{\"defaultValue\":\"false\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.ParaVirtualization.EncryptionInTransit\":{\"defaultValue\":\"true\",\"source\":\"IMAGE\",\"descriptorType\":\"boolean\"},\"Storage.ParaVirtualization.AttachmentVersion\":{\"values\":[\"1\",\"2\"],\"defaultValue\":\"2\",\"source\":\"IMAGE\",\"descriptorType\":\"enuminteger\"}},\"imageId\":\""+imageID+"\",\"compartmentId\":\""+args.compartmentId+"\",\"computeGlobalImageCapabilitySchemaVersionName\":\"a3c588d1-282b-4937-9928-2570b5133968\"}")
 		output, err = command.CombinedOutput()
 		if err != nil {
 			log.Print(command.String())
@@ -412,7 +399,7 @@ func imageExists(imageName, imageVersion string) (bool, error) {
 	return true, nil
 }
 
-func replaceArmPackageLinks(baseDir string, filename string, searchString string, replaceString string) (string, error) {
+func updatePackerConfig(baseDir string, filename string, searchString string, replaceString string) (string, error) {
 	scriptName := baseDir + filename
 	err := replaceInFileRegex(scriptName, map[*regexp.Regexp]string{
 		regexp.MustCompile(searchString): replaceString,
@@ -657,7 +644,7 @@ source "qemu" "img" {
   output_directory     = "build/"
   accelerator          = "kvm"
   disk_size            = "80G"
-  disk_interface       = "virtio"
+  disk_interface       = "virtio-scsi"
   format               = "raw"
   net_device           = "virtio-net"
   boot_wait            = "15s"
@@ -678,22 +665,6 @@ build {
 
 	if args.arch == "arm64" {
 		replacements[`provisioner "shell" {
-    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
-    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    scripts          = ["${path.root}/../scripts/build/install-powershell.sh"]
-  }`] = `  provisioner "shell" {
-    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
-    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    inline           = [
-      "curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.5.1/powershell-7.5.1-linux-arm64.tar.gz",
-      "mkdir -p /opt/microsoft/powershell/7",
-      "tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7",
-      "chmod +x /opt/microsoft/powershell/7/pwsh",
-      "ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh"
-    ]
-  }`
-
-		replacements[`provisioner "shell" {
     environment_vars = ["IMAGE_VERSION=${var.image_version}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]`] = `  provisioner "shell" {
     environment_vars = ["IMAGE_VERSION=${var.image_version}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "CODEQL_JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-arm64"]`
 
@@ -702,6 +673,34 @@ build {
 
 		// Remove chrome installation, there is no arm build from Google
 		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
+
+		replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
+				"${path.root}/../scripts/build/install-runner-package.sh",`
+
+		replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
+		provisioner "shell" {
+			execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+				inline = ["touch /etc/waagent.conf"]
+		}`
+
+		replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+      "sleep 30",
+      "export HISTSIZE=0 && sync",
+      "usermod -aG docker ubuntu",
+      "apt install -y libelf-dev linux-oracle open-iscsi",
+      "echo 'ISCSI_AUTO=true' > /etc/iscsi/iscsi.initramfs",
+      "echo 'MODULES=most' > /etc/initramfs-tools/conf.d/modules.conf",
+      "echo 'RESUME=none' >> /etc/initramfs-tools/conf.d/modules.conf",
+      "update-initramfs -u -k all",
+      "apt-get clean",
+      "rm -rf /var/lib/apt/lists/*"
+    ]`
+		// At this point this is the only Ubuntu-specific hard coded blocks we have left.
+		replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
+			destination = "${path.root}/../Ubuntu2404-Readme.md"`
+
+		replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
+			destination = "${path.root}/../software-report.json"`
 	} else {
 		replacements[`provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
@@ -722,34 +721,33 @@ build {
       "apt install -y --allow-downgrades nvidia-container-toolkit=$TOOLKIT_VERSION nvidia-container-toolkit-base=$TOOLKIT_VERSION libnvidia-container-tools=$TOOLKIT_VERSION",
       "apt-mark hold nvidia-container-toolkit nvidia-container-toolkit-base libnvidia-container-tools",
       "sed -i '/#accept-nvidia-visible-devices-as-volume-mounts/a accept-nvidia-visible-devices-as-volume-mounts = true' /etc/nvidia-container-runtime/config.toml",
-      "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest"
+      "go install github.com/NVIDIA/nvkind/cmd/nvkind@latest",
     ]
   }`
+
+		replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
+				"${path.root}/../scripts/build/install-runner-package.sh",`
+
+		replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
+		provisioner "shell" {
+			execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+				inline = ["touch /etc/waagent.conf"]
+		}`
+
+		replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+				"sleep 30",
+				"export HISTSIZE=0 && sync",
+				"usermod -aG docker ubuntu",
+				"apt install -y libelf-dev",
+				"apt-get clean",
+				"rm -rf /var/lib/apt/lists/*"
+			]`
+
+		// At this point this is the only Ubuntu-specific hard coded blocks we have left.
+		replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
+			destination = "${path.root}/../Ubuntu2404-Readme.md"`
+
+		replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
+			destination = "${path.root}/../software-report.json"`
 	}
-
-	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
-      "${path.root}/../scripts/build/install-runner-package.sh",`
-
-	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
-	provisioner "shell" {
-	  execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-      inline = ["touch /etc/waagent.conf"]
-	}`
-
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
-      "sleep 30",
-      "export HISTSIZE=0 && sync",
-      "usermod -aG docker ubuntu",
-      "apt install -y libelf-dev",
-      "apt-get clean",
-      "rm -rf /var/lib/apt/lists/*"
-    ]`
-
-	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
-	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
-    destination = "${path.root}/../Ubuntu2404-Readme.md"`
-
-	replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
-    destination = "${path.root}/../software-report.json"`
-
 }

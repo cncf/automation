@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 180
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -40,7 +40,7 @@ jobs:
         with:
           go-version-file: ci/gha-runner-vm/go.mod
       - name: Change Ubuntu mirrors
-        uses: vegardit/fast-apt-mirror.sh@c02f624f2c4108687b16f980a2c9e10d82bdace6 # v1.4.4
+        uses: vegardit/fast-apt-mirror.sh@806c59276adfff2df420124ad5e4587f018c358a # v1.4.5
         with:
           exclude-current: true
       - name: Set up QEMU
@@ -124,7 +124,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
       - name: Start kind cluster
@@ -134,9 +134,9 @@ jobs:
           apiVersion: kind.x-k8s.io/v1alpha4
           nodes:
           - role: control-plane
-            image: kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
+            image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
           - role: worker
-            image: kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
+            image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
           EOF
 
           kind create cluster --config kind-config.yaml
@@ -146,7 +146,7 @@ jobs:
           helm install cncf-gha-controller \
             --namespace arc-systems \
             --create-namespace \
-            --version 0.11.0 \
+            --version 0.14.1 \
             oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
 
           kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=controller-manager --timeout=600s -n arc-systems
@@ -214,7 +214,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 

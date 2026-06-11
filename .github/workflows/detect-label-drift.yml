@@ -12,9 +12,10 @@ jobs:
     permissions:
       contents: read
       issues: write
+      pull-requests: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -207,7 +208,68 @@ jobs:
 
       - name: Upload drift report
         if: always()
-        uses: actions/upload-artifact@604373da6381d3ce0449574800a7cedc1d30e586 # v4.3.5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: label-drift-report
           path: /tmp/label_drift.json
+
+      - name: Fix stale helper labels on open issues and PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+
+          REPO = os.environ["GITHUB_REPOSITORY"]
+
+          def list_items(kind):
+              return json.loads(subprocess.check_output(
+                  ["gh", kind, "list", "--repo", REPO, "--state", "open",
+                   "--limit", "500", "--json", "number,labels"],
+                  text=True,
+              ))
+
+          def remove_label(kind, number, label):
+              subprocess.run(
+                  ["gh", kind, "edit", str(number), "--repo", REPO, "--remove-label", label],
+                  check=True,
+              )
+              print(f" [{kind} #{number}] removed '{label}'")
+
+          def matches(label_names, pattern):
+              if pattern == "{toc,tag/*,sub/*}":
+                  return any(
+                      l == "toc" or l.startswith("tag/") or l.startswith("sub/")
+                      for l in label_names
+                  )
+              if pattern.endswith("/*"):
+                  prefix = pattern[:-1]
+                  return any(l.startswith(prefix) for l in label_names)
+              return pattern in label_names
+
+          # (trigger pattern, stale label to remove)
+          RULES = [
+              ("triage/*",          "needs-triage"),
+              ("kind/*",             "needs-kind"),
+              ("{toc,tag/*,sub/*}", "needs-group"),
+              ("priority/*",        "needs-priority"),
+              ("area/*",            "needs-area"),
+              ("status/*",          "needs-status"),
+              ("dd/triage/*",       "dd/needs-triage"),
+          ]
+
+          total_fixed = 0
+          for kind in ("issue", "pr"):
+              for item in list_items(kind):
+                  number = item["number"]
+                  label_names = {l["name"] for l in item["labels"]}
+                  for trigger, stale in RULES:
+                      if stale in label_names and matches(label_names, trigger):
+                          remove_label(kind, number, stale)
+                          label_names.discard(stale)
+                          total_fixed += 1
+
+          print(f"\nTotal label corrections made: {total_fixed}")
+          PY

@@ -2,10 +2,10 @@ ARG BASE_IMAGE
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:8.0-${BASE_IMAGE} AS build
 
-ARG RUNNER_VERSION=2.333.0
+ARG RUNNER_VERSION=2.334.0
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.8.1
 ARG DOCKER_VERSION=28.0.4
-ARG BUILDX_VERSION=0.33.0
+ARG BUILDX_VERSION=0.34.1
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -114,4 +114,4 @@ USER runner
 RUN pip3 install --user launchable~=1.0
 
 RUN export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin && \
-    go install sigs.k8s.io/kind@v0.30.0
+    go install sigs.k8s.io/kind@v0.32.0

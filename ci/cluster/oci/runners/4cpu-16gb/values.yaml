@@ -207,7 +207,6 @@ template:
     containers:
       - name: runner
         image: ghcr.io/cncf/external-gha-runner:noble
-        imagePullPolicy: Always
         command: ["/home/runner/run.sh"]
         resources:
           requests:

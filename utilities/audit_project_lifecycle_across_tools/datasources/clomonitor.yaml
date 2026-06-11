@@ -1526,20 +1526,8 @@
       url: https://github.com/kubewarden/kubewarden.io
       check_sets:
         - docs
-    - name: policy-server
-      url: https://github.com/kubewarden/policy-server
-      check_sets:
-        - code
-    - name: kubewarden-controller
-      url: https://github.com/kubewarden/kubewarden-controller
-      check_sets:
-        - code
-    - name: kwctl
-      url: https://github.com/kubewarden/kwctl
-      check_sets:
-        - code
-    - name: audit-scanner
-      url: https://github.com/kubewarden/audit-scanner
+    - name: adm-controller
+      url: https://github.com/kubewarden/adm-controller
       check_sets:
         - code
 - name: kudo
@@ -1860,7 +1848,7 @@
   logo_url: https://raw.githubusercontent.com/cncf/artwork/master/projects/opentelemetry/icon/color/opentelemetry-icon-color.svg
   devstats_url: https://opentelemetry.devstats.cncf.io/
   accepted_at: "2019-05-07"
-  maturity: incubating
+  maturity: graduated
   repositories:
     - name: community
       url: https://github.com/open-telemetry/community

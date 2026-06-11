@@ -429,6 +429,60 @@ func TestGenerateProjectYAML_AutoDetected(t *testing.T) {
 		}
 	})
 
+	t.Run("renders slack candidates as comments", func(t *testing.T) {
+		result := &BootstrapResult{
+			Slug:                "envoy",
+			Name:                "Envoy",
+			Description:         "A test",
+			GitHubOrg:           "envoyproxy",
+			GitHubRepo:          "envoy",
+			CNCFSlackChannel:    "#envoy",
+			CNCFSlackCandidates: []string{"#envoy-dev", "#envoy-mobile"},
+			Sources:             map[string]string{"cncf_slack_channel": "github_readme"},
+		}
+
+		output, err := GenerateProjectYAML(result)
+		if err != nil {
+			t.Fatalf("error = %v", err)
+		}
+		yamlStr := string(output)
+
+		if !strings.Contains(yamlStr, `cncf_slack_channel: "#envoy"`) {
+			t.Error("should contain primary cncf_slack_channel value")
+		}
+		if !strings.Contains(yamlStr, `Also detected: "#envoy-dev", "#envoy-mobile"`) {
+			t.Errorf("should contain candidates comment, got:\n%s", yamlStr)
+		}
+		if !strings.Contains(yamlStr, "please verify the correct channel") {
+			t.Error("should contain verification prompt for candidates")
+		}
+	})
+
+	t.Run("no candidates comment when only one channel", func(t *testing.T) {
+		result := &BootstrapResult{
+			Slug:             "test-project",
+			Name:             "Test Project",
+			Description:      "A test",
+			GitHubOrg:        "test-org",
+			GitHubRepo:       "test-project",
+			CNCFSlackChannel: "#test-project",
+			Sources:          map[string]string{"cncf_slack_channel": "github_readme"},
+		}
+
+		output, err := GenerateProjectYAML(result)
+		if err != nil {
+			t.Fatalf("error = %v", err)
+		}
+		yamlStr := string(output)
+
+		if !strings.Contains(yamlStr, `cncf_slack_channel: "#test-project"`) {
+			t.Error("should contain cncf_slack_channel value")
+		}
+		if strings.Contains(yamlStr, "Also detected") {
+			t.Error("should NOT contain candidates comment when no candidates")
+		}
+	})
+
 	t.Run("uses auto-detected TOC issue URL", func(t *testing.T) {
 		result := &BootstrapResult{
 			Slug:          "test-project",

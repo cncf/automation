@@ -15,6 +15,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// fieldEdit describes a single field change to apply to the landscape file.
+type fieldEdit struct {
+	key      string
+	newValue string
+	isExtra  bool // true if this field belongs under the extra: mapping
+	exists   bool // true = update existing field, false = insert new field
+}
+
 func main() {
 	projectPath := flag.String("project", "", "Path to project.yaml")
 	landscapePath := flag.String("landscape", "", "Path to landscape.yml")
@@ -47,36 +55,41 @@ func main() {
 		log.Fatalf("Failed to parse landscape YAML: %v", err)
 	}
 
-	// Update
-	updated := updateLandscape(&root, &project)
+	lines := strings.Split(string(landscapeData), "\n")
+
+	// Update using line-level edits
+	newLines, updated := updateLandscape(&root, &project, lines)
 	if !updated {
-		log.Printf("No matching entry found for project %s", project.Name)
+		log.Printf("No matching entry found or no changes needed for project %s", project.Name)
 		os.Exit(0)
 	}
 
+	output := strings.Join(newLines, "\n")
+
 	if *dryRun {
-		// Create temp file for new content
 		tmpFile, err := os.CreateTemp("", "landscape-*.yml")
 		if err != nil {
 			log.Fatalf("Failed to create temp file: %v", err)
 		}
-		defer os.Remove(tmpFile.Name())
+		defer func() {
+			if err := os.Remove(tmpFile.Name()); err != nil {
+				log.Printf("Warning: failed to remove temp file: %v", err)
+			}
+		}()
 
-		encoder := yaml.NewEncoder(tmpFile)
-		encoder.SetIndent(2)
-		if err := encoder.Encode(&root); err != nil {
-			log.Fatalf("Failed to encode landscape YAML: %v", err)
+		if _, err := tmpFile.WriteString(output); err != nil {
+			log.Fatalf("Failed to write temp file: %v", err)
 		}
-		tmpFile.Close()
+		if err := tmpFile.Close(); err != nil {
+			log.Fatalf("Failed to close temp file: %v", err)
+		}
 
-		// Run diff
 		cmd := exec.Command("diff", "-u", *landscapePath, tmpFile.Name())
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		fmt.Println("--- Diff ---")
-		_ = cmd.Run() // diff returns exit code 1 if files differ, which is expected
+		_ = cmd.Run()
 
-		// Print PR details
 		fmt.Println("\n--- Pull Request Details ---")
 		fmt.Printf("Title: Update %s metadata\n", project.Name)
 		fmt.Printf("Body: Automated update for %s from cncf/automation\n", project.Name)
@@ -87,18 +100,9 @@ func main() {
 	}
 
 	// Save
-	f, err := os.Create(*landscapePath)
-	if err != nil {
-		log.Fatalf("Failed to open landscape file for writing: %v", err)
+	if err := os.WriteFile(*landscapePath, []byte(output), 0644); err != nil {
+		log.Fatalf("Failed to write landscape file: %v", err)
 	}
-	defer f.Close()
-
-	encoder := yaml.NewEncoder(f)
-	encoder.SetIndent(2)
-	if err := encoder.Encode(&root); err != nil {
-		log.Fatalf("Failed to encode landscape YAML: %v", err)
-	}
-	f.Close() // Close explicitly before git operations
 	log.Printf("Successfully updated landscape.yml for project %s", project.Name)
 
 	if *createPR {
@@ -153,7 +157,6 @@ func createPullRequest(landscapePath, landscapeRepo string, project *projects.Pr
 	}
 
 	// Create PR using gh
-	// Check if gh is available
 	if _, err := exec.LookPath("gh"); err != nil {
 		return fmt.Errorf("gh cli not found, cannot create PR")
 	}
@@ -171,15 +174,14 @@ func createPullRequest(landscapePath, landscapeRepo string, project *projects.Pr
 	return nil
 }
 
-func updateLandscape(root *yaml.Node, project *projects.Project) bool {
-	// Navigate to 'landscape' key
+// updateLandscape navigates the YAML node tree to find the matching project
+// entry, then applies line-level edits to the raw file lines.
+func updateLandscape(root *yaml.Node, project *projects.Project, lines []string) ([]string, bool) {
 	if root.Kind != yaml.DocumentNode {
-		return false
+		return lines, false
 	}
 
 	var landscapeSeq *yaml.Node
-
-	// Find "landscape" key in the root map
 	if len(root.Content) > 0 && root.Content[0].Kind == yaml.MappingNode {
 		for i := 0; i < len(root.Content[0].Content); i += 2 {
 			key := root.Content[0].Content[i]
@@ -192,12 +194,10 @@ func updateLandscape(root *yaml.Node, project *projects.Project) bool {
 	}
 
 	if landscapeSeq == nil {
-		return false
+		return lines, false
 	}
 
-	// Iterate through categories
 	for _, categoryNode := range landscapeSeq.Content {
-		// Find "subcategories"
 		var subcategoriesSeq *yaml.Node
 		for i := 0; i < len(categoryNode.Content); i += 2 {
 			key := categoryNode.Content[i]
@@ -207,14 +207,11 @@ func updateLandscape(root *yaml.Node, project *projects.Project) bool {
 				break
 			}
 		}
-
 		if subcategoriesSeq == nil {
 			continue
 		}
 
-		// Iterate through subcategories
 		for _, subcategoryNode := range subcategoriesSeq.Content {
-			// Find "items"
 			var itemsSeq *yaml.Node
 			for i := 0; i < len(subcategoryNode.Content); i += 2 {
 				key := subcategoryNode.Content[i]
@@ -224,28 +221,28 @@ func updateLandscape(root *yaml.Node, project *projects.Project) bool {
 					break
 				}
 			}
-
 			if itemsSeq == nil {
 				continue
 			}
 
-			// Iterate through items
 			for _, itemNode := range itemsSeq.Content {
-				if matchAndUpdateItem(itemNode, project) {
-					return true
+				newLines, matched := matchAndUpdateItem(itemNode, project, lines)
+				if matched {
+					return newLines, true
 				}
 			}
 		}
 	}
 
-	return false
+	return lines, false
 }
 
-func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project) bool {
+// matchAndUpdateItem checks if the given item node matches the project (by name
+// and repo_url), and if so, detects changes and applies line-level edits.
+func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project, lines []string) ([]string, bool) {
 	var nameNode *yaml.Node
 	var repoURLNode *yaml.Node
 
-	// Find name and repo_url
 	for i := 0; i < len(itemNode.Content); i += 2 {
 		key := itemNode.Content[i]
 		val := itemNode.Content[i+1]
@@ -257,10 +254,9 @@ func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project) bool {
 	}
 
 	if nameNode == nil || repoURLNode == nil {
-		return false
+		return lines, false
 	}
 
-	// Check match
 	nameMatch := strings.EqualFold(nameNode.Value, project.Name)
 	repoMatch := false
 	for _, repo := range project.Repositories {
@@ -270,65 +266,49 @@ func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project) bool {
 		}
 	}
 
-	if nameMatch && repoMatch {
-		return updateItemFields(itemNode, project)
+	if !nameMatch || !repoMatch {
+		return lines, false
 	}
 
-	return false
+	edits := detectChanges(itemNode, project)
+	if len(edits) == 0 {
+		return lines, false
+	}
+
+	newLines := applyItemEdits(lines, edits, itemNode)
+	return newLines, true
 }
 
-func updateItemFields(itemNode *yaml.Node, project *projects.Project) bool {
-	changed := false
-	// Helper to set or add field
-	setField := func(node *yaml.Node, fieldName, value string) {
-		if value == "" {
+// detectChanges compares the YAML node tree values against the project and
+// returns a list of field edits needed. This is read-only on the node tree.
+func detectChanges(itemNode *yaml.Node, project *projects.Project) []fieldEdit {
+	var edits []fieldEdit
+
+	checkField := func(key, newValue string, isExtra bool, node *yaml.Node) {
+		if newValue == "" {
 			return
 		}
 		found := false
 		for i := 0; i < len(node.Content); i += 2 {
-			key := node.Content[i]
-			if key.Value == fieldName {
-				if node.Content[i+1].Value != value {
-					node.Content[i+1].Value = value
-					changed = true
-				}
+			if node.Content[i].Value == key {
 				found = true
+				if node.Content[i+1].Value != newValue {
+					edits = append(edits, fieldEdit{key: key, newValue: newValue, isExtra: isExtra, exists: true})
+				}
 				break
 			}
 		}
 		if !found {
-			node.Content = append(node.Content,
-				&yaml.Node{Kind: yaml.ScalarNode, Value: fieldName},
-				&yaml.Node{Kind: yaml.ScalarNode, Value: value},
-			)
-			changed = true
+			edits = append(edits, fieldEdit{key: key, newValue: newValue, isExtra: isExtra, exists: false})
 		}
 	}
 
-	// Helper to get or create 'extra' node
-	getExtraNode := func() *yaml.Node {
-		for i := 0; i < len(itemNode.Content); i += 2 {
-			key := itemNode.Content[i]
-			if key.Value == "extra" {
-				return itemNode.Content[i+1]
-			}
-		}
-		// Create extra if not found
-		extraNode := &yaml.Node{Kind: yaml.MappingNode}
-		itemNode.Content = append(itemNode.Content,
-			&yaml.Node{Kind: yaml.ScalarNode, Value: "extra"},
-			extraNode,
-		)
-		changed = true
-		return extraNode
-	}
+	// Top-level fields
+	checkField("homepage_url", project.Website, false, itemNode)
+	checkField("description", project.Description, false, itemNode)
 
-	setField(itemNode, "homepage_url", project.Website)
-	setField(itemNode, "description", project.Description)
-
-	// Top level social fields
 	if val, ok := project.Social["twitter"]; ok {
-		setField(itemNode, "twitter", val)
+		checkField("twitter", val, false, itemNode)
 	}
 
 	// Extra fields
@@ -338,7 +318,6 @@ func updateItemFields(itemNode *yaml.Node, project *projects.Project) bool {
 		"youtube":  "youtube_url",
 	}
 
-	// Check if we need to update extra fields
 	needsExtra := false
 	for key := range extraMappings {
 		if _, ok := project.Social[key]; ok {
@@ -348,13 +327,266 @@ func updateItemFields(itemNode *yaml.Node, project *projects.Project) bool {
 	}
 
 	if needsExtra {
-		extraNode := getExtraNode()
-		for key, landscapeKey := range extraMappings {
-			if val, ok := project.Social[key]; ok {
-				setField(extraNode, landscapeKey, val)
+		var extraNode *yaml.Node
+		for i := 0; i < len(itemNode.Content); i += 2 {
+			if itemNode.Content[i].Value == "extra" {
+				extraNode = itemNode.Content[i+1]
+				break
+			}
+		}
+
+		for socialKey, landscapeKey := range extraMappings {
+			val, ok := project.Social[socialKey]
+			if !ok || val == "" {
+				continue
+			}
+			if extraNode != nil {
+				checkField(landscapeKey, val, true, extraNode)
+			} else {
+				edits = append(edits, fieldEdit{key: landscapeKey, newValue: val, isExtra: true, exists: false})
 			}
 		}
 	}
 
-	return changed
+	return edits
+}
+
+// applyItemEdits applies the detected field edits to the raw file lines.
+// Updates are applied first (they may shrink lines by collapsing block scalars),
+// then inserts are applied (they grow lines).
+func applyItemEdits(lines []string, edits []fieldEdit, itemNode *yaml.Node) []string {
+	result := make([]string, len(lines))
+	copy(result, lines)
+
+	start, end := getItemLineRange(result, itemNode)
+	fieldIndent := detectFieldIndent(result, start, end)
+	extraIndent := fieldIndent + 2
+
+	// Apply updates first (may change line count if collapsing block scalars)
+	for _, edit := range edits {
+		if !edit.exists {
+			continue
+		}
+		indent := fieldIndent
+		if edit.isExtra {
+			indent = extraIndent
+		}
+		result, end = replaceFieldInLines(result, start, end, edit.key, edit.newValue, indent)
+	}
+
+	// Apply inserts (each insert shifts subsequent lines)
+	for _, edit := range edits {
+		if edit.exists {
+			continue
+		}
+		indent := fieldIndent
+		if edit.isExtra {
+			indent = extraIndent
+		}
+		result, end = insertFieldInLines(result, start, end, edit.key, edit.newValue, indent, edit.isExtra, fieldIndent)
+	}
+
+	return result
+}
+
+// getItemLineRange returns the 0-indexed start and end (exclusive) line indices
+// for the given item node within the lines slice.
+func getItemLineRange(lines []string, itemNode *yaml.Node) (start, end int) {
+	start = itemNode.Line - 1 // convert 1-indexed to 0-indexed
+
+	// Detect the indent of the "- " sequence marker on the start line
+	dashPos := strings.Index(lines[start], "- ")
+	if dashPos < 0 {
+		dashPos = 0
+	}
+
+	for i := start + 1; i < len(lines); i++ {
+		trimmed := strings.TrimLeft(lines[i], " ")
+		if trimmed == "" || trimmed == "\r" {
+			continue
+		}
+		indent := len(lines[i]) - len(trimmed)
+		if indent <= dashPos {
+			return start, i
+		}
+	}
+	return start, len(lines)
+}
+
+// detectFieldIndent determines the indentation level for top-level fields
+// within an item by examining the lines after the sequence marker line.
+func detectFieldIndent(lines []string, start, end int) int {
+	for i := start + 1; i < end && i < len(lines); i++ {
+		trimmed := strings.TrimLeft(lines[i], " ")
+		if trimmed == "" {
+			continue
+		}
+		return len(lines[i]) - len(trimmed)
+	}
+	// Fallback: start line indent + 2
+	trimmed := strings.TrimLeft(lines[start], " ")
+	return len(lines[start]) - len(trimmed) + 2
+}
+
+// findFieldLine returns the 0-indexed line number where the given key appears
+// at the specified indentation, or -1 if not found.
+func findFieldLine(lines []string, start, end int, key string, indent int) int {
+	prefix := strings.Repeat(" ", indent) + key + ":"
+	for i := start; i < end && i < len(lines); i++ {
+		if strings.HasPrefix(lines[i], prefix) {
+			rest := lines[i][len(prefix):]
+			if rest == "" || rest[0] == ' ' || rest[0] == '\r' || rest[0] == '\n' {
+				return i
+			}
+		}
+	}
+	return -1
+}
+
+// findExtraBlockEnd returns the line index (exclusive) where the extra block
+// ends. It scans from after the extra: key line for lines indented at or beyond
+// extraIndent.
+func findExtraBlockEnd(lines []string, extraKeyLine, itemEnd, extraIndent int) int {
+	last := extraKeyLine
+	for i := extraKeyLine + 1; i < itemEnd && i < len(lines); i++ {
+		trimmed := strings.TrimLeft(lines[i], " ")
+		if trimmed == "" {
+			continue
+		}
+		lineIndent := len(lines[i]) - len(trimmed)
+		if lineIndent >= extraIndent {
+			last = i
+		} else {
+			break
+		}
+	}
+	return last + 1
+}
+
+// findLastFieldLine returns the index of the last non-blank line within the
+// item that has indentation >= fieldIndent.
+func findLastFieldLine(lines []string, start, end, fieldIndent int) int {
+	last := start
+	for i := start; i < end && i < len(lines); i++ {
+		trimmed := strings.TrimLeft(lines[i], " ")
+		if trimmed == "" {
+			continue
+		}
+		lineIndent := len(lines[i]) - len(trimmed)
+		if lineIndent >= fieldIndent {
+			last = i
+		}
+	}
+	return last
+}
+
+// replaceFieldInLines replaces the value of an existing field in the raw lines.
+// Handles block scalars (>-, >, |, |-) by collapsing continuation lines.
+func replaceFieldInLines(lines []string, start, end int, key, newValue string, indent int) ([]string, int) {
+	lineIdx := findFieldLine(lines, start, end, key, indent)
+	if lineIdx < 0 {
+		return lines, end
+	}
+
+	prefix := strings.Repeat(" ", indent) + key + ":"
+	valuePart := strings.TrimSpace(lines[lineIdx][len(prefix):])
+
+	isBlockScalar := valuePart == ">" || valuePart == ">-" || valuePart == "|" || valuePart == "|-"
+
+	// Replace the key line with the new simple scalar value
+	lines[lineIdx] = strings.Repeat(" ", indent) + key + ": " + yamlQuoteIfNeeded(newValue)
+
+	if isBlockScalar {
+		// Remove continuation lines (lines indented more than the key)
+		contStart := lineIdx + 1
+		contEnd := contStart
+		for contEnd < end && contEnd < len(lines) {
+			trimmed := strings.TrimLeft(lines[contEnd], " ")
+			if trimmed == "" {
+				break
+			}
+			lineIndent := len(lines[contEnd]) - len(trimmed)
+			if lineIndent > indent {
+				contEnd++
+			} else {
+				break
+			}
+		}
+		if contEnd > contStart {
+			lines = append(lines[:contStart], lines[contEnd:]...)
+			end -= (contEnd - contStart)
+		}
+	}
+
+	return lines, end
+}
+
+// insertFieldInLines inserts a new field line at the appropriate position.
+// For top-level fields, inserts before extra: (if present) or at end of item.
+// For extra fields, inserts at end of extra block, creating extra: if needed.
+func insertFieldInLines(lines []string, start, end int, key, newValue string, indent int, isExtra bool, fieldIndent int) ([]string, int) {
+	newLine := strings.Repeat(" ", indent) + key + ": " + yamlQuoteIfNeeded(newValue)
+
+	var insertAt int
+
+	if isExtra {
+		extraLine := findFieldLine(lines, start, end, "extra", fieldIndent)
+		if extraLine >= 0 {
+			insertAt = findExtraBlockEnd(lines, extraLine, end, fieldIndent+2)
+		} else {
+			// Create extra: block
+			extraKeyLine := strings.Repeat(" ", fieldIndent) + "extra:"
+			insertPos := findLastFieldLine(lines, start, end, fieldIndent) + 1
+			lines = insertLine(lines, insertPos, extraKeyLine)
+			end++
+			insertAt = insertPos + 1
+		}
+	} else {
+		extraLine := findFieldLine(lines, start, end, "extra", fieldIndent)
+		if extraLine >= 0 {
+			insertAt = extraLine
+		} else {
+			insertAt = findLastFieldLine(lines, start, end, fieldIndent) + 1
+		}
+	}
+
+	lines = insertLine(lines, insertAt, newLine)
+	end++
+
+	return lines, end
+}
+
+// insertLine inserts a new line at the given position in the slice.
+func insertLine(lines []string, at int, line string) []string {
+	lines = append(lines, "")
+	copy(lines[at+1:], lines[at:])
+	lines[at] = line
+	return lines
+}
+
+// yamlQuoteIfNeeded returns the value with YAML quoting applied if the value
+// contains characters that require it (e.g. ": ", " #", or special starters).
+func yamlQuoteIfNeeded(value string) string {
+	if value == "" {
+		return "''"
+	}
+
+	needsQuoting := false
+
+	if strings.Contains(value, ": ") || strings.Contains(value, " #") {
+		needsQuoting = true
+	}
+
+	specialStarts := "&*!|>'\"%@`{}[],?"
+	if strings.ContainsAny(string(value[0]), specialStarts) {
+		needsQuoting = true
+	}
+
+	if !needsQuoting {
+		return value
+	}
+
+	escaped := strings.ReplaceAll(value, `\`, `\\`)
+	escaped = strings.ReplaceAll(escaped, `"`, `\"`)
+	return `"` + escaped + `"`
 }

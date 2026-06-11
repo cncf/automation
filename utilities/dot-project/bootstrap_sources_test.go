@@ -935,6 +935,81 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 		}
 	})
 
+	t.Run("derives slack channel from channels URL in slack_url", func(t *testing.T) {
+		landscape := &LandscapeData{
+			Name:     "Test Project",
+			Maturity: "sandbox",
+			SlackURL: "https://cloud-native.slack.com/channels/test-project",
+		}
+		result := mergeBootstrapData("test-project", landscape, nil, nil)
+		if result.CNCFSlackChannel != "#test-project" {
+			t.Errorf("CNCFSlackChannel = %q, want #test-project", result.CNCFSlackChannel)
+		}
+	})
+
+	t.Run("derives slack channel from archives URL in slack_url", func(t *testing.T) {
+		landscape := &LandscapeData{
+			Name:     "Test Project",
+			Maturity: "sandbox",
+			SlackURL: "https://cloud-native.slack.com/archives/test-project",
+		}
+		result := mergeBootstrapData("test-project", landscape, nil, nil)
+		if result.CNCFSlackChannel != "#test-project" {
+			t.Errorf("CNCFSlackChannel = %q, want #test-project", result.CNCFSlackChannel)
+		}
+	})
+
+	t.Run("promotes first GitHub channel as primary when no landscape", func(t *testing.T) {
+		github := &GitHubData{
+			SlackChannels: []string{"#envoy", "#envoy-dev", "#envoy-mobile"},
+		}
+		result := mergeBootstrapData("envoy", nil, nil, github)
+		if result.CNCFSlackChannel != "#envoy" {
+			t.Errorf("CNCFSlackChannel = %q, want #envoy", result.CNCFSlackChannel)
+		}
+		if len(result.CNCFSlackCandidates) != 2 {
+			t.Fatalf("CNCFSlackCandidates len = %d, want 2", len(result.CNCFSlackCandidates))
+		}
+		if result.CNCFSlackCandidates[0] != "#envoy-dev" || result.CNCFSlackCandidates[1] != "#envoy-mobile" {
+			t.Errorf("CNCFSlackCandidates = %v, want [#envoy-dev, #envoy-mobile]", result.CNCFSlackCandidates)
+		}
+	})
+
+	t.Run("landscape primary with GitHub candidates", func(t *testing.T) {
+		landscape := &LandscapeData{
+			Name:        "Envoy",
+			Maturity:    "graduated",
+			ChatChannel: "#envoy",
+		}
+		github := &GitHubData{
+			SlackChannels: []string{"#envoy", "#envoy-dev", "#envoy-mobile"},
+		}
+		result := mergeBootstrapData("envoy", landscape, nil, github)
+		if result.CNCFSlackChannel != "#envoy" {
+			t.Errorf("CNCFSlackChannel = %q, want #envoy", result.CNCFSlackChannel)
+		}
+		// #envoy is already primary, so candidates should be the other two
+		if len(result.CNCFSlackCandidates) != 2 {
+			t.Fatalf("CNCFSlackCandidates len = %d, want 2", len(result.CNCFSlackCandidates))
+		}
+		if result.CNCFSlackCandidates[0] != "#envoy-dev" || result.CNCFSlackCandidates[1] != "#envoy-mobile" {
+			t.Errorf("CNCFSlackCandidates = %v, want [#envoy-dev, #envoy-mobile]", result.CNCFSlackCandidates)
+		}
+	})
+
+	t.Run("single GitHub channel has no candidates", func(t *testing.T) {
+		github := &GitHubData{
+			SlackChannels: []string{"#my-project"},
+		}
+		result := mergeBootstrapData("my-project", nil, nil, github)
+		if result.CNCFSlackChannel != "#my-project" {
+			t.Errorf("CNCFSlackChannel = %q, want #my-project", result.CNCFSlackChannel)
+		}
+		if len(result.CNCFSlackCandidates) != 0 {
+			t.Errorf("CNCFSlackCandidates = %v, want empty", result.CNCFSlackCandidates)
+		}
+	})
+
 	t.Run("sets accepted date from landscape extra", func(t *testing.T) {
 		landscape := &LandscapeData{
 			Name:         "Test Project",
