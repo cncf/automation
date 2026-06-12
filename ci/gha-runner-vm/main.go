@@ -141,33 +141,6 @@ func run(cmd *cobra.Command, argv []string) error {
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GHCupVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-FastlaneVersion.*", "")
 
-	if args.arch == "arm64" {
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-runner-package.sh", "actions-runner-linux-x64", "actions-runner-linux-arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-bicep.sh", "linux-x64", "linux-arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-julia.sh", "x86_64", "aarch64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-miniconda.sh", "x86_64", "aarch64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-dotnetcore-sdk.sh", "linux-x64", "linux-arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-microsoft-edge.sh", "arch=amd64", "arch=arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-oras-cli.sh", "linux_amd64", "linux_arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-aliyun-cli.sh", "amd64", "arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "x64", "aarch64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-codeql-bundle.sh", "/x64", "/arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "wget .*", "wget http://launchpadlibrarian.net/723810004/libicu74_74.2-1ubuntu3_arm64.deb")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "libicu70_70.1-2_amd64.deb", "libicu74_74.2-1ubuntu3_arm64.deb")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-dpkg.sh", "EXPECTED_LIBICU_SHA512=.*", "EXPECTED_LIBICU_SHA512=f5bc20c081d5dc6642a066052e69982702cf4b8638f77719567f7f30f622aae59ec1c23cb17842532c141768460369c176ad079e4ed22d6f4436f4ad86f30f79")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/SoftwareReport.CachedTools.psm1", "x64", "aarch64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/SoftwareReport.Tools.psm1", "x64", "arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "Import-Module \\(Join-Path \\$PSScriptRoot \"SoftwareReport.Browsers.psm1\"\\) -DisableNameChecking", "")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Browsers and Drivers\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*", "")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", "# Environment variables\n.*", "")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GeckodriverVersion.*", "")
-		updatePackerConfig(baseDir, "/images/ubuntu/scripts/tests/Browsers.Tests.ps1", "Describe \"Chrome\"(.|\n)*", "")
-		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-amd64", "linux-arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "linux-x86_64", "linux-aarch64")
-		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "x64", "arm64")
-		updatePackerConfig(baseDir, "/images/ubuntu/toolsets/toolset-2404.json", "\"PyPy\",\n            \"arch\": \"arm64\"", "\"PyPy\",\n            \"arch\": \"aarch64\"")
-	}
-
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
 	command.Stdout = os.Stdout
@@ -663,46 +636,8 @@ build {
     inline = ["touch /etc/waagent.conf"]
   }`, args.isoURL, args.isoChecksum)
 
-	if args.arch == "arm64" {
-		replacements[`provisioner "shell" {
-    environment_vars = ["IMAGE_VERSION=${var.image_version}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]`] = `  provisioner "shell" {
-    environment_vars = ["IMAGE_VERSION=${var.image_version}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "CODEQL_JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-arm64"]`
 
-		// Remove edge installation, there is no arm build from Microsoft
-		replacements[`"${path.root}/../scripts/build/install-microsoft-edge.sh",`] = ``
-
-		// Remove chrome installation, there is no arm build from Google
-		replacements[`"${path.root}/../scripts/build/install-google-chrome.sh",`] = ``
-
-		replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
-				"${path.root}/../scripts/build/install-runner-package.sh",`
-
-		replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
-		provisioner "shell" {
-			execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-				inline = ["touch /etc/waagent.conf"]
-		}`
-
-		replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
-      "sleep 30",
-      "export HISTSIZE=0 && sync",
-      "usermod -aG docker ubuntu",
-      "apt install -y libelf-dev linux-oracle open-iscsi",
-      "echo 'ISCSI_AUTO=true' > /etc/iscsi/iscsi.initramfs",
-      "echo 'MODULES=most' > /etc/initramfs-tools/conf.d/modules.conf",
-      "echo 'RESUME=none' >> /etc/initramfs-tools/conf.d/modules.conf",
-      "update-initramfs -u -k all",
-      "apt-get clean",
-      "rm -rf /var/lib/apt/lists/*"
-    ]`
-		// At this point this is the only Ubuntu-specific hard coded blocks we have left.
-		replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
-			destination = "${path.root}/../Ubuntu2404-Readme.md"`
-
-		replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
-			destination = "${path.root}/../software-report.json"`
-	} else {
-		replacements[`provisioner "shell" {
+	replacements[`provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     script          = "${path.root}/../scripts/build/list-dpkg.sh"
   }`] = `provisioner "shell" {
@@ -725,16 +660,16 @@ build {
     ]
   }`
 
-		replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
+	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
 				"${path.root}/../scripts/build/install-runner-package.sh",`
 
-		replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
+	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
 		provisioner "shell" {
 			execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
 				inline = ["touch /etc/waagent.conf"]
 		}`
 
-		replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
 				"sleep 30",
 				"export HISTSIZE=0 && sync",
 				"usermod -aG docker ubuntu",
@@ -743,11 +678,10 @@ build {
 				"rm -rf /var/lib/apt/lists/*"
 			]`
 
-		// At this point this is the only Ubuntu-specific hard coded blocks we have left.
-		replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
+	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
+	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
 			destination = "${path.root}/../Ubuntu2404-Readme.md"`
 
-		replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
+	replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
 			destination = "${path.root}/../software-report.json"`
-	}
 }

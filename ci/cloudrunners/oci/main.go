@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -85,9 +86,6 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
 		CompartmentId:   common.String(compartmentId),
 		OperatingSystem: common.String(osname),
-		SortBy:          core.ListImagesSortByTimecreated,
-		SortOrder:       core.ListImagesSortOrderDesc,
-		Limit:           common.Int(1),
 		LifecycleState:  core.ImageLifecycleStateAvailable,
 	})
 	if err != nil {
@@ -96,7 +94,13 @@ func findImage(ctx context.Context, computeClient core.ComputeClient, compartmen
 	if len(images.Items) == 0 {
 		return nil, fmt.Errorf("no images found for %s", osname)
 	}
-	return &images.Items[0], nil
+	sort.Slice(images.Items, func(i, j int) bool {
+		return images.Items[i].TimeCreated.Time.After(images.Items[j].TimeCreated.Time)
+	})
+	selected := &images.Items[0]
+	log.Printf("findImage: found %d images for %s, selected %s (created %s, version %s)",
+		len(images.Items), osname, *selected.DisplayName, selected.TimeCreated.String(), *selected.OperatingSystemVersion)
+	return selected, nil
 }
 
 func run(cmd *cobra.Command, argv []string) error {
@@ -277,11 +281,11 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
 		"rm -rf \\$HOME",
 		"sudo chown -R 1000:1000 /etc/skel/",
-		"mv /etc/skel/.cargo /home/ubuntu/",
-		"mv /etc/skel/.nvm /home/ubuntu/",
-		"mv /etc/skel/.rustup /home/ubuntu/",
-		"mv /etc/skel/.dotnet /home/ubuntu/",
-		"mv /etc/skel/.composer /home/ubuntu/",
+		"sudo mv /etc/skel/.cargo /home/ubuntu/",
+		"sudo mv /etc/skel/.nvm /home/ubuntu/",
+		"sudo mv /etc/skel/.rustup /home/ubuntu/",
+		"sudo mv /etc/skel/.dotnet /home/ubuntu/",
+		"sudo mv /etc/skel/.composer /home/ubuntu/",
 		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
 		"sudo sysctl fs.inotify.max_user_instances=1280",
 		"sudo sysctl fs.inotify.max_user_watches=655360",
