@@ -169,8 +169,8 @@ jobs:
         id: build_image
         run: |
           set -euo pipefail
-          export OCI_CONFIG_FILE="~/.oci/config"
-          export OCI_CLI_KEY_FILE="~/.oci/oci_api_key.pem"
+          export OCI_CONFIG_FILE=~/.oci/config
+          export OCI_CLI_KEY_FILE=~/.oci/oci_api_key.pem
           mkdir -p ~/.oci
 
           cat > ${OCI_CONFIG_FILE} << EOF
