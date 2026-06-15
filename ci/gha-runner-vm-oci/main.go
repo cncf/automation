@@ -566,6 +566,7 @@ build {
       "export HISTSIZE=0 && sync",
       "usermod -aG docker ubuntu",
       "apt install -y libelf-dev",
+      "snap remove oracle-cloud-agent --purge --terminate",
       "rm -rf /var/lib/apt/lists/*"
     ]`
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
