@@ -13,16 +13,17 @@ import (
 
 func main() {
 	var (
-		name          = flag.String("name", "", "Project display name to search for (e.g., 'Kubernetes')")
-		githubOrg     = flag.String("github-org", "", "GitHub organization (e.g., 'kubernetes')")
-		githubRepo    = flag.String("github-repo", "", "Primary GitHub repository name (e.g., 'kubernetes')")
-		githubToken   = flag.String("github-token", "", "GitHub personal access token (or set GITHUB_TOKEN env)")
-		outputDir     = flag.String("output-dir", ".", "Directory to write scaffold output")
-		skipLandscape = flag.Bool("skip-landscape", false, "Skip CNCF landscape YAML lookup")
-		skipCLO       = flag.Bool("skip-clomonitor", false, "Skip CLOMonitor API lookup")
-		skipGH        = flag.Bool("skip-github", false, "Skip GitHub API lookup")
-		dryRun        = flag.Bool("dry-run", false, "Print generated YAML to stdout without writing files")
-		force         = flag.Bool("force", false, "Overwrite auxiliary files (never overwrites project.yaml or maintainers.yaml)")
+		name           = flag.String("name", "", "Project display name to search for (e.g., 'Kubernetes')")
+		githubOrg      = flag.String("github-org", "", "GitHub organization (e.g., 'kubernetes')")
+		githubRepo     = flag.String("github-repo", "", "Primary GitHub repository name (e.g., 'kubernetes')")
+		githubToken    = flag.String("github-token", "", "GitHub personal access token (or set GITHUB_TOKEN env)")
+		outputDir      = flag.String("output-dir", ".", "Directory to write scaffold output")
+		skipLandscape  = flag.Bool("skip-landscape", false, "Skip CNCF landscape YAML lookup")
+		skipCLO        = flag.Bool("skip-clomonitor", false, "Skip CLOMonitor API lookup")
+		skipGH         = flag.Bool("skip-github", false, "Skip GitHub API lookup")
+		maintainersCSV = flag.String("maintainers-csv", "", "Optional path to a local project-maintainers.csv (default: fetch from cncf/foundation)")
+		dryRun         = flag.Bool("dry-run", false, "Print generated YAML to stdout without writing files")
+		force          = flag.Bool("force", false, "Overwrite auxiliary files (never overwrites project.yaml or maintainers.yaml)")
 	)
 	flag.Parse()
 
@@ -165,9 +166,6 @@ func main() {
 			log.Printf("  Warning: GitHub fetch failed: %v", err)
 		} else {
 			fmt.Fprintf(os.Stderr, "  Found on GitHub: %s\n", ghData.Repo.FullName)
-			if len(ghData.Maintainers) > 0 {
-				fmt.Fprintf(os.Stderr, "  Discovered %d maintainer(s) from governance files\n", len(ghData.Maintainers))
-			}
 		}
 	}
 
@@ -218,9 +216,61 @@ func main() {
 		}
 	}
 
+	// Phase 3.7: Discover maintainers from the CNCF foundation maintainers CSV.
+	var csvMaintainers []string
+	{
+		seen := map[string]bool{}
+		var searchNames []string
+		add := func(n string) {
+			n = strings.TrimSpace(n)
+			if n != "" && !seen[strings.ToLower(n)] {
+				seen[strings.ToLower(n)] = true
+				searchNames = append(searchNames, n)
+			}
+		}
+		if landscapeData != nil {
+			add(landscapeData.Name)
+		}
+		add(projectName)
+		add(org)
+		add(repo)
+		if cloProject != nil {
+			add(cloProject.DisplayName)
+		}
+
+		fmt.Fprintf(os.Stderr, "  Discovering maintainers from foundation CSV...\n")
+		blocks, err := projects.FetchFoundationMaintainers(*maintainersCSV, client)
+		if err != nil {
+			log.Printf("  Warning: maintainers CSV lookup failed: %v", err)
+		} else {
+			csvMaintainers = projects.MatchProjectMaintainers(blocks, searchNames...)
+			if len(csvMaintainers) > 0 {
+				fmt.Fprintf(os.Stderr, "  Discovered %d maintainer(s) from foundation CSV\n", len(csvMaintainers))
+			} else {
+				fmt.Fprintf(os.Stderr, "  No maintainers matched in foundation CSV for: %s\n", strings.Join(searchNames, ", "))
+			}
+		}
+	}
+
 	// Phase 4: Merge data
 	fmt.Fprintf(os.Stderr, "  Merging data sources...\n")
 	result := projects.MergeBootstrapData(slug, landscapeData, cloProject, ghData)
+
+	// Maintainers come exclusively from the foundation CSV. On no match, leave
+	// the roster empty and flag a TODO.
+	result.Maintainers = csvMaintainers
+	result.TODOs = removeTODO(result.TODOs, "Add maintainer GitHub handles")
+	if len(csvMaintainers) > 0 {
+		result.Sources["maintainers"] = "foundation-csv"
+		if result.ProjectLead == "" {
+			result.ProjectLead = csvMaintainers[0]
+			result.Sources["project_lead"] = "foundation-csv"
+			result.TODOs = removeTODO(result.TODOs, "Set project_lead GitHub handle")
+		}
+	} else {
+		result.TODOs = append(result.TODOs,
+			"No maintainers found in cncf/foundation project-maintainers.csv — add maintainer handles manually")
+	}
 
 	// Apply TOC issue URL from search if not already set by landscape
 	if result.TOCIssueURL == "" && tocURL != "" {
@@ -318,6 +368,17 @@ func main() {
 			fmt.Fprintf(os.Stderr, "  %s: %s\n", field, source)
 		}
 	}
+}
+
+// removeTODO returns todos without any entries equal to target.
+func removeTODO(todos []string, target string) []string {
+	var out []string
+	for _, t := range todos {
+		if t != target {
+			out = append(out, t)
+		}
+	}
+	return out
 }
 
 // normalizeGitHubOrg strips a full GitHub URL down to just the org name.
