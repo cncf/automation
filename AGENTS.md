@@ -33,16 +33,16 @@ utilities/landscape-sync/
 
 ### Go version guard — critical
 
-`.go-version` pins **Go 1.26.1**. `.github/scripts/check-go-version.sh` runs in CI and **fails if any `go.mod` or any `FROM golang:` Dockerfile line doesn't match exactly**. When bumping Go, update `.go-version` plus every `go.mod` and every `Dockerfile` in one commit.
+`.go-version` pins **Go 1.26.1**. `.github/scripts/check-go-version.sh` is the guard script that enforces this — it **fails if any `go.mod` or any `FROM golang:` Dockerfile line doesn't match exactly**. When bumping Go, update `.go-version` plus every `go.mod` and every `Dockerfile` in one commit.
 
 ### Per-module test commands
 
 Most modules: `go test -v ./...`
 
 Exceptions:
-- `utilities/labeler/` — **no Makefile test target**; run `go test -v` (flat single package, not `./...`).
+- `utilities/labeler/` — **no Makefile `test` target**; run `go test -v` directly (flat single package).
 - `utilities/landscape-mcp-server/` — also flat single package; `go test -v` or `go test ./...` both work.
-- `utilities/dot-project/` — Makefile uses `go test -v ./...`; **CI uses plain `go test -v -coverprofile=coverage.out`** (CI sets `REPO_ROOT` and `MAINTAINER_API_STUB=true` — tests will fail without these if run outside CI).
+- `utilities/dot-project/` — Makefile uses `go test -v ./...`; **CI runs flat `go test -v -coverprofile=coverage.out`** (no `./...`). Note: `REPO_ROOT`, `MAINTAINER_API_ENDPOINT`, and `MAINTAINER_API_STUB=true` are set on the validator binary run step in CI, not the test step — unit tests do not require them.
 
 ### Per-module quirks
 
@@ -116,7 +116,7 @@ No central manifest. Install per-folder:
 ## CI / GitHub Actions
 
 - **`ci-test.yaml`** is `workflow_dispatch`-only and requires OCI secrets + self-hosted runners. It cannot be run locally.
-- **All GitHub Actions are SHA-pinned** (enforced by `kusari.yaml`). When editing `.github/actions/labeler-action`, manually bump its pinned SHA in `slash-commands.yml` and any other workflow that references it by SHA.
+- **GitHub Actions are expected to be SHA-pinned** (Kusari Inspector via `kusari.yaml` flags unpinned ones); most are, though some reusable workflows are tag-pinned (e.g. `slsa-github-generator@v2.1.0`). When editing `.github/actions/labeler-action`, manually bump its pinned SHA in `slash-commands.yml` and any other workflow that references it by SHA.
 - PR labels are applied via slash commands: `/kind`, `/area`, `/priority`, `/status` — see `.github/CONTRIBUTING.md` and `.github/README_LABELING.md`.
 
 ---
