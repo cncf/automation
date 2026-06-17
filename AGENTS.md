@@ -62,7 +62,7 @@ Exceptions:
 
 ## Terraform / OpenTofu
 
-Terraform and OpenTofu are interchangeable here. Makefiles default to `TF ?= terraform`; override with `TF=tofu make ...`. The `ci/cluster/akamai/arc/` directory has no Makefile — run `tofu`/`terraform` directly.
+Terraform and OpenTofu are interchangeable here. Makefiles default to `TF ?= terraform`; override with `TF=tofu make ...`.
 
 ### Makefile targets (`ci/iac/oracle/` and `ci/iac/akamai/`)
 
@@ -84,7 +84,7 @@ make cluster-apply
 - **Per-cluster files must exist before `make`:** `cluster/tfbackends/<name>.tfbackend` and `cluster/tfvars/<name>.tfvars` (or `buckets/...`). Existing names: oracle clusters `oke-cncf-gha-chi`, `oke-cncf-gha-phx`, `oke-cncf-gha-runners`, `oke-cncf-services`; akamai cluster `lke-cncf-gha-iad2`.
 - **`*-apply` consumes `plan.out` and ignores var files** — always run `*-plan` immediately before `*-apply`. Never apply a stale plan.
 - **Run `make clean` when switching cluster names** — a single `.terraform/` dir is shared; reuse across clusters silently applies the wrong state.
-- **Two-stack Akamai ordering:** parent stack writes `kubeconfig.yaml`; `cluster/akamai/arc/` reads `../kubeconfig.yaml`. Deploy parent first; destroy `arc` before destroying the parent cluster.
+- **Akamai kubeconfig:** `ci/iac/akamai/` outputs a base64-encoded kubeconfig — retrieve it with `make cluster-output | jq -r '.kubeconfig.value'` (it is not written to a file automatically).
 
 ### Required env vars per stack
 
@@ -92,7 +92,6 @@ make cluster-apply
 |-------|--------------|
 | `iac/oracle/` | `TF_VAR_compartment_ocid`, `TF_VAR_tenancy_ocid`, `TF_VAR_user_ocid`, `TF_VAR_fingerprint`, `TF_VAR_private_key_path` |
 | `iac/akamai/` | `TF_VAR_linode_api_token`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` |
-| `cluster/akamai/arc/` | `TF_VAR_github_token`, `TF_VAR_github_config_url` |
 
 ---
 
