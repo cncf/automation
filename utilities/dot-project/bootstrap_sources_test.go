@@ -260,50 +260,6 @@ func TestFetchFromGitHub(t *testing.T) {
 		if result.Org.TwitterUser != "testorg" {
 			t.Errorf("Org.TwitterUser = %q, want %q", result.Org.TwitterUser, "testorg")
 		}
-		// CODEOWNERS should be parsed
-		if len(result.Maintainers) == 0 {
-			t.Error("expected maintainers from CODEOWNERS")
-		}
-	})
-
-	t.Run("discovers OWNERS file", func(t *testing.T) {
-		var serverURL2 string
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			switch r.URL.Path {
-			case "/repos/test-org/test-repo":
-				json.NewEncoder(w).Encode(GitHubRepoData{Name: "test-repo", FullName: "test-org/test-repo", DefaultBranch: "main"})
-			case "/orgs/test-org":
-				json.NewEncoder(w).Encode(GitHubOrgData{Login: "test-org"})
-			case "/repos/test-org/test-repo/community/profile":
-				json.NewEncoder(w).Encode(GitHubCommunityProfile{})
-			case "/repos/test-org/test-repo/contents/":
-				json.NewEncoder(w).Encode([]GitHubContentEntry{
-					{Name: "OWNERS", Path: "OWNERS", Type: "file", DownloadURL: serverURL2 + "/raw/OWNERS"},
-				})
-			case "/raw/OWNERS":
-				w.Write([]byte("approvers:\n  - alice\n  - bob\nreviewers:\n  - carol\n"))
-			case "/repos/test-org/test-repo/contents/.github":
-				w.WriteHeader(http.StatusNotFound)
-			case "/repos/test-org/.github/contents/":
-				w.WriteHeader(http.StatusNotFound)
-			default:
-				http.NotFound(w, r)
-			}
-		}))
-		defer server.Close()
-		serverURL2 = server.URL
-
-		result, err := fetchFromGitHub("test-org", "test-repo", "", server.Client(), server.URL)
-		if err != nil {
-			t.Fatalf("fetchFromGitHub() error = %v", err)
-		}
-		if len(result.Maintainers) != 2 {
-			t.Errorf("expected 2 maintainers (approvers), got %d: %v", len(result.Maintainers), result.Maintainers)
-		}
-		if len(result.Reviewers) != 1 {
-			t.Errorf("expected 1 reviewer, got %d: %v", len(result.Reviewers), result.Reviewers)
-		}
 	})
 
 	t.Run("repo not found returns error", func(t *testing.T) {
@@ -1146,8 +1102,6 @@ func TestMergeBootstrapData(t *testing.T) {
 				Login:       "test-org",
 				TwitterUser: "testorg",
 			},
-			Maintainers: []string{"alice", "bob"},
-			Reviewers:   []string{"carol"},
 			Community: &GitHubCommunityProfile{
 				HealthPercentage: 90,
 			},
@@ -1175,8 +1129,8 @@ func TestMergeBootstrapData(t *testing.T) {
 		if result.LandscapeCategory != "Observability" {
 			t.Errorf("LandscapeCategory = %q, want %q", result.LandscapeCategory, "Observability")
 		}
-		if len(result.Maintainers) != 2 {
-			t.Errorf("Maintainers count = %d, want 2", len(result.Maintainers))
+		if len(result.Maintainers) != 0 {
+			t.Errorf("Maintainers count = %d, want 0 (maintainers come from the foundation CSV, not the merge)", len(result.Maintainers))
 		}
 		if result.CLOMonitorScore == nil || result.CLOMonitorScore.Global != 85.0 {
 			t.Errorf("CLOMonitorScore.Global = %v, want 85.0", result.CLOMonitorScore)

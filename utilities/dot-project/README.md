@@ -178,6 +178,7 @@ GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
 | `-skip-landscape` | `false` | Skip CNCF landscape YAML lookup |
 | `-skip-clomonitor` | `false` | Skip CLOMonitor API lookup |
 | `-skip-github` | `false` | Skip GitHub API lookup |
+| `-maintainers-csv` | | Optional path to a local `project-maintainers.csv` (default: fetch fresh from `cncf/foundation`) |
 | `-dry-run` | `false` | Print generated YAML without writing files |
 
 #### Data Sources and Priority
@@ -188,10 +189,14 @@ The bootstrap tool fetches data from multiple sources and merges them with this 
 2. **CLOMonitor** - project metadata, scores, repository list
 3. **GitHub API** (fallback) - repo description, org info, community health profile
 
-Maintainer discovery checks these files (in the repo root, `.github/`, and org `.github` repo):
-- `CODEOWNERS` - extracts `@handle` references
-- `OWNERS` - parses Kubernetes-style YAML (approvers/reviewers)
-- `MAINTAINERS` / `MAINTAINERS.md` - heuristic extraction of handles, tables, GitHub URLs
+Maintainer discovery uses the CNCF foundation maintainers CSV
+([`cncf/foundation/project-maintainers.csv`](https://github.com/cncf/foundation/blob/main/project-maintainers.csv))
+as the source of truth. The project being bootstrapped is matched against the
+CSV's project labels case-insensitively, trying several name variants (landscape
+name, project name, GitHub org, repo, and CLOMonitor name) and gathering any
+per-project sub-groups (e.g. `Kubernetes steering` + `Kubernetes maintainers`).
+Pass `-maintainers-csv` to read a local copy instead of fetching it. If no match
+is found, the maintainer roster is left empty with a TODO.
 
 ### Provisioning
 
