@@ -112,10 +112,7 @@ maintainers:
         members:{{ if .Maintainers }}{{ range .Maintainers }}
           - {{ . }}{{ end }}{{ else }}
           # TODO: Add maintainer handles
-          - github-handle{{ end }}{{ if .Reviewers }}
-      - name: "reviewers"
-        members:{{ range .Reviewers }}
-          - {{ . }}{{ end }}{{ end }}
+          - github-handle{{ end }}
 `
 
 // readmeTemplate generates the README.md for the .project directory.

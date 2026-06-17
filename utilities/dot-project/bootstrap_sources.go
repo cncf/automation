@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -219,8 +218,6 @@ type GitHubData struct {
 	Repo        *GitHubRepoData         `json:"repo"`
 	Org         *GitHubOrgData          `json:"org"`
 	Community   *GitHubCommunityProfile `json:"community"`
-	Maintainers []string                `json:"maintainers,omitempty"`
-	Reviewers   []string                `json:"reviewers,omitempty"`
 	HasAdopters bool                    `json:"has_adopters,omitempty"`
 
 	// Discovered file URLs (from Community Profile or governance file scan)
@@ -362,36 +359,10 @@ type governanceFile struct {
 	parseFunc func(data *GitHubData, content string, htmlURL string)
 }
 
+// governanceFiles are community-health files discovered from the repo. Maintainer
+// rosters are no longer sourced from governance files — the foundation
+// maintainers CSV is the single source of truth (see bootstrap_maintainers_csv.go).
 var governanceFiles = []governanceFile{
-	{
-		name: "CODEOWNERS",
-		parseFunc: func(data *GitHubData, content string, _ string) {
-			handles := parseCodeowners(content)
-			data.Maintainers = mergeStringSlices(data.Maintainers, handles)
-		},
-	},
-	{
-		name: "OWNERS",
-		parseFunc: func(data *GitHubData, content string, _ string) {
-			approvers, reviewers := parseOwnersFile(content)
-			data.Maintainers = mergeStringSlices(data.Maintainers, approvers)
-			data.Reviewers = mergeStringSlices(data.Reviewers, reviewers)
-		},
-	},
-	{
-		name: "MAINTAINERS",
-		parseFunc: func(data *GitHubData, content string, _ string) {
-			handles := parseMaintainersFile(content)
-			data.Maintainers = mergeStringSlices(data.Maintainers, handles)
-		},
-	},
-	{
-		name: "MAINTAINERS.md",
-		parseFunc: func(data *GitHubData, content string, _ string) {
-			handles := parseMaintainersFile(content)
-			data.Maintainers = mergeStringSlices(data.Maintainers, handles)
-		},
-	},
 	{
 		name: "ADOPTERS.md",
 		parseFunc: func(data *GitHubData, _ string, _ string) {
@@ -408,9 +379,9 @@ var governanceFiles = []governanceFile{
 	},
 }
 
-// discoverGovernanceFiles looks for CODEOWNERS, OWNERS, MAINTAINERS in the repo root,
-// .github/ subdirectory, and the org-level .github repo, then scans all repos in the
-// org to collect maintainer handles across the entire org.
+// discoverGovernanceFiles looks for community-health files (ADOPTERS.md,
+// SECURITY.md) in the repo root, the .github/ subdirectory, and the org-level
+// .github repo.
 func discoverGovernanceFiles(result *GitHubData, org, repo string, doGet func(string) (*http.Response, error), client *http.Client) {
 	// Locations to search, in order of priority
 	contentPaths := []string{
@@ -442,99 +413,6 @@ func discoverGovernanceFiles(result *GitHubData, org, repo string, doGet func(st
 					if err == nil && content != "" {
 						gf.parseFunc(result, content, entry.HTMLURL)
 					}
-				}
-			}
-		}
-	}
-
-	// Scan all org repos to collect maintainer handles across the entire org.
-	scanOrgReposForGovernance(result, org, repo, doGet, client)
-}
-
-// scanOrgReposForGovernance lists all repositories in the org and searches each one
-// for governance files, skipping the primary repo root already checked by discoverGovernanceFiles.
-// Handles found across all repos are merged and deduplicated into result.Maintainers.
-func scanOrgReposForGovernance(result *GitHubData, org, primaryRepo string, doGet func(string) (*http.Response, error), client *http.Client) {
-	// Already-checked repos — skip them to avoid duplicate work
-	alreadyChecked := map[string]bool{
-		strings.ToLower(primaryRepo): true,
-		".github":                    true,
-	}
-
-	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer handles...\n", org)
-	before := len(result.Maintainers)
-
-	page := 1
-	for {
-		path := fmt.Sprintf("/orgs/%s/repos?per_page=100&page=%d", org, page)
-		resp, err := doGet(path)
-		if err != nil || resp.StatusCode != http.StatusOK {
-			if resp != nil {
-				resp.Body.Close()
-			}
-			fmt.Fprintf(os.Stderr, "  Warning: could not list repos for org %s\n", org)
-			return
-		}
-
-		var repos []struct {
-			Name string `json:"name"`
-		}
-		if err := json.NewDecoder(resp.Body).Decode(&repos); err != nil {
-			resp.Body.Close()
-			return
-		}
-		resp.Body.Close()
-
-		if len(repos) == 0 {
-			return
-		}
-
-		for _, r := range repos {
-			if alreadyChecked[strings.ToLower(r.Name)] {
-				continue
-			}
-
-			fmt.Fprintf(os.Stderr, "    Checking %s/%s...\n", org, r.Name)
-			scanRepoRootForGovernance(result, org, r.Name, doGet, client)
-		}
-
-		// No more pages
-		if len(repos) < 100 {
-			break
-		}
-		page++
-	}
-
-	found := len(result.Maintainers) - before
-	if found > 0 {
-		fmt.Fprintf(os.Stderr, "  Found %d maintainer(s) across org repos\n", found)
-	}
-}
-
-// scanRepoRootForGovernance lists the root contents of a single repo and parses
-// any governance files found there.
-func scanRepoRootForGovernance(result *GitHubData, org, repo string, doGet func(string) (*http.Response, error), client *http.Client) {
-	resp, err := doGet(fmt.Sprintf("/repos/%s/%s/contents/", org, repo))
-	if err != nil || resp.StatusCode != http.StatusOK {
-		if resp != nil {
-			resp.Body.Close()
-		}
-		return
-	}
-
-	var entries []GitHubContentEntry
-	if err := json.NewDecoder(resp.Body).Decode(&entries); err != nil {
-		resp.Body.Close()
-		return
-	}
-	resp.Body.Close()
-
-	for _, entry := range entries {
-		for _, gf := range governanceFiles {
-			if strings.EqualFold(entry.Name, gf.name) && entry.Type == "file" && entry.DownloadURL != "" {
-				content, err := fetchFileContent(client, entry.DownloadURL)
-				if err == nil && content != "" {
-					gf.parseFunc(result, content, entry.HTMLURL)
 				}
 			}
 		}
@@ -995,16 +873,10 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 		result.CLOMonitorScore = clomonitor.Score
 	}
 
-	// Maintainers and reviewers from GitHub
+	// Community-health and identity signals from GitHub.
+	// Maintainers come exclusively from the foundation CSV (handled by the
+	// caller after this merge), not from GitHub governance files.
 	if github != nil {
-		result.Maintainers = github.Maintainers
-		result.Reviewers = github.Reviewers
-
-		// Infer project_lead from first discovered maintainer
-		if len(github.Maintainers) > 0 && result.ProjectLead == "" {
-			result.ProjectLead = github.Maintainers[0]
-			result.Sources["project_lead"] = "github"
-		}
 
 		// Community health signals
 		if github.Community != nil {

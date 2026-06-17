@@ -44,9 +44,8 @@ type BootstrapResult struct {
 	// Additional Slack channels detected across the org
 	CNCFSlackCandidates []string `json:"cncf_slack_candidates,omitempty" yaml:"cncf_slack_candidates,omitempty"`
 
-	// Maintainers discovered from CODEOWNERS/OWNERS/MAINTAINERS files
+	// Maintainers discovered from the cncf/foundation project-maintainers.csv
 	Maintainers []string `json:"maintainers,omitempty" yaml:"maintainers,omitempty"`
-	Reviewers   []string `json:"reviewers,omitempty" yaml:"reviewers,omitempty"`
 
 	// CLOMonitor scores (informational, included as YAML comments)
 	CLOMonitorScore *CLOMonitorScore `json:"clomonitor_score,omitempty" yaml:"clomonitor_score,omitempty"`
