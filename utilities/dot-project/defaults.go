@@ -24,4 +24,9 @@ const (
 	// DefaultFuzzyMatchWeight is the weight applied to partial word-match
 	// scores when fuzzy-matching project names against landscape entries.
 	DefaultFuzzyMatchWeight = 0.5
+
+	// DefaultFoundationMaintainersCSVURL is the canonical source of truth for
+	// CNCF project maintainers, published by the foundation. It is fetched
+	// fresh on each run unless the caller overrides it with a local file path.
+	DefaultFoundationMaintainersCSVURL = "https://raw.githubusercontent.com/cncf/foundation/main/project-maintainers.csv"
 )
