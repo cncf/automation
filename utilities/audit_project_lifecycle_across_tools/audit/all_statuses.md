@@ -4,21 +4,22 @@
 
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
+| Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
 | Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| CoHDI | cohdi | cohdi | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| KAI Scheduler | kai-scheduler | kai-scheduler | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | service-mesh-performance | service-mesh-performance | sandbox | archived | - | - | - | archived |
 | TrestleGRC | trestlegrc | trestlegrc | sandbox | sandbox | - | - | sandbox | - |
-| Velero | velero | velero | sandbox | - | sandbox | sandbox | sandbox | - |
 | <QHTTPX> | - | - | forming | - | - | - | - | - |
+| agentregistry | - | - | forming | - | - | - | - | - |
+| AI Runway | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
-| Apicurio Registry | - | - | forming | - | - | - | - | - |
+| Apicurio Registry | - | apicurio-registry | forming | sandbox | sandbox | - | sandbox | - |
 | BLAFS | - | - | forming | - | - | - | - | - |
+| CAIPE (Community AI Platform Engineering) | - | - | forming | - | - | - | - | - |
 | Cedar | - | cedar | forming | sandbox | - | sandbox | - | - |
 | CNCF Standards & Specifications | - | - | forming | - | - | - | - | - |
 | CNCF Toolbox | - | - | forming | - | - | - | - | - |
@@ -29,11 +30,12 @@
 | DevOps AI Toolkit | - | - | forming | - | - | - | - | - |
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
-| Higress | - | - | forming | sandbox | - | sandbox | sandbox | - |
+| Inference Gateway | - | - | forming | - | - | - | - | - |
 | kbind | - | - | forming | - | - | - | - | - |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| llm-d | - | - | forming | - | - | - | sandbox | - |
+| llm-d | - | - | forming | - | sandbox | sandbox | sandbox | - |
+| Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
@@ -48,6 +50,7 @@
 | Devstream | - | devstream | archived | archived | - | - | - | archived |
 | FabEdge | - | fabedge | archived | archived | - | - | - | archived |
 | Fonio | - | ingraind | archived | archived | - | - | - | archived |
+| Hexa | - | hexa | archived | archived | - | - | sandbox | archived |
 | Keptn | - | keptn | archived | archived | - | - | - | archived |
 | Krator | - | krator | archived | archived | - | - | - | archived |
 | Krustlet | - | krustlet | archived | archived | - | - | - | archived |
@@ -83,7 +86,7 @@
 | Dapr | dapr | dapr | graduated | graduated | graduated | graduated | graduated | graduated |
 | Dragonfly | d7y | d7y | graduated | graduated | graduated | graduated | graduated | graduated |
 | Envoy | envoy | envoy | graduated | graduated | graduated | graduated | graduated | graduated |
-| Etcd | etcd | etcd | graduated | graduated | graduated | graduated | graduated | graduated |
+| Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
 | Falco | falco | falco | graduated | graduated | graduated | graduated | graduated | graduated |
 | Fluentd | fluentd | fluentd | graduated | graduated | graduated | graduated | graduated | graduated |
 | Flux | fluxcd | fluxcd | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -134,7 +137,6 @@
 | Lima | lima | lima | incubating | incubating | incubating | incubating | incubating | incubating |
 | LitmusChaos | litmuschaos | litmuschaos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Longhorn | longhorn | longhorn | incubating | incubating | incubating | incubating | incubating | incubating |
-| metal3-io | metal3 | metal3 | incubating | incubating | incubating | incubating | incubating | incubating |
 | Microcks | microcks | microcks | incubating | incubating | incubating | incubating | incubating | incubating |
 | NATS | nats | nats | incubating | incubating | incubating | incubating | incubating | incubating |
 | Notary | notary | notary | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -174,7 +176,7 @@
 | CloudNativePG | cloudnativepg | cloudnativepg | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Clusternet | clusternet | clusternet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Clusterpedia | clusterpedia | clusterpedia | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| CoHDI | cohdi | cohdi | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| CoHDI | cohdi | cohdi | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Confidential Containers | confcont | confcont | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Connect RPC | connect | connect | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -193,7 +195,7 @@
 | External Secrets Operator | externalsecretsoperator | externalsecretsoperator | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | HAMi | hami | hami | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Headlamp | headlamp | headlamp | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Hexa | hexa | hexa | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Higress | higress | higress | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | HolmesGPT | holmesgpt | holmesgpt | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | HwameiStor | hwameistor | hwameistor | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Hyperlight | hyperlight | hyperlight | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -206,7 +208,7 @@
 | K8sGPT | k8sgpt | k8sgpt | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | K8up | k8up | k8up | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | kagent | kagent | kagent | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| KAI Scheduler | kai-scheduler | kai-scheduler | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| KAI Scheduler | kai-scheduler | kai-scheduler | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kairos | kairos | kairos | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kanister | kanister | kanister | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KCL | kcl | kcl | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -292,7 +294,7 @@
 | TrestleGRC | trestlegrc | trestlegrc | sandbox | sandbox | - | - | sandbox | - |
 | Trickster | trickster | trickster | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | urunc | urunc | urunc | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Velero | velero | velero | sandbox | - | sandbox | sandbox | sandbox | - |
+| Velero | velero | velero | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Vineyard | vineyard | vineyard | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Virtual Kubelet | virtualkubelet | virtualkubelet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | VS Code Kubernetes Tools | vscodekubernetestools | vscodekubernetestools | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -307,9 +309,12 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | <QHTTPX> | - | - | forming | - | - | - | - | - |
+| agentregistry | - | - | forming | - | - | - | - | - |
+| AI Runway | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
-| Apicurio Registry | - | - | forming | - | - | - | - | - |
+| Apicurio Registry | - | apicurio-registry | forming | sandbox | sandbox | - | sandbox | - |
 | BLAFS | - | - | forming | - | - | - | - | - |
+| CAIPE (Community AI Platform Engineering) | - | - | forming | - | - | - | - | - |
 | Cedar | - | cedar | forming | sandbox | - | sandbox | - | - |
 | CNCF Standards & Specifications | - | - | forming | - | - | - | - | - |
 | CNCF Toolbox | - | - | forming | - | - | - | - | - |
@@ -320,11 +325,12 @@
 | DevOps AI Toolkit | - | - | forming | - | - | - | - | - |
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
-| Higress | - | - | forming | sandbox | - | sandbox | sandbox | - |
+| Inference Gateway | - | - | forming | - | - | - | - | - |
 | kbind | - | - | forming | - | - | - | - | - |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| llm-d | - | - | forming | - | - | - | sandbox | - |
+| llm-d | - | - | forming | - | sandbox | sandbox | sandbox | - |
+| Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
@@ -344,6 +350,7 @@
 | Devstream | - | devstream | archived | archived | - | - | - | archived |
 | FabEdge | - | fabedge | archived | archived | - | - | - | archived |
 | Fonio | - | ingraind | archived | archived | - | - | - | archived |
+| Hexa | - | hexa | archived | archived | - | - | sandbox | archived |
 | Keptn | - | keptn | archived | archived | - | - | - | archived |
 | Krator | - | krator | archived | archived | - | - | - | archived |
 | Krustlet | - | krustlet | archived | archived | - | - | - | archived |

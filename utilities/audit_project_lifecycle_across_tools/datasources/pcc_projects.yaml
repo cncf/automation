@@ -351,12 +351,6 @@ categories:
     status: Active
     project_logo: https://lf-master-project-logos-prod.s3.us-east-2.amazonaws.com/longhorn.svg
     repository_url: https://github.com/longhorn/longhorn
-  - name: metal3-io
-    slug: metal3
-    category: Incubating
-    status: Active
-    project_logo: https://lf-master-project-logos-prod.s3.us-east-2.amazonaws.com/metal3.svg
-    repository_url: https://github.com/metal3-io
   - name: Microcks
     slug: microcks
     category: Incubating
@@ -676,12 +670,12 @@ categories:
     status: Active
     project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/headlamp/headlamp-logo.svg?v=1708621133033
     repository_url: https://github.com/kubernetes-sigs/headlamp
-  - name: Hexa
-    slug: hexa
+  - name: Higress
+    slug: higress
     category: Sandbox
     status: Active
-    project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/hexa/hexa-logo.svg?v=1708621268755
-    repository_url: https://github.com/hexa-org
+    project_logo: null
+    repository_url: https://github.com/higress-group
   - name: HolmesGPT
     slug: holmesgpt
     category: Sandbox
@@ -1100,7 +1094,7 @@ categories:
     slug: pipecd
     category: Sandbox
     status: Active
-    project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/pipecd/pipecd-logo.svg?v=1740682534713
+    project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/pipecd/pipecd-logo.svg?v=1781190895346
     repository_url: https://github.com/pipe-cd/pipecd
   - name: Piraeus-Datastore
     slug: piraeus-datastore
@@ -1329,18 +1323,30 @@ forming_projects:
   status: Formation - Exploratory
   project_logo: null
   repository_url: https://github.com/Quantam-Open-Source/QHTTPX
+- name: agentregistry
+  status: Formation - Exploratory
+  project_logo: null
+  repository_url: https://github.com/agentregistry-dev/agentregistry
+- name: AI Runway
+  status: Formation - Exploratory
+  project_logo: null
+  repository_url: https://github.com/kaito-project/airunway
 - name: AIBrix
   status: Formation - Exploratory
   project_logo: null
   repository_url: https://github.com/vllm-project/aibrix
 - name: Apicurio Registry
   status: Formation - Exploratory
-  project_logo: null
+  project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/apicurio-registry/apicurio-registry-logo.svg?v=1781191115295
   repository_url: https://github.com/Apicurio/apicurio-registry
 - name: BLAFS
   status: Formation - Exploratory
   project_logo: null
   repository_url: https://github.com/negativa-ai/BLAFS
+- name: CAIPE (Community AI Platform Engineering)
+  status: Formation - Exploratory
+  project_logo: null
+  repository_url: https://github.com/cnoe-io/ai-platform-engineering
 - name: Cedar
   status: Formation - Exploratory
   project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/cedar-policy/cedar-policy-logo.svg?v=1764851829365
@@ -1377,10 +1383,10 @@ forming_projects:
   status: Formation - Exploratory
   project_logo: null
   repository_url: https://github.com/Gthulhu
-- name: Higress
+- name: Inference Gateway
   status: Formation - Exploratory
   project_logo: null
-  repository_url: https://github.com/higress-group
+  repository_url: https://github.com/inference-gateway/inference-gateway
 - name: kbind
   status: Formation - Exploratory
   project_logo: null
@@ -1397,6 +1403,10 @@ forming_projects:
   status: Formation - Exploratory
   project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/llm-d/llm-d-logo.svg?v=1778170334377
   repository_url: https://github.com/llm-d
+- name: Metal³
+  status: Formation - Exploratory
+  project_logo: https://lf-master-project-logos-prod.s3.us-east-2.amazonaws.com/metal3.svg
+  repository_url: https://github.com/metal3-io
 - name: OptiFlow (AI‑OrchestrateX)
   status: Formation - Exploratory
   project_logo: null
@@ -1481,6 +1491,11 @@ archived_projects:
   category: Sandbox
   project_logo: null
   repository_url: https://github.com/foniod/foniod
+- name: Hexa
+  status: Archived
+  category: Archived
+  project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/hexa/hexa-logo.svg?v=1708621268755
+  repository_url: https://github.com/hexa-org
 - name: IO Flow
   status: Formation - Disengaged
   category: null
