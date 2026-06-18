@@ -9,7 +9,7 @@ RUN go build -o bin/cloudrunner-oci ./oci && \
     go build -o bin/cloudrunner-kubevirt ./kubevirt
 
 ### Final Stage
-FROM alpine:3.23.4
+FROM alpine:3.24.1
 
 COPY --from=build /app/bin/cloudrunner-oci /cloudrunner-oci
 COPY --from=build /app/bin/cloudrunner-kubevirt /cloudrunner-kubevirt

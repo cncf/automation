@@ -71,30 +71,39 @@ func run(cmd *cobra.Command, argv []string) error {
 		if *release.Prerelease {
 			continue
 		}
-		if strings.Contains(strings.ToLower(release.GetName()), strings.ToLower(fmt.Sprintf("%s %s", args.os, args.osVersion))) {
-			log.Printf("Found %s %s release: %s\n", args.os, args.osVersion, release.GetTagName())
-			downloadURL := release.GetTarballURL()
-
-			if exists, _ := imageExists(imageName, release.GetTagName()); exists {
-				if os.Getenv("GITHUB_PERIODIC") == "true" {
-					log.Println("Image already exists.")
-					return nil
-				}
-			}
-
-			log.Printf("Download URL: %s\n", downloadURL)
-
-			filename, err = extractPackerFileFromURL(downloadURL, sourceFile)
-			if err != nil {
-				log.Fatalf("Failed to extract packer file: %s\n", err)
-			}
-			varsFilename, err = extractPackerFileFromURL(downloadURL, varsFile)
-			if err != nil {
-				log.Fatalf("Failed to extract packer file: %s\n", err)
-			}
-			selectedRelease = release
-			break
+		releaseName := strings.ToLower(release.GetName())
+		if !strings.Contains(releaseName, strings.ToLower(fmt.Sprintf("%s %s", args.os, args.osVersion))) {
+			continue
 		}
+		// Filter by architecture: arm64 releases contain "arm64" in the name, amd64 ones don't
+		if args.arch == "arm64" && !strings.Contains(releaseName, "arm64") {
+			continue
+		}
+		if args.arch != "arm64" && strings.Contains(releaseName, "arm64") {
+			continue
+		}
+		log.Printf("Found %s %s release: %s\n", args.os, args.osVersion, release.GetTagName())
+		downloadURL := release.GetTarballURL()
+
+		if exists, _ := imageExists(imageName, release.GetTagName()); exists {
+			if os.Getenv("GITHUB_PERIODIC") == "true" {
+				log.Println("Image already exists.")
+				return nil
+			}
+		}
+
+		log.Printf("Download URL: %s\n", downloadURL)
+
+		filename, err = extractPackerFileFromURL(downloadURL, sourceFile)
+		if err != nil {
+			log.Fatalf("Failed to extract packer file: %s\n", err)
+		}
+		varsFilename, err = extractPackerFileFromURL(downloadURL, varsFile)
+		if err != nil {
+			log.Fatalf("Failed to extract packer file: %s\n", err)
+		}
+		selectedRelease = release
+		break
 	}
 
 	pkrContent, err := os.ReadFile(filename)
@@ -635,7 +644,6 @@ build {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     inline = ["touch /etc/waagent.conf"]
   }`, args.isoURL, args.isoChecksum)
-
 
 	replacements[`provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
