@@ -24,7 +24,7 @@ env:
 jobs:
   build-x86:
     name: Build new Actions x86-64 VM
-    runs-on: oracle-vm-8cpu-32gb-x86-64
+    runs-on: cncf-ubuntu-16-64-x86
     env:
       PACKER_VERSION: 1.14.3
     outputs:
