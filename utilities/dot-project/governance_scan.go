@@ -14,7 +14,13 @@ import (
 // populate the onboarding issue.
 const suggestionsFileName = "maintainer-suggestions.md"
 
-func DiscoverGovernanceSuggestions(org, primaryRepo, token string, client *http.Client, baseURL string, csvHandles map[string]bool) []MaintainerSuggestion {
+// DiscoverGovernanceSuggestions scans an org's repositories in a single shared
+// pass and returns two things:
+//  1. maintainer handle suggestions found in governance files
+//     (CODEOWNERS / OWNERS / MAINTAINERS), excluding handles already in csvHandles;
+//  2. CNCF Slack channel names referenced in each repo's README / CONTRIBUTING /
+//     COMMUNITY files.
+func DiscoverGovernanceSuggestions(org, primaryRepo, token string, client *http.Client, baseURL string, csvHandles map[string]bool) ([]MaintainerSuggestion, []string) {
 	if baseURL == "" {
 		baseURL = defaultGitHubAPIURL
 	}
@@ -30,7 +36,7 @@ func DiscoverGovernanceSuggestions(org, primaryRepo, token string, client *http.
 		return client.Do(req)
 	}
 
-	c := newSuggestionCollector()
+	c := newOrgScanCollector()
 
 	scanContentsForSuggestions(c, doGet, client,
 		fmt.Sprintf("/repos/%s/%s/contents/", org, primaryRepo), fmt.Sprintf("%s/%s", org, primaryRepo))
@@ -41,8 +47,52 @@ func DiscoverGovernanceSuggestions(org, primaryRepo, token string, client *http.
 
 	scanOrgReposForSuggestions(c, org, primaryRepo, doGet, client)
 
-	return c.suggestions(csvHandles)
+	return c.suggestions.suggestions(csvHandles), c.slack
 }
+
+// orgScanCollector accumulates the results of a single shared org-wide scan
+// pass: maintainer suggestions (from governance files) and Slack channels (from
+// community documentation files).
+type orgScanCollector struct {
+	suggestions *suggestionCollector
+	slackSeen   map[string]bool
+	slack       []string
+}
+
+func newOrgScanCollector() *orgScanCollector {
+	return &orgScanCollector{
+		suggestions: newSuggestionCollector(),
+		slackSeen:   make(map[string]bool),
+	}
+}
+
+// addSlack records discovered Slack channel names, deduplicating across repos
+// while preserving discovery order.
+func (c *orgScanCollector) addSlack(channels []string) {
+	for _, ch := range channels {
+		if ch == "" || c.slackSeen[ch] {
+			continue
+		}
+		c.slackSeen[ch] = true
+		c.slack = append(c.slack, ch)
+	}
+}
+
+// isCommunityDocFile reports whether name is a README / CONTRIBUTING / COMMUNITY
+// document (any extension), matched case-insensitively. These files are scanned
+// for CNCF Slack channel references.
+func isCommunityDocFile(name string) bool {
+	base := strings.ToUpper(name)
+	if i := strings.LastIndex(base, "."); i > 0 {
+		base = base[:i]
+	}
+	switch base {
+	case "README", "CONTRIBUTING", "COMMUNITY":
+		return true
+	}
+	return false
+}
+
 
 func isGovernanceMaintainerFile(name string) bool {
 	switch strings.ToUpper(name) {
@@ -99,9 +149,10 @@ func addGovernanceFileToCollector(c *suggestionCollector, filename, content, sou
 	}
 }
 
-// scanContentsForSuggestions lists a contents path and feeds any governance
-// files found there into the collector, labelled with sourceRepo.
-func scanContentsForSuggestions(c *suggestionCollector, doGet func(string) (*http.Response, error), client *http.Client, contentPath, sourceRepo string) {
+// scanContentsForSuggestions lists a contents path and, in a single pass, feeds
+// any governance files into the maintainer collector and extracts Slack channel
+// references from README / CONTRIBUTING / COMMUNITY files.
+func scanContentsForSuggestions(c *orgScanCollector, doGet func(string) (*http.Response, error), client *http.Client, contentPath, sourceRepo string) {
 	resp, err := doGet(contentPath)
 	if err != nil || resp.StatusCode != http.StatusOK {
 		if resp != nil {
@@ -117,25 +168,34 @@ func scanContentsForSuggestions(c *suggestionCollector, doGet func(string) (*htt
 	resp.Body.Close()
 
 	for _, entry := range entries {
-		if entry.Type == "file" && entry.DownloadURL != "" && isGovernanceMaintainerFile(entry.Name) {
+		if entry.Type != "file" || entry.DownloadURL == "" {
+			continue
+		}
+		switch {
+		case isGovernanceMaintainerFile(entry.Name):
 			content, err := fetchFileContent(client, entry.DownloadURL)
 			if err == nil && content != "" {
-				addGovernanceFileToCollector(c, entry.Name, content, sourceRepo)
+				addGovernanceFileToCollector(c.suggestions, entry.Name, content, sourceRepo)
+			}
+		case isCommunityDocFile(entry.Name):
+			content, err := fetchFileContent(client, entry.DownloadURL)
+			if err == nil && content != "" {
+				c.addSlack(extractSlackChannels(content))
 			}
 		}
 	}
 }
 
 // scanOrgReposForSuggestions lists every repo in the org and scans each repo
-// root for governance files, skipping the primary repo and the org .github repo
-// (already scanned by the caller).
-func scanOrgReposForSuggestions(c *suggestionCollector, org, primaryRepo string, doGet func(string) (*http.Response, error), client *http.Client) {
+// root for governance files and community docs, skipping the primary repo and
+// the org .github repo (already scanned by the caller).
+func scanOrgReposForSuggestions(c *orgScanCollector, org, primaryRepo string, doGet func(string) (*http.Response, error), client *http.Client) {
 	alreadyChecked := map[string]bool{
 		strings.ToLower(primaryRepo): true,
 		".github":                    true,
 	}
 
-	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer suggestions...\n", org)
+	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer suggestions and Slack channels...\n", org)
 
 	page := 1
 	for {

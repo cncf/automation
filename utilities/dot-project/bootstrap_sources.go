@@ -521,6 +521,46 @@ func MergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	return mergeBootstrapData(slug, landscape, clomonitor, github)
 }
 
+// AddDiscoveredSlackChannels merges additional discovered Slack channel names
+// (e.g. from the org-wide repo scan) into result.SlackChannels as non-primary
+// entries, skipping duplicates. If the result has no primary channel yet, the
+// first newly-added channel is promoted to primary.
+func AddDiscoveredSlackChannels(result *BootstrapResult, names []string) {
+	if result == nil || len(names) == 0 {
+		return
+	}
+	seen := make(map[string]bool)
+	hasPrimary := false
+	for _, ch := range result.SlackChannels {
+		seen[ch.Name] = true
+		if ch.Primary {
+			hasPrimary = true
+		}
+	}
+	added := false
+	for _, name := range names {
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		entry := SlackChannel{Name: name}
+		if !hasPrimary {
+			entry.Primary = true
+			hasPrimary = true
+		}
+		result.SlackChannels = append(result.SlackChannels, entry)
+		added = true
+	}
+	if added {
+		if result.Sources == nil {
+			result.Sources = map[string]string{}
+		}
+		if _, ok := result.Sources["slack_channels"]; !ok {
+			result.Sources["slack_channels"] = "github_org_scan"
+		}
+	}
+}
+
 // fuzzyMatch performs case-insensitive substring matching to find the best
 // candidate matching the query. Returns the best match and a score (0 = no match).
 func fuzzyMatch(query string, candidates []string) (best string, score float64) {
