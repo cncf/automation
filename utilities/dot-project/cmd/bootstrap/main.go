@@ -88,10 +88,19 @@ func main() {
 	}
 	slug = strings.Trim(slug, "-")
 
-	// GitHub token from env if not provided via flag
+	// GitHub token from env if not provided via flag (GITHUB_TOKEN, then GH_TOKEN)
 	token := *githubToken
 	if token == "" {
 		token = os.Getenv("GITHUB_TOKEN")
+	}
+	if token == "" {
+		token = os.Getenv("GH_TOKEN")
+	}
+	if token == "" {
+		fmt.Fprintln(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / GH_TOKEN).")
+		fmt.Fprintln(os.Stderr, "        Unauthenticated GitHub API is limited to 60 requests/hour, so the")
+		fmt.Fprintln(os.Stderr, "        org-wide scan will likely be rate-limited (HTTP 403).")
+		fmt.Fprintln(os.Stderr, "        Re-run with a token, e.g.:  GITHUB_TOKEN=$(gh auth token) go run ./cmd/bootstrap ...")
 	}
 
 	client := &http.Client{Timeout: projects.DefaultHTTPTimeout}

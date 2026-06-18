@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,7 +19,28 @@ const (
 	defaultGitHubAPIURL     = "https://api.github.com"
 	defaultLandscapeYAMLURL = "https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml"
 	landscapeLogoBaseURL    = "https://landscape.cncf.io/logos/"
+
+	// bootstrapUserAgent identifies this tool to the GitHub API, which requires
+	// a User-Agent header on every request.
+	bootstrapUserAgent = "cncf-dot-project-bootstrap"
 )
+
+// rateLimitHint returns a human-friendly suffix when a GitHub API response
+// indicates the rate limit is exhausted (X-RateLimit-Remaining: 0), otherwise "".
+func rateLimitHint(resp *http.Response) string {
+	if resp == nil || resp.Header.Get("X-RateLimit-Remaining") != "0" {
+		return ""
+	}
+	msg := " — GitHub API rate limit exhausted"
+	if reset := resp.Header.Get("X-RateLimit-Reset"); reset != "" {
+		if secs, err := strconv.ParseInt(reset, 10, 64); err == nil {
+			msg += fmt.Sprintf(" (resets at %s)", time.Unix(secs, 0).Format("15:04:05"))
+		}
+	}
+	msg += "; set GITHUB_TOKEN to raise the limit to 5000/hr (e.g. GITHUB_TOKEN=$(gh auth token))"
+	return msg
+}
+
 
 // fetchFromCLOMonitor queries the CLOMonitor search API for a CNCF project by display name.
 // It passes text and foundation=cncf as query parameters so the server filters results,
@@ -271,6 +293,7 @@ func fetchFromGitHub(org, repo, token string, client *http.Client, baseURL strin
 			req.Header.Set("Authorization", "token "+token)
 		}
 		req.Header.Set("Accept", "application/vnd.github.v3+json")
+		req.Header.Set("User-Agent", bootstrapUserAgent)
 		return client.Do(req)
 	}
 
@@ -633,6 +656,7 @@ func detectDCOCLA(org, repo, token string, client *http.Client, baseURL string) 
 			req.Header.Set("Authorization", "token "+token)
 		}
 		req.Header.Set("Accept", "application/vnd.github.v3+json")
+		req.Header.Set("User-Agent", bootstrapUserAgent)
 		return client.Do(req)
 	}
 
@@ -711,6 +735,7 @@ func SearchTOCIssues(projectName, orgName, token string, client *http.Client, ba
 			req.Header.Set("Authorization", "token "+token)
 		}
 		req.Header.Set("Accept", "application/vnd.github.v3+json")
+		req.Header.Set("User-Agent", bootstrapUserAgent)
 
 		resp, err := client.Do(req)
 		if err != nil {

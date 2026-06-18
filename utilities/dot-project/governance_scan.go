@@ -93,7 +93,6 @@ func isCommunityDocFile(name string) bool {
 	return false
 }
 
-
 func isGovernanceMaintainerFile(name string) bool {
 	switch strings.ToUpper(name) {
 	case "CODEOWNERS", "OWNERS", "MAINTAINERS", "MAINTAINERS.MD":
@@ -202,10 +201,12 @@ func scanOrgReposForSuggestions(c *orgScanCollector, org, primaryRepo string, do
 		path := fmt.Sprintf("/orgs/%s/repos?per_page=100&page=%d", org, page)
 		resp, err := doGet(path)
 		if err != nil || resp.StatusCode != http.StatusOK {
+			hint := ""
 			if resp != nil {
+				hint = rateLimitHint(resp)
 				resp.Body.Close()
 			}
-			fmt.Fprintf(os.Stderr, "  Warning: could not list repos for org %s\n", org)
+			fmt.Fprintf(os.Stderr, "  Warning: could not list repos for org %s%s\n", org, hint)
 			return
 		}
 
