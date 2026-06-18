@@ -18,7 +18,7 @@ This document defines the schema for CNCF `.project` repository metadata files.
 | `type` | string | No | Project type | Free text (e.g., `"project"`, `"platform"`, `"specification"`) |
 | `package_managers` | map[string]string | No | Registry identifiers (e.g., npm, Docker Hub) | All values must be non-empty strings |
 | `project_lead` | string | No | Primary contact GitHub handle or team | Non-empty if present; `@` prefix is stripped; can be a GitHub handle (e.g., `jdoe`) or a GitHub team (e.g., `org/team-name`) |
-| `cncf_slack_channel` | string | No | CNCF Slack channel name | Must start with `#` if present |
+| `slack_channels` | SlackChannel[] | No | One or more CNCF Slack channels | Each `name` must start with `#`; at most one entry may set `primary: true` |
 | `maturity_log` | MaturityEntry[] | Yes | Maturity phase history | At least one entry; chronological order |
 | `repositories` | string[] | Yes | Repository URLs | At least one valid HTTP(S) URL |
 | `website` | string | No | Project website | Valid HTTP(S) URL if present |
@@ -40,6 +40,28 @@ This document defines the schema for CNCF `.project` repository metadata files.
 | `phase` | string | Yes | Maturity phase | One of: `sandbox`, `incubating`, `graduated`, `archived` |
 | `date` | datetime | Yes | Date of phase transition | ISO 8601 format |
 | `issue` | string | Yes | TOC issue URL | Non-empty |
+
+### SlackChannel
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `name` | string | Yes | Channel name (e.g., `#kubernetes-dev`) | Must start with `#` |
+| `workspace` | string | No | Slack workspace identifier (e.g., `cncf`) | |
+| `link` | string | No | Invite or channel URL | Valid HTTP(S) URL if present |
+| `primary` | boolean | No | Whether this is the primary channel most end-users should join | At most one entry per project may be `true` |
+
+Example:
+
+```yaml
+slack_channels:
+  - name: "#kubernetes-users"
+    workspace: "cncf"
+    link: "https://cloud-native.slack.com/messages/kubernetes-users"
+    primary: true
+  - name: "#kubernetes-dev"
+    workspace: "cncf"
+    link: "https://cloud-native.slack.com/messages/kubernetes-dev"
+```
 
 ### Audit
 

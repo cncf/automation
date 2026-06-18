@@ -8,6 +8,27 @@ import (
 	"testing"
 )
 
+// primarySlackName returns the name of the primary detected Slack channel, or "".
+func primarySlackName(result *BootstrapResult) string {
+	for _, ch := range result.SlackChannels {
+		if ch.Primary {
+			return ch.Name
+		}
+	}
+	return ""
+}
+
+// slackCandidateNames returns the names of the non-primary detected Slack channels.
+func slackCandidateNames(result *BootstrapResult) []string {
+	var names []string
+	for _, ch := range result.SlackChannels {
+		if !ch.Primary {
+			names = append(names, ch.Name)
+		}
+	}
+	return names
+}
+
 func TestFetchFromCLOMonitor(t *testing.T) {
 	// helper checks that the request carries the expected search query params
 	checkSearchParams := func(t *testing.T, r *http.Request, wantText string) {
@@ -872,8 +893,8 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 
 		result := mergeBootstrapData("test-project", landscape, nil, nil)
 
-		if result.CNCFSlackChannel != "#test-project" {
-			t.Errorf("CNCFSlackChannel = %q, want #test-project", result.CNCFSlackChannel)
+		if got := primarySlackName(result); got != "#test-project" {
+			t.Errorf("primary slack channel = %q, want #test-project", got)
 		}
 	})
 
@@ -886,8 +907,8 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 
 		result := mergeBootstrapData("test-project", landscape, nil, nil)
 
-		if result.CNCFSlackChannel != "#test-project" {
-			t.Errorf("CNCFSlackChannel = %q, want #test-project", result.CNCFSlackChannel)
+		if got := primarySlackName(result); got != "#test-project" {
+			t.Errorf("primary slack channel = %q, want #test-project", got)
 		}
 	})
 
@@ -898,8 +919,8 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 			SlackURL: "https://cloud-native.slack.com/channels/test-project",
 		}
 		result := mergeBootstrapData("test-project", landscape, nil, nil)
-		if result.CNCFSlackChannel != "#test-project" {
-			t.Errorf("CNCFSlackChannel = %q, want #test-project", result.CNCFSlackChannel)
+		if got := primarySlackName(result); got != "#test-project" {
+			t.Errorf("primary slack channel = %q, want #test-project", got)
 		}
 	})
 
@@ -910,8 +931,8 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 			SlackURL: "https://cloud-native.slack.com/archives/test-project",
 		}
 		result := mergeBootstrapData("test-project", landscape, nil, nil)
-		if result.CNCFSlackChannel != "#test-project" {
-			t.Errorf("CNCFSlackChannel = %q, want #test-project", result.CNCFSlackChannel)
+		if got := primarySlackName(result); got != "#test-project" {
+			t.Errorf("primary slack channel = %q, want #test-project", got)
 		}
 	})
 
@@ -920,14 +941,15 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 			SlackChannels: []string{"#envoy", "#envoy-dev", "#envoy-mobile"},
 		}
 		result := mergeBootstrapData("envoy", nil, nil, github)
-		if result.CNCFSlackChannel != "#envoy" {
-			t.Errorf("CNCFSlackChannel = %q, want #envoy", result.CNCFSlackChannel)
+		if got := primarySlackName(result); got != "#envoy" {
+			t.Errorf("primary slack channel = %q, want #envoy", got)
 		}
-		if len(result.CNCFSlackCandidates) != 2 {
-			t.Fatalf("CNCFSlackCandidates len = %d, want 2", len(result.CNCFSlackCandidates))
+		candidates := slackCandidateNames(result)
+		if len(candidates) != 2 {
+			t.Fatalf("candidate channels len = %d, want 2", len(candidates))
 		}
-		if result.CNCFSlackCandidates[0] != "#envoy-dev" || result.CNCFSlackCandidates[1] != "#envoy-mobile" {
-			t.Errorf("CNCFSlackCandidates = %v, want [#envoy-dev, #envoy-mobile]", result.CNCFSlackCandidates)
+		if candidates[0] != "#envoy-dev" || candidates[1] != "#envoy-mobile" {
+			t.Errorf("candidate channels = %v, want [#envoy-dev, #envoy-mobile]", candidates)
 		}
 	})
 
@@ -941,15 +963,16 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 			SlackChannels: []string{"#envoy", "#envoy-dev", "#envoy-mobile"},
 		}
 		result := mergeBootstrapData("envoy", landscape, nil, github)
-		if result.CNCFSlackChannel != "#envoy" {
-			t.Errorf("CNCFSlackChannel = %q, want #envoy", result.CNCFSlackChannel)
+		if got := primarySlackName(result); got != "#envoy" {
+			t.Errorf("primary slack channel = %q, want #envoy", got)
 		}
 		// #envoy is already primary, so candidates should be the other two
-		if len(result.CNCFSlackCandidates) != 2 {
-			t.Fatalf("CNCFSlackCandidates len = %d, want 2", len(result.CNCFSlackCandidates))
+		candidates := slackCandidateNames(result)
+		if len(candidates) != 2 {
+			t.Fatalf("candidate channels len = %d, want 2", len(candidates))
 		}
-		if result.CNCFSlackCandidates[0] != "#envoy-dev" || result.CNCFSlackCandidates[1] != "#envoy-mobile" {
-			t.Errorf("CNCFSlackCandidates = %v, want [#envoy-dev, #envoy-mobile]", result.CNCFSlackCandidates)
+		if candidates[0] != "#envoy-dev" || candidates[1] != "#envoy-mobile" {
+			t.Errorf("candidate channels = %v, want [#envoy-dev, #envoy-mobile]", candidates)
 		}
 	})
 
@@ -958,11 +981,11 @@ func TestMergeBootstrapData_ExtraFields(t *testing.T) {
 			SlackChannels: []string{"#my-project"},
 		}
 		result := mergeBootstrapData("my-project", nil, nil, github)
-		if result.CNCFSlackChannel != "#my-project" {
-			t.Errorf("CNCFSlackChannel = %q, want #my-project", result.CNCFSlackChannel)
+		if got := primarySlackName(result); got != "#my-project" {
+			t.Errorf("primary slack channel = %q, want #my-project", got)
 		}
-		if len(result.CNCFSlackCandidates) != 0 {
-			t.Errorf("CNCFSlackCandidates = %v, want empty", result.CNCFSlackCandidates)
+		if candidates := slackCandidateNames(result); len(candidates) != 0 {
+			t.Errorf("candidate channels = %v, want empty", candidates)
 		}
 	})
 

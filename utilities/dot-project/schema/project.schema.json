@@ -29,11 +29,6 @@
         "$ref": "#/$defs/Audit"
       }
     },
-    "cncf_slack_channel": {
-      "type": "string",
-      "description": "CNCF Slack channel",
-      "pattern": "^#"
-    },
     "description": {
       "type": "string",
       "description": "One-line project description"
@@ -101,6 +96,13 @@
     "security": {
       "description": "Security configuration",
       "$ref": "#/$defs/SecurityConfig"
+    },
+    "slack_channels": {
+      "type": "array",
+      "description": "CNCF Slack channels (one or more). Mark the channel most end-users should join with primary: true.",
+      "items": {
+        "$ref": "#/$defs/SlackChannel"
+      }
     },
     "slug": {
       "type": "string",
@@ -394,6 +396,32 @@
           ]
         }
       ]
+    },
+    "SlackChannel": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "link": {
+          "type": "string",
+          "description": "Invite or channel URL",
+          "format": "uri"
+        },
+        "name": {
+          "type": "string",
+          "description": "Channel name (e.g., #kubernetes-dev)",
+          "pattern": "^#"
+        },
+        "primary": {
+          "type": "boolean",
+          "description": "Whether this is the primary channel for end-users"
+        },
+        "workspace": {
+          "type": "string",
+          "description": "Slack workspace identifier (e.g., cncf)"
+        }
+      }
     }
   }
 }

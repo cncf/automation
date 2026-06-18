@@ -26,8 +26,12 @@ type Project struct {
 	Slug          string `json:"slug" yaml:"slug"` // Unique project identifier (lowercase, alphanumeric + hyphens)
 
 	// Contacts and channels
-	ProjectLead      string `json:"project_lead,omitempty" yaml:"project_lead,omitempty"`             // GitHub handle of primary contact
-	CNCFSlackChannel string `json:"cncf_slack_channel,omitempty" yaml:"cncf_slack_channel,omitempty"` // CNCF Slack channel (e.g., "#kubernetes")
+	ProjectLead string `json:"project_lead,omitempty" yaml:"project_lead,omitempty"` // GitHub handle of primary contact
+
+
+	// SlackChannels lists one or more Slack channels for the project.
+	// Mark the channel most end-users should join with primary: true.
+	SlackChannels []SlackChannel `json:"slack_channels,omitempty" yaml:"slack_channels,omitempty"`
 
 	// Governance, security, legal, documentation
 	Security      *SecurityConfig      `json:"security,omitempty" yaml:"security,omitempty"`
@@ -37,6 +41,16 @@ type Project struct {
 
 	// CNCF Landscape integration
 	Landscape *LandscapeConfig `json:"landscape,omitempty" yaml:"landscape,omitempty"`
+}
+
+// SlackChannel represents a single Slack channel for a project.
+// Projects may list one or more channels; the channel that most end-users
+// should join is marked with Primary: true.
+type SlackChannel struct {
+	Workspace string `json:"workspace,omitempty" yaml:"workspace,omitempty"` // Slack workspace identifier (e.g., "cncf")
+	Link      string `json:"link,omitempty" yaml:"link,omitempty"`           // Invite or channel URL
+	Name      string `json:"name" yaml:"name"`                               // Channel name (e.g., "#kubernetes-dev")
+	Primary   bool   `json:"primary,omitempty" yaml:"primary,omitempty"`     // Whether this is the primary channel for end-users
 }
 
 // LandscapeConfig maps the project to its CNCF Landscape location

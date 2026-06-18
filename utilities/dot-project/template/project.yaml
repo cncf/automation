@@ -12,7 +12,11 @@ name: "My Project"              # REQUIRED: display name
 description: ""                 # REQUIRED: one-line project description
 type: "project"                 # REQUIRED: project, platform, specification, etc.
 project_lead: "github-handle"   # Optional: GitHub handle or team (org/team-name)
-cncf_slack_channel: "#my-project" # Optional: CNCF Slack channel
+slack_channels:                 # Optional: one or more CNCF Slack channels
+  - name: "#my-project"         # REQUIRED per entry: must start with "#"
+    workspace: "cncf"           # Optional: Slack workspace identifier
+    link: "https://cloud-native.slack.com/messages/my-project" # Optional: channel/invite URL
+    primary: true               # Optional: mark the main channel for end-users
 
 maturity_log:                   # REQUIRED: at least one entry
   - phase: "sandbox"            # sandbox, incubating, graduated, archived

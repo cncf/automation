@@ -25,7 +25,7 @@ func TestGenerateProjectYAML(t *testing.T) {
 			LandscapeCategory:    "Observability",
 			LandscapeSubcategory: "Monitoring",
 			ProjectLead:          "alice",
-			CNCFSlackChannel:     "#test-project",
+			SlackChannels:        []SlackChannel{{Name: "#test-project", Primary: true}},
 			HasSecurityPolicy:    true,
 			HasContributing:      true,
 			HasLicense:           true,
@@ -406,13 +406,13 @@ func TestWriteScaffold_SkipsExistingFiles(t *testing.T) {
 func TestGenerateProjectYAML_AutoDetected(t *testing.T) {
 	t.Run("uses auto-detected slack channel with verification comment", func(t *testing.T) {
 		result := &BootstrapResult{
-			Slug:             "test-project",
-			Name:             "Test Project",
-			Description:      "A test",
-			GitHubOrg:        "test-org",
-			GitHubRepo:       "test-project",
-			CNCFSlackChannel: "#test-project",
-			Sources:          map[string]string{"cncf_slack_channel": "landscape"},
+			Slug:          "test-project",
+			Name:          "Test Project",
+			Description:   "A test",
+			GitHubOrg:     "test-org",
+			GitHubRepo:    "test-project",
+			SlackChannels: []SlackChannel{{Name: "#test-project", Primary: true}},
+			Sources:       map[string]string{"slack_channels": "landscape"},
 		}
 
 		output, err := GenerateProjectYAML(result)
@@ -421,24 +421,33 @@ func TestGenerateProjectYAML_AutoDetected(t *testing.T) {
 		}
 		yamlStr := string(output)
 
-		if !strings.Contains(yamlStr, `cncf_slack_channel: "#test-project"`) {
-			t.Error("should contain cncf_slack_channel value")
+		if !strings.Contains(yamlStr, "slack_channels:") {
+			t.Error("should contain slack_channels block")
+		}
+		if !strings.Contains(yamlStr, `- name: "#test-project"`) {
+			t.Error("should contain slack channel name")
+		}
+		if !strings.Contains(yamlStr, "primary: true") {
+			t.Error("should mark the detected channel as primary")
 		}
 		if !strings.Contains(yamlStr, "AUTO-DETECTED") {
 			t.Error("should contain AUTO-DETECTED verification comment")
 		}
 	})
 
-	t.Run("renders slack candidates as comments", func(t *testing.T) {
+	t.Run("renders slack candidates as additional channels", func(t *testing.T) {
 		result := &BootstrapResult{
-			Slug:                "envoy",
-			Name:                "Envoy",
-			Description:         "A test",
-			GitHubOrg:           "envoyproxy",
-			GitHubRepo:          "envoy",
-			CNCFSlackChannel:    "#envoy",
-			CNCFSlackCandidates: []string{"#envoy-dev", "#envoy-mobile"},
-			Sources:             map[string]string{"cncf_slack_channel": "github_readme"},
+			Slug:        "envoy",
+			Name:        "Envoy",
+			Description: "A test",
+			GitHubOrg:   "envoyproxy",
+			GitHubRepo:  "envoy",
+			SlackChannels: []SlackChannel{
+				{Name: "#envoy", Primary: true},
+				{Name: "#envoy-dev"},
+				{Name: "#envoy-mobile"},
+			},
+			Sources: map[string]string{"slack_channels": "github_readme"},
 		}
 
 		output, err := GenerateProjectYAML(result)
@@ -447,26 +456,41 @@ func TestGenerateProjectYAML_AutoDetected(t *testing.T) {
 		}
 		yamlStr := string(output)
 
-		if !strings.Contains(yamlStr, `cncf_slack_channel: "#envoy"`) {
-			t.Error("should contain primary cncf_slack_channel value")
+		if !strings.Contains(yamlStr, `- name: "#envoy"`) {
+			t.Error("should contain primary slack channel value")
 		}
-		if !strings.Contains(yamlStr, `Also detected: "#envoy-dev", "#envoy-mobile"`) {
-			t.Errorf("should contain candidates comment, got:\n%s", yamlStr)
+		if !strings.Contains(yamlStr, `- name: "#envoy-dev"`) || !strings.Contains(yamlStr, `- name: "#envoy-mobile"`) {
+			t.Errorf("should contain candidate channels as entries, got:\n%s", yamlStr)
 		}
-		if !strings.Contains(yamlStr, "please verify the correct channel") {
-			t.Error("should contain verification prompt for candidates")
+
+		// Generated YAML should be valid and have exactly one primary channel.
+		var project Project
+		if err := yaml.Unmarshal([]byte(yamlStr), &project); err != nil {
+			t.Fatalf("generated YAML is not parseable: %v", err)
+		}
+		if len(project.SlackChannels) != 3 {
+			t.Fatalf("expected 3 slack_channels, got %d", len(project.SlackChannels))
+		}
+		primaries := 0
+		for _, ch := range project.SlackChannels {
+			if ch.Primary {
+				primaries++
+			}
+		}
+		if primaries != 1 {
+			t.Errorf("expected exactly one primary channel, got %d", primaries)
 		}
 	})
 
-	t.Run("no candidates comment when only one channel", func(t *testing.T) {
+	t.Run("single detected channel produces one primary entry", func(t *testing.T) {
 		result := &BootstrapResult{
-			Slug:             "test-project",
-			Name:             "Test Project",
-			Description:      "A test",
-			GitHubOrg:        "test-org",
-			GitHubRepo:       "test-project",
-			CNCFSlackChannel: "#test-project",
-			Sources:          map[string]string{"cncf_slack_channel": "github_readme"},
+			Slug:          "test-project",
+			Name:          "Test Project",
+			Description:   "A test",
+			GitHubOrg:     "test-org",
+			GitHubRepo:    "test-project",
+			SlackChannels: []SlackChannel{{Name: "#test-project", Primary: true}},
+			Sources:       map[string]string{"slack_channels": "github_readme"},
 		}
 
 		output, err := GenerateProjectYAML(result)
@@ -475,11 +499,15 @@ func TestGenerateProjectYAML_AutoDetected(t *testing.T) {
 		}
 		yamlStr := string(output)
 
-		if !strings.Contains(yamlStr, `cncf_slack_channel: "#test-project"`) {
-			t.Error("should contain cncf_slack_channel value")
+		if !strings.Contains(yamlStr, `- name: "#test-project"`) {
+			t.Error("should contain slack channel value")
 		}
-		if strings.Contains(yamlStr, "Also detected") {
-			t.Error("should NOT contain candidates comment when no candidates")
+		var project Project
+		if err := yaml.Unmarshal([]byte(yamlStr), &project); err != nil {
+			t.Fatalf("generated YAML is not parseable: %v", err)
+		}
+		if len(project.SlackChannels) != 1 {
+			t.Errorf("expected exactly one slack channel, got %d", len(project.SlackChannels))
 		}
 	})
 

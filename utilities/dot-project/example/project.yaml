@@ -10,7 +10,14 @@ name: "Kubernetes"
 description: "Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications."
 type: "platform"
 project_lead: "thockin"
-cncf_slack_channel: "#kubernetes-dev"
+slack_channels:
+  - name: "#kubernetes-users"
+    workspace: "cncf"
+    link: "https://cloud-native.slack.com/messages/kubernetes-users"
+    primary: true
+  - name: "#kubernetes-dev"
+    workspace: "cncf"
+    link: "https://cloud-native.slack.com/messages/kubernetes-dev"
 
 maturity_log:
   - phase: "sandbox"

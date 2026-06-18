@@ -819,38 +819,40 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 		result.Sources["social.twitter"] = "github"
 	}
 
-	// Slack channel: landscape extra.chat_channel > derived from extra.slack_url > GitHub org-wide scan
-	// Landscape values are authoritative; GitHub-discovered channels become candidates.
+	// Slack channels: landscape extra.chat_channel > derived from extra.slack_url > GitHub org-wide scan.
+	// Landscape values are authoritative and become the primary channel;
+	// GitHub-discovered channels are added as additional (non-primary) entries.
+	var primaryName, primaryLink string
 	if landscape != nil && landscape.ChatChannel != "" {
-		result.CNCFSlackChannel = landscape.ChatChannel
-		result.Sources["cncf_slack_channel"] = "landscape"
+		primaryName = landscape.ChatChannel
+		primaryLink = landscape.SlackURL
+		result.Sources["slack_channels"] = "landscape"
 	} else if landscape != nil && landscape.SlackURL != "" {
 		// Derive channel name from slack URL: .../messages/<channel-name> or .../channels/<channel-name> or .../archives/<channel-name>
-		channel := extractChannelFromSlackURL(landscape.SlackURL)
-		if channel != "" {
-			result.CNCFSlackChannel = "#" + channel
-			result.Sources["cncf_slack_channel"] = "landscape"
+		if channel := extractChannelFromSlackURL(landscape.SlackURL); channel != "" {
+			primaryName = "#" + channel
+			primaryLink = landscape.SlackURL
+			result.Sources["slack_channels"] = "landscape"
 		}
 	}
 
-	// Collect all GitHub-discovered Slack channels
-	if github != nil && len(github.SlackChannels) > 0 {
-		if result.CNCFSlackChannel == "" {
-			// No landscape value — promote the first GitHub channel as primary
-			result.CNCFSlackChannel = github.SlackChannels[0]
-			result.Sources["cncf_slack_channel"] = "github_readme"
-			// Remaining channels become candidates
-			if len(github.SlackChannels) > 1 {
-				result.CNCFSlackCandidates = append([]string{}, github.SlackChannels[1:]...)
+	// Promote the first GitHub channel as primary when landscape provided none.
+	if primaryName == "" && github != nil && len(github.SlackChannels) > 0 {
+		primaryName = github.SlackChannels[0]
+		result.Sources["slack_channels"] = "github_readme"
+	}
+
+	if primaryName != "" {
+		result.SlackChannels = append(result.SlackChannels, SlackChannel{Name: primaryName, Link: primaryLink, Primary: true})
+	}
+
+	// Add remaining GitHub-discovered channels as additional entries (excluding the primary).
+	if github != nil {
+		for _, ch := range github.SlackChannels {
+			if ch == primaryName {
+				continue
 			}
-		} else {
-			// Landscape provided a primary — all GitHub channels are candidates
-			// (excluding duplicates of the landscape value)
-			for _, ch := range github.SlackChannels {
-				if ch != result.CNCFSlackChannel {
-					result.CNCFSlackCandidates = append(result.CNCFSlackCandidates, ch)
-				}
-			}
+			result.SlackChannels = append(result.SlackChannels, SlackChannel{Name: ch})
 		}
 	}
 
@@ -962,8 +964,8 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	if result.ProjectLead == "" {
 		result.TODOs = append(result.TODOs, "Set project_lead GitHub handle")
 	}
-	if result.CNCFSlackChannel == "" {
-		result.TODOs = append(result.TODOs, "Set cncf_slack_channel")
+	if len(result.SlackChannels) == 0 {
+		result.TODOs = append(result.TODOs, "Set slack_channels")
 	}
 	if !result.HasDCO && !result.HasCLA {
 		result.TODOs = append(result.TODOs, "Set identity_type under legal (has_dco, has_cla)")

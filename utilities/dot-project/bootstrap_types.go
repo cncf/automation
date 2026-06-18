@@ -38,11 +38,11 @@ type BootstrapResult struct {
 	LandscapeSubcategory string `json:"landscape_subcategory,omitempty" yaml:"landscape_subcategory,omitempty"`
 
 	// Contacts
-	ProjectLead      string `json:"project_lead,omitempty" yaml:"project_lead,omitempty"`
-	CNCFSlackChannel string `json:"cncf_slack_channel,omitempty" yaml:"cncf_slack_channel,omitempty"`
+	ProjectLead string `json:"project_lead,omitempty" yaml:"project_lead,omitempty"`
 
-	// Additional Slack channels detected across the org
-	CNCFSlackCandidates []string `json:"cncf_slack_candidates,omitempty" yaml:"cncf_slack_candidates,omitempty"`
+	// Slack channels detected across the org. The primary channel is marked
+	// with Primary: true; additional channels are non-primary entries.
+	SlackChannels []SlackChannel `json:"slack_channels,omitempty" yaml:"slack_channels,omitempty"`
 
 	// Maintainers discovered from the cncf/foundation project-maintainers.csv
 	Maintainers []string `json:"maintainers,omitempty" yaml:"maintainers,omitempty"`
