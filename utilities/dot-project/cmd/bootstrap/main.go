@@ -24,8 +24,17 @@ func main() {
 		maintainersCSV = flag.String("maintainers-csv", "", "Optional path to a local project-maintainers.csv (default: fetch from cncf/foundation)")
 		dryRun         = flag.Bool("dry-run", false, "Print generated YAML to stdout without writing files")
 		force          = flag.Bool("force", false, "Overwrite auxiliary files (never overwrites project.yaml or maintainers.yaml)")
+		envFile        = flag.String("env-file", ".env", "Path to a .env file to load (e.g. GITHUB_TOKEN=...); real env vars take precedence")
 	)
 	flag.Parse()
+
+	// Load a .env file (if present) before resolving the token below. Real
+	// environment variables always take precedence over file values.
+	if applied, err := projects.LoadDotEnv(*envFile); err != nil {
+		fmt.Fprintf(os.Stderr, "  Warning: could not read %s: %v\n", *envFile, err)
+	} else if len(applied) > 0 {
+		fmt.Fprintf(os.Stderr, "  Loaded %d variable(s) from %s\n", len(applied), *envFile)
+	}
 
 	// Validate required inputs
 	if *name == "" && *githubOrg == "" {
@@ -88,10 +97,19 @@ func main() {
 	}
 	slug = strings.Trim(slug, "-")
 
-	// GitHub token from env if not provided via flag
+	// GitHub token from env if not provided via flag (GITHUB_TOKEN). The value
+	// may come from the shell or from the .env file loaded above.
 	token := *githubToken
 	if token == "" {
 		token = os.Getenv("GITHUB_TOKEN")
+	}
+	if token == "" {
+		fmt.Fprintln(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / .env).")
+		fmt.Fprintln(os.Stderr, "        Unauthenticated GitHub API requests are rate-limited (HTTP 403 once exceeded).")
+		fmt.Fprintln(os.Stderr, "        Provide a token via any of:")
+		fmt.Fprintln(os.Stderr, "          - a .env file containing:  GITHUB_TOKEN=ghp_xxx")
+		fmt.Fprintln(os.Stderr, "          - the environment:         GITHUB_TOKEN=ghp_xxx go run ./cmd/bootstrap ...")
+		fmt.Fprintln(os.Stderr, "          - the flag:                -github-token ghp_xxx")
 	}
 
 	client := &http.Client{Timeout: projects.DefaultHTTPTimeout}
@@ -379,32 +397,4 @@ func removeTODO(todos []string, target string) []string {
 		}
 	}
 	return out
-}
-
-// normalizeGitHubOrg strips a full GitHub URL down to just the org name.
-// Accepts "https://github.com/org" or plain "org-name".
-func normalizeGitHubOrg(v string) string {
-	const prefix = "https://github.com/"
-	v = strings.TrimSuffix(strings.TrimSpace(v), "/")
-	if strings.HasPrefix(v, prefix) {
-		parts := strings.SplitN(strings.TrimPrefix(v, prefix), "/", 2)
-		return parts[0]
-	}
-	return v
-}
-
-// normalizeGitHubRepo strips a full GitHub URL down to just the repo name.
-// Accepts "https://github.com/org/repo", "https://github.com/org", or plain "repo".
-func normalizeGitHubRepo(v string) string {
-	const prefix = "https://github.com/"
-	v = strings.TrimSuffix(strings.TrimSpace(v), "/")
-	if strings.HasPrefix(v, prefix) {
-		parts := strings.SplitN(strings.TrimPrefix(v, prefix), "/", 2)
-		if len(parts) == 2 && parts[1] != "" {
-			return parts[1]
-		}
-		// URL was github.com/org with no repo segment — caller will default repo=org
-		return ""
-	}
-	return v
 }

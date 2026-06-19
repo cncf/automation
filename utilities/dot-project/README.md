@@ -164,7 +164,15 @@ All generated files use:
 
 # Use a GitHub token for higher rate limits
 GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
+
+# Or put the token in a .env file (auto-loaded; never overrides real env vars)
+echo 'GITHUB_TOKEN=ghp_xxx' > .env
+./bin/bootstrap -name "My Project" -github-org my-org
 ```
+
+> **Tip:** A token is recommended — unauthenticated GitHub API requests are
+> rate-limited (HTTP 403 once the limit is exceeded). The token is read from
+> (in priority order): `-github-token` flag → `GITHUB_TOKEN` env → `.env` file.
 
 #### Flags
 
@@ -173,7 +181,8 @@ GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
 | `-name` | | Project display name to search for |
 | `-github-org` | | GitHub organization |
 | `-github-repo` | | Primary repository name (defaults to org name) |
-| `-github-token` | | GitHub token (or set `GITHUB_TOKEN` env) |
+| `-github-token` | | GitHub token (or set `GITHUB_TOKEN` env, or a `.env` file) |
+| `-env-file` | `.env` | Path to a `.env` file to load (real env vars take precedence) |
 | `-output-dir` | `.` | Directory to write scaffold output |
 | `-skip-landscape` | `false` | Skip CNCF landscape YAML lookup |
 | `-skip-clomonitor` | `false` | Skip CLOMonitor API lookup |
