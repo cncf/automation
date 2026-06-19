@@ -111,10 +111,29 @@ func TestRenderSuggestionsTable(t *testing.T) {
 	table := renderSuggestionsTable([]MaintainerSuggestion{
 		{Handle: "alice", Roles: []string{"maintainer", "code owner"}, Sources: []string{"org/repo:MAINTAINERS"}},
 	})
-	for _, want := range []string{"| Handle | Role(s) | Found in |", "| @alice |", "maintainer, code owner", "org/repo:MAINTAINERS"} {
+	for _, want := range []string{"| Handle | Role(s) | Found in |", "| @alice |", "maintainer, code owner", "[org/repo](https://github.com/org/repo) — MAINTAINERS"} {
 		if !strings.Contains(table, want) {
 			t.Errorf("table missing %q\n%s", want, table)
 		}
+	}
+}
+
+func TestFormatSources(t *testing.T) {
+	if got := formatSources(nil); got != "" {
+		t.Errorf("expected empty string, got %q", got)
+	}
+
+	got := formatSources([]string{"org/repo-a:MAINTAINERS.md", "org/repo-b:CODEOWNERS"})
+	want := "[org/repo-a](https://github.com/org/repo-a) — MAINTAINERS.md" +
+		"<br>" +
+		"[org/repo-b](https://github.com/org/repo-b) — CODEOWNERS"
+	if got != want {
+		t.Errorf("formatSources =\n%q\nwant\n%q", got, want)
+	}
+
+	// Malformed entries (no colon) are emitted verbatim.
+	if got := formatSources([]string{"just-a-string"}); got != "just-a-string" {
+		t.Errorf("expected verbatim passthrough, got %q", got)
 	}
 }
 

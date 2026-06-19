@@ -129,10 +129,30 @@ func renderSuggestionsTable(suggestions []MaintainerSuggestion) string {
 	b.WriteString("|--------|---------|----------|\n")
 	for _, s := range suggestions {
 		roles := strings.Join(s.Roles, ", ")
-		sources := strings.Join(s.Sources, ", ")
+		sources := formatSources(s.Sources)
 		fmt.Fprintf(&b, "| @%s | %s | %s |\n", s.Handle, roles, sources)
 	}
 	return b.String()
+}
+
+// formatSources renders a list of "org/repo:file" source strings into a single
+// markdown table cell.
+func formatSources(sources []string) string {
+	if len(sources) == 0 {
+		return ""
+	}
+	items := make([]string, 0, len(sources))
+	for _, src := range sources {
+		repo, file, ok := strings.Cut(src, ":")
+		if !ok || repo == "" {
+			items = append(items, src)
+			continue
+		}
+		// Link the repository (always a valid URL); show the file name as plain
+		// text since governance files may live in the repo root or .github/.
+		items = append(items, fmt.Sprintf("[%s](https://github.com/%s) — %s", repo, repo, file))
+	}
+	return strings.Join(items, "<br>")
 }
 
 // BuildSuggestionsSection renders the full markdown "Suggested maintainers"
