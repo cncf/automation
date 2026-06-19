@@ -22,6 +22,10 @@ type BootstrapResult struct {
 	// GitHub context (used for scaffold generation)
 	GitHubOrg  string `json:"github_org,omitempty" yaml:"github_org,omitempty"`
 	GitHubRepo string `json:"github_repo,omitempty" yaml:"github_repo,omitempty"`
+	// DefaultBranch is the primary repo's default branch (e.g. "main" or
+	// "master"). Used to build file URLs (README, ADOPTERS) so they point at the
+	// branch that actually exists. Empty falls back to "main".
+	DefaultBranch string `json:"default_branch,omitempty" yaml:"default_branch,omitempty"`
 
 	// URLs
 	Website      string            `json:"website,omitempty" yaml:"website,omitempty"`

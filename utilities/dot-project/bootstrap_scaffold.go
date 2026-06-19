@@ -51,10 +51,10 @@ website: "{{ .Website }}"{{ else }}
 artwork: "{{ if .Artwork }}{{ .Artwork }}{{ else }}{{ artworkURL .Slug }}{{ end }}"
 {{ if .HasAdopters }}
 adopters:
-  path: "{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) "" "ADOPTERS.md" }}"{{ else }}
+  path: "{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "ADOPTERS.md" }}"{{ else }}
 # TODO: Add ADOPTERS.md if your project tracks adopters
 # adopters:
-#   path: "{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) "" "ADOPTERS.md" }}"{{ end }}
+#   path: "{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "ADOPTERS.md" }}"{{ end }}
 
 {{ if .PackageManagers }}
 package_managers:{{ if isAutoDetected .Sources "package_managers" }} # AUTO-DETECTED — please verify{{ end }}{{ range $registry, $id := .PackageManagers }}
@@ -68,7 +68,7 @@ social:{{ range $platform, $url := .Social }}
 
 security:
   policy:
-    path: "{{ if .SecurityPolicyURL }}{{ .SecurityPolicyURL }}{{ else }}{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) "" "SECURITY.md" }}{{ end }}"{{ if .SecurityContactURL }}
+    path: "{{ if .SecurityPolicyURL }}{{ .SecurityPolicyURL }}{{ else }}{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "SECURITY.md" }}{{ end }}"{{ if .SecurityContactURL }}
   contact:
     advisory_url: "{{ .SecurityContactURL }}"{{ else }}
   contact:
@@ -76,13 +76,13 @@ security:
 
 governance:
   contributing:
-    path: "{{ if .ContributingURL }}{{ .ContributingURL }}{{ else }}{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) "" "CONTRIBUTING.md" }}{{ end }}"
+    path: "{{ if .ContributingURL }}{{ .ContributingURL }}{{ else }}{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "CONTRIBUTING.md" }}{{ end }}"
   code_of_conduct:
     path: "{{ if .CodeOfConductURL }}{{ .CodeOfConductURL }}{{ else }}https://github.com/cncf/foundation/blob/main/code-of-conduct.md{{ end }}"
 
 legal:
   license:
-    path: "{{ if .LicenseURL }}{{ .LicenseURL }}{{ else }}{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) "" "LICENSE" }}{{ end }}"
+    path: "{{ if .LicenseURL }}{{ .LicenseURL }}{{ else }}{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "LICENSE" }}{{ end }}"
   identity_type:
 {{ if isAutoDetected .Sources "identity_type" }}    has_dco: {{ .HasDCO }} # AUTO-DETECTED — please verify
     has_cla: {{ .HasCLA }} # AUTO-DETECTED — please verify{{ else }}    has_dco: true
@@ -92,7 +92,7 @@ legal:
 {{ if .HasReadme }}
 documentation:
   readme:
-    path: "{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) "" "README.md" }}"{{ end }}
+    path: "{{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "README.md" }}"{{ end }}
 {{ if and .LandscapeCategory .LandscapeSubcategory }}
 landscape:
   category: "{{ .LandscapeCategory }}"
@@ -163,7 +163,7 @@ The {{ .Name }} maintainers take security seriously. We appreciate your efforts 
 
 Instead, please report them through our [private vulnerability reporting]({{ githubAdvisoryURL .GitHubOrg (or .GitHubRepo .Slug) }}) form.
 
-For more details, see the [{{ .Name }} security policy]({{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) "" "SECURITY.md" }}).
+For more details, see the [{{ .Name }} security policy]({{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "SECURITY.md" }}).
 `
 
 // codeownersTemplate generates the CODEOWNERS file.

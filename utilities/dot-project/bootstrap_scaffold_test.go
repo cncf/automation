@@ -176,6 +176,57 @@ func TestGenerateProjectYAML(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("uses repo default branch for file URLs", func(t *testing.T) {
+		result := &BootstrapResult{
+			Slug:          "test-project",
+			Name:          "Test Project",
+			GitHubOrg:     "test-org",
+			GitHubRepo:    "test-project",
+			DefaultBranch: "master",
+			HasReadme:     true,
+			HasAdopters:   true,
+		}
+
+		yamlStr := string(mustGenerateProjectYAML(t, result))
+
+		// README and ADOPTERS URLs must use the detected default branch (master),
+		// not the hardcoded "main" fallback.
+		if !strings.Contains(yamlStr, "test-org/test-project/blob/master/README.md") {
+			t.Errorf("README URL should use default branch 'master':\n%s", yamlStr)
+		}
+		if !strings.Contains(yamlStr, "test-org/test-project/blob/master/ADOPTERS.md") {
+			t.Errorf("ADOPTERS URL should use default branch 'master':\n%s", yamlStr)
+		}
+		if strings.Contains(yamlStr, "test-org/test-project/blob/main/README.md") {
+			t.Errorf("README URL should not fall back to 'main' when default branch is set:\n%s", yamlStr)
+		}
+	})
+
+	t.Run("falls back to main when default branch is empty", func(t *testing.T) {
+		result := &BootstrapResult{
+			Slug:       "test-project",
+			Name:       "Test Project",
+			GitHubOrg:  "test-org",
+			GitHubRepo: "test-project",
+			HasReadme:  true,
+		}
+
+		yamlStr := string(mustGenerateProjectYAML(t, result))
+		if !strings.Contains(yamlStr, "test-org/test-project/blob/main/README.md") {
+			t.Errorf("README URL should fall back to 'main' when default branch is empty:\n%s", yamlStr)
+		}
+	})
+}
+
+// mustGenerateProjectYAML is a test helper that fails the test on error.
+func mustGenerateProjectYAML(t *testing.T, result *BootstrapResult) []byte {
+	t.Helper()
+	output, err := GenerateProjectYAML(result)
+	if err != nil {
+		t.Fatalf("GenerateProjectYAML() error = %v", err)
+	}
+	return output
 }
 
 func TestGenerateMaintainersYAML(t *testing.T) {

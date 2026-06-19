@@ -41,7 +41,6 @@ func rateLimitHint(resp *http.Response) string {
 	return msg
 }
 
-
 // fetchFromCLOMonitor queries the CLOMonitor search API for a CNCF project by display name.
 // It passes text and foundation=cncf as query parameters so the server filters results,
 // then fuzzy-matches the display_name among the returned candidates.
@@ -789,6 +788,7 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	}
 	if github != nil && github.Repo != nil {
 		result.GitHubRepo = github.Repo.Name
+		result.DefaultBranch = github.Repo.DefaultBranch
 	}
 
 	// Name: landscape > clomonitor > github > slug
