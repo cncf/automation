@@ -172,7 +172,8 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 
 > **Tip:** A token is recommended — unauthenticated GitHub API requests are
 > rate-limited (HTTP 403 once the limit is exceeded). The token is read from
-> (in priority order): `-github-token` flag → `GITHUB_TOKEN` env → `.env` file.
+> (in priority order): `-github-token` flag → `GITHUB_TOKEN` env → the env file
+> specified by `-env-file` (default: `.env`).
 
 #### Flags
 

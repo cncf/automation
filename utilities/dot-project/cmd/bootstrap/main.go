@@ -104,10 +104,10 @@ func main() {
 		token = os.Getenv("GITHUB_TOKEN")
 	}
 	if token == "" {
-		fmt.Fprintln(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / .env).")
+		fmt.Fprintf(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / %s).\n", *envFile)
 		fmt.Fprintln(os.Stderr, "        Unauthenticated GitHub API requests are rate-limited (HTTP 403 once exceeded).")
 		fmt.Fprintln(os.Stderr, "        Provide a token via any of:")
-		fmt.Fprintln(os.Stderr, "          - a .env file containing:  GITHUB_TOKEN=ghp_xxx")
+		fmt.Fprintf(os.Stderr, "          - an env file (%s) containing:  GITHUB_TOKEN=ghp_xxx\n", *envFile)
 		fmt.Fprintln(os.Stderr, "          - the environment:         GITHUB_TOKEN=ghp_xxx go run ./cmd/bootstrap ...")
 		fmt.Fprintln(os.Stderr, "          - the flag:                -github-token ghp_xxx")
 	}

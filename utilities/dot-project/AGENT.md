@@ -176,7 +176,7 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 - `-name` - Project display name to search for
 - `-github-org` - GitHub organization
 - `-github-repo` - Primary repository name (defaults to org name)
-- `-github-token` - GitHub token. Resolution order: flag → `GITHUB_TOKEN` → `.env` file
+- `-github-token` - GitHub token. Resolution order: flag → `GITHUB_TOKEN` → the env file specified by `-env-file` (default: `.env`)
 - `-env-file` - Path to a `.env` file to load (default: `.env`; real env vars take precedence)
 - `-output-dir` - Directory for scaffold output (default: `.`)
 - `-skip-landscape` - Skip CNCF landscape YAML lookup (default: false)
