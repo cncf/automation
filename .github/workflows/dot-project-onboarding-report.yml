@@ -1,0 +1,51 @@
+name: dot-project onboarding report
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs daily at 06:00 UTC
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  onboarding-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: utilities/dot-project/go.mod
+
+      - name: Build onboarding-report
+        working-directory: utilities/dot-project
+        run: go build -o bin/onboarding-report ./cmd/onboarding-report
+
+      - name: Generate onboarding report
+        working-directory: utilities/dot-project
+        env:
+          GITHUB_TOKEN: ${{ secrets.ENTERPRISE_TOKEN }}
+        run: |
+          ./bin/onboarding-report \
+            -enterprise cncf \
+            -output ONBOARDED.md
+
+      - name: Check for changes
+        id: diff
+        working-directory: utilities/dot-project
+        run: |
+          git diff --quiet ONBOARDED.md && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add utilities/dot-project/ONBOARDED.md
+          git commit -m "chore: update .project onboarding report [skip ci]"
+          git push
+
