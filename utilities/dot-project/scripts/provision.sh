@@ -251,7 +251,7 @@ provision_project() {
             gh repo create "$target_repo" \
                 --public \
                 --description "Project metadata for ${name} - CNCF .project automation" \
-                || die "Failed to create repo ${target_repo}"
+                || { warn "Failed to create repo ${target_repo}"; return 1; }
         fi
     fi
 
@@ -289,7 +289,7 @@ provision_project() {
             bootstrap_args+=(-force)
         fi
         "$BOOTSTRAP_BIN" "${bootstrap_args[@]}" \
-            || die "Bootstrap failed for ${name}"
+            || { warn "Bootstrap failed for ${name}"; rm -rf "$tmp_dir"; trap - EXIT; return 1; }
     fi
 
     # Step 4: Commit and push
@@ -304,7 +304,7 @@ provision_project() {
             commit -m "Initial .project scaffold for ${name}" \
             || { info "  Nothing to commit (already up to date)"; }
         git -C "$tmp_dir" push -u origin main \
-            || die "Failed to push to ${target_repo}"
+            || { warn "Failed to push to ${target_repo}"; rm -rf "$tmp_dir"; trap - EXIT; return 1; }
     fi
 
     # Step 5: Set secrets
@@ -506,10 +506,10 @@ main() {
             b_repo=$(echo "${b_repo:-}" | xargs)
 
             if provision_project "$b_org" "$b_name" "$b_repo"; then
-                ((count++))
+                ((count++)) || true
             else
                 warn "Failed to provision ${b_org}/${b_name}"
-                ((failed++))
+                ((failed++)) || true
             fi
         done < "$BATCH_FILE"
 
