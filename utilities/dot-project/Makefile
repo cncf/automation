@@ -2,20 +2,35 @@
 
 REPO_ROOT := $(abspath ../..)
 
-.PHONY: all build test clean install run help provision
+CMDs := validator landscape-updater bootstrap onboarding-report audit-checker staleness-checker generate-schema migrate
+BINS := $(addprefix bin/,$(CMDs))
+
+.PHONY: all build test clean install run help provision $(CMDs)
 
 # Default target
 all: build
 
-# Build the validator
+# Build all binaries in parallel
 build:
-	@echo "Building project validator..."
 	@mkdir -p bin
-	go build -o bin/validator ./cmd/validator
-	@echo "Building landscape updater..."
-	go build -o bin/landscape-updater ./cmd/landscape-updater
-	@echo "Building bootstrap tool..."
-	go build -o bin/bootstrap ./cmd/bootstrap
+	@go build -o bin/validator ./cmd/validator & \
+	go build -o bin/landscape-updater ./cmd/landscape-updater & \
+	go build -o bin/bootstrap ./cmd/bootstrap & \
+	go build -o bin/onboarding-report ./cmd/onboarding-report & \
+	go build -o bin/audit-checker ./cmd/audit-checker & \
+	go build -o bin/staleness-checker ./cmd/staleness-checker & \
+	go build -o bin/generate-schema ./cmd/generate-schema & \
+	go build -o bin/migrate ./cmd/migrate & \
+	wait
+	@echo "All binaries built."
+
+bin/%: cmd/%/main.go $(wildcard *.go)
+	@mkdir -p bin
+	go build -o $@ ./cmd/$*
+
+# Build a single tool: make validator, make bootstrap, etc.
+$(CMDS): %: bin/%
+
 
 # Build docker image
 docker-build:
@@ -105,7 +120,8 @@ provision: build
 # Show help
 help:
 	@echo "Available targets:"
-	@echo "  build         - Build the validator, landscape-updater, and bootstrap binaries"
+	@echo "  build         - Build all binaries in parallel"
+	@echo "  <tool>        - Build a single tool (e.g., make validator, make bootstrap)"
 	@echo "  docker-build  - Build docker image"
 	@echo "  test          - Run tests"
 	@echo "  test-coverage - Run tests with coverage report"
