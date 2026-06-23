@@ -252,6 +252,23 @@ func main() {
 		}
 	}
 
+	// Phase 3.8: Discover maintainer suggestions from org governance files.
+	// These are advisory only — the foundation CSV remains the source of truth.
+	var suggestions []projects.MaintainerSuggestion
+	if !*skipGH && org != "" {
+		csvSet := map[string]bool{}
+		for _, h := range csvMaintainers {
+			csvSet[strings.ToLower(h)] = true
+		}
+		fmt.Fprintf(os.Stderr, "  Discovering maintainer suggestions from org governance files...\n")
+		suggestions = projects.DiscoverGovernanceSuggestions(org, repo, token, client, "", csvSet)
+		if len(suggestions) > 0 {
+			fmt.Fprintf(os.Stderr, "  Found %d maintainer suggestion(s) not yet in the CSV\n", len(suggestions))
+		} else {
+			fmt.Fprintf(os.Stderr, "  No additional maintainer suggestions found\n")
+		}
+	}
+
 	// Phase 4: Merge data
 	fmt.Fprintf(os.Stderr, "  Merging data sources...\n")
 	result := projects.MergeBootstrapData(slug, landscapeData, cloProject, ghData)
@@ -353,6 +370,17 @@ func main() {
 		}
 	}
 
+	if section := projects.BuildSuggestionsSection(suggestions); section != "" {
+		fmt.Fprintf(os.Stderr, "\nMaintainer suggestions (from org governance files, not yet in the CSV):\n\n%s\n", section)
+		if !*dryRun {
+			if path, err := projects.WriteSuggestionsFile(*outputDir, suggestions); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not write suggestions file: %v\n", err)
+			} else if path != "" {
+				fmt.Fprintf(os.Stderr, "  Wrote maintainer suggestions to %s\n", path)
+			}
+		}
+	}
+
 	// Show TODOs
 	if len(result.TODOs) > 0 {
 		fmt.Fprintln(os.Stderr, "\nRemaining TODOs:")
@@ -379,32 +407,4 @@ func removeTODO(todos []string, target string) []string {
 		}
 	}
 	return out
-}
-
-// normalizeGitHubOrg strips a full GitHub URL down to just the org name.
-// Accepts "https://github.com/org" or plain "org-name".
-func normalizeGitHubOrg(v string) string {
-	const prefix = "https://github.com/"
-	v = strings.TrimSuffix(strings.TrimSpace(v), "/")
-	if strings.HasPrefix(v, prefix) {
-		parts := strings.SplitN(strings.TrimPrefix(v, prefix), "/", 2)
-		return parts[0]
-	}
-	return v
-}
-
-// normalizeGitHubRepo strips a full GitHub URL down to just the repo name.
-// Accepts "https://github.com/org/repo", "https://github.com/org", or plain "repo".
-func normalizeGitHubRepo(v string) string {
-	const prefix = "https://github.com/"
-	v = strings.TrimSuffix(strings.TrimSpace(v), "/")
-	if strings.HasPrefix(v, prefix) {
-		parts := strings.SplitN(strings.TrimPrefix(v, prefix), "/", 2)
-		if len(parts) == 2 && parts[1] != "" {
-			return parts[1]
-		}
-		// URL was github.com/org with no repo segment — caller will default repo=org
-		return ""
-	}
-	return v
 }

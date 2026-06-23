@@ -103,6 +103,7 @@ const maintainersYAMLTemplate = `# Maintainer roster for {{ .Name }}
 {{ if not .Maintainers }}
 # TODO: Add maintainer GitHub handles{{ end }}
 
+#  Maintainers: Please connect your GitHub handle to your LFID on openprofile.dev to enable automatic access to CNCF resources. The system will use your primary email address for setup.
 maintainers:
   - project_id: "{{ .Slug }}"
     {{ if .GitHubOrg }}org: "{{ .GitHubOrg }}"{{ else }}# TODO: Set GitHub organization
