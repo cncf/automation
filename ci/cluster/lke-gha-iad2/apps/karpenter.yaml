@@ -31,7 +31,7 @@ spec:
     helm:
       releaseName: karpenter
       values: |
-        credentialsSecretRef=linode-credentials
+        credentialsSecretRef: linode-credentials
         settings:
           clusterName: lke-cncf-gha-iad2
   - repoURL: https://github.com/cncf/automation
