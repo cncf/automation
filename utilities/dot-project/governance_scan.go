@@ -221,6 +221,20 @@ type repoEntry struct {
 	Name string
 }
 
+// isGHSARepo matches GitHub Security Advisory temporary fork repos.
+// These have names like "project-ghsa-xxxx-xxxx-xxxx" and are auto-created
+// private forks that mirror the parent's CODEOWNERS but aren't real project repos.
+func isGHSARepo(name string) bool {
+	return strings.Contains(strings.ToLower(name), "-ghsa-")
+}
+
+// isGitHubPagesRepo matches GitHub Pages repos (e.g. "org.github.io").
+// These are static documentation/blog sites and won't contain meaningful
+// governance files distinct from the main project.
+func isGitHubPagesRepo(name string) bool {
+	return strings.HasSuffix(strings.ToLower(name), ".github.io")
+}
+
 // scanOrgReposForSuggestions lists every repo in the org and scans each repo
 // root for governance files and community docs, skipping the primary repo and
 // the org .github repo (already scanned by the caller).
@@ -231,6 +245,7 @@ func scanOrgReposForSuggestions(c *orgScanCollector, org, primaryRepo string, do
 	alreadyChecked := map[string]bool{
 		strings.ToLower(primaryRepo): true,
 		".github":                    true,
+		".github-private":            true,
 	}
 
 	fmt.Fprintf(os.Stderr, "  Scanning all repos in %s org for maintainer suggestions and Slack channels...\n", org)
@@ -254,8 +269,12 @@ func scanOrgReposForSuggestions(c *orgScanCollector, org, primaryRepo string, do
 		}
 
 		var repos []struct {
-			Name string `json:"name"`
-			Fork bool   `json:"fork"`
+			Name       string `json:"name"`
+			Fork       bool   `json:"fork"`
+			Archived   bool   `json:"archived"`
+			Disabled   bool   `json:"disabled"`
+			IsTemplate bool   `json:"is_template"`
+			Size       int    `json:"size"`
 		}
 		if err := json.NewDecoder(resp.Body).Decode(&repos); err != nil {
 			resp.Body.Close()
@@ -271,7 +290,18 @@ func scanOrgReposForSuggestions(c *orgScanCollector, org, primaryRepo string, do
 			if alreadyChecked[strings.ToLower(r.Name)] {
 				continue
 			}
-			if r.Fork {
+			// Skip repos that won't have relevant active governance data:
+			// - Forks: governance files belong to the upstream project
+			// - Archived: no longer maintained, stale data
+			// - Disabled: inaccessible repos
+			// - Templates: boilerplate, not project-specific
+			// - GHSA repos: temporary private forks for security advisories
+			// - GitHub Pages (*.github.io): static sites, no governance
+			// - Empty repos (size 0): nothing to scan
+			if r.Fork || r.Archived || r.Disabled || r.IsTemplate || r.Size == 0 {
+				continue
+			}
+			if isGHSARepo(r.Name) || isGitHubPagesRepo(r.Name) {
 				continue
 			}
 			toScan = append(toScan, repoEntry{Name: r.Name})

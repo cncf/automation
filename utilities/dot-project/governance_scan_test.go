@@ -31,8 +31,8 @@ func TestDiscoverGovernanceSuggestions(t *testing.T) {
 		// Org repo listing: one own repo + one fork (the fork must be skipped)
 		case "/orgs/test-org/repos":
 			json.NewEncoder(w).Encode([]map[string]any{
-				{"name": "other-repo", "fork": false},
-				{"name": "forked-repo", "fork": true},
+				{"name": "other-repo", "fork": false, "size": 100},
+				{"name": "forked-repo", "fork": true, "size": 50},
 			})
 
 		// other-repo root: a MAINTAINERS file + an OWNERS with an alias + a README
