@@ -13,6 +13,10 @@ spec:
           value: "true"
           effect: NoSchedule
       requirements:
+        - key: topology.kubernetes.io/region
+          operator: In
+          values:
+            - us-iad-2
         - key: karpenter.k8s.linode/instance-class
           operator: In
           values:
