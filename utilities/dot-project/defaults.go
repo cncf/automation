@@ -29,4 +29,13 @@ const (
 	// CNCF project maintainers, published by the foundation. It is fetched
 	// fresh on each run unless the caller overrides it with a local file path.
 	DefaultFoundationMaintainersCSVURL = "https://raw.githubusercontent.com/cncf/foundation/main/project-maintainers.csv"
+
+	// DefaultGitHubAPIURL is the base URL for the GitHub REST API.
+	DefaultGitHubAPIURL = "https://api.github.com"
+
+	// DefaultGitHubGraphQLURL is the GitHub GraphQL API endpoint.
+	DefaultGitHubGraphQLURL = "https://api.github.com/graphql"
+
+	// DefaultEnterprise is the GitHub Enterprise slug for CNCF.
+	DefaultEnterprise = "cncf"
 )
