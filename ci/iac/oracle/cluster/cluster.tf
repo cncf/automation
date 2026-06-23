@@ -83,5 +83,7 @@ resource "oci_containerengine_node_pool" "service_worker" {
 
   node_pool_cycling_details {
     is_node_cycling_enabled = false
+    maximum_unavailable     = 1
+    maximum_surge           = 1
   }
 }

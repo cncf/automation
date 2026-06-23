@@ -33,7 +33,11 @@ spec:
       values: |
         credentialsSecretRef: linode-credentials
         settings:
+          batchIdleDuration: 10s
           clusterName: lke-cncf-gha-iad2
+        controller:
+          image:
+            tag: main
   - repoURL: https://github.com/cncf/automation
     targetRevision: main
     path: ci/cluster/lke-gha-iad2/manifests/karpenter
