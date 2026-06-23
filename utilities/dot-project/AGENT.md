@@ -410,7 +410,11 @@ slug: "project-name"
 name: "Project Name"
 description: "Project description"
 project_lead: "github-handle"
-cncf_slack_channel: "#project-name"
+slack_channels:
+  - name: "#project-name"
+    workspace: "cncf"
+    link: "https://cloud-native.slack.com/messages/project-name"
+    primary: true
 maturity_log:
   - phase: "incubating"
     date: 2024-01-15

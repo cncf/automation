@@ -49,8 +49,12 @@ func main() {
 			"name":               {Type: "string", Description: "Project display name"},
 			"description":        {Type: "string", Description: "One-line project description"},
 			"type":               {Type: "string", Description: "Project type (e.g., project, platform, specification)"},
-			"project_lead":       {Type: "string", Description: "GitHub handle or team (org/team-name) of primary contact"},
-			"cncf_slack_channel": {Type: "string", Description: "CNCF Slack channel", Pattern: "^#"},
+			"project_lead": {Type: "string", Description: "GitHub handle or team (org/team-name) of primary contact"},
+			"slack_channels": {
+				Type:        "array",
+				Description: "CNCF Slack channels (one or more). Mark the channel most end-users should join with primary: true.",
+				Items:       &JSONSchemaProperty{Ref: "#/$defs/SlackChannel"},
+			},
 			"maturity_log": {
 				Type:        "array",
 				Description: "Maturity phase transition history (chronological order)",
@@ -98,6 +102,16 @@ func main() {
 				Required: []string{"path"},
 				Properties: map[string]JSONSchemaProperty{
 					"path": {Type: "string", Description: "File path or URL"},
+				},
+			},
+			"SlackChannel": {
+				Type:     "object",
+				Required: []string{"name"},
+				Properties: map[string]JSONSchemaProperty{
+					"workspace": {Type: "string", Description: "Slack workspace identifier (e.g., cncf)"},
+					"link":      {Type: "string", Format: "uri", Description: "Invite or channel URL"},
+					"name":      {Type: "string", Description: "Channel name (e.g., #kubernetes-dev)", Pattern: "^#"},
+					"primary":   {Type: "boolean", Description: "Whether this is the primary channel for end-users"},
 				},
 			},
 			"SecurityConfig": {

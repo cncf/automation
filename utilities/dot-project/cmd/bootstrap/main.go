@@ -88,10 +88,19 @@ func main() {
 	}
 	slug = strings.Trim(slug, "-")
 
-	// GitHub token from env if not provided via flag
+	// GitHub token from env if not provided via flag (GITHUB_TOKEN, then GH_TOKEN)
 	token := *githubToken
 	if token == "" {
 		token = os.Getenv("GITHUB_TOKEN")
+	}
+	if token == "" {
+		token = os.Getenv("GH_TOKEN")
+	}
+	if token == "" {
+		fmt.Fprintln(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / GH_TOKEN).")
+		fmt.Fprintln(os.Stderr, "        Unauthenticated GitHub API is limited to 60 requests/hour, so the")
+		fmt.Fprintln(os.Stderr, "        org-wide scan will likely be rate-limited (HTTP 403).")
+		fmt.Fprintln(os.Stderr, "        Re-run with a token, e.g.:  GITHUB_TOKEN=$(gh auth token) go run ./cmd/bootstrap ...")
 	}
 
 	client := &http.Client{Timeout: projects.DefaultHTTPTimeout}
@@ -252,26 +261,37 @@ func main() {
 		}
 	}
 
-	// Phase 3.8: Discover maintainer suggestions from org governance files.
-	// These are advisory only — the foundation CSV remains the source of truth.
+	// Phase 3.8: Discover maintainer suggestions and Slack channels from org repos.
+	// Maintainer suggestions are advisory only — the foundation CSV remains the
+	// source of truth. Slack channels are merged in as candidates to verify.
 	var suggestions []projects.MaintainerSuggestion
+	var orgSlackChannels []string
 	if !*skipGH && org != "" {
 		csvSet := map[string]bool{}
 		for _, h := range csvMaintainers {
 			csvSet[strings.ToLower(h)] = true
 		}
-		fmt.Fprintf(os.Stderr, "  Discovering maintainer suggestions from org governance files...\n")
-		suggestions = projects.DiscoverGovernanceSuggestions(org, repo, token, client, "", csvSet)
+		fmt.Fprintf(os.Stderr, "  Discovering maintainer suggestions and Slack channels from org repos...\n")
+		suggestions, orgSlackChannels = projects.DiscoverGovernanceSuggestions(org, repo, token, client, "", csvSet)
 		if len(suggestions) > 0 {
 			fmt.Fprintf(os.Stderr, "  Found %d maintainer suggestion(s) not yet in the CSV\n", len(suggestions))
 		} else {
 			fmt.Fprintf(os.Stderr, "  No additional maintainer suggestions found\n")
+		}
+		if len(orgSlackChannels) > 0 {
+			fmt.Fprintf(os.Stderr, "  Found %d Slack channel(s) across org repos\n", len(orgSlackChannels))
 		}
 	}
 
 	// Phase 4: Merge data
 	fmt.Fprintf(os.Stderr, "  Merging data sources...\n")
 	result := projects.MergeBootstrapData(slug, landscapeData, cloProject, ghData)
+
+	// Merge org-wide discovered Slack channels as additional candidates to verify.
+	if len(orgSlackChannels) > 0 {
+		projects.AddDiscoveredSlackChannels(result, orgSlackChannels)
+		result.TODOs = removeTODO(result.TODOs, "Set slack_channels")
+	}
 
 	// Maintainers come exclusively from the foundation CSV. On no match, leave
 	// the roster empty and flag a TODO.

@@ -29,7 +29,7 @@ For CNCF projects adopting `.project`:
 |-------|------|-------------|
 | `type` | string | Project type (e.g., "project", "platform", "specification") |
 | `project_lead` | string | GitHub handle of primary contact |
-| `cncf_slack_channel` | string | CNCF Slack channel (must start with `#`) |
+| `slack_channels` | SlackChannel[] | One or more CNCF Slack channels; mark the main one with `primary: true` |
 | `website` | string | Project website URL |
 | `adopters` | PathRef | Link to ADOPTERS.md or adopters list |
 | `artwork` | string | Artwork/logo URL |

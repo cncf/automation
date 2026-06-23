@@ -4,7 +4,9 @@ schema_version: "1.0.0"
 slug: "test-project"
 type: "platform"
 project_lead: "testlead"
-cncf_slack_channel: "#test-project"
+slack_channels:
+  - name: "#test-project"
+    primary: true
 maturity_log:
   - phase: "incubating"
     date: "2024-01-15T00:00:00Z"

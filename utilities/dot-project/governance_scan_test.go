@@ -31,15 +31,16 @@ func TestDiscoverGovernanceSuggestions(t *testing.T) {
 		// Org repo listing: one own repo + one fork (the fork must be skipped)
 		case "/orgs/test-org/repos":
 			json.NewEncoder(w).Encode([]map[string]any{
-				{"name": "other-repo", "fork": false},
-				{"name": "forked-repo", "fork": true},
+				{"name": "other-repo", "fork": false, "size": 100},
+				{"name": "forked-repo", "fork": true, "size": 50},
 			})
 
-		// other-repo root: a MAINTAINERS file + an OWNERS with an alias
+		// other-repo root: a MAINTAINERS file + an OWNERS with an alias + a README
 		case "/repos/test-org/other-repo/contents/":
 			json.NewEncoder(w).Encode([]GitHubContentEntry{
 				{Name: "MAINTAINERS", Type: "file", DownloadURL: base + "/raw/other-repo/MAINTAINERS"},
 				{Name: "OWNERS", Type: "file", DownloadURL: base + "/raw/other-repo/OWNERS"},
+				{Name: "README.md", Type: "file", DownloadURL: base + "/raw/other-repo/README"},
 			})
 		case "/raw/other-repo/MAINTAINERS":
 			// alice again (different role+source) + carol
@@ -47,6 +48,9 @@ func TestDiscoverGovernanceSuggestions(t *testing.T) {
 		case "/raw/other-repo/OWNERS":
 			// a real reviewer (dave) + an alias group that must be filtered out
 			fmt.Fprint(w, "reviewers:\n  - dave\n  - other-repo-reviewers\n")
+		case "/raw/other-repo/README":
+			// README referencing a CNCF Slack channel
+			fmt.Fprint(w, "## Community\nJoin us on Slack at https://cloud-native.slack.com/messages/test-channel\n")
 
 		// The fork's contents must never be requested; fail loudly if it is.
 		case "/repos/test-org/forked-repo/contents/":
@@ -62,12 +66,17 @@ func TestDiscoverGovernanceSuggestions(t *testing.T) {
 
 	// bob is already in the CSV roster, so should be excluded.
 	csv := map[string]bool{"bob": true}
-	got := DiscoverGovernanceSuggestions("test-org", "test-repo", "", server.Client(), server.URL, csv)
+	got, slack := DiscoverGovernanceSuggestions("test-org", "test-repo", "", server.Client(), server.URL, csv)
 
 	// Expect alice (code owner + maintainer), carol (maintainer), dave (reviewer);
 	// bob excluded (CSV), other-repo-reviewers excluded (alias), fork skipped.
 	if len(got) != 3 {
 		t.Fatalf("expected 3 suggestions, got %d: %+v", len(got), got)
+	}
+
+	// The README in other-repo references a CNCF Slack channel.
+	if len(slack) != 1 || slack[0] != "#test-channel" {
+		t.Errorf("slack channels = %v, want [#test-channel]", slack)
 	}
 
 	byHandle := map[string]MaintainerSuggestion{}

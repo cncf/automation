@@ -17,8 +17,21 @@ type StalenessResult struct {
 	Message              string    `json:"message"`
 }
 
-// CheckStaleness checks if a project's maintainer data is stale
-// A project is considered stale if its maintainers haven't been updated in the given threshold
+// primarySlackChannel returns the name of the project's primary Slack channel.
+// It prefers the entry marked primary, falling back to the first entry.
+func primarySlackChannel(project Project) string {
+	for _, ch := range project.SlackChannels {
+		if ch.Primary {
+			return ch.Name
+		}
+	}
+	if len(project.SlackChannels) > 0 {
+		return project.SlackChannels[0].Name
+	}
+	return ""
+}
+
+// CheckStaleness checks if a project's maintainer data is stale// A project is considered stale if its maintainers haven't been updated in the given threshold
 func CheckStaleness(project Project, lastUpdate time.Time, thresholdDays int) StalenessResult {
 	daysSince := int(time.Since(lastUpdate).Hours() / 24)
 	isStale := daysSince > thresholdDays
@@ -29,7 +42,7 @@ func CheckStaleness(project Project, lastUpdate time.Time, thresholdDays int) St
 		DaysSinceUpdate:      daysSince,
 		IsStale:              isStale,
 		ProjectLead:          project.ProjectLead,
-		SlackChannel:         project.CNCFSlackChannel,
+		SlackChannel:         primarySlackChannel(project),
 	}
 
 	if isStale {

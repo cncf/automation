@@ -94,7 +94,9 @@ func main() {
 		project.ProjectLead = strings.TrimPrefix(*projectLead, "@")
 	}
 	if *slackChannel != "" {
-		project.CNCFSlackChannel = *slackChannel
+		project.SlackChannels = []projects.SlackChannel{
+			{Name: *slackChannel, Primary: true},
+		}
 	}
 
 	// Marshal to YAML
