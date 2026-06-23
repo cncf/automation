@@ -6,8 +6,8 @@ spec:
   template:
     spec:
       taints:
-      - key: "karpenter.sh/nodepool"
-        value: "default"
+        - key: cncf.io/gha-runner
+          effect: NoSchedule
       requirements:
         - key: kubernetes.io/arch
           operator: In
@@ -19,6 +19,6 @@ spec:
         group: karpenter.k8s.linode
         kind: LinodeNodeClass
         name: default
-      expireAfter: 720h # 30 * 24h = 720h
+      expireAfter: Never
   limits:
     cpu: 1000
