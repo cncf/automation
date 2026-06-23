@@ -255,11 +255,24 @@ func validateProjectStruct(project Project) []string {
 		}
 	}
 
-	// Validate cncf_slack_channel (optional but must start with # if present)
-	if project.CNCFSlackChannel != "" {
-		if !strings.HasPrefix(project.CNCFSlackChannel, "#") {
-			errors = append(errors, fmt.Sprintf("cncf_slack_channel must start with '#', got: %s", project.CNCFSlackChannel))
+
+	// Validate slack_channels (optional list of structured channels)
+	primarySlackCount := 0
+	for i, ch := range project.SlackChannels {
+		if ch.Name == "" {
+			errors = append(errors, fmt.Sprintf("slack_channels[%d].name is required", i))
+		} else if !strings.HasPrefix(ch.Name, "#") {
+			errors = append(errors, fmt.Sprintf("slack_channels[%d].name must start with '#', got: %s", i, ch.Name))
 		}
+		if ch.Link != "" && !isValidURL(ch.Link) {
+			errors = append(errors, fmt.Sprintf("slack_channels[%d].link is not a valid URL: %s", i, ch.Link))
+		}
+		if ch.Primary {
+			primarySlackCount++
+		}
+	}
+	if primarySlackCount > 1 {
+		errors = append(errors, fmt.Sprintf("at most one slack_channels entry may be marked primary, found %d", primarySlackCount))
 	}
 
 	// Validate schema version

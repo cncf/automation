@@ -1,0 +1,7 @@
+apiVersion: karpenter.k8s.linode/v1alpha1
+kind: LinodeNodeClass
+metadata:
+  name: default
+spec:
+  tags:
+  - "karpenter-node"

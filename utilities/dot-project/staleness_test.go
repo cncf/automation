@@ -9,7 +9,7 @@ import (
 func TestCheckStaleness(t *testing.T) {
 	project := validBaseProject()
 	project.ProjectLead = "jdoe"
-	project.CNCFSlackChannel = "#test-project"
+	project.SlackChannels = []SlackChannel{{Name: "#test-project", Primary: true}}
 
 	// Fresh update - not stale
 	recent := time.Now().Add(-24 * time.Hour * 30) // 30 days ago

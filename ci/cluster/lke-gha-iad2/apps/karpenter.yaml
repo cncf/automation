@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: karpenter
+  namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.slack: internal-gha-argo
+  labels:
+    cluster: lke-gha-iad2
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: karpenter
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  sources:
+  - repoURL: https://github.com/linode/karpenter-provider-linode
+    targetRevision: helm-karpenter-v0.1.5
+    path: charts/karpenter-crd
+    helm:
+      releaseName: karpenter-crd
+  - repoURL: https://github.com/linode/karpenter-provider-linode
+    targetRevision: helm-karpenter-v0.1.5
+    path: charts/karpenter
+    helm:
+      releaseName: karpenter
+      values: |
+        credentialsSecretRef: linode-credentials
+        region: us-iad-2
+        settings:
+          batchIdleDuration: 10s
+          clusterName: lke-cncf-gha-iad2
+        controller:
+          image:
+            tag: main
+  - repoURL: https://github.com/cncf/automation
+    targetRevision: main
+    path: ci/cluster/lke-gha-iad2/manifests/karpenter
+    directory:
+      recurse: true

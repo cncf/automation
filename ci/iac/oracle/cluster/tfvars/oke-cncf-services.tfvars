@@ -16,8 +16,8 @@ svc_cidr                  = "10.0.20.0/24"
 node_cidr                 = "10.0.10.0/23"
 deploy_ingress            = true
 
-control_plane_k8s_version   = "v1.35.2"
-nodepool_k8s_version        = "v1.35.2"
+control_plane_k8s_version   = "v1.36.0"
+nodepool_k8s_version        = "v1.36.0"
 regional_service_cidr_label = "all-sjc-services-in-oracle-services-network"
 
 # CIDR_BLOCK   : is overriden to node_cidr in networks.tf file

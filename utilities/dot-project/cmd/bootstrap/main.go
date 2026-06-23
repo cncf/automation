@@ -97,20 +97,23 @@ func main() {
 	}
 	slug = strings.Trim(slug, "-")
 
-	// GitHub token from env if not provided via flag (GITHUB_TOKEN). The value
-	// may come from the shell or from the .env file loaded above.
-	token := *githubToken
-	if token == "" {
-		token = os.Getenv("GITHUB_TOKEN")
-	}
-	if token == "" {
-		fmt.Fprintf(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / %s).\n", *envFile)
-		fmt.Fprintln(os.Stderr, "        Unauthenticated GitHub API requests are rate-limited (HTTP 403 once exceeded).")
-		fmt.Fprintln(os.Stderr, "        Provide a token via any of:")
-		fmt.Fprintf(os.Stderr, "          - an env file (%s) containing:  GITHUB_TOKEN=ghp_xxx\n", *envFile)
-		fmt.Fprintln(os.Stderr, "          - the environment:         GITHUB_TOKEN=ghp_xxx go run ./cmd/bootstrap ...")
-		fmt.Fprintln(os.Stderr, "          - the flag:                -github-token ghp_xxx")
-	}
+        // GitHub token from env if not provided via flag (GITHUB_TOKEN, then GH_TOKEN). The value
+        // may come from the shell or from the .env file loaded above.
+        token := *githubToken
+        if token == "" {
+                token = os.Getenv("GITHUB_TOKEN")
+        }
+        if token == "" {
+                token = os.Getenv("GH_TOKEN")
+        }
+        if token == "" {
+                fmt.Fprintf(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / GH_TOKEN / %s).\n", *envFile)
+                fmt.Fprintln(os.Stderr, "        Unauthenticated GitHub API requests are rate-limited (HTTP 403 once exceeded).")
+                fmt.Fprintln(os.Stderr, "        Provide a token via any of:")
+                fmt.Fprintf(os.Stderr, "          - an env file (%s) containing:  GITHUB_TOKEN=ghp_xxx\n", *envFile)
+                fmt.Fprintln(os.Stderr, "          - the environment:         GITHUB_TOKEN=ghp_xxx go run ./cmd/bootstrap ...")
+                fmt.Fprintln(os.Stderr, "          - the flag:                -github-token ghp_xxx")
+        }
 
 	client := &http.Client{Timeout: projects.DefaultHTTPTimeout}
 
@@ -270,9 +273,37 @@ func main() {
 		}
 	}
 
+	// Phase 3.8: Discover maintainer suggestions and Slack channels from org repos.
+	// Maintainer suggestions are advisory only — the foundation CSV remains the
+	// source of truth. Slack channels are merged in as candidates to verify.
+	var suggestions []projects.MaintainerSuggestion
+	var orgSlackChannels []string
+	if !*skipGH && org != "" {
+		csvSet := map[string]bool{}
+		for _, h := range csvMaintainers {
+			csvSet[strings.ToLower(h)] = true
+		}
+		fmt.Fprintf(os.Stderr, "  Discovering maintainer suggestions and Slack channels from org repos...\n")
+		suggestions, orgSlackChannels = projects.DiscoverGovernanceSuggestions(org, repo, token, client, "", csvSet)
+		if len(suggestions) > 0 {
+			fmt.Fprintf(os.Stderr, "  Found %d maintainer suggestion(s) not yet in the CSV\n", len(suggestions))
+		} else {
+			fmt.Fprintf(os.Stderr, "  No additional maintainer suggestions found\n")
+		}
+		if len(orgSlackChannels) > 0 {
+			fmt.Fprintf(os.Stderr, "  Found %d Slack channel(s) across org repos\n", len(orgSlackChannels))
+		}
+	}
+
 	// Phase 4: Merge data
 	fmt.Fprintf(os.Stderr, "  Merging data sources...\n")
 	result := projects.MergeBootstrapData(slug, landscapeData, cloProject, ghData)
+
+	// Merge org-wide discovered Slack channels as additional candidates to verify.
+	if len(orgSlackChannels) > 0 {
+		projects.AddDiscoveredSlackChannels(result, orgSlackChannels)
+		result.TODOs = removeTODO(result.TODOs, "Set slack_channels")
+	}
 
 	// Maintainers come exclusively from the foundation CSV. On no match, leave
 	// the roster empty and flag a TODO.
@@ -367,6 +398,17 @@ func main() {
 			}
 			if result.LicenseURL != "" {
 				fmt.Fprintf(os.Stderr, "  LICENSE: %s\n", result.LicenseURL)
+			}
+		}
+	}
+
+	if section := projects.BuildSuggestionsSection(suggestions); section != "" {
+		fmt.Fprintf(os.Stderr, "\nMaintainer suggestions (from org governance files, not yet in the CSV):\n\n%s\n", section)
+		if !*dryRun {
+			if path, err := projects.WriteSuggestionsFile(*outputDir, suggestions); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not write suggestions file: %v\n", err)
+			} else if path != "" {
+				fmt.Fprintf(os.Stderr, "  Wrote maintainer suggestions to %s\n", path)
 			}
 		}
 	}

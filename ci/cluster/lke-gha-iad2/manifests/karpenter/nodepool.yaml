@@ -1,0 +1,47 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: default
+spec:
+  template:
+    metadata:
+      labels:
+        nodepool: karpenter
+    spec:
+      taints:
+        - key: cncf.io/gha-runner
+          value: "true"
+          effect: NoSchedule
+      requirements:
+        - key: topology.kubernetes.io/region
+          operator: In
+          values:
+            - us-iad-2
+        - key: karpenter.k8s.linode/instance-class
+          operator: In
+          values:
+            - dedicated
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values:
+            - g8-dedicated-16-4
+            - g8-dedicated-32-8
+            - g8-dedicated-64-16
+            - g8-dedicated-96-24
+            - g8-dedicated-128-32
+            - g8-dedicated-96-48
+            - g8-dedicated-256-64
+            - g8-dedicated-512-128
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+      nodeClassRef:
+        group: karpenter.k8s.linode
+        kind: LinodeNodeClass
+        name: default
+      expireAfter: Never
+  limits:
+    cpu: 1000

@@ -453,9 +453,9 @@ spec:
                   storage: 10Gi
               storageClassName: linode-block-storage
         name: overlay
-      # tolerations:
-      # - key: "cncf.io/gha-runner"
-      #   operator: "Exists"
-      #   effect: "NoSchedule"
-      # nodeSelector:
-      #   nodepool: karpenter
+      tolerations:
+      - key: "cncf.io/gha-runner"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        nodepool: karpenter

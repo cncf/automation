@@ -525,33 +525,39 @@ func TestProjectLeadValidation(t *testing.T) {
 	}
 }
 
-func TestSlackChannelValidation(t *testing.T) {
+
+func TestSlackChannelsValidation(t *testing.T) {
 	tests := []struct {
 		name        string
-		channel     string
+		channels    []SlackChannel
 		expectError bool
 	}{
-		{"valid channel", "#kubernetes", false},
-		{"empty is ok", "", false},
-		{"missing hash", "kubernetes", true},
+		{"empty list is ok", nil, false},
+		{"single valid primary", []SlackChannel{{Name: "#kubernetes", Primary: true}}, false},
+		{"multiple with one primary", []SlackChannel{{Name: "#kubernetes", Primary: true}, {Name: "#kubernetes-dev"}}, false},
+		{"valid link", []SlackChannel{{Name: "#kubernetes", Link: "https://cloud-native.slack.com/messages/kubernetes"}}, false},
+		{"missing name", []SlackChannel{{Primary: true}}, true},
+		{"name without hash", []SlackChannel{{Name: "kubernetes"}}, true},
+		{"invalid link", []SlackChannel{{Name: "#kubernetes", Link: "not-a-url"}}, true},
+		{"multiple primaries", []SlackChannel{{Name: "#a", Primary: true}, {Name: "#b", Primary: true}}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			project := validBaseProject()
-			project.CNCFSlackChannel = tt.channel
+			project.SlackChannels = tt.channels
 			errs := validateProjectStruct(project)
 			hasChannelError := false
 			for _, e := range errs {
-				if strings.Contains(e, "cncf_slack_channel") {
+				if strings.Contains(e, "slack_channels") {
 					hasChannelError = true
 					break
 				}
 			}
 			if tt.expectError && !hasChannelError {
-				t.Errorf("expected slack channel error for %q, got: %v", tt.channel, errs)
+				t.Errorf("expected slack_channels error for %+v, got: %v", tt.channels, errs)
 			}
 			if !tt.expectError && hasChannelError {
-				t.Errorf("did not expect slack channel error for %q, got: %v", tt.channel, errs)
+				t.Errorf("did not expect slack_channels error for %+v, got: %v", tt.channels, errs)
 			}
 		})
 	}

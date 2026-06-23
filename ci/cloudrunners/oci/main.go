@@ -275,6 +275,18 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 	}
 	defer sshClient.Close()
 
+	if args.arch == "arm64" {
+		arm_command := "sudo nft insert rule ip filter INPUT iifname \"br-*\" accept && sudo nft insert rule ip filter FORWARD iifname \"br-*\" accept"
+		log.Println("running ssh command", "command", arm_command)
+
+		output, err := sshClient.RunCommand(ctx, arm_command)
+		if err != nil {
+			log.Println(err, "running ssh command", "command", arm_command, "output", string(output[:]))
+			return fmt.Errorf("running command %q: %w", arm_command, err)
+		}
+		log.Println("command succeeded", "command", arm_command, "output", string(output))
+	}
+
 	commands := []string{
 		"sudo sh -c 'echo \"install algif_aead /bin/false\" > /etc/modprobe.d/disable-algif.conf'",
 		"sudo rmmod algif_aead 2>/dev/null || true",
