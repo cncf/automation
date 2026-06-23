@@ -32,6 +32,7 @@ spec:
       releaseName: karpenter
       values: |
         credentialsSecretRef: linode-credentials
+        region: us-iad-2
         settings:
           batchIdleDuration: 10s
           clusterName: lke-cncf-gha-iad2
