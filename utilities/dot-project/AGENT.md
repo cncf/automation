@@ -166,13 +166,18 @@ Auto-generates `project.yaml` and `maintainers.yaml` scaffolds by fetching data 
 
 # With GitHub token for higher rate limits
 GITHUB_TOKEN=ghp_xxx ./bin/bootstrap -name "My Project" -github-org my-org
+
+# Or store the token in a .env file (auto-loaded; real env vars win)
+echo 'GITHUB_TOKEN=ghp_xxx' > .env
+./bin/bootstrap -name "My Project" -github-org my-org
 ```
 
 **bootstrap** (`cmd/bootstrap/main.go`):
 - `-name` - Project display name to search for
 - `-github-org` - GitHub organization
 - `-github-repo` - Primary repository name (defaults to org name)
-- `-github-token` - GitHub token (or set `GITHUB_TOKEN` env)
+- `-github-token` - GitHub token. Resolution order: flag → `GITHUB_TOKEN` → the env file specified by `-env-file` (default: `.env`)
+- `-env-file` - Path to a `.env` file to load (default: `.env`; real env vars take precedence)
 - `-output-dir` - Directory for scaffold output (default: `.`)
 - `-skip-landscape` - Skip CNCF landscape YAML lookup (default: false)
 - `-skip-clomonitor` - Skip CLOMonitor API lookup (default: false)
