@@ -10,6 +10,7 @@ spec:
     spec:
       taints:
         - key: cncf.io/gha-runner
+          value: "true"
           effect: NoSchedule
       requirements:
         - key: kubernetes.io/arch
