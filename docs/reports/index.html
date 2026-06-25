@@ -272,6 +272,7 @@
 
     .kpi-card.blue::before { background: linear-gradient(90deg, var(--accent), #93c5fd); }
     .kpi-card.green::before { background: linear-gradient(90deg, var(--graduated), #86efac); }
+    .kpi-card.teal::before { background: linear-gradient(90deg, #0891b2, #22d3ee); }
     .kpi-card.purple::before { background: linear-gradient(90deg, var(--sandbox), #c4b5fd); }
     .kpi-card.amber::before { background: linear-gradient(90deg, var(--accent3), #fcd34d); }
     .kpi-card.red::before { background: linear-gradient(90deg, var(--accent4), #fca5a5); }
@@ -294,6 +295,7 @@
 
     .kpi-card.blue .kpi-value { color: var(--accent); }
     .kpi-card.green .kpi-value { color: var(--graduated); }
+    .kpi-card.teal .kpi-value { color: #0891b2; }
     .kpi-card.purple .kpi-value { color: var(--sandbox); }
     .kpi-card.amber .kpi-value { color: var(--accent3); }
     .kpi-card.red .kpi-value { color: var(--accent4); }
@@ -1093,17 +1095,22 @@
       <div class="kpi-card green">
         <div class="kpi-label">Nearly Complete</div>
         <div class="kpi-value" id="kpi-onb-nearly-complete">3</div>
-        <div class="kpi-desc">≥95% done</div>
+        <div class="kpi-desc">&gt;95% done</div>
       </div>
-      <div class="kpi-card blue">
+      <div class="kpi-card teal">
+        <div class="kpi-label">More than Halfway</div>
+        <div class="kpi-value" id="kpi-onb-halfway">8</div>
+        <div class="kpi-desc">&gt;70% done</div>
+      </div>
+      <div class="kpi-card amber">
         <div class="kpi-label">Good Progress</div>
-        <div class="kpi-value" id="kpi-onb-in-progress">20</div>
-        <div class="kpi-desc">50–94.9% done</div>
+        <div class="kpi-value" id="kpi-onb-in-progress">7</div>
+        <div class="kpi-desc">&gt;30% done</div>
       </div>
       <div class="kpi-card red">
         <div class="kpi-label">Low Progress or New</div>
-        <div class="kpi-value" id="kpi-onb-low">0</div>
-        <div class="kpi-desc">&lt;50% done</div>
+        <div class="kpi-value" id="kpi-onb-low">1</div>
+        <div class="kpi-desc">≤30% done</div>
       </div>
     </div>
 
@@ -1522,9 +1529,9 @@ function initCharts() {
 // ══════════════════════════════════════════
 
 function getProgressColor(pct) {
-  if (pct >= 95) return COLORS.green;
-  if (pct >= 80) return COLORS.blue;
-  if (pct >= 65) return COLORS.amber;
+  if (pct > 95) return COLORS.green;
+  if (pct > 70) return '#0891b2';
+  if (pct > 30) return COLORS.amber;
   return COLORS.red;
 }
 
@@ -1762,13 +1769,15 @@ async function loadDashboard() {
     document.getElementById('sb-backlog-subtitle').textContent   = `${velocityData.sandbox.backlogCount} projects currently in sandbox review`;
 
     // ── Onboarding page ──────────────────────────────────────────────────────
-    const onbTotal    = o.summary?.total         ?? onboardingIssues.length;
-    const onbNearly   = o.summary?.nearly_complete ?? 0;
-    const onbInProg   = o.summary?.in_progress    ?? 0;
-    const onbLow      = o.summary?.low_progress   ?? 0;
+    const onbTotal    = onboardingIssues.length;
+    const onbNearly   = onboardingIssues.filter(p => p.progress > 95).length;
+    const onbHalfway  = onboardingIssues.filter(p => p.progress > 70 && p.progress <= 95).length;
+    const onbInProg   = onboardingIssues.filter(p => p.progress > 30 && p.progress <= 70).length;
+    const onbLow      = onboardingIssues.filter(p => p.progress <= 30).length;
 
     document.getElementById('kpi-onb-total').textContent          = onbTotal;
     document.getElementById('kpi-onb-nearly-complete').textContent = onbNearly;
+    document.getElementById('kpi-onb-halfway').textContent         = onbHalfway;
     document.getElementById('kpi-onb-in-progress').textContent    = onbInProg;
     document.getElementById('kpi-onb-low').textContent            = onbLow;
 
