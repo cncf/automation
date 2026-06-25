@@ -1235,6 +1235,7 @@ let onboardingHistory = [];
 let sandboxHistory = [];
 let onboardingIssues = [];
 let serviceDeskData = [];
+let serviceDeskSatisfaction = [];
 let satisfactionData = [];
 
 // ══════════════════════════════════════════
@@ -1697,6 +1698,7 @@ async function loadDashboard() {
     sandboxHistory    = m.sandbox_completed_by_year   || [];
     onboardingIssues  = o.issues || [];
     serviceDeskData      = d.service_desk || [];
+    serviceDeskSatisfaction = d.service_desk_satisfaction || [];
     satisfactionData     = d.maintainer_satisfaction || [];
 
     // ── Update dates ────────────────────────────────────────────────────────
@@ -1953,10 +1955,20 @@ function renderServiceDeskYearlyKpis() {
     return acc;
   }, {});
 
+  // Create satisfaction lookup by year
+  const satisfactionByYear = {};
+  serviceDeskSatisfaction.forEach(s => {
+    satisfactionByYear[s.year] = s;
+  });
+
   const years = Object.keys(yearlyTotals).sort((left, right) => left.localeCompare(right));
 
   container.innerHTML = years.map((year) => {
     const totals = yearlyTotals[year];
+    const satisfaction = satisfactionByYear[year];
+    const satisfactionStars = satisfaction ? satisfaction.average.toFixed(1) : '-';
+    const tooltipText = satisfaction ? `Rating: ${satisfaction.average.toFixed(1)}${satisfaction.ratings ? ` (${satisfaction.ratings} reviews)` : ''}` : 'No data';
+    
     return `
       <div class="kpi-card">
         <div class="kpi-label">${year}</div>
@@ -1969,6 +1981,10 @@ function renderServiceDeskYearlyKpis() {
           <div class="kpi-split-row">
             <span class="kpi-split-label">Resolved</span>
             <span class="kpi-split-value resolved">${totals.resolved}</span>
+          </div>
+          <div class="kpi-split-row">
+            <span class="kpi-split-label">Satisfaction</span>
+            <span class="kpi-split-value" style="color:var(--accent);cursor:help" title="${tooltipText}">${satisfactionStars} ⭐</span>
           </div>
         </div>
       </div>
