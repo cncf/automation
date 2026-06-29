@@ -11,7 +11,7 @@ import (
 func TestValidator(t *testing.T) {
 	// Create a test cache directory
 	cacheDir := ".test-cache"
-	defer os.RemoveAll(cacheDir)
+	defer func() { _ = os.RemoveAll(cacheDir) }()
 
 	_ = NewValidator(cacheDir) // Test that constructor works
 
@@ -97,8 +97,8 @@ func TestMaturityLogValidation(t *testing.T) {
 
 	for _, expectedError := range expectedErrors {
 		found := false
-		for _, error := range errors {
-			if error == expectedError {
+		for _, e := range errors {
+			if e == expectedError {
 				found = true
 				break
 			}
@@ -128,8 +128,8 @@ func TestAuditsValidation(t *testing.T) {
 
 	for _, expectedError := range expectedErrors {
 		found := false
-		for _, error := range errors {
-			if error == expectedError {
+		for _, e := range errors {
+			if e == expectedError {
 				found = true
 				break
 			}
@@ -156,8 +156,8 @@ func TestRepositoriesValidation(t *testing.T) {
 
 	for _, expectedError := range expectedErrors {
 		found := false
-		for _, error := range errors {
-			if error == expectedError {
+		for _, e := range errors {
+			if e == expectedError {
 				found = true
 				break
 			}
@@ -340,8 +340,8 @@ func TestNewFieldsValidation(t *testing.T) {
 
 	for _, expectedError := range expectedErrors {
 		found := false
-		for _, error := range errors {
-			if error == expectedError {
+		for _, e := range errors {
+			if e == expectedError {
 				found = true
 				break
 			}
@@ -502,7 +502,9 @@ func TestProjectLeadValidation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			project := validBaseProject()
-			project.ProjectLead = tt.lead
+			if tt.lead != "" {
+				project.ProjectLeads = StringOrSlice{tt.lead}
+			}
 			errs := validateProjectStruct(project)
 
 			hasLeadError := false
@@ -524,7 +526,6 @@ func TestProjectLeadValidation(t *testing.T) {
 		})
 	}
 }
-
 
 func TestSlackChannelsValidation(t *testing.T) {
 	tests := []struct {
@@ -725,9 +726,9 @@ func TestIdentityTypeValidation(t *testing.T) {
 func TestPackageManagersValidation(t *testing.T) {
 	t.Run("valid entries", func(t *testing.T) {
 		project := validBaseProject()
-		project.PackageManagers = map[string]string{
-			"docker": "kubernetes/kubectl",
-			"npm":    "@kubernetes/client-node",
+		project.PackageManagers = map[string]StringOrSlice{
+			"docker": {"kubernetes/kubectl"},
+			"npm":    {"@kubernetes/client-node"},
 		}
 		errs := validateProjectStruct(project)
 		for _, e := range errs {

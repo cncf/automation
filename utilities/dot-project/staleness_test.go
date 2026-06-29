@@ -8,7 +8,7 @@ import (
 
 func TestCheckStaleness(t *testing.T) {
 	project := validBaseProject()
-	project.ProjectLead = "jdoe"
+	project.ProjectLeads = StringOrSlice{"jdoe"}
 	project.SlackChannels = []SlackChannel{{Name: "#test-project", Primary: true}}
 
 	// Fresh update - not stale

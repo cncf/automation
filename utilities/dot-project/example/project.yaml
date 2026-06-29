@@ -9,7 +9,9 @@ slug: "kubernetes"
 name: "Kubernetes"
 description: "Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications."
 type: "platform"
-project_lead: "thockin"
+project_lead:
+  - "thockin"
+  - "kubernetes/sig-leads"
 slack_channels:
   - name: "#kubernetes-users"
     workspace: "cncf"
@@ -43,7 +45,10 @@ adopters:
   path: "https://github.com/kubernetes/community/blob/master/ADOPTERS.md"
 
 package_managers:
-  docker: "registry.k8s.io/kube-apiserver"
+  docker:
+    - "registry.k8s.io/kube-apiserver"
+    - "registry.k8s.io/kube-controller-manager"
+    - "registry.k8s.io/kube-scheduler"
   homebrew: "kubernetes-cli"
   chocolatey: "kubernetes-cli"
 

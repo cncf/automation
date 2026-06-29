@@ -36,12 +36,19 @@ func CheckStaleness(project Project, lastUpdate time.Time, thresholdDays int) St
 	daysSince := int(time.Since(lastUpdate).Hours() / 24)
 	isStale := daysSince > thresholdDays
 
+	// Strip any leading "@" from each handle before joining so the report
+	// never emits "@@handle" when the value was stored with the prefix.
+	strippedLeads := make([]string, len(project.ProjectLeads))
+	for i, l := range project.ProjectLeads {
+		strippedLeads[i] = strings.TrimPrefix(strings.TrimSpace(l), "@")
+	}
+
 	result := StalenessResult{
 		ProjectSlug:          project.Slug,
 		LastMaintainerUpdate: lastUpdate,
 		DaysSinceUpdate:      daysSince,
 		IsStale:              isStale,
-		ProjectLead:          project.ProjectLead,
+		ProjectLead:          strings.Join(strippedLeads, ", "),
 		SlackChannel:         primarySlackChannel(project),
 	}
 

@@ -11,7 +11,10 @@ slug: "my-project"              # REQUIRED: lowercase identifier (a-z, 0-9, hyph
 name: "My Project"              # REQUIRED: display name
 description: ""                 # REQUIRED: one-line project description
 type: "project"                 # REQUIRED: project, platform, specification, etc.
-project_lead: "github-handle"   # Optional: GitHub handle or team (org/team-name)
+project_lead: "github-handle"   # Optional: single lead — plain string
+# project_lead:                  # Optional: multiple leads — list form
+#   - "github-handle"
+#   - "org/team-name"
 slack_channels:                 # Optional: one or more CNCF Slack channels
   - name: "#my-project"         # REQUIRED per entry: must start with "#"
     workspace: "cncf"           # Optional: Slack workspace identifier
@@ -33,8 +36,12 @@ artwork: "https://github.com/cncf/artwork/tree/master/projects/my-project"
 #   path: "https://github.com/my-org/my-project/blob/main/ADOPTERS.md"
 
 # package_managers:              # Optional: registry identifiers
-#   docker: "my-org/my-project"
+#   docker: "my-org/my-project"  # single image — plain string
+#   # docker:                    # multiple images — list form
+#   #   - "my-org/my-project"
+#   #   - "my-org/my-project-arm64"
 #   npm: "my-project"
+#   fedora: "my-project"
 
 social:                         # Optional
   twitter: "https://twitter.com/myproject"

@@ -1,9 +1,59 @@
 package projects
 
 import (
+	"fmt"
 	"net/http"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
+
+// StringOrSlice is a YAML/JSON type that accepts both a plain string scalar
+// and a sequence of strings. Single-element values round-trip as a plain
+// string for backward-compatible YAML output; multi-element values serialize
+// as a YAML list.
+//
+// Used for:
+//   - project_lead  — supports multiple leads
+//   - package_managers values — supports multiple images/packages per registry
+type StringOrSlice []string
+
+// UnmarshalYAML allows project.yaml files to use either form:
+//
+//	project_lead: "jdoe"          # scalar (backward-compatible)
+//	project_lead:                 # list
+//	  - "jdoe"
+//	  - "jsmith"
+func (s *StringOrSlice) UnmarshalYAML(value *yaml.Node) error {
+	switch value.Kind {
+	case yaml.ScalarNode:
+		*s = StringOrSlice{value.Value}
+		return nil
+	case yaml.SequenceNode:
+		var ss []string
+		if err := value.Decode(&ss); err != nil {
+			return err
+		}
+		*s = ss
+		return nil
+	default:
+		return fmt.Errorf("expected string or sequence, got YAML node type %v", value.Tag)
+	}
+}
+
+// MarshalYAML serializes a single-element StringOrSlice as a plain string
+// scalar (readable, backward-compatible). Multi-element values serialize as a
+// YAML sequence. An empty slice serializes as nil (omitempty will drop it).
+func (s StringOrSlice) MarshalYAML() (interface{}, error) {
+	switch len(s) {
+	case 0:
+		return nil, nil
+	case 1:
+		return s[0], nil
+	default:
+		return []string(s), nil
+	}
+}
 
 type Project struct {
 	Name         string            `json:"name" yaml:"name"`
@@ -18,7 +68,10 @@ type Project struct {
 	Adopters     *PathRef          `json:"adopters,omitempty" yaml:"adopters,omitempty"` // Link to ADOPTERS.md or similar
 
 	// Distribution
-	PackageManagers map[string]string `json:"package_managers,omitempty" yaml:"package_managers,omitempty"` // Registry identifiers (e.g., npm, pypi, docker)
+	// PackageManagers maps registry names to one or more identifiers.
+	// A single identifier may be given as a plain string; multiple identifiers
+	// (e.g., multi-arch Docker images) may be given as a list.
+	PackageManagers map[string]StringOrSlice `json:"package_managers,omitempty" yaml:"package_managers,omitempty"`
 
 	// Schema and identification
 	SchemaVersion string `json:"schema_version" yaml:"schema_version"`
@@ -26,8 +79,10 @@ type Project struct {
 	Slug          string `json:"slug" yaml:"slug"` // Unique project identifier (lowercase, alphanumeric + hyphens)
 
 	// Contacts and channels
-	ProjectLead string `json:"project_lead,omitempty" yaml:"project_lead,omitempty"` // GitHub handle of primary contact
-
+	// ProjectLeads holds one or more GitHub handles or GitHub team references
+	// (org/team-name) for the project lead(s). Accepts a plain string (single
+	// lead, backward-compatible) or a YAML list (multiple leads).
+	ProjectLeads StringOrSlice `json:"project_lead,omitempty" yaml:"project_lead,omitempty"`
 
 	// SlackChannels lists one or more Slack channels for the project.
 	// Mark the channel most end-users should join with primary: true.

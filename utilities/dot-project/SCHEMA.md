@@ -16,8 +16,8 @@ This document defines the schema for CNCF `.project` repository metadata files.
 | `name` | string | Yes | Project display name | Non-empty |
 | `description` | string | Yes | One-line project description | Non-empty |
 | `type` | string | No | Project type | Free text (e.g., `"project"`, `"platform"`, `"specification"`) |
-| `package_managers` | map[string]string | No | Registry identifiers (e.g., npm, Docker Hub) | All values must be non-empty strings |
-| `project_lead` | string | No | Primary contact GitHub handle or team | Non-empty if present; `@` prefix is stripped; can be a GitHub handle (e.g., `jdoe`) or a GitHub team (e.g., `org/team-name`) |
+| `package_managers` | map[string](string\|string[]) | No | Registry identifiers. Each value is a single string or a list of strings (e.g., multiple Docker images) | All values must be non-empty strings |
+| `project_lead` | string \| string[] | No | One or more primary contact GitHub handles or teams. Accepts a plain string (single lead, backward-compatible) or a YAML list (multiple leads) | Non-empty if present; `@` prefix is stripped; each entry can be a GitHub handle (e.g., `jdoe`) or a GitHub team (e.g., `org/team-name`) |
 | `slack_channels` | SlackChannel[] | No | One or more CNCF Slack channels | Each `name` must start with `#`; at most one entry may set `primary: true` |
 | `maturity_log` | MaturityEntry[] | Yes | Maturity phase history | At least one entry; chronological order |
 | `repositories` | string[] | Yes | Repository URLs | At least one valid HTTP(S) URL |

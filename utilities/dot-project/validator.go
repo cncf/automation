@@ -51,12 +51,12 @@ func (pv *ProjectValidator) ValidateProjects() ([]ValidationResult, error) {
 	}
 
 	var results []ValidationResult
-	for _, url := range projectURLs {
-		result, err := pv.validateProject(url)
+	for _, projectURL := range projectURLs {
+		result, err := pv.validateProject(projectURL)
 		if err != nil {
-			log.Printf("Error validating project %s: %v", url, err)
+			log.Printf("Error validating project %s: %v", projectURL, err)
 			result = ValidationResult{
-				URL:         url,
+				URL:         projectURL,
 				Valid:       false,
 				Errors:      []string{err.Error()},
 				LastChecked: time.Now(),
@@ -187,7 +187,7 @@ func (pv *ProjectValidator) fetchContent(url string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("HTTP %d: %s", resp.StatusCode, resp.Status)
@@ -236,25 +236,25 @@ func validateProjectStruct(project Project) []string {
 		errors = append(errors, fmt.Sprintf("slug must be lowercase alphanumeric with hyphens, got: %s", project.Slug))
 	}
 
-	// Validate project_lead (optional but must be non-empty if present)
-	// Accepts either a GitHub handle (e.g., "jdoe") or a GitHub team (e.g., "org/team-name")
-	if project.ProjectLead != "" {
-		lead := strings.TrimSpace(project.ProjectLead)
+	// Validate project_lead (optional; each entry must be a valid GitHub handle
+	// or a GitHub team reference of the form org/team-name).
+	// Accepts a single string (scalar) or a list for projects with multiple leads.
+	for i, rawLead := range project.ProjectLeads {
+		lead := strings.TrimSpace(rawLead)
 		lead = strings.TrimPrefix(lead, "@")
 		if lead == "" {
-			errors = append(errors, "project_lead cannot be empty or just '@'")
+			errors = append(errors, fmt.Sprintf("project_lead[%d] cannot be empty or just '@'", i))
 		} else if strings.Contains(lead, "/") {
 			parts := strings.Split(lead, "/")
 			if len(parts) != 2 {
-				errors = append(errors, fmt.Sprintf("project_lead team format must be org/team-name (got too many segments): %s", project.ProjectLead))
+				errors = append(errors, fmt.Sprintf("project_lead[%d] team format must be org/team-name (got too many segments): %s", i, rawLead))
 			} else if parts[0] == "" {
-				errors = append(errors, fmt.Sprintf("project_lead team format requires a non-empty org (expected org/team-name): %s", project.ProjectLead))
+				errors = append(errors, fmt.Sprintf("project_lead[%d] team format requires a non-empty org (expected org/team-name): %s", i, rawLead))
 			} else if parts[1] == "" {
-				errors = append(errors, fmt.Sprintf("project_lead team format requires a non-empty team name (expected org/team-name): %s", project.ProjectLead))
+				errors = append(errors, fmt.Sprintf("project_lead[%d] team format requires a non-empty team name (expected org/team-name): %s", i, rawLead))
 			}
 		}
 	}
-
 
 	// Validate slack_channels (optional list of structured channels)
 	primarySlackCount := 0
@@ -342,9 +342,9 @@ func validateProjectStruct(project Project) []string {
 	}
 
 	// Validate social links
-	for platform, url := range project.Social {
-		if !isValidURL(url) {
-			errors = append(errors, fmt.Sprintf("social.%s is not a valid URL: %s", platform, url))
+	for platform, rawURL := range project.Social {
+		if !isValidURL(rawURL) {
+			errors = append(errors, fmt.Sprintf("social.%s is not a valid URL: %s", platform, rawURL))
 		}
 	}
 
@@ -441,6 +441,18 @@ func validateProjectStruct(project Project) []string {
 				{project.Legal.IdentityType.DCOURL, "legal.identity_type.dco_url"},
 				{project.Legal.IdentityType.CLAURL, "legal.identity_type.cla_url"},
 			})...)
+		}
+	}
+
+	// Validate package_managers: each key must have at least one non-empty value.
+	for key, vals := range project.PackageManagers {
+		if len(vals) == 0 {
+			errors = append(errors, fmt.Sprintf("package_managers.%s must have at least one value", key))
+		}
+		for j, v := range vals {
+			if strings.TrimSpace(v) == "" {
+				errors = append(errors, fmt.Sprintf("package_managers.%s[%d] value must not be empty", key, j))
+			}
 		}
 	}
 

@@ -91,7 +91,7 @@ func main() {
 		project.Website = *website
 	}
 	if *projectLead != "" {
-		project.ProjectLead = strings.TrimPrefix(*projectLead, "@")
+		project.ProjectLeads = projects.StringOrSlice{strings.TrimPrefix(*projectLead, "@")}
 	}
 	if *slackChannel != "" {
 		project.SlackChannels = []projects.SlackChannel{

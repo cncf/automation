@@ -30,6 +30,7 @@ type JSONSchemaProperty struct {
 	Required             []string                      `json:"required,omitempty"`
 	Ref                  string                        `json:"$ref,omitempty"`
 	AdditionalProperties interface{}                   `json:"additionalProperties,omitempty"`
+	OneOf                []JSONSchemaProperty          `json:"oneOf,omitempty"`
 }
 
 func main() {
@@ -44,12 +45,18 @@ func main() {
 		AdditionalProperties: &falseVal,
 		Required:             []string{"schema_version", "slug", "name", "description", "maturity_log", "repositories"},
 		Properties: map[string]JSONSchemaProperty{
-			"schema_version":     {Type: "string", Description: "Schema version", Enum: []string{"1.0.0"}},
-			"slug":               {Type: "string", Description: "Unique project identifier", Pattern: "^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$"},
-			"name":               {Type: "string", Description: "Project display name"},
-			"description":        {Type: "string", Description: "One-line project description"},
-			"type":               {Type: "string", Description: "Project type (e.g., project, platform, specification)"},
-			"project_lead": {Type: "string", Description: "GitHub handle or team (org/team-name) of primary contact"},
+			"schema_version": {Type: "string", Description: "Schema version", Enum: []string{"1.0.0"}},
+			"slug":           {Type: "string", Description: "Unique project identifier", Pattern: "^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$"},
+			"name":           {Type: "string", Description: "Project display name"},
+			"description":    {Type: "string", Description: "One-line project description"},
+			"type":           {Type: "string", Description: "Project type (e.g., project, platform, specification)"},
+			"project_lead": {
+				Description: "One or more GitHub handles or team references (org/team-name) for the project lead(s). Accepts a plain string (single lead) or a list (multiple leads).",
+				OneOf: []JSONSchemaProperty{
+					{Type: "string"},
+					{Type: "array", Items: &JSONSchemaProperty{Type: "string"}},
+				},
+			},
 			"slack_channels": {
 				Type:        "array",
 				Description: "CNCF Slack channels (one or more). Mark the channel most end-users should join with primary: true.",
@@ -65,18 +72,27 @@ func main() {
 				Description: "Repository URLs",
 				Items:       &JSONSchemaProperty{Type: "string", Format: "uri"},
 			},
-			"website":          {Type: "string", Description: "Project website URL", Format: "uri"},
-			"artwork":          {Type: "string", Description: "Artwork/logo URL", Format: "uri"},
-			"social":           {Type: "object", Description: "Social platform URLs", AdditionalProperties: JSONSchemaProperty{Type: "string", Format: "uri"}},
-			"mailing_lists":    {Type: "array", Description: "Mailing list addresses", Items: &JSONSchemaProperty{Type: "string"}},
-			"audits":           {Type: "array", Description: "Security/performance audits", Items: &JSONSchemaProperty{Ref: "#/$defs/Audit"}},
-			"adopters":         {Ref: "#/$defs/PathRef", Description: "Link to ADOPTERS.md or adopters list"},
-			"package_managers": {Type: "object", Description: "Registry identifiers (e.g., npm package name, Docker Hub image)", AdditionalProperties: JSONSchemaProperty{Type: "string"}},
-			"security":         {Ref: "#/$defs/SecurityConfig", Description: "Security configuration"},
-			"governance":       {Ref: "#/$defs/GovernanceConfig", Description: "Governance configuration"},
-			"legal":            {Ref: "#/$defs/LegalConfig", Description: "Legal configuration"},
-			"documentation":    {Ref: "#/$defs/DocumentationConfig", Description: "Documentation configuration"},
-			"landscape":        {Ref: "#/$defs/LandscapeConfig", Description: "CNCF Landscape location"},
+			"website":       {Type: "string", Description: "Project website URL", Format: "uri"},
+			"artwork":       {Type: "string", Description: "Artwork/logo URL", Format: "uri"},
+			"social":        {Type: "object", Description: "Social platform URLs", AdditionalProperties: JSONSchemaProperty{Type: "string", Format: "uri"}},
+			"mailing_lists": {Type: "array", Description: "Mailing list addresses", Items: &JSONSchemaProperty{Type: "string"}},
+			"audits":        {Type: "array", Description: "Security/performance audits", Items: &JSONSchemaProperty{Ref: "#/$defs/Audit"}},
+			"adopters":      {Ref: "#/$defs/PathRef", Description: "Link to ADOPTERS.md or adopters list"},
+			"package_managers": {
+				Type:        "object",
+				Description: "Registry identifiers. Each key is a registry name (e.g., docker, npm, fedora). Each value is a single identifier string or a list of identifiers (e.g., multiple Docker images).",
+				AdditionalProperties: JSONSchemaProperty{
+					OneOf: []JSONSchemaProperty{
+						{Type: "string"},
+						{Type: "array", Items: &JSONSchemaProperty{Type: "string"}},
+					},
+				},
+			},
+			"security":      {Ref: "#/$defs/SecurityConfig", Description: "Security configuration"},
+			"governance":    {Ref: "#/$defs/GovernanceConfig", Description: "Governance configuration"},
+			"legal":         {Ref: "#/$defs/LegalConfig", Description: "Legal configuration"},
+			"documentation": {Ref: "#/$defs/DocumentationConfig", Description: "Documentation configuration"},
+			"landscape":     {Ref: "#/$defs/LandscapeConfig", Description: "CNCF Landscape location"},
 		},
 		Defs: map[string]JSONSchema{
 			"MaturityEntry": {
