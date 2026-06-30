@@ -64,7 +64,7 @@ jobs:
           packer plugins install github.com/hashicorp/qemu
 
       - name: Install OCI CLI
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.13'
           pip-install: oci-cli
@@ -157,7 +157,7 @@ jobs:
           packer plugins install github.com/hashicorp/qemu
 
       - name: Install OCI CLI
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.13'
           pip-install: oci-cli
@@ -357,7 +357,7 @@ jobs:
           name: image-ocid-arm64
 
       - name: Install OCI CLI
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.13'
           pip-install: oci-cli
@@ -383,7 +383,7 @@ jobs:
           name: object-name-x86
 
       - name: Install OCI CLI
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.13'
           pip-install: oci-cli
@@ -412,7 +412,7 @@ jobs:
           name: image-ocid-x86
 
       - name: Install OCI CLI
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.13'
           pip-install: oci-cli
@@ -444,7 +444,7 @@ jobs:
           name: image-tag-x86
 
       - name: Install OCI CLI
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.13'
           pip-install: oci-cli
