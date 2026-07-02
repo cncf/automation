@@ -71,6 +71,8 @@ spec:
           env:
             - name: CMD_DOMAIN
               value: "notes.cncf.io"
+            - name: CMD_URL_PATH
+              value: "archive"
             - name: CMD_URL_ADDPORT
               value: "false"
             - name: CMD_PROTOCOL_USESSL
