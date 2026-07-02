@@ -109,6 +109,12 @@ spec:
     - path:
         type: PathPrefix
         value: /
+    sessionPersistence:
+      sessionName: codimd-affinity
+      type: Cookie
+      absoluteTimeout: 1h
+      cookieConfig:
+        lifetimeType: Permanent
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
