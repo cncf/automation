@@ -1,0 +1,201 @@
+---
+# Source: codimd/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: codimd-lfx
+  namespace: codimd
+  labels:
+    app.kubernetes.io/component: Service
+    app.kubernetes.io/name: codimd-lfx
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/component: server-lfx
+    app.kubernetes.io/name: codimd-lfx
+  ports:
+    - port: 80
+      targetPort: 3000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: codimd-saml-idp-cert
+  namespace: codimd
+data:
+  idp.pem: |
+    -----BEGIN CERTIFICATE-----
+    MIIDDTCCAfWgAwIBAgIJD/4DK+iPjgTHMA0GCSqGSIb3DQEBCwUAMCQxIjAgBgNV
+    BAMTGWxpbnV4Zm91bmRhdGlvbi5hdXRoMC5jb20wHhcNMTcwNDI0MTcwMzIyWhcN
+    MzEwMTAxMTcwMzIyWjAkMSIwIAYDVQQDExlsaW51eGZvdW5kYXRpb24uYXV0aDAu
+    Y29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0wpNJszy699/9RKp
+    hACjVgFF28sdDwBP0LUWz/rh8Rk82mnuLyrWTa3N6aNutpmSFDozrGs8qyr+j6oB
+    aRIfepoB/dlTCzYu0Fl3HzLafR4TcppIlILZkLshq60h80AHoG4d6Z1jfW7UmL2n
+    aT5ZwlD6KpxcVPrveFDN9f5QkaQ3TYdFVz1EmZvOy62+C8kP4xhw16QI9kO/BBIA
+    PYNjo8p6breagyx5AsrbKwo3U+IJFo09+OOjacCAYdSejCMv21XV/0bpJ+oiAilP
+    Ka0SzD6B5xafGKGbh19Tq1q1VZ36Ij9gjVbqDHuvMDGuaFJeaoqOB1QF3QL5s9c+
+    EVB2CwIDAQABo0IwQDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSqPGrbM6XA
+    /BSWT7uDYL4CCldR2zAOBgNVHQ8BAf8EBAMCAoQwDQYJKoZIhvcNAQELBQADggEB
+    ADeVadc2b6ZvxCYYfffNP2IX1L3bbZnR7JRCTXCarFC8zN7R4BOk5nh2gVEJSDIQ
+    5MwlLlWhwxurr0vOaBGsBtp6f5KxAxPKiTVunV7KxzzWse+DudaAEm4MI8aG0RJc
+    K+VE1Aw81ko64LfwPFY3exmcr5COcuaILnKm3GcDzBxdn0EcckKyZbvFETEM+n8N
+    0Ze315bO3+4BOKR4DaBYSXsrbcG7ccRwzkXuw5KTu9ggB99IjPxQWn8+D49yGoPj
+    14bT4n2PRaEBQ0uDt8EPsgfK1F9KsHy5s9SVRjYBJcaNYue9NVGWn63J6inLp0ya
+    L7mD9p23sEmSBvFlUtroFEM=
+    -----END CERTIFICATE-----
+---
+# Source: codimd/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codimd-lfx
+  namespace: codimd
+  labels:
+    app.kubernetes.io/component: server-lfx
+    app.kubernetes.io/name: codimd-lfx
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: server-lfx
+      app.kubernetes.io/name: codimd-lfx
+  template:
+    metadata:
+      name: codimd-lfx
+      labels:
+        app.kubernetes.io/component: server-lfx
+        app.kubernetes.io/name: codimd-lfx
+    spec:
+      securityContext:
+        fsGroup: 1500
+        runAsGroup: 1500
+        runAsNonRoot: true
+        runAsUser: 1500
+      containers:
+        - name: codimd-lfx
+          image: docker.io/hackmdio/hackmd:2.6.1
+          imagePullPolicy: "IfNotPresent"
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              sed -i "s/__('Sign in via %s', 'SAML')/__('Sign in via %s', 'LFX')/" \
+                /home/hackmd/app/public/views/shared/signin-modal.ejs
+              exec /home/hackmd/app/docker-entrypoint.sh
+          env:
+            - name: CMD_DOMAIN
+              value: "notes.cncf.io"
+            - name: CMD_URL_ADDPORT
+              value: "false"
+            - name: CMD_PROTOCOL_USESSL
+              value: "true"
+            - name: CMD_USECDN
+              value: "false"
+            # CNPG-managed connection string; auto-created Secret `codimd-app`
+            # holds a ready-to-use "uri" field: postgresql://codimd:<pw>@codimd-rw:5432/codimd
+            - name: CMD_DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: codimd-app
+                  key: uri
+            - name: CMD_SESSION_LIFE
+              value: "1209600000"
+            - name: CMD_HSTS_ENABLE
+              value: "true"
+            - name: CMD_HSTS_MAX_AGE
+              value: "31536000"
+            - name: CMD_HSTS_INCLUDE_SUBDOMAINS
+              value: "false"
+            - name: CMD_HSTS_PRELOAD
+              value: "true"
+            - name: CMD_CSP_ENABLE
+              value: "true"
+            - name: CMD_ALLOW_GRAVATAR
+              value: "true"
+            - name: CMD_RESPONSE_MAX_LAG
+              value: "70"
+            - name: CMD_IMAGE_UPLOAD_TYPE
+              value: "s3"
+            - name: CMD_S3_REGION
+              value: "us-sanjose-1"
+            - name: CMD_S3_BUCKET
+              value: "cncf-codimd-images"
+            - name: CMD_S3_ENDPOINT
+              value: "https://axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com"
+            - name: CMD_S3_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: codimd-s3-creds
+                  key: ACCESS_KEY_ID
+            - name: CMD_S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: codimd-s3-creds
+                  key: ACCESS_SECRET_KEY
+            - name: CMD_ALLOW_FREEURL
+              value: "false"
+            - name: CMD_FORBIDDEN_NOTE_IDS
+              value: "robots.txt,favicon.ico,api,archive"
+            - name: CMD_DEFAULT_PERMISSION
+              value: "editable"
+            - name: CMD_ALLOW_ANONYMOUS_EDITS
+              value: "true"
+            - name: CMD_ALLOW_ANONYMOUS_VIEWS
+              value: "true"
+            - name: CMD_ALLOW_PDF_EXPORT
+              value: "false"
+            - name: CMD_DEFAULT_USE_HARD_BREAK
+              value: "true"
+            - name: CMD_LINKIFY_HEADER_STYLE
+              value: "keep-case"
+            - name: CMD_AUTO_VERSION_CHECK
+              value: "true"
+            - name: CMD_SAML_IDPSSOURL
+              value: "https://sso.linuxfoundation.org/samlp/Rfj4nCX6tyPjl2cpBRdDVnxg22fxyCR3"
+            - name: CMD_SAML_IDPCERT
+              value: "/etc/codimd/saml/idp.pem"
+            - name: CMD_SAML_ISSUER
+              value: "notes.cncf.io"
+            - name: CMD_SAML_IDENTIFIERFORMAT
+              value: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+            - name: CMD_SAML_ATTRIBUTE_ID
+              value: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+            - name: CMD_SAML_ATTRIBUTE_USERNAME
+              value: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+            - name: CMD_SAML_ATTRIBUTE_EMAIL
+              value: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+          envFrom:
+            - secretRef:
+                name: codimd-session
+          ports:
+            - name: http
+              containerPort: 3000
+          volumeMounts:
+            - mountPath: /etc/codimd/saml
+              name: saml-idp-cert
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /status
+            initialDelaySeconds: 3
+            failureThreshold: 2
+            successThreshold: 3
+            timeoutSeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /status
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 2
+      restartPolicy: Always
+      volumes:
+        - name: saml-idp-cert
+          configMap:
+            name: codimd-saml-idp-cert

@@ -94,6 +94,20 @@ spec:
     matches:
     - path:
         type: PathPrefix
+        value: /archive
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /
+  - backendRefs:
+    - name: codimd-lfx
+      namespace: codimd
+      port: 80
+    matches:
+    - path:
+        type: PathPrefix
         value: /
 ---
 apiVersion: gateway.networking.k8s.io/v1

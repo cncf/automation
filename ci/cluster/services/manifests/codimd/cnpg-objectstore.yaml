@@ -1,0 +1,22 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: codimd-backups
+  namespace: codimd
+spec:
+  configuration:
+    destinationPath: "s3://cncf-codimd-backups/postgres"
+    endpointURL: "https://axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com"
+    s3Credentials:
+      accessKeyId:
+        name: codimd-s3-creds
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: codimd-s3-creds
+        key: ACCESS_SECRET_KEY
+    wal:
+      compression: gzip
+      maxParallel: 4
+    data:
+      compression: gzip
+  retentionPolicy: "30d"

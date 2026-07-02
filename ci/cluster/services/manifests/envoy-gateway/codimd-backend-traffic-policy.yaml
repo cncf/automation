@@ -1,0 +1,15 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: codimd-lfx-session-affinity
+  namespace: codimd
+spec:
+  targetRefs:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: codimd
+  connection:
+    sessionAffinity:
+      cookie:
+        name: codimd-affinity
+        ttl: 3600s

@@ -1,0 +1,70 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: codimd
+  namespace: codimd
+spec:
+  instances: 2  # 1 primary + 1 hot standby
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.6-standard-trixie
+  primaryUpdateStrategy: unsupervised
+ 
+  storage:
+    size: 100Gi
+    storageClass: oci-bv
+  walStorage:
+    size: 20Gi
+    storageClass: oci-bv
+ 
+  bootstrap:
+    initdb:
+      database: codimd
+      owner: codimd
+      # The generated app-user password lands in Secret `codimd-app` automatically.
+ 
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "2GB"
+      work_mem: "8MB"
+      maintenance_work_mem: "256MB"
+      effective_cache_size: "6GB"
+ 
+  resources:
+    requests:
+      cpu: "4000m"
+      memory: "8Gi"
+    limits:
+      cpu: "4000m"
+      memory: "8Gi"
+ 
+  affinity:
+    podAntiAffinityType: preferred
+    topologyKey: kubernetes.io/hostname
+ 
+  monitoring:
+    enablePodMonitor: true
+ 
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: codimd-backups
+---
+# Daily base backup (WAL is archived continuously by the plugin above).
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: codimd-daily
+  namespace: codimd
+spec:
+  cluster:
+    name: codimd
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+  # Six fields: sec min hour day-of-month month day-of-week
+  schedule: "0 0 2 * * *"
+  backupOwnerReference: self
+  immediate: true      # take one right away so PITR is available on day 1
+  

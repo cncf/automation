@@ -35,33 +35,6 @@ spec:
     - port: 80
       targetPort: 3000
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: codimd-saml-idp-cert
-  namespace: codimd
-data:
-  idp.pem: |
-    -----BEGIN CERTIFICATE-----
-    MIIDDTCCAfWgAwIBAgIJD/4DK+iPjgTHMA0GCSqGSIb3DQEBCwUAMCQxIjAgBgNV
-    BAMTGWxpbnV4Zm91bmRhdGlvbi5hdXRoMC5jb20wHhcNMTcwNDI0MTcwMzIyWhcN
-    MzEwMTAxMTcwMzIyWjAkMSIwIAYDVQQDExlsaW51eGZvdW5kYXRpb24uYXV0aDAu
-    Y29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0wpNJszy699/9RKp
-    hACjVgFF28sdDwBP0LUWz/rh8Rk82mnuLyrWTa3N6aNutpmSFDozrGs8qyr+j6oB
-    aRIfepoB/dlTCzYu0Fl3HzLafR4TcppIlILZkLshq60h80AHoG4d6Z1jfW7UmL2n
-    aT5ZwlD6KpxcVPrveFDN9f5QkaQ3TYdFVz1EmZvOy62+C8kP4xhw16QI9kO/BBIA
-    PYNjo8p6breagyx5AsrbKwo3U+IJFo09+OOjacCAYdSejCMv21XV/0bpJ+oiAilP
-    Ka0SzD6B5xafGKGbh19Tq1q1VZ36Ij9gjVbqDHuvMDGuaFJeaoqOB1QF3QL5s9c+
-    EVB2CwIDAQABo0IwQDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSqPGrbM6XA
-    /BSWT7uDYL4CCldR2zAOBgNVHQ8BAf8EBAMCAoQwDQYJKoZIhvcNAQELBQADggEB
-    ADeVadc2b6ZvxCYYfffNP2IX1L3bbZnR7JRCTXCarFC8zN7R4BOk5nh2gVEJSDIQ
-    5MwlLlWhwxurr0vOaBGsBtp6f5KxAxPKiTVunV7KxzzWse+DudaAEm4MI8aG0RJc
-    K+VE1Aw81ko64LfwPFY3exmcr5COcuaILnKm3GcDzBxdn0EcckKyZbvFETEM+n8N
-    0Ze315bO3+4BOKR4DaBYSXsrbcG7ccRwzkXuw5KTu9ggB99IjPxQWn8+D49yGoPj
-    14bT4n2PRaEBQ0uDt8EPsgfK1F9KsHy5s9SVRjYBJcaNYue9NVGWn63J6inLp0ya
-    L7mD9p23sEmSBvFlUtroFEM=
-    -----END CERTIFICATE-----
----
 # Source: codimd/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -145,20 +118,6 @@ spec:
               value: "keep-case"
             - name: CMD_AUTO_VERSION_CHECK
               value: "true"
-            - name: CMD_SAML_IDPSSOURL
-              value: "https://sso.linuxfoundation.org/samlp/Rfj4nCX6tyPjl2cpBRdDVnxg22fxyCR3"
-            - name: CMD_SAML_IDPCERT
-              value: "/etc/codimd/saml/idp.pem"
-            - name: CMD_SAML_ISSUER
-              value: "notes.cncf.io"
-            - name: CMD_SAML_IDENTIFIERFORMAT
-              value: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
-            - name: CMD_SAML_ATTRIBUTE_ID
-              value: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-            - name: CMD_SAML_ATTRIBUTE_USERNAME
-              value: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-            - name: CMD_SAML_ATTRIBUTE_EMAIL
-              value: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
           envFrom:
             - secretRef:
                 name: codimd-auth-env
@@ -170,9 +129,6 @@ spec:
           volumeMounts:
             - mountPath: /home/hackmd/app/public/uploads
               name: image-store
-            - mountPath: /etc/codimd/saml
-              name: saml-idp-cert
-              readOnly: true
           readinessProbe:
             httpGet:
               port: 3000
@@ -197,6 +153,3 @@ spec:
         - name: image-store
           persistentVolumeClaim:
             claimName: codimd
-        - name: saml-idp-cert
-          configMap:
-            name: codimd-saml-idp-cert

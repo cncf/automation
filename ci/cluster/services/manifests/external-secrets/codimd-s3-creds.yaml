@@ -1,0 +1,16 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: codimd-s3-creds
+  namespace: codimd
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: oci-secret-store
+  target:
+    name: codimd-s3-creds
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: codimd-s3-creds
