@@ -80,6 +80,7 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - |
+              export CMD_DB_URL="${CMD_DB_URL/postgresql:\/\//postgres:\/\/}"
               sed -i "s/__('Sign in via %s', 'SAML')/__('Sign in via %s', 'LFX')/" \
                 /home/hackmd/app/public/views/shared/signin-modal.ejs
               exec /home/hackmd/app/docker-entrypoint.sh
