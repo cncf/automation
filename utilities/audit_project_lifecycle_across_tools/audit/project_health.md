@@ -59,12 +59,14 @@
 | Chaos Mesh | incubating | Healthy | 75 |
 | Cloud Custodian | incubating | Healthy | 78 |
 | CNI | incubating | Excellent | 80 |
+| Confidential Containers | incubating | Excellent | 85 |
 | Contour | incubating | Healthy | 76 |
 | Cortex | incubating | Excellent | 80 |
 | emissary-ingress | incubating | Healthy | 68 |
 | Flatcar | incubating | Excellent | 81 |
 | Fluid Project | incubating | Healthy | 78 |
 | gRPC | incubating | Excellent | 84 |
+| HAMi | incubating | Excellent | 86 |
 | karmada | incubating | Healthy | 79 |
 | Keycloak | incubating | Excellent | 85 |
 | Kserve | incubating | Excellent | 82 |
@@ -116,7 +118,6 @@
 | Clusterpedia | sandbox | Healthy | 72 |
 | CoHDI | sandbox | Healthy | 66 |
 | composefs | sandbox | Healthy | 71 |
-| Confidential Containers | sandbox | Excellent | 85 |
 | Connect RPC | sandbox | Excellent | 84 |
 | container2wasm | sandbox | Healthy | 72 |
 | ContainerSSH | sandbox | Healthy | 74 |
@@ -131,7 +132,6 @@
 | easegress | sandbox | Healthy | 73 |
 | Eraser | sandbox | Stable | 56 |
 | External Secrets Operator | sandbox | Excellent | 82 |
-| HAMi | sandbox | Excellent | 86 |
 | Headlamp | sandbox | Excellent | 80 |
 | Higress | sandbox | Stable | - |
 | HolmesGPT | sandbox | Healthy | 74 |
