@@ -4,6 +4,7 @@
 |---|---|---|---|---|---|---|---|---|
 | Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
 | Prometheus | prometheus | prometheus_del | graduated | graduated | graduated | graduated | graduated | graduated |
+| Confidential Containers | confcont | confcont | incubating | incubating | incubating | incubating | sandbox | incubating |
 | Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -16,7 +17,7 @@
 | agentregistry | - | - | forming | - | - | - | - | - |
 | AI Runway | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
-| Apicurio Registry | - | apicurio-registry | forming | sandbox | sandbox | - | sandbox | - |
+| Apicurio Registry | - | apicurio-registry | forming | sandbox | sandbox | - | sandbox | sandbox |
 | BLAFS | - | - | forming | - | - | - | - | - |
 | CAIPE (Community AI Platform Engineering) | - | - | forming | - | - | - | - | - |
 | Cedar | - | cedar | forming | sandbox | - | sandbox | - | - |
@@ -30,10 +31,10 @@
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
 | Inference Gateway | - | - | forming | - | - | - | - | - |
-| kbind | - | - | forming | - | - | - | - | - |
+| kbind | - | - | forming | - | sandbox | - | sandbox | sandbox |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| llm-d | - | - | forming | - | sandbox | sandbox | sandbox | - |
+| llm-d | - | - | forming | sandbox | sandbox | sandbox | sandbox | - |
 | Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
@@ -49,7 +50,7 @@
 | Devstream | - | devstream | archived | archived | - | - | - | archived |
 | FabEdge | - | fabedge | archived | archived | - | - | - | archived |
 | Fonio | - | ingraind | archived | archived | - | - | - | archived |
-| Hexa | - | hexa | archived | archived | - | - | sandbox | archived |
+| Hexa | - | hexa | archived | archived | - | - | - | archived |
 | Keptn | - | keptn | archived | archived | - | - | - | archived |
 | Krator | - | krator | archived | archived | - | - | - | archived |
 | Krustlet | - | krustlet | archived | archived | - | - | - | archived |
