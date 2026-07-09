@@ -149,8 +149,8 @@
       "name": "metal3-io",
       "path": "Provisioning / Automation & Configuration",
       "maturity": "incubating",
-      "match_note": "clomonitor_name+lfx_slug",
-      "matched_pcc": true,
+      "match_note": "clomonitor_name",
+      "matched_pcc": false,
       "matched_clomonitor": true,
       "findings": []
     },
@@ -375,10 +375,10 @@
     {
       "name": "Hexa",
       "path": "Provisioning / Security & Compliance",
-      "maturity": "sandbox",
-      "match_note": "clomonitor_name+lfx_slug",
+      "maturity": "archived",
+      "match_note": "pcc_name",
       "matched_pcc": true,
-      "matched_clomonitor": true,
+      "matched_clomonitor": false,
       "findings": []
     },
     {
@@ -670,15 +670,6 @@
       "findings": []
     },
     {
-      "name": "ORAS",
-      "path": "Runtime / Cloud Native Storage",
-      "maturity": "sandbox",
-      "match_note": "clomonitor_name+lfx_slug",
-      "matched_pcc": true,
-      "matched_clomonitor": true,
-      "findings": []
-    },
-    {
       "name": "Piraeus Datastore",
       "path": "Runtime / Cloud Native Storage",
       "maturity": "sandbox",
@@ -691,6 +682,15 @@
       "name": "Rook",
       "path": "Runtime / Cloud Native Storage",
       "maturity": "graduated",
+      "match_note": "clomonitor_name+lfx_slug",
+      "matched_pcc": true,
+      "matched_clomonitor": true,
+      "findings": []
+    },
+    {
+      "name": "Velero",
+      "path": "Runtime / Cloud Native Storage",
+      "maturity": "sandbox",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -1377,10 +1377,29 @@
       "name": "Higress",
       "path": "Orchestration & Management / API Gateway",
       "maturity": "sandbox",
-      "match_note": "none",
-      "matched_pcc": false,
-      "matched_clomonitor": false,
-      "findings": []
+      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "matched_pcc": true,
+      "matched_clomonitor": true,
+      "findings": [
+        {
+          "field": "extra.clomonitor_name",
+          "landscape": null,
+          "pcc": null,
+          "clomonitor": "higress",
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": false,
+          "message": "Landscape missing; CLOMonitor has 'higress'."
+        },
+        {
+          "field": "extra.dev_stats_url",
+          "landscape": null,
+          "pcc": null,
+          "clomonitor": "https://higress.devstats.cncf.io/",
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": false,
+          "message": "Landscape missing; CLOMonitor has 'https://higress.devstats.cncf.io/'."
+        }
+      ]
     },
     {
       "name": "Kgateway",
@@ -1563,6 +1582,34 @@
       "matched_pcc": true,
       "matched_clomonitor": true,
       "findings": []
+    },
+    {
+      "name": "Apicurio Registry",
+      "path": "App Definition and Development / Streaming & Messaging",
+      "maturity": "sandbox",
+      "match_note": "clo_slug_guess",
+      "matched_pcc": false,
+      "matched_clomonitor": true,
+      "findings": [
+        {
+          "field": "extra.clomonitor_name",
+          "landscape": null,
+          "pcc": null,
+          "clomonitor": "apicurio-registry",
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": false,
+          "message": "Landscape missing; CLOMonitor has 'apicurio-registry'."
+        },
+        {
+          "field": "extra.dev_stats_url",
+          "landscape": null,
+          "pcc": null,
+          "clomonitor": "https://apicurioregistry.devstats.cncf.io/",
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": false,
+          "message": "Landscape missing; CLOMonitor has 'https://apicurioregistry.devstats.cncf.io/'."
+        }
+      ]
     },
     {
       "name": "CloudEvents",
@@ -1794,6 +1841,15 @@
       "name": "Operator Framework",
       "path": "App Definition and Development / Application Definition & Image Build",
       "maturity": "incubating",
+      "match_note": "clomonitor_name+lfx_slug",
+      "matched_pcc": true,
+      "matched_clomonitor": true,
+      "findings": []
+    },
+    {
+      "name": "ORAS",
+      "path": "App Definition and Development / Application Definition & Image Build",
+      "maturity": "sandbox",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -2311,7 +2367,17 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": []
+      "findings": [
+        {
+          "field": "repo_url",
+          "landscape": "https://github.com/container2wasm/container2wasm",
+          "pcc": "https://github.com/ktock/container2wasm",
+          "clomonitor": "https://github.com/container2wasm/container2wasm",
+          "pcc_clomonitor_agree": false,
+          "landscape_clomonitor_agree": true,
+          "message": "PCC ('https://github.com/ktock/container2wasm') and CLOMonitor ('https://github.com/container2wasm/container2wasm') disagree. Landscape ('https://github.com/container2wasm/container2wasm') ≠ PCC ('https://github.com/ktock/container2wasm')."
+        }
+      ]
     },
     {
       "name": "KAITO",
@@ -2350,15 +2416,6 @@
           "message": "Landscape missing; CLOMonitor has 'kserve'."
         }
       ]
-    },
-    {
-      "name": "Volcano-Kthena",
-      "path": "Inference / Framework",
-      "maturity": "incubating",
-      "match_note": "none",
-      "matched_pcc": false,
-      "matched_clomonitor": false,
-      "findings": []
     }
   ]
 }
