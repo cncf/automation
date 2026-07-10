@@ -802,7 +802,8 @@
   </div>
   <div class="nav-group secondary">
     <a class="nav-ext-link" href="https://www.cncf.io/project-metrics/" target="_blank" rel="noopener noreferrer">Project Metrics <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
-    <a class="nav-ext-link" href="https://landscape.cncf.io/stats" target="_blank" rel="noopener noreferrer">CNCF Landscape <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+    <a class="nav-ext-link" href="https://landscape.cncf.io/stats" target="_blank" rel="noopener noreferrer">Landscape <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
+    <a class="nav-ext-link" href="https://insights.linuxfoundation.org/collection/details/cncf" target="_blank" rel="noopener noreferrer">Insights <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     <a class="nav-ext-link" href="https://clomonitor.io/stats" target="_blank" rel="noopener noreferrer">CLOMonitor <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     <a class="nav-ext-link" href="https://gitjobs.dev/stats" target="_blank" rel="noopener noreferrer">GitJobs <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     <a class="nav-ext-link" href="https://ocgroups.dev/stats" target="_blank" rel="noopener noreferrer">OCG <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
@@ -815,7 +816,7 @@
   <div class="page active" id="page-overview">
     <div class="section-header">
       <div class="section-label">Portfolio Snapshot</div>
-      <div class="section-title">Project <strong>Health Overview</strong></div>
+      <div class="section-title">Project <strong>Status Overview</strong></div>
       <div class="section-subtitle" id="overview-subtitle">As of 2026-04-10 · Data sourced from CNCF TOC &amp; Sandbox repos + Landscape YAML</div>
     </div>
 
@@ -918,6 +919,24 @@
       </div>
     </div>
 
+    <!-- Level changes this year -->
+    <div class="chart-card" style="margin-bottom:24px">
+      <div class="chart-title">Level Changes — <span id="levelChangesYear"></span></div>
+      <div class="chart-subtitle">Projects that completed Incubation or Graduation reviews this year, sorted by most recent. Sourced from the landscape.</div>
+      <table class="data-table" style="margin-top:16px">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Level Change</th>
+            <th>Month</th>
+          </tr>
+        </thead>
+        <tbody id="levelChangesTbody">
+          <tr class="no-data-row"><td colspan="3">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Onboarding history -->
     <div class="chart-card" style="margin-bottom:24px">
       <div class="chart-title">Onboarding Completed — By Year</div>
@@ -928,7 +947,7 @@
     </div>
 
     <!-- Sandbox applications -->
-    <div class="chart-card">
+    <div class="chart-card" style="margin-bottom:24px">
       <div class="chart-title">Sandbox Applications Reviewed — By Year</div>
       <div class="chart-subtitle">Closed sandbox application reviews by calendar year</div>
       <div class="chart-container tall">
@@ -1240,6 +1259,7 @@ let incubationBacklog = [];
 let sandboxBacklog = [];
 let onboardingHistory = [];
 let sandboxHistory = [];
+let levelChanges = [];
 let onboardingIssues = [];
 let serviceDeskData = [];
 let serviceDeskSatisfaction = [];
@@ -1617,6 +1637,35 @@ function renderTable() {
 }
 
 // ══════════════════════════════════════════
+// LEVEL CHANGES TABLE
+// ══════════════════════════════════════════
+
+function renderLevelChanges() {
+  const tbody = document.getElementById('levelChangesTbody');
+  const year = new Date().getFullYear();
+  const yearEl = document.getElementById('levelChangesYear');
+  if (yearEl) yearEl.textContent = year;
+
+  if (!levelChanges || levelChanges.length === 0) {
+    tbody.innerHTML = `<tr class="no-data-row"><td colspan="3">No level changes found for ${year}.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = levelChanges.map(lc => {
+    const badge = lc.type === 'Graduation'
+      ? `<span class="status-badge" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0">&#8594; Graduated</span>`
+      : `<span class="status-badge" style="background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe">&#8594; Incubating</span>`;
+    return `
+      <tr>
+        <td><a class="project-link" href="${lc.url}" target="_blank" rel="noopener">${lc.name}</a></td>
+        <td>${badge}</td>
+        <td style="font-size:13px; color:var(--text-muted)">${lc.month}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════
 
@@ -1703,6 +1752,7 @@ async function loadDashboard() {
     sandboxBacklog    = m.sandbox_backlog?.stages    || [];
     onboardingHistory = m.onboarding_completed_by_year || [];
     sandboxHistory    = m.sandbox_completed_by_year   || [];
+    levelChanges      = d.level_changes               || [];
     onboardingIssues  = o.issues || [];
     serviceDeskData      = d.service_desk || [];
     serviceDeskSatisfaction = d.service_desk_satisfaction || [];
@@ -1788,6 +1838,7 @@ async function loadDashboard() {
 
   // Init charts and table (use populated globals; fall back to empty if load failed)
   initCharts();
+  renderLevelChanges();
   renderServiceDeskYearlyKpis();
   initServiceDeskChart();
   initSatisfactionChart();
