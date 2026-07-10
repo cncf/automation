@@ -302,7 +302,7 @@
     {
       "name": "Confidential Containers",
       "path": "Provisioning / Security & Compliance",
-      "maturity": "sandbox",
+      "maturity": "incubating",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -1051,7 +1051,7 @@
     {
       "name": "hami",
       "path": "Orchestration & Management / Scheduling & Orchestration",
-      "maturity": "sandbox",
+      "maturity": "incubating",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -2414,6 +2414,34 @@
           "pcc_clomonitor_agree": null,
           "landscape_clomonitor_agree": false,
           "message": "Landscape missing; CLOMonitor has 'kserve'."
+        }
+      ]
+    },
+    {
+      "name": "llm-d",
+      "path": "Inference / Framework",
+      "maturity": "sandbox",
+      "match_note": "clo_slug_guess",
+      "matched_pcc": false,
+      "matched_clomonitor": true,
+      "findings": [
+        {
+          "field": "extra.clomonitor_name",
+          "landscape": null,
+          "pcc": null,
+          "clomonitor": "llm-d",
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": false,
+          "message": "Landscape missing; CLOMonitor has 'llm-d'."
+        },
+        {
+          "field": "extra.dev_stats_url",
+          "landscape": null,
+          "pcc": null,
+          "clomonitor": "https://llmd.devstats.cncf.io/",
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": false,
+          "message": "Landscape missing; CLOMonitor has 'https://llmd.devstats.cncf.io/'."
         }
       ]
     }
