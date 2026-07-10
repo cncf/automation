@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-10T00:44:04.506693Z",
+  "generated": "2026-07-10T15:20:05.734437Z",
   "report_date": "2026-07-10",
   "metrics": {
     "maturity": {
@@ -68,7 +68,7 @@
     },
     "incubation_velocity": {
       "avg_days_to_complete": 290,
-      "avg_age_open": 297,
+      "avg_age_open": 298,
       "total_closed": 103
     },
     "sandbox_backlog": {
@@ -308,6 +308,11 @@
       "date": "2026-06-01",
       "created": 78,
       "resolved": 64
+    },
+    {
+      "date": "2026-06-01",
+      "created": 38,
+      "resolved": 37
     }
   ],
   "service_desk_satisfaction": [
@@ -328,7 +333,7 @@
     },
     {
       "year": "2026",
-      "ratings": 65,
+      "ratings": 71,
       "average": 5.0
     }
   ],
@@ -434,8 +439,8 @@
     "summary": {
       "total": 16,
       "one_task_left": 3,
-      "nearly_complete_only": 12,
-      "more_than_halfway": 1,
+      "nearly_complete_only": 13,
+      "more_than_halfway": 0,
       "low_progress": 0,
       "nearly_complete": 3,
       "in_progress": 13
@@ -487,6 +492,21 @@
         "age": "red"
       },
       {
+        "name": "Agones",
+        "url": "https://github.com/cncf/sandbox/issues/469",
+        "progress": 94.4,
+        "status": "green",
+        "ca": "green",
+        "dco": "green",
+        "license_scanning": "green",
+        "ghe": "green",
+        "footer": "green",
+        "domain": "red",
+        "landscape": "green",
+        "days_open": 119,
+        "age": "yellow"
+      },
+      {
         "name": "Cedar",
         "url": "https://github.com/cncf/sandbox/issues/410",
         "progress": 94.4,
@@ -498,8 +518,23 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 274,
+        "days_open": 275,
         "age": "orange"
+      },
+      {
+        "name": "Sermant",
+        "url": "https://github.com/cncf/sandbox/issues/300",
+        "progress": 93.8,
+        "status": "green",
+        "ca": "red",
+        "dco": "green",
+        "license_scanning": "green",
+        "ghe": "green",
+        "footer": "green",
+        "domain": "red",
+        "landscape": "green",
+        "days_open": 630,
+        "age": "red"
       },
       {
         "name": "composefs",
@@ -577,21 +612,6 @@
         "age": "red"
       },
       {
-        "name": "Sermant",
-        "url": "https://github.com/cncf/sandbox/issues/300",
-        "progress": 90.6,
-        "status": "green",
-        "ca": "red",
-        "dco": "green",
-        "license_scanning": "green",
-        "ghe": "green",
-        "footer": "green",
-        "domain": "red",
-        "landscape": "green",
-        "days_open": 630,
-        "age": "red"
-      },
-      {
         "name": "SOPS",
         "url": "https://github.com/cncf/sandbox/issues/157",
         "progress": 90.3,
@@ -607,21 +627,6 @@
         "age": "red"
       },
       {
-        "name": "Agones",
-        "url": "https://github.com/cncf/sandbox/issues/469",
-        "progress": 88.9,
-        "status": "green",
-        "ca": "green",
-        "dco": "green",
-        "license_scanning": "green",
-        "ghe": "green",
-        "footer": "green",
-        "domain": "red",
-        "landscape": "green",
-        "days_open": 119,
-        "age": "yellow"
-      },
-      {
         "name": "Oxia",
         "url": "https://github.com/cncf/sandbox/issues/408",
         "progress": 86.1,
@@ -633,13 +638,13 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 276,
+        "days_open": 277,
         "age": "orange"
       },
       {
         "name": "Apicurio Registry",
         "url": "https://github.com/cncf/sandbox/issues/495",
-        "progress": 82.9,
+        "progress": 85.7,
         "status": "green",
         "ca": "green",
         "dco": "green",
@@ -649,6 +654,21 @@
         "domain": "green",
         "landscape": "green",
         "days_open": 28,
+        "age": "green"
+      },
+      {
+        "name": "kbind (formerly kube-bind)",
+        "url": "https://github.com/cncf/sandbox/issues/496",
+        "progress": 85.7,
+        "status": "green",
+        "ca": "green",
+        "dco": "green",
+        "license_scanning": "red",
+        "ghe": "green",
+        "footer": "red",
+        "domain": "green",
+        "landscape": "red",
+        "days_open": 23,
         "age": "green"
       },
       {
@@ -665,21 +685,6 @@
         "landscape": "green",
         "days_open": 731,
         "age": "red"
-      },
-      {
-        "name": "kbind (formerly kube-bind)",
-        "url": "https://github.com/cncf/sandbox/issues/496",
-        "progress": 77.1,
-        "status": "yellow",
-        "ca": "green",
-        "dco": "green",
-        "license_scanning": "red",
-        "ghe": "green",
-        "footer": "red",
-        "domain": "green",
-        "landscape": "red",
-        "days_open": 22,
-        "age": "green"
       }
     ]
   }
