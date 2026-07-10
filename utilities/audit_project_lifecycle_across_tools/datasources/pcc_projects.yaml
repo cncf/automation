@@ -952,6 +952,12 @@ categories:
     status: Active
     project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/kusionstack/kusionstack-logo.svg?v=1740434506832
     repository_url: https://github.com/KusionStack
+  - name: llm-d
+    slug: llm-d
+    category: Sandbox
+    status: Active
+    project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/llm-d/llm-d-logo.svg?v=1778170334377
+    repository_url: https://github.com/llm-d
   - name: Logging Operator
     slug: logging-operator
     category: Sandbox
@@ -1270,12 +1276,6 @@ categories:
     status: Active
     project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/velero/velero-logo.svg?v=1773763251650
     repository_url: https://github.com/velero-io
-  - name: Vineyard
-    slug: vineyard
-    category: Sandbox
-    status: Active
-    project_logo: https://lf-master-project-logos-prod.s3.us-east-2.amazonaws.com/vineyard.svg
-    repository_url: https://github.com/v6d-io/
   - name: Virtual Kubelet
     slug: virtualkubelet
     category: Sandbox
@@ -1399,10 +1399,6 @@ forming_projects:
   status: Formation - Exploratory
   project_logo: null
   repository_url: https://github.com/ksctl
-- name: llm-d
-  status: Formation - Exploratory
-  project_logo: https://lfx-cdn-prod.s3.us-east-1.amazonaws.com/project-artifacts/llm-d/llm-d-logo.svg?v=1778170334377
-  repository_url: https://github.com/llm-d
 - name: Metal³
   status: Formation - Exploratory
   project_logo: https://lf-master-project-logos-prod.s3.us-east-2.amazonaws.com/metal3.svg
@@ -1656,6 +1652,11 @@ archived_projects:
   category: null
   project_logo: null
   repository_url: https://github.com/ciena/turnbuckle
+- name: Vineyard
+  status: Archived
+  category: Archived
+  project_logo: https://lf-master-project-logos-prod.s3.us-east-2.amazonaws.com/vineyard.svg
+  repository_url: https://github.com/v6d-io/
 - name: Wasm Mock Server
   status: Formation - Disengaged
   category: null

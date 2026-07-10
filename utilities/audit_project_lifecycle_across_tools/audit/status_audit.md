@@ -4,11 +4,11 @@
 |---|---|---|---|---|---|---|---|---|
 | Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
 | Prometheus | prometheus | prometheus_del | graduated | graduated | graduated | graduated | graduated | graduated |
-| Confidential Containers | confcont | confcont | incubating | incubating | incubating | incubating | sandbox | incubating |
 | Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| llm-d | llm-d | - | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | service-mesh-performance | service-mesh-performance | sandbox | archived | - | - | - | archived |
@@ -34,7 +34,6 @@
 | kbind | - | - | forming | - | sandbox | - | sandbox | sandbox |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| llm-d | - | - | forming | sandbox | sandbox | sandbox | sandbox | - |
 | Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
@@ -68,4 +67,5 @@
 | skooner | - | k8dash | archived | archived | - | - | - | archived |
 | SuperEdge | - | superedge | archived | archived | - | - | - | archived |
 | Teller | - | teller | archived | archived | - | - | - | archived |
+| Vineyard | - | vineyard | archived | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Xline | - | xline | archived | archived | - | - | - | archived |

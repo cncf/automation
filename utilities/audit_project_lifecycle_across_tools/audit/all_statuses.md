@@ -5,7 +5,6 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
-| Confidential Containers | confcont | confcont | incubating | incubating | incubating | incubating | sandbox | incubating |
 | Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -35,7 +34,6 @@
 | kbind | - | - | forming | - | sandbox | - | sandbox | sandbox |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| llm-d | - | - | forming | sandbox | sandbox | sandbox | sandbox | - |
 | Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
@@ -69,6 +67,7 @@
 | skooner | - | k8dash | archived | archived | - | - | - | archived |
 | SuperEdge | - | superedge | archived | archived | - | - | - | archived |
 | Teller | - | teller | archived | archived | - | - | - | archived |
+| Vineyard | - | vineyard | archived | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Xline | - | xline | archived | archived | - | - | - | archived |
 
 ## Graduated
@@ -122,7 +121,7 @@
 | Chaos Mesh | ChaosMesh | ChaosMesh | incubating | incubating | incubating | incubating | incubating | incubating |
 | Cloud Custodian | c7n | c7n | incubating | incubating | incubating | incubating | incubating | incubating |
 | CNI | cni | cni | incubating | incubating | incubating | incubating | incubating | incubating |
-| Confidential Containers | confcont | confcont | incubating | incubating | incubating | incubating | sandbox | incubating |
+| Confidential Containers | confcont | confcont | incubating | incubating | incubating | incubating | incubating | incubating |
 | Contour | contour | contour | incubating | incubating | incubating | incubating | incubating | incubating |
 | Cortex | cortex | cortex | incubating | incubating | incubating | incubating | incubating | incubating |
 | emissary-ingress | emissary | emissary | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -243,6 +242,7 @@
 | Kuma | kuma | kuma | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kured | kured | kured | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KusionStack | kusionstack | kusionstack | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| llm-d | llm-d | - | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Logging Operator | logging-operator | logging-operator | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | LoxiLB | loxilb | loxilb | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Meshery | meshery | meshery | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -296,7 +296,6 @@
 | Trickster | trickster | trickster | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | urunc | urunc | urunc | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Velero | velero | velero | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Vineyard | vineyard | vineyard | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Virtual Kubelet | virtualkubelet | virtualkubelet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | VS Code Kubernetes Tools | vscodekubernetestools | vscodekubernetestools | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | WasmEdge Runtime | wasmedge-runtime | wasmedge-runtime | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -330,7 +329,6 @@
 | kbind | - | - | forming | - | sandbox | - | sandbox | sandbox |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| llm-d | - | - | forming | sandbox | sandbox | sandbox | sandbox | - |
 | Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
@@ -369,6 +367,7 @@
 | skooner | - | k8dash | archived | archived | - | - | - | archived |
 | SuperEdge | - | superedge | archived | archived | - | - | - | archived |
 | Teller | - | teller | archived | archived | - | - | - | archived |
+| Vineyard | - | vineyard | archived | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Xline | - | xline | archived | archived | - | - | - | archived |
 
 ## Prospect
