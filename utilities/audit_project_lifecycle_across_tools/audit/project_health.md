@@ -180,6 +180,7 @@
 | Kuma | sandbox | Excellent | 84 |
 | Kured | sandbox | Healthy | 69 |
 | KusionStack | sandbox | Excellent | 80 |
+| llm-d | sandbox | Excellent | 85 |
 | Logging Operator | sandbox | Healthy | 78 |
 | LoxiLB | sandbox | Healthy | 70 |
 | Meshery | sandbox | Excellent | 87 |
@@ -233,7 +234,6 @@
 | Trickster | sandbox | Healthy | 75 |
 | urunc | sandbox | Healthy | 73 |
 | Velero | sandbox | Excellent | 89 |
-| Vineyard | sandbox | Healthy | 64 |
 | Virtual Kubelet | sandbox | Healthy | 74 |
 | VS Code Kubernetes Tools | sandbox | Healthy | 75 |
 | WasmEdge Runtime | sandbox | Healthy | 77 |
@@ -267,7 +267,6 @@
 | kbind | forming | - | - |
 | Kmesh | forming | Excellent | 82 |
 | ksctl | forming | Excellent | 87 |
-| llm-d | forming | Excellent | 85 |
 | Metal³ | forming | Excellent | 82 |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - |
 | Schema Driven Configuration | forming | Healthy | 65 |
@@ -306,6 +305,7 @@
 | skooner | archived | Archived | - |
 | SuperEdge | archived | Archived | - |
 | Teller | archived | Archived | - |
+| Vineyard | archived | Healthy | 64 |
 | Xline | archived | Archived | - |
 
 ## Prospect
