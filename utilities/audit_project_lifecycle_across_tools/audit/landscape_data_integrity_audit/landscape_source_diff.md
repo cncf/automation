@@ -5,9 +5,9 @@ When those two disagree, that is called out. **`landscape.yml` should be updated
 
 ## Summary
 
-- **CNCF landscape items in scope:** 252
-- **With at least one drift / conflict row:** 13
-- **Findings where Landscape and CLOMonitor disagree:** 12
+- **CNCF landscape items in scope:** 253
+- **With at least one drift / conflict row:** 14
+- **Findings where Landscape and CLOMonitor disagree:** 14
 - **No PCC and no CLOMonitor match:** 3
 
 ## Differences (sorted by field)
@@ -22,10 +22,12 @@ Each row is one detected mismatch. Sorted by `Field`, then `Project`.
 | extra.clomonitor_name | Higress | sandbox | — | — | higress | **No** | Landscape missing; CLOMonitor has 'higress'. |
 | extra.clomonitor_name | KAITO | sandbox | — | — | kaito | **No** | Landscape missing; CLOMonitor has 'kaito'. |
 | extra.clomonitor_name | KServe | incubating | — | — | kserve | **No** | Landscape missing; CLOMonitor has 'kserve'. |
+| extra.clomonitor_name | llm-d | sandbox | — | — | llm-d | **No** | Landscape missing; CLOMonitor has 'llm-d'. |
 | extra.clomonitor_name | Podman Container Tools | sandbox | podman | — | podman-container-tools | **No** | Landscape ('podman') ≠ CLOMonitor ('podman-container-tool… |
 | extra.clomonitor_name | Runme Notebooks | sandbox | runme | — | runme-notebooks | **No** | Landscape ('runme') ≠ CLOMonitor ('runme-notebooks'). |
 | extra.dev_stats_url | Apicurio Registry | sandbox | — | — | https://apicurioregistry.devstats.cncf.io/ | **No** | Landscape missing; CLOMonitor has 'https://apicurioregist… |
 | extra.dev_stats_url | Higress | sandbox | — | — | https://higress.devstats.cncf.io/ | **No** | Landscape missing; CLOMonitor has 'https://higress.devsta… |
+| extra.dev_stats_url | llm-d | sandbox | — | — | https://llmd.devstats.cncf.io/ | **No** | Landscape missing; CLOMonitor has 'https://llmd.devstats.… |
 | extra.dev_stats_url | OpenEverest | sandbox | — | — | https://openeverest.devstats.cncf.io/ | **No** | Landscape missing; CLOMonitor has 'https://openeverest.de… |
 | extra.lfx_slug | Prometheus | graduated | prometheus_del | prometheus | — | — | Landscape ('prometheus_del') ≠ PCC ('prometheus'). |
 | project (maturity) | Service Mesh Performance | archived | archived | sandbox | — | — | Landscape ('archived') ≠ PCC ('sandbox'). |
