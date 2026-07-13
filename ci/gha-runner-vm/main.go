@@ -149,6 +149,7 @@ func run(cmd *cobra.Command, argv []string) error {
 
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GHCupVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-FastlaneVersion.*", "")
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "bz2", "gz")
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
