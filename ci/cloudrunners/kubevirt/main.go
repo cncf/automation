@@ -230,6 +230,29 @@ ssh_authorized_keys:
 		"mv /etc/skel/.rustup /home/ubuntu/",
 		"mv /etc/skel/.dotnet /home/ubuntu/",
 		"mv /etc/skel/.composer /home/ubuntu/",
+		// Reproduce the fix normally applied by runner-images' own
+		// /opt/post-generation/environment-variables.sh, without relying on its
+		// user-detection heuristic ("cut -d: -f6 /etc/passwd | tail -1"). That
+		// heuristic only holds in upstream's own Azure flow because the image is
+		// deprovisioned (waagent -deprovision+user) before deployment, so the
+		// deploy-time admin account is guaranteed to be the last /etc/passwd
+		// entry. Our build keeps the pre-existing "ubuntu" account live across
+		// the whole provisioning run instead of deprovisioning it (see the
+		// deprovision-step replacement in gha-runner-vm-oci/main.go and
+		// gha-runner-vm/main.go), and later steps -- e.g. installing
+		// MySQL/PostgreSQL/MongoDB -- add their own system users afterward, so
+		// "ubuntu" is not reliably last by the time the image is baked. Target it
+		// explicitly instead: this rewrites the literal "$HOME" placeholders that
+		// install scripts such as install-rust.sh write into /etc/environment
+		// (since the image-build user is not the final runner user) into the
+		// real home directory. Without this, PATH entries like
+		// "$HOME/.cargo/bin" are never resolved and tools such as cargo are not
+		// found by job steps.
+		// See: https://github.com/actions/runner-images/blob/main/docs/create-image-and-azure-resources.md#post-generation-scripts
+		"sudo sed -i \"s|\\$HOME|/home/ubuntu|g\" /etc/environment",
+		// systemd-linger.sh has the same "last /etc/passwd entry" heuristic for
+		// the same reason; enable lingering for "ubuntu" explicitly instead.
+		"sudo loginctl enable-linger ubuntu",
 		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
 		"sudo sysctl fs.inotify.max_user_instances=1280",
 		"sudo sysctl fs.inotify.max_user_watches=655360",
