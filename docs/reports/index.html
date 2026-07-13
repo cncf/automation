@@ -1656,6 +1656,8 @@ function renderLevelChanges() {
       ? `<span class="status-badge" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0">&#8594; Graduated</span>`
       : lc.type === 'Archived'
       ? `<span class="status-badge" style="background:#f3f4f6; color:#374151; border:1px solid #d1d5db">&#8594; Archived</span>`
+      : lc.type === 'Sandbox'
+      ? `<span class="status-badge" style="background:#ede9fe; color:#6d28d9; border:1px solid #ddd6fe">&#8594; Sandbox</span>`
       : `<span class="status-badge" style="background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe">&#8594; Incubating</span>`;
     return `
       <tr>
