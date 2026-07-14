@@ -409,7 +409,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: docker.io/library/busybox:1.38.0
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:53aa8b461bbd06424e50c55c9055f312ac55040bc91a02a8e81cf60791d37473
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
