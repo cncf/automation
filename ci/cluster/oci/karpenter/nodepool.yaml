@@ -16,7 +16,6 @@ spec:
     metadata:
       labels:
         nodepool: karpenter
-        karpenter.sh/do-not-disrupt: "true"
     spec:
       taints:
         - key: cncf.io/gha-runner
