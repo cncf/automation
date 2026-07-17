@@ -20,6 +20,23 @@ Cross-checks CNCF project lifecycle data from **LFX PCC** against Landscape, CLO
 
 See [utilities/audit_project_lifecycle_across_tools/README.md](./utilities/audit_project_lifecycle_across_tools/README.md) for workflows, local usage, and file layout.
 
+### Project Level Moves
+
+A Copilot agent workflow for changing a CNCF project's maturity level (sandbox,
+incubating, graduated, archived) consistently across all the repos that track it:
+`cncf-landscape`, `clomonitor`, `cncf-foundation`, and `cncf-artwork`.
+
+It is shipped as a VS Code prompt file plus a companion skill:
+
+- Prompt: [.github/prompts/move-project-level.prompt.md](./.github/prompts/move-project-level.prompt.md)
+- Skill: [.github/skills/move-project-level/SKILL.md](./.github/skills/move-project-level/SKILL.md)
+
+**Usage:** open a multi-root workspace containing this repo and the four target
+repos above, then in Copilot Chat (agent mode) run `/move-project-level` and fill
+in the project, new level, and date. The workflow prepares a `move/<slug>-to-<level>`
+branch per repo and applies the correct per-repo edit, stopping at the diff for
+review (it does not commit or push).
+
 ## Contributing
 
 Contributions to improve these automation tools are welcome! Please see our [contributing guidelines](CONTRIBUTING.md) for more details.
