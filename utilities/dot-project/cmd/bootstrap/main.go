@@ -97,23 +97,23 @@ func main() {
 	}
 	slug = strings.Trim(slug, "-")
 
-        // GitHub token from env if not provided via flag (GITHUB_TOKEN, then GH_TOKEN). The value
-        // may come from the shell or from the .env file loaded above.
-        token := *githubToken
-        if token == "" {
-                token = os.Getenv("GITHUB_TOKEN")
-        }
-        if token == "" {
-                token = os.Getenv("GH_TOKEN")
-        }
-        if token == "" {
-                fmt.Fprintf(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / GH_TOKEN / %s).\n", *envFile)
-                fmt.Fprintln(os.Stderr, "        Unauthenticated GitHub API requests are rate-limited (HTTP 403 once exceeded).")
-                fmt.Fprintln(os.Stderr, "        Provide a token via any of:")
-                fmt.Fprintf(os.Stderr, "          - an env file (%s) containing:  GITHUB_TOKEN=ghp_xxx\n", *envFile)
-                fmt.Fprintln(os.Stderr, "          - the environment:         GITHUB_TOKEN=ghp_xxx go run ./cmd/bootstrap ...")
-                fmt.Fprintln(os.Stderr, "          - the flag:                -github-token ghp_xxx")
-        }
+	// GitHub token from env if not provided via flag (GITHUB_TOKEN, then GH_TOKEN). The value
+	// may come from the shell or from the .env file loaded above.
+	token := *githubToken
+	if token == "" {
+		token = os.Getenv("GITHUB_TOKEN")
+	}
+	if token == "" {
+		token = os.Getenv("GH_TOKEN")
+	}
+	if token == "" {
+		fmt.Fprintf(os.Stderr, "  Note: no GitHub token set (-github-token / GITHUB_TOKEN / GH_TOKEN / %s).\n", *envFile)
+		fmt.Fprintln(os.Stderr, "        Unauthenticated GitHub API requests are rate-limited (HTTP 403 once exceeded).")
+		fmt.Fprintln(os.Stderr, "        Provide a token via any of:")
+		fmt.Fprintf(os.Stderr, "          - an env file (%s) containing:  GITHUB_TOKEN=ghp_xxx\n", *envFile)
+		fmt.Fprintln(os.Stderr, "          - the environment:         GITHUB_TOKEN=ghp_xxx go run ./cmd/bootstrap ...")
+		fmt.Fprintln(os.Stderr, "          - the flag:                -github-token ghp_xxx")
+	}
 
 	client := &http.Client{Timeout: projects.DefaultHTTPTimeout}
 
@@ -259,7 +259,13 @@ func main() {
 			add(cloProject.DisplayName)
 		}
 
-		fmt.Fprintf(os.Stderr, "  Discovering maintainers from foundation CSV...\n")
+		// Report the CSV source (local path or remote URL) for visibility; any
+		// fetch/parse issue with it is surfaced in the warning logged below.
+		csvSource := *maintainersCSV
+		if csvSource == "" {
+			csvSource = projects.DefaultFoundationMaintainersCSVURL
+		}
+		fmt.Fprintf(os.Stderr, "  Discovering maintainers from foundation CSV (%s)...\n", csvSource)
 		blocks, err := projects.FetchFoundationMaintainers(*maintainersCSV, client)
 		if err != nil {
 			log.Printf("  Warning: maintainers CSV lookup failed: %v", err)
