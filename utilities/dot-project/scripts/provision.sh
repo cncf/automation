@@ -451,13 +451,26 @@ create_onboarding_issue() {
     local current_user
     current_user=$(gh api user --jq '.login' 2>/dev/null || true)
 
-    # Fetch up to 3 org owners; fall back to maintainers.yaml handles
+    # Fetch org owners ranked by recent activity (most active first)
     local handles=()
+    local -a admin_logins=()
     while IFS= read -r login; do
         [[ "$login" == "$current_user" ]] && continue
-        handles+=("$login")
+        admin_logins+=("$login")
+    done < <(gh api "orgs/${org}/members?role=admin&per_page=100" --jq '.[].login' 2>/dev/null || true)
+
+    # Rank admins by recent activity within the org and pick the top 3
+    local -a scored=()
+    for login in "${admin_logins[@]}"; do
+        local count
+        count=$(gh api "users/${login}/events/orgs/${org}?per_page=100" --jq 'length' 2>/dev/null || echo "0")
+        scored+=("${count} ${login}")
+    done
+    while IFS= read -r line; do
+        local ranked_login="${line#* }"
+        handles+=("$ranked_login")
         [[ ${#handles[@]} -ge 3 ]] && break
-    done < <(gh api "orgs/${org}/members?role=admin&per_page=10" --jq '.[].login' 2>/dev/null || true)
+    done < <(printf '%s\n' "${scored[@]}" | sort -t' ' -k1 -nr)
 
     if [[ ${#handles[@]} -eq 0 ]] && [[ -f "${tmp_dir}/maintainers.yaml" ]]; then
         while IFS= read -r login; do
@@ -557,7 +570,7 @@ main() {
 
         local count=0
         local failed=0
-        while IFS='|' read -r b_org b_name b_repo; do
+        while IFS='|' read -r b_org b_name b_repo || [[ -n "$b_org" ]]; do
             # Skip comments and empty lines
             [[ "$b_org" =~ ^[[:space:]]*# ]] && continue
             [[ -z "$b_org" ]] && continue
