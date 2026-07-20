@@ -324,17 +324,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.accepted",
-          "landscape": "2023-09-19",
-          "pcc": null,
-          "clomonitor": "2023-12-19",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('2023-09-19') ≠ CLOMonitor ('2023-12-19')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "Curiefense",
@@ -700,8 +690,8 @@
       "name": "Vineyard",
       "path": "Runtime / Cloud Native Storage",
       "maturity": "sandbox",
-      "match_note": "clomonitor_name+lfx_slug",
-      "matched_pcc": true,
+      "match_note": "clomonitor_name",
+      "matched_pcc": false,
       "matched_clomonitor": true,
       "findings": []
     },
@@ -1172,17 +1162,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.accepted",
-          "landscape": "2023-12-19",
-          "pcc": null,
-          "clomonitor": "2023-09-19",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('2023-12-19') ≠ CLOMonitor ('2023-09-19')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "Kured",
@@ -2421,10 +2401,19 @@
       "name": "llm-d",
       "path": "Inference / Framework",
       "maturity": "sandbox",
-      "match_note": "clo_slug_guess",
-      "matched_pcc": false,
+      "match_note": "clo_slug_guess+pcc_name",
+      "matched_pcc": true,
       "matched_clomonitor": true,
       "findings": [
+        {
+          "field": "extra.lfx_slug",
+          "landscape": null,
+          "pcc": "llm-d",
+          "clomonitor": null,
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": null,
+          "message": "Landscape missing; PCC has 'llm-d'."
+        },
         {
           "field": "extra.clomonitor_name",
           "landscape": null,
