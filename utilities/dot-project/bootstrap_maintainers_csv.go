@@ -63,7 +63,7 @@ func fetchMaintainersCSVFromURL(url string, client *http.Client) ([]MaintainerBl
 	}
 	resp, err := client.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("fetching maintainers CSV: %w", err)
+		return nil, fmt.Errorf("fetching maintainers CSV from %s: %w", url, err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {

@@ -15,6 +15,7 @@
 #   --skip-protection     Skip setting branch protection rules
 #   --skip-issue          Skip creating onboarding issue
 #   --force               Force regeneration of scaffold files (overwrites auxiliary files)
+#   --no-cache            Skip the once-per-run project-maintainers.csv prefetch
 #   --bootstrap-bin <p>   Path to bootstrap binary (default: ./bin/bootstrap)
 #   -h, --help            Show this help message
 #
@@ -58,7 +59,6 @@ if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
     unset _gh_token
 fi
 
-
 # Defaults
 DRY_RUN=false
 SKIP_SECRETS=false
@@ -71,10 +71,25 @@ ORG=""
 NAME=""
 REPO=""
 
+# Prefetch: project-maintainers.csv is identical for every org in a batch, so it
+# is downloaded once per run to a temp file and reused by every
+# bootstrap call (via -maintainers-csv). The temp file is fresh on every run
+NO_CACHE=false
+CSV_CACHE=""          # temp file path, set by setup_cache()
+CURRENT_TMP_DIR=""    # per-org scaffold temp dir, tracked for cleanup on exit
+
 die() { echo "Error: $*" >&2; exit 1; }
 info() { echo "==> $*" >&2; }
 warn() { echo "WARNING: $*" >&2; }
 dry() { if $DRY_RUN; then echo "[dry-run] $*" >&2; return 0; fi; return 1; }
+
+# cleanup removes transient state on exit: the current org's scaffold temp dir
+# and the one-time project-maintainers.csv temp file. Registered once in main().
+cleanup() {
+    if [[ -n "${CURRENT_TMP_DIR:-}" ]]; then rm -rf "$CURRENT_TMP_DIR"; fi
+    if [[ -n "${CSV_CACHE:-}" ]]; then rm -f "$CSV_CACHE"; fi
+    return 0
+}
 
 usage() {
     sed -n '2,/^$/{ s/^# //; s/^#//; p }' "$0"
@@ -93,6 +108,7 @@ while [[ $# -gt 0 ]]; do
         --skip-protection) SKIP_PROTECTION=true; shift ;;
         --force)        FORCE=true; shift ;;
         --skip-issue)   SKIP_ISSUE=true; shift ;;
+        --no-cache)     NO_CACHE=true; shift ;;
         --bootstrap-bin) BOOTSTRAP_BIN="$2"; shift 2 ;;
         -h|--help)      usage ;;
         *)              die "Unknown option: $1" ;;
@@ -210,6 +226,38 @@ set_secret() {
 }
 
 # ──────────────────────────────────────────────
+# Prefetch project-maintainers.csv
+# ──────────────────────────────────────────────
+
+# setup_cache downloads project-maintainers.csv once per run to a
+# temp file and sets CSV_CACHE so every bootstrap call reuses it (via
+# -maintainers-csv) instead of re-fetching per org.
+setup_cache() {
+    if $NO_CACHE; then
+        info "Prefetch disabled (--no-cache): bootstrap will fetch project-maintainers.csv per org"
+        return 0
+    fi
+    if $DRY_RUN; then
+        info "Dry-run: skipping project-maintainers.csv prefetch"
+        return 0
+    fi
+
+    # URL mirrors DefaultFoundationMaintainersCSVURL in defaults.go. bootstrap
+    # logs the exact URL it uses per org, so any URL issue is visible there too.
+    local url="https://raw.githubusercontent.com/cncf/foundation/main/project-maintainers.csv"
+
+    local tmp
+    tmp="$(mktemp)" || { warn "Could not create temp file; bootstrap will fetch CSV per org"; return 0; }
+    info "Fetching project-maintainers.csv once for this run..."
+    if curl -fsSL "$url" -o "$tmp"; then
+        CSV_CACHE="$tmp"
+    else
+        warn "Failed to fetch project-maintainers.csv; bootstrap will fetch it per org"
+        rm -f "$tmp"
+    fi
+}
+
+# ──────────────────────────────────────────────
 # Provision a single project
 # ──────────────────────────────────────────────
 
@@ -258,7 +306,7 @@ provision_project() {
     # Step 2: Clone/init to temp directory
     local tmp_dir
     tmp_dir=$(mktemp -d)
-    trap "rm -rf '$tmp_dir'" EXIT
+    CURRENT_TMP_DIR="$tmp_dir"
 
     if dry "would clone ${target_repo} to ${tmp_dir}"; then
         :
@@ -288,8 +336,12 @@ provision_project() {
         if $FORCE; then
             bootstrap_args+=(-force)
         fi
+        # Reuse the one-time cached project-maintainers.csv instead of re-fetching per org.
+        if [[ -n "$CSV_CACHE" ]]; then
+            bootstrap_args+=(-maintainers-csv "$CSV_CACHE")
+        fi
         "$BOOTSTRAP_BIN" "${bootstrap_args[@]}" \
-            || { warn "Bootstrap failed for ${name}"; rm -rf "$tmp_dir"; trap - EXIT; return 1; }
+            || { warn "Bootstrap failed for ${name}"; rm -rf "$tmp_dir"; CURRENT_TMP_DIR=""; return 1; }
     fi
 
     # Step 4: Commit and push
@@ -304,7 +356,7 @@ provision_project() {
             commit -m "Initial .project scaffold for ${name}" \
             || { info "  Nothing to commit (already up to date)"; }
         git -C "$tmp_dir" push -u origin main \
-            || { warn "Failed to push to ${target_repo}"; rm -rf "$tmp_dir"; trap - EXIT; return 1; }
+            || { warn "Failed to push to ${target_repo}"; rm -rf "$tmp_dir"; CURRENT_TMP_DIR=""; return 1; }
     fi
 
     # Step 5: Set secrets
@@ -364,9 +416,9 @@ PROTECTION
         create_onboarding_issue "$org" "$name" "$tmp_dir" "$target_repo"
     fi
 
-    # Clean up trap for this iteration
+    # Clean up this iteration's scaffold temp dir
     rm -rf "$tmp_dir"
-    trap - EXIT
+    CURRENT_TMP_DIR=""
 }
 
 # ──────────────────────────────────────────────
@@ -493,7 +545,9 @@ EOF
 # ──────────────────────────────────────────────
 
 main() {
+    trap cleanup EXIT
     check_prerequisites
+    setup_cache
 
     if [[ -n "$BATCH_FILE" ]]; then
         # Batch mode
