@@ -76,7 +76,7 @@ func main() {
 	client := &http.Client{Timeout: projects.DefaultHTTPTimeout}
 
 	log.Printf("Fetching organizations from enterprise: %s", *enterprise)
-	orgs, err := listEnterpriseOrgs(client, ghToken, *enterprise)
+	orgs, err := listEnterpriseOrgs(client, projects.DefaultGitHubGraphQLURL, ghToken, *enterprise)
 	if err != nil {
 		log.Fatalf("Failed to list enterprise orgs: %v", err)
 	}
@@ -127,8 +127,10 @@ func main() {
 }
 
 // listEnterpriseOrgs uses the GitHub GraphQL API to paginate through all
-// organizations in the enterprise.
-func listEnterpriseOrgs(client *http.Client, token, enterprise string) ([]string, error) {
+// organizations in the enterprise. Organizations that block the token (e.g.
+// orgs that forbid classic PATs) are skipped with a warning rather than
+// failing the whole listing.
+func listEnterpriseOrgs(client *http.Client, apiURL, token, enterprise string) ([]string, error) {
 	var allOrgs []string
 	var cursor *string
 
@@ -166,7 +168,7 @@ query($enterprise: String!, $first: Int!, $after: String) {
 			return nil, fmt.Errorf("marshaling request: %w", err)
 		}
 
-		req, err := http.NewRequest("POST", projects.DefaultGitHubGraphQLURL, bytes.NewReader(bodyBytes))
+		req, err := http.NewRequest("POST", apiURL, bytes.NewReader(bodyBytes))
 		if err != nil {
 			return nil, err
 		}
@@ -197,11 +199,19 @@ query($enterprise: String!, $first: Int!, $after: String) {
 		}
 
 		if len(gqlResp.Errors) > 0 {
-			msgs := make([]string, len(gqlResp.Errors))
-			for i, e := range gqlResp.Errors {
-				msgs[i] = e.Message
+			// Errors without any data mean the request itself failed (bad
+			// credentials, missing scope). Errors alongside data are per-org
+			// access blocks; keep the orgs that did come back.
+			if gqlResp.Data.Enterprise.Organizations.Nodes == nil {
+				msgs := make([]string, len(gqlResp.Errors))
+				for i, e := range gqlResp.Errors {
+					msgs[i] = e.Message
+				}
+				return nil, fmt.Errorf("GraphQL errors: %s", strings.Join(msgs, "; "))
 			}
-			return nil, fmt.Errorf("GraphQL errors: %s", strings.Join(msgs, "; "))
+			for _, e := range gqlResp.Errors {
+				log.Printf("Warning: skipping inaccessible org: %s", e.Message)
+			}
 		}
 
 		// If the enterprise field is null/empty, the token likely lacks read:enterprise scope.
@@ -215,6 +225,10 @@ query($enterprise: String!, $first: Int!, $after: String) {
 
 		nodes := gqlResp.Data.Enterprise.Organizations.Nodes
 		for _, n := range nodes {
+			// Orgs the token cannot access surface as null nodes.
+			if n.Login == "" {
+				continue
+			}
 			allOrgs = append(allOrgs, n.Login)
 		}
 
