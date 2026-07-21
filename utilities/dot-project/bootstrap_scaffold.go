@@ -220,7 +220,8 @@ jobs:
       - uses: cncf/automation/.github/actions/validate-maintainers@95d25b12337a14e4a74f690c856f6903584e839e
         with:
           maintainers_file: 'maintainers.yaml'
-          verify_maintainers: 'true'
+          # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
+          verify_maintainers: 'false'
         env:
           LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
 `
