@@ -296,7 +296,8 @@ All action references should be **SHA-pinned** for reproducibility.
 - uses: cncf/automation/.github/actions/validate-maintainers@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c
   with:
     maintainers_file: 'maintainers.yaml'
-    verify_maintainers: 'true'
+    # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
+    verify_maintainers: 'false'
   env:
     LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
 ```
