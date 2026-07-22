@@ -413,7 +413,7 @@ PROTECTION
 
     # Step 8: Create onboarding issue if there are TODOs
     if ! $SKIP_ISSUE; then
-        create_onboarding_issue "$org" "$name" "$tmp_dir" "$target_repo"
+        create_onboarding_issue "$org" "$name" "$tmp_dir" "$target_repo" "$repo"
     fi
 
     # Clean up this iteration's scaffold temp dir
@@ -430,6 +430,7 @@ create_onboarding_issue() {
     local name="$2"
     local tmp_dir="$3"
     local target_repo="$4"
+    local primary_repo="${5:-$org}"  # fallback to org name if not provided
 
     # Collect TODO lines from project.yaml header (lines before schema_version:)
     local todos=()
@@ -459,18 +460,30 @@ create_onboarding_issue() {
         admin_logins+=("$login")
     done < <(gh api "orgs/${org}/members?role=admin&per_page=100" --jq '.[].login' 2>/dev/null || true)
 
-    # Rank admins by recent activity within the org and pick the top 3
-    local -a scored=()
-    for login in "${admin_logins[@]}"; do
-        local count
-        count=$(gh api "users/${login}/events/orgs/${org}?per_page=100" --jq 'length' 2>/dev/null || echo "0")
-        scored+=("${count} ${login}")
-    done
-    while IFS= read -r line; do
-        local ranked_login="${line#* }"
-        handles+=("$ranked_login")
+    # Rank admins by their contributions to the primary repo (most commits first).
+    local -a contributor_logins=()
+    while IFS= read -r login; do
+        [[ -n "$login" ]] && contributor_logins+=("$login")
+    done < <(gh api "repos/${org}/${primary_repo}/contributors?per_page=100" --jq '.[].login' 2>/dev/null || true)
+
+    # Pick top 3 admins that appear in the contributors list
+    for login in "${contributor_logins[@]}"; do
+        for admin in "${admin_logins[@]}"; do
+            if [[ "$login" == "$admin" ]]; then
+                handles+=("$login")
+                break
+            fi
+        done
         [[ ${#handles[@]} -ge 3 ]] && break
-    done < <(printf '%s\n' "${scored[@]}" | sort -t' ' -k1 -nr)
+    done
+
+    # If no admins found in contributors, fall back to the admin list order
+    if [[ ${#handles[@]} -eq 0 ]]; then
+        for admin in "${admin_logins[@]}"; do
+            handles+=("$admin")
+            [[ ${#handles[@]} -ge 3 ]] && break
+        done
+    fi
 
     if [[ ${#handles[@]} -eq 0 ]] && [[ -f "${tmp_dir}/maintainers.yaml" ]]; then
         while IFS= read -r login; do
