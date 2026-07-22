@@ -196,6 +196,21 @@
     }
     .nav-ext-link:hover { color: var(--text); }
 
+    .fragment-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      margin-left: 6px;
+      opacity: 0.65;
+      transition: opacity 0.15s, color 0.15s;
+      vertical-align: middle;
+    }
+
+    .fragment-link:hover {
+      opacity: 1;
+      color: var(--accent);
+    }
+
     /* ── MAIN LAYOUT ── */
     main {
       max-width: 1400px;
@@ -821,7 +836,7 @@
     </div>
 
     <!-- KPIs -->
-    <div class="kpi-grid">
+    <div class="kpi-grid" data-fragment-page="overview" data-fragment="kpis">
       <div class="kpi-card green">
         <div class="kpi-label">Graduated</div>
         <div class="kpi-value" id="kpi-graduated">35</div>
@@ -860,7 +875,7 @@
     </div>
 
     <!-- Charts row -->
-    <div class="chart-grid">
+    <div class="chart-grid" data-fragment-page="overview" data-fragment="maturity">
       <div class="chart-card">
         <div class="chart-title">Maturity Distribution</div>
         <div class="chart-subtitle">All projects by level including pipeline</div>
@@ -920,7 +935,7 @@
     </div>
 
     <!-- Level changes this year -->
-    <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-card" style="margin-bottom:24px" data-fragment-page="overview" data-fragment="level-changes">
       <div class="chart-title">Level Changes — <span id="levelChangesYear"></span></div>
       <div class="chart-subtitle">Projects that completed Sandbox, Incubation, Graduation, or Archival reviews this year, sorted by most recent. Sourced from the landscape. Does not include projects that have been voted in by the TOC but have not yet signed a CA.</div>
       <table class="data-table" style="margin-top:16px">
@@ -938,7 +953,7 @@
     </div>
 
     <!-- Onboarding history -->
-    <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-card" style="margin-bottom:24px" data-fragment-page="overview" data-fragment="onboarding-history">
       <div class="chart-title">Onboarding Completed — By Year</div>
       <div class="chart-subtitle">Projects completing CNCF onboarding checklist annually</div>
       <div class="chart-container tall">
@@ -947,7 +962,7 @@
     </div>
 
     <!-- Sandbox applications -->
-    <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-card" style="margin-bottom:24px" data-fragment-page="overview" data-fragment="sandbox-history">
       <div class="chart-title">Sandbox Applications Reviewed — By Year</div>
       <div class="chart-subtitle">Closed sandbox application reviews by calendar year</div>
       <div class="chart-container tall">
@@ -966,7 +981,7 @@
     </div>
 
     <!-- Velocity summary -->
-    <div class="velocity-grid">
+    <div class="velocity-grid" data-fragment-page="pipeline" data-fragment="velocity-summary">
       <div class="velocity-card">
         <div class="velocity-title">🎓 Graduation Reviews</div>
         <div class="velocity-metric">
@@ -1062,7 +1077,7 @@
     </div>
 
     <!-- Backlog detail charts -->
-    <div class="chart-grid-3">
+    <div class="chart-grid-3" data-fragment-page="pipeline" data-fragment="backlog-stages">
       <div class="chart-card">
         <div class="chart-title">Graduation Backlog — by Stage</div>
         <div id="grad-backlog-subtitle" class="chart-subtitle">6 projects currently in graduation review</div>
@@ -1087,7 +1102,7 @@
     </div>
 
     <!-- Velocity comparison -->
-    <div class="chart-card">
+    <div class="chart-card" data-fragment-page="pipeline" data-fragment="velocity-comparison">
       <div class="chart-title">Review Velocity Comparison</div>
       <div class="chart-subtitle">Average days to complete review vs. average age of open reviews</div>
       <div class="chart-container tall">
@@ -1105,7 +1120,7 @@
       <div class="section-subtitle">Active onboarding issues — completion checklist by project</div>
     </div>
 
-    <div class="onboarding-summary">
+    <div class="onboarding-summary" data-fragment-page="onboarding" data-fragment="summary">
       <div class="kpi-card green">
         <div class="kpi-label">Total Issues</div>
         <div class="kpi-value" id="kpi-onb-total">23</div>
@@ -1139,7 +1154,7 @@
     </div>
 
     <!-- Onboarding table -->
-    <div class="chart-card" style="padding: 0; overflow: hidden;">
+    <div class="chart-card" style="padding: 0; overflow: hidden;" data-fragment-page="onboarding" data-fragment="table">
       <div style="overflow-x: auto;">
         <table class="data-table" id="onboardingTable">
           <thead>
@@ -1174,7 +1189,7 @@
     </div>
 
     <!-- Latest survey KPIs -->
-    <div class="kpi-grid" id="satisfaction-kpis">
+    <div class="kpi-grid" id="satisfaction-kpis" data-fragment-page="satisfaction" data-fragment="summary">
       <div class="kpi-card blue">
         <div class="kpi-label">Latest Period</div>
         <div class="kpi-value" id="sat-kpi-period" style="font-size:22px">—</div>
@@ -1198,7 +1213,7 @@
     </div>
 
     <!-- Trend chart -->
-    <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-card" style="margin-bottom:24px" data-fragment-page="satisfaction" data-fragment="trend">
       <div class="chart-title">Maintainer Overall Sat and Response Time Sat</div>
       <div class="chart-subtitle">Biannual survey results since 2017 — percentage of positive responses per period</div>
       <div class="chart-container" style="height:320px">
@@ -1207,7 +1222,7 @@
     </div>
 
     <!-- Data table -->
-    <div class="chart-card" style="padding: 0; overflow: hidden;">
+    <div class="chart-card" style="padding: 0; overflow: hidden;" data-fragment-page="satisfaction" data-fragment="table">
       <div style="overflow-x: auto;">
         <table class="data-table" id="satisfactionTable">
           <thead>
@@ -1231,8 +1246,8 @@
       <div class="section-title">Service Desk <strong>Ticket Resolutions</strong></div>
       <div class="section-subtitle">Monthly tickets created vs. resolved</div>
     </div>
-    <div class="kpi-grid" id="serviceDeskYearlyKpis"></div>
-    <div class="chart-card">
+    <div class="kpi-grid" id="serviceDeskYearlyKpis" data-fragment-page="servicedesk" data-fragment="yearly-kpis"></div>
+    <div class="chart-card" data-fragment-page="servicedesk" data-fragment="trend">
       <div class="chart-container tall">
         <canvas id="serviceDeskChart"></canvas>
       </div>
@@ -1673,14 +1688,100 @@ function renderLevelChanges() {
 // NAV
 // ══════════════════════════════════════════
 
+const DEFAULT_PAGE = 'overview';
+const VALID_PAGES = new Set(['overview', 'pipeline', 'onboarding', 'servicedesk', 'satisfaction']);
+
+function normalizePage(page) {
+  if (!page) return DEFAULT_PAGE;
+  const normalized = String(page).trim().toLowerCase();
+  return VALID_PAGES.has(normalized) ? normalized : DEFAULT_PAGE;
+}
+
+function buildHash(page, section = '') {
+  const p = normalizePage(page);
+  if (!section) return `#${p}`;
+  return `#${p}/${section}`;
+}
+
+function parseHash() {
+  const raw = window.location.hash.replace(/^#/, '').trim();
+  if (!raw) return { page: DEFAULT_PAGE, section: '' };
+  const [pagePart = '', sectionPart = ''] = raw.split('/', 2);
+  return {
+    page: normalizePage(pagePart),
+    section: sectionPart.trim().toLowerCase(),
+  };
+}
+
+function activatePage(page) {
+  const p = normalizePage(page);
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.page === p);
+  });
+  document.querySelectorAll('.page').forEach(panel => {
+    panel.classList.toggle('active', panel.id === `page-${p}`);
+  });
+}
+
+function findFragmentTarget(page, section) {
+  if (!section) return null;
+  return document.querySelector(
+    `[data-fragment-page="${page}"][data-fragment="${section}"]`
+  );
+}
+
+function routeFromHash(scrollToFragment = true) {
+  const { page, section } = parseHash();
+  activatePage(page);
+  if (scrollToFragment && section) {
+    const target = findFragmentTarget(page, section);
+    if (target) {
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+}
+
+function initFragmentLinks() {
+  document.querySelectorAll('[data-fragment-page][data-fragment]').forEach(section => {
+    const page = section.getAttribute('data-fragment-page') || '';
+    const fragment = section.getAttribute('data-fragment') || '';
+    if (!page || !fragment) return;
+
+    const titleEl = section.querySelector('.chart-title, .velocity-title, .kpi-label, .section-title');
+    if (!titleEl || titleEl.querySelector('.fragment-link')) return;
+
+    const link = document.createElement('a');
+    link.className = 'fragment-link';
+    link.href = buildHash(page, fragment);
+    link.title = 'Link to this section';
+    link.textContent = '#';
+    titleEl.appendChild(link);
+  });
+}
+
 document.querySelectorAll('.nav-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('page-' + tab.dataset.page).classList.add('active');
+    const page = normalizePage(tab.dataset.page || DEFAULT_PAGE);
+    const targetHash = buildHash(page);
+    if (window.location.hash !== targetHash) {
+      window.location.hash = targetHash;
+    } else {
+      routeFromHash(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   });
 });
+
+window.addEventListener('hashchange', () => routeFromHash(true));
+
+if (!window.location.hash) {
+  history.replaceState(null, '', buildHash(DEFAULT_PAGE));
+}
+
+initFragmentLinks();
+routeFromHash(false);
 
 document.querySelectorAll('#onboardingTable th[data-sort]').forEach(th => {
   th.addEventListener('click', () => {
