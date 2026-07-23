@@ -938,12 +938,12 @@
     <div class="chart-card" style="margin-bottom:24px" data-fragment-page="overview" data-fragment="level-changes">
       <div class="chart-title">Level Changes — <span id="levelChangesYear"></span></div>
       <div class="chart-subtitle">Projects that completed Sandbox, Incubation, Graduation, or Archival reviews this year, sorted by most recent. Sourced from the landscape. Does not include projects that have been voted in by the TOC but have not yet signed a CA.</div>
-      <table class="data-table" style="margin-top:16px">
+      <table class="data-table" id="levelChangesTable" style="margin-top:16px">
         <thead>
           <tr>
             <th>Project</th>
-            <th>Level Change</th>
-            <th>Month</th>
+            <th data-sort="type">Level Change</th>
+            <th data-sort="month">Month</th>
           </tr>
         </thead>
         <tbody id="levelChangesTbody">
@@ -1275,6 +1275,9 @@ let sandboxBacklog = [];
 let onboardingHistory = [];
 let sandboxHistory = [];
 let levelChanges = [];
+let lcSortCol = null;   // null = default order (most recent first)
+let lcSortDir = 'desc';
+const LC_TYPE_RANK = { 'Sandbox': 0, 'Incubation': 1, 'Graduation': 2, 'Archived': 3 };
 let onboardingIssues = [];
 let serviceDeskData = [];
 let serviceDeskSatisfaction = [];
@@ -1666,7 +1669,24 @@ function renderLevelChanges() {
     return;
   }
 
-  tbody.innerHTML = levelChanges.map(lc => {
+  let data = [...levelChanges];
+  if (lcSortCol) {
+    data.sort((a, b) => {
+      let av, bv;
+      if (lcSortCol === 'type') {
+        av = LC_TYPE_RANK[a.type] ?? 99;
+        bv = LC_TYPE_RANK[b.type] ?? 99;
+      } else { // 'month' → sort chronologically using closed_at
+        av = a.closed_at || '';
+        bv = b.closed_at || '';
+      }
+      if (av < bv) return lcSortDir === 'asc' ? -1 : 1;
+      if (av > bv) return lcSortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  tbody.innerHTML = data.map(lc => {
     const badge = lc.type === 'Graduation'
       ? `<span class="status-badge" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0">&#8594; Graduated</span>`
       : lc.type === 'Archived'
@@ -1795,6 +1815,21 @@ document.querySelectorAll('#onboardingTable th[data-sort]').forEach(th => {
     document.querySelectorAll('#onboardingTable th[data-sort]').forEach(t => t.classList.remove('sort-asc', 'sort-desc'));
     th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
     renderTable();
+  });
+});
+
+document.querySelectorAll('#levelChangesTable th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.sort;
+    if (lcSortCol === col) {
+      lcSortDir = lcSortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      lcSortCol = col;
+      lcSortDir = col === 'month' ? 'desc' : 'asc';
+    }
+    document.querySelectorAll('#levelChangesTable th[data-sort]').forEach(t => t.classList.remove('sort-asc', 'sort-desc'));
+    th.classList.add(lcSortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+    renderLevelChanges();
   });
 });
 
