@@ -40,7 +40,9 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-          pip-install: oci-cli
+
+      - name: Install OCI CLI packages
+        run: pip install oci-cli
 
       - name: Verify OCI CLI
         run: oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system runner-images --operating-system-version 123456
@@ -165,7 +167,9 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-          pip-install: oci-cli
+
+      - name: Install OCI CLI packages
+        run: pip install oci-cli
 
       - name: Verify OCI CLI
         run: oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system runner-images --operating-system-version 123456
@@ -398,7 +402,9 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-          pip-install: oci-cli
+
+      - name: Install OCI CLI packages
+        run: pip install oci-cli
 
       - name: Release
         run: |
@@ -424,7 +430,9 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-          pip-install: oci-cli
+
+      - name: Install OCI CLI packages
+        run: pip install oci-cli
 
       - name: Sync image to other regions
         run: |
@@ -453,7 +461,9 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-          pip-install: oci-cli
+
+      - name: Install OCI CLI packages
+        run: pip install oci-cli
 
       - name: Release
         run: |
@@ -485,7 +495,9 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-          pip-install: oci-cli
+
+      - name: Install OCI CLI packages
+        run: pip install oci-cli
 
       - name: Import Custom Image on Ashburn
         run: |
