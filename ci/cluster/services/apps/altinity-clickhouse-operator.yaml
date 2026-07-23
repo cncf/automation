@@ -33,7 +33,7 @@ spec:
           files:
             config.yaml:
               watch:
-                namespaces: ["clickhouse-altinity", "seebom"]
+                namespaces: ["clickhouse-altinity", "seebom", :"bomhort"]
   destination:
     server: https://kubernetes.default.svc
     namespace: clickhouse-altinity
