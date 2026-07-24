@@ -34,6 +34,28 @@ spec:
       namespaces:
         from: All
 
+  - name: https-api-bomhort
+    protocol: HTTPS
+    port: 443
+    hostname: bomhort.cncf.io
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: bomhort-tls-gw
+        kind: Secret
+        group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-bomhort
+    protocol: HTTP
+    port: 80
+    hostname: bomhort.cncf.io
+    allowedRoutes:
+      namespaces:
+        from: All
+
   - name: https-notes
     protocol: HTTPS
     port: 443
