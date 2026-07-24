@@ -162,24 +162,28 @@ jobs:
         include:
           - runner: "amd64"
             arch: "amd64"
-            shape: "VM.Standard.E6.Flex,VM.Standard.E5.Flex,VM.Standard.E4.Flex"
+            shape: "VM.Standard.E5.Flex,VM.Standard.E4.Flex"
             ocpus: 2
             memory: 8.0
+            preemptible: true
           - runner: "arm64"
             arch: "arm64"
             shape: "VM.Standard.A1.Flex"
             ocpus: 2
             memory: 8.0
+            preemptible: true
           - runner: "gpu-a10-1"
             arch: "amd64"
             shape: "VM.GPU.A10.1"
             ocpus: 0   # Not a flex type, so ocpus and memory are determined by the shape
             memory: 0
+            preemptible: false
           - runner: "gpu-a10-2"
             arch: "amd64"
             shape: "VM.GPU.A10.2"
             ocpus: 0   # Not a flex type, so ocpus and memory are determined by the shape
             memory: 0
+            preemptible: false
     steps:
       - name: Test the published Cloudrunner Docker image
         run: |
@@ -211,4 +215,5 @@ jobs:
             --subnet-id=${{ env.SUBNET_ID }} \
             --fallback-region=${{ env.FALLBACK_REGION }} \
             --fallback-availability-domain=${{ env.FALLBACK_AVAILABILITY_DOMAIN }} \
-            --fallback-subnet-id=${{ env.FALLBACK_SUBNET_ID }}
+            --fallback-subnet-id=${{ env.FALLBACK_SUBNET_ID }} \
+            --preemptible=${{ matrix.preemptible }}
