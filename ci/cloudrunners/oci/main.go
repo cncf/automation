@@ -43,7 +43,9 @@ var args struct {
 	shape              string
 	shapeOcpus         float32
 	shapeMemoryInGBs   float32
+	bootVolumeSizeGB   int64
 	runEnv             string
+	preemptible        bool
 
 	fallbackRegion             string
 	fallbackAvailabilityDomain string
@@ -218,8 +220,8 @@ func tryLaunch(ctx context.Context, region regionConfig, shape string, sshKeyPai
 		},
 		SourceDetails: &core.InstanceSourceViaImageDetails{
 			ImageId:             common.String(*latestImage.Id),
-			BootVolumeSizeInGBs: common.Int64(600),
-			BootVolumeVpusPerGB: common.Int64(120),
+			BootVolumeSizeInGBs: common.Int64(args.bootVolumeSizeGB),
+			BootVolumeVpusPerGB: common.Int64(30),
 		},
 		AgentConfig: &core.LaunchInstanceAgentConfigDetails{
 			PluginsConfig: []core.InstanceAgentPluginConfigDetails{{
@@ -231,12 +233,22 @@ func tryLaunch(ctx context.Context, region regionConfig, shape string, sshKeyPai
 		},
 	}
 
+	if args.preemptible {
+		launchDetails.PreemptibleInstanceConfig = &core.PreemptibleInstanceConfigDetails{
+			PreemptionAction: core.TerminatePreemptionAction{
+				PreserveBootVolume: common.Bool(false),
+			},
+		}
+	}
+
 	// Only set flexible shape config when OCPUs/memory are specified and
 	// the shape is actually flexible.
+	// OCI counts 1 OCPU = 2 vCPUs. The flag accepts vCPUs for a 1:1 mapping,
+	// so we divide by 2 to get the OCPU value the API expects.
 	if args.shapeMemoryInGBs > 0.0 && args.shapeOcpus > 0.0 && strings.Contains(shape, "Flex") {
 		launchDetails.ShapeConfig = &core.LaunchInstanceShapeConfigDetails{
 			MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
-			Ocpus:       common.Float32(args.shapeOcpus),
+			Ocpus:       common.Float32(args.shapeOcpus / 2),
 		}
 	}
 
@@ -370,7 +382,7 @@ func init() {
 		&args.shapeOcpus,
 		"shape-ocpus",
 		0.0, // Default to 0, indicating not set.
-		"Number of OCPUs for flexible shapes (e.g., 1.0, 2.0). Required if a '.Flex' shape is used.",
+		"Number of CPUs for flexible shapes (e.g., 1.0, 2.0). Required if a '.Flex' shape is used.",
 	)
 	flags.Float32Var(
 		&args.shapeMemoryInGBs,
@@ -383,6 +395,18 @@ func init() {
 		"running-environment",
 		"production",
 		"Running Environment: production or ci",
+	)
+	flags.BoolVar(
+		&args.preemptible,
+		"preemptible",
+		true,
+		"Launch preemptible (spot) instances for lower cost. Instance may be reclaimed by OCI at any time.",
+	)
+	flags.Int64Var(
+		&args.bootVolumeSizeGB,
+		"boot-volume-size-gb",
+		300,
+		"Boot volume size in GB",
 	)
 	flags.StringVar(
 		&args.fallbackRegion,
