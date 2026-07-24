@@ -296,10 +296,10 @@ spec:
     spec:
       containers:
       - name: runner
-        image: ghcr.io/cncf/gha-cloudrunner@sha256:40d65db4a514a71c3e2a3523f39586d5945fa26f735c7dbeb45428f19fa025b6
+        image: ghcr.io/cncf/gha-cloudrunner@sha256:ea0562a06e529210c314c76460a0ab1ef782620f66d42176da636560c871be88
         args:
         - --arch=amd64
-        - --shape=VM.Standard.E5.Flex,VM.Standard.E4.Flex
+        - --shape=VM.Standard.E4.Flex,VM.Standard.E5.Flex
         - --shape-ocpus=16.0
         - --shape-memory-in-gbs=64.0
         - --compartment-id=ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
