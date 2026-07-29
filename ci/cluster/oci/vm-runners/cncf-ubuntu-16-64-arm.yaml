@@ -307,7 +307,7 @@ spec:
         - --availability-domain=bzBe:US-SANJOSE-1-AD-1
         - --subnet-id=ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq
         - --fallback-region=us-phoenix-1
-        - --fallback-availability-domain=bzBe:PHX-AD-3
+        - --fallback-availability-domain=bzBe:PHX-AD-3,bzBe:PHX-AD-1,bzBe:PHX-AD-2
         - --fallback-subnet-id=ocid1.subnet.oc1.phx.aaaaaaaabmyvcputzxzy5hrkezavo6m7efa7ap54ztyrj5nvupayqyuw4kja
         env:
         - name: OCI_CONFIG_FILE
@@ -325,7 +325,7 @@ spec:
         fsGroup: 1001
         supplementalGroups:
         - 999
-      serviceAccountName: cncf-ubuntu-16-64-arm-gha-rs-no-permission
+      serviceAccountName: cloudrunner-launcher
       volumes:
       - name: oci-config
         secret:

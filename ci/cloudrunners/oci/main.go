@@ -46,17 +46,28 @@ var args struct {
 	bootVolumeSizeGB   int64
 	runEnv             string
 	preemptible        bool
+	preemptionQueue    string
 
-	fallbackRegion             string
-	fallbackAvailabilityDomain string
-	fallbackSubnetId           string
+	fallbackRegions             []string
+	fallbackAvailabilityDomains []string
+	fallbackSubnetIds           []string
 }
+
+// exitCodePreempted is the sentinel exit code the launcher uses when the
+// instance was reclaimed by OCI mid-job. The preemption-rerun CronJob in
+// ci/cluster/oci/hacks/ keys off this value; keep them in sync.
+const exitCodePreempted = 79
+
+var errPreempted = errors.New("instance preempted")
 
 func main() {
 	log.SetFlags(log.Flags() | log.Lshortfile)
 
 	if err := Cmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		if errors.Is(err, errPreempted) {
+			os.Exit(exitCodePreempted)
+		}
 		os.Exit(1)
 	}
 
@@ -77,6 +88,26 @@ func isOutOfCapacityError(err error) bool {
 		}
 	}
 	return false
+}
+
+// splitAndTrim splits a comma-separated flag value into trimmed, non-empty items.
+func splitAndTrim(s string) []string {
+	var items []string
+	for _, item := range strings.Split(s, ",") {
+		if item = strings.TrimSpace(item); item != "" {
+			items = append(items, item)
+		}
+	}
+	return items
+}
+
+// vcpusPerOcpu returns how many vCPUs OCI exposes per OCPU for the given
+// shape: 1 for Ampere ARM shapes (no SMT), 2 for x86 shapes.
+func vcpusPerOcpu(shape string) float32 {
+	if strings.HasPrefix(shape, "VM.Standard.A") || strings.HasPrefix(shape, "BM.Standard.A") {
+		return 1
+	}
+	return 2
 }
 
 // findImage returns the latest GHA runner image available in the current region of the given compute client.
@@ -110,28 +141,32 @@ func run(cmd *cobra.Command, argv []string) error {
 	defer cancel()
 
 	// Parse the comma-separated shape list (single value is fine too).
-	shapes := strings.Split(args.shape, ",")
-	for i := range shapes {
-		shapes[i] = strings.TrimSpace(shapes[i])
-	}
+	shapes := splitAndTrim(args.shape)
 
-	// Build the ordered list of regions: primary (from flags) + fallbacks.
-	regions := []regionConfig{
-		{
-			Region:             args.region,
-			AvailabilityDomain: args.availabilityDomain,
-			SubnetID:           args.subnetId,
-		},
-	}
-	if args.fallbackRegion != "" {
-		if args.fallbackAvailabilityDomain == "" || args.fallbackSubnetId == "" {
-			return fmt.Errorf("--fallback-availability-domain and --fallback-subnet-id are required when --fallback-region is set")
-		}
+	// Build the ordered list of launch targets: every AD of the primary
+	// region (from flags), then every AD of the fallback region. ADs are
+	// comma-separated; subnets are regional in OCI so one subnet ID covers
+	// all ADs of its region.
+	var regions []regionConfig
+	for _, ad := range splitAndTrim(args.availabilityDomain) {
 		regions = append(regions, regionConfig{
-			Region:             args.fallbackRegion,
-			AvailabilityDomain: args.fallbackAvailabilityDomain,
-			SubnetID:           args.fallbackSubnetId,
+			Region:             args.region,
+			AvailabilityDomain: ad,
+			SubnetID:           args.subnetId,
 		})
+	}
+	if len(args.fallbackRegions) != len(args.fallbackAvailabilityDomains) || len(args.fallbackRegions) != len(args.fallbackSubnetIds) {
+		return fmt.Errorf("--fallback-region, --fallback-availability-domain and --fallback-subnet-id must be repeated the same number of times (got %d/%d/%d)",
+			len(args.fallbackRegions), len(args.fallbackAvailabilityDomains), len(args.fallbackSubnetIds))
+	}
+	for i, fallbackRegion := range args.fallbackRegions {
+		for _, ad := range splitAndTrim(args.fallbackAvailabilityDomains[i]) {
+			regions = append(regions, regionConfig{
+				Region:             fallbackRegion,
+				AvailabilityDomain: ad,
+				SubnetID:           args.fallbackSubnetIds[i],
+			})
+		}
 	}
 
 	// Create SSH key pair once — reused across retry attempts.
@@ -177,7 +212,23 @@ func run(cmd *cobra.Command, argv []string) error {
 			}()
 
 			log.Printf("instance launched successfully: region=%s shape=%s", region.Region, shape)
-			return runOnMachine(ctx, machine, sshKeyPair)
+			err = runOnMachine(ctx, machine, sshKeyPair)
+			if err != nil && args.preemptible {
+				if state, stateErr := machine.LifecycleState(context.Background()); stateErr == nil &&
+					(state == core.InstanceLifecycleStateTerminating || state == core.InstanceLifecycleStateTerminated) {
+					log.Printf("INSTANCE PREEMPTED: region=%s ad=%s shape=%s state=%s: instance was reclaimed by OCI while the job was running",
+						region.Region, region.AvailabilityDomain, shape, state)
+					if args.preemptionQueue != "" {
+						if reportErr := reportPreemption(context.Background(), args.preemptionQueue); reportErr != nil {
+							log.Printf("failed to record preemption for auto-rerun: %v", reportErr)
+						} else {
+							log.Printf("preemption recorded in %s for auto-rerun", args.preemptionQueue)
+						}
+					}
+					err = fmt.Errorf("%w (region=%s ad=%s shape=%s): %w", errPreempted, region.Region, region.AvailabilityDomain, shape, err)
+				}
+			}
+			return err
 		}
 	}
 
@@ -243,12 +294,14 @@ func tryLaunch(ctx context.Context, region regionConfig, shape string, sshKeyPai
 
 	// Only set flexible shape config when OCPUs/memory are specified and
 	// the shape is actually flexible.
-	// OCI counts 1 OCPU = 2 vCPUs. The flag accepts vCPUs for a 1:1 mapping,
-	// so we divide by 2 to get the OCPU value the API expects.
+	// The --shape-ocpus flag accepts vCPUs so runner labels map 1:1 to CPUs.
+	// On x86 shapes (E4/E5/E6) 1 OCPU = 2 vCPUs (SMT), so we divide by 2.
+	// On Ampere ARM shapes (A1/A2) there is no SMT: 1 OCPU = 1 vCPU, so the
+	// value is passed through unchanged.
 	if args.shapeMemoryInGBs > 0.0 && args.shapeOcpus > 0.0 && strings.Contains(shape, "Flex") {
 		launchDetails.ShapeConfig = &core.LaunchInstanceShapeConfigDetails{
 			MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
-			Ocpus:       common.Float32(args.shapeOcpus / 2),
+			Ocpus:       common.Float32(args.shapeOcpus / vcpusPerOcpu(shape)),
 		}
 	}
 
@@ -358,7 +411,7 @@ func init() {
 		&args.availabilityDomain,
 		"availability-domain",
 		"bzBe:US-SANJOSE-1-AD-1",
-		"Availability Domain",
+		"Comma-separated list of Availability Domains to try in order",
 	)
 	flags.StringVar(
 		&args.compartmentId,
@@ -402,28 +455,34 @@ func init() {
 		true,
 		"Launch preemptible (spot) instances for lower cost. Instance may be reclaimed by OCI at any time.",
 	)
+	flags.StringVar(
+		&args.preemptionQueue,
+		"preemption-queue-configmap",
+		"preemption-rerun-queue",
+		"ConfigMap (in this pod's namespace) recording preempted jobs for auto-rerun. Empty disables reporting.",
+	)
 	flags.Int64Var(
 		&args.bootVolumeSizeGB,
 		"boot-volume-size-gb",
 		300,
 		"Boot volume size in GB",
 	)
-	flags.StringVar(
-		&args.fallbackRegion,
+	flags.StringArrayVar(
+		&args.fallbackRegions,
 		"fallback-region",
-		"us-ashburn-1",
-		"Fallback OCI region to try when primary is out of capacity",
+		[]string{"us-ashburn-1"},
+		"Fallback OCI region to try when primary is out of capacity. Repeat for multiple fallback regions, tried in order.",
 	)
-	flags.StringVar(
-		&args.fallbackAvailabilityDomain,
+	flags.StringArrayVar(
+		&args.fallbackAvailabilityDomains,
 		"fallback-availability-domain",
-		"bzBe:US-ASHBURN-AD-1",
-		"Availability domain for the fallback region",
+		[]string{"bzBe:US-ASHBURN-AD-1,bzBe:US-ASHBURN-AD-2,bzBe:US-ASHBURN-AD-3"},
+		"Comma-separated list of Availability Domains for the matching --fallback-region occurrence. Repeat per fallback region.",
 	)
-	flags.StringVar(
-		&args.fallbackSubnetId,
+	flags.StringArrayVar(
+		&args.fallbackSubnetIds,
 		"fallback-subnet-id",
-		"ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q",
-		"Subnet ID for the fallback region",
+		[]string{"ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q"},
+		"Subnet ID for the matching --fallback-region occurrence. Repeat per fallback region.",
 	)
 }
