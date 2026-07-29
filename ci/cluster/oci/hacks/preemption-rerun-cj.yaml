@@ -1,0 +1,176 @@
+---
+# Queue of preempted jobs awaiting rerun. Entries are written by the
+# gha-cloudrunner launcher (--preemption-queue-configmap) and consumed by the
+# preemption-rerun CronJob below. Keys are "run-<workflowRunId>", values are
+# JSON: {"repo":"owner/repo","run_id":<id>,"first_seen":<epoch>}.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: preemption-rerun-queue
+  namespace: arc-systems
+---
+# Lets the launcher pods (which run with the ARC "no permission" service
+# accounts) read their own EphemeralRunner and record preempted jobs in the
+# queue. Bound to all service accounts in arc-systems because each runner
+# scale set gets its own generated service account.
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: preemption-reporter
+  namespace: arc-systems
+rules:
+  - apiGroups: ["actions.github.com"]
+    resources: ["ephemeralrunners"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["preemption-rerun-queue"]
+    verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: preemption-reporter
+  namespace: arc-systems
+subjects:
+  - kind: Group
+    name: system:serviceaccounts:arc-systems
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: preemption-reporter
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: preemption-rerunner
+  namespace: arc-systems
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: preemption-rerun
+  namespace: arc-systems
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["preemption-rerun-queue"]
+    verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: preemption-rerun
+  namespace: arc-systems
+subjects:
+  - kind: ServiceAccount
+    name: preemption-rerunner
+    namespace: arc-systems
+roleRef:
+  kind: Role
+  name: preemption-rerun
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: preemption-rerun
+  namespace: arc-systems
+spec:
+  schedule: "*/3 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: preemption-rerunner
+          containers:
+          - name: rerun
+            image: docker.io/alpine/k8s:1.32.10
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: DRY_RUN
+              value: "false"
+            - name: MAX_ATTEMPTS
+              value: "3"
+            - name: STALE_SECONDS
+              value: "86400"
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-arc-secret
+                  key: github_token
+            command:
+            - /bin/bash
+            args:
+            - -c
+            - |
+              set -uo pipefail
+              NS=arc-systems
+              QUEUE=preemption-rerun-queue
+              AUTH=()
+              [ -n "${GITHUB_TOKEN:-}" ] && AUTH=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+
+              drop() {
+                kubectl -n "${NS}" patch configmap "${QUEUE}" --type=json \
+                  -p "[{\"op\":\"remove\",\"path\":\"/data/$1\"}]" >/dev/null
+                echo "dequeued $1: $2"
+              }
+
+              now=$(date +%s)
+              entries=$(kubectl -n "${NS}" get configmap "${QUEUE}" -o json | jq -r '.data // {} | to_entries[] | @base64')
+              [ -z "${entries}" ] && { echo "queue empty"; exit 0; }
+
+              for e in ${entries}; do
+                key=$(echo "${e}" | base64 -d | jq -r '.key')
+                val=$(echo "${e}" | base64 -d | jq -r '.value')
+                repo=$(echo "${val}" | jq -r '.repo')
+                run_id=$(echo "${val}" | jq -r '.run_id')
+                first_seen=$(echo "${val}" | jq -r '.first_seen')
+                age=$(( now - first_seen ))
+
+                run=$(curl -sf "${AUTH[@]}" -H "Accept: application/vnd.github+json" \
+                  "https://api.github.com/repos/${repo}/actions/runs/${run_id}")
+                if [ -z "${run}" ]; then
+                  echo "could not fetch ${repo} run ${run_id} (age ${age}s)"
+                  [ "${age}" -gt "${STALE_SECONDS}" ] && drop "${key}" "stale, run unfetchable"
+                  continue
+                fi
+
+                status=$(echo "${run}" | jq -r '.status')
+                conclusion=$(echo "${run}" | jq -r '.conclusion')
+                attempt=$(echo "${run}" | jq -r '.run_attempt')
+
+                if [ "${status}" != "completed" ]; then
+                  if [ "${age}" -gt "${STALE_SECONDS}" ]; then
+                    drop "${key}" "stale, still ${status} after ${age}s"
+                  else
+                    echo "keeping ${key}: run ${status}, waiting for completion"
+                  fi
+                  continue
+                fi
+
+                if [ "${conclusion}" = "failure" ] && [ "${attempt}" -lt "${MAX_ATTEMPTS}" ]; then
+                  if [ "${DRY_RUN}" = "true" ]; then
+                    drop "${key}" "DRY_RUN: would rerun failed jobs of ${repo} run ${run_id} (attempt ${attempt})"
+                  else
+                    if curl -sf -X POST "${AUTH[@]}" -H "Accept: application/vnd.github+json" \
+                      "https://api.github.com/repos/${repo}/actions/runs/${run_id}/rerun-failed-jobs" >/dev/null; then
+                      drop "${key}" "rerun triggered for ${repo} run ${run_id} (was attempt ${attempt})"
+                    else
+                      echo "rerun failed for ${repo} run ${run_id}, keeping ${key}"
+                      [ "${age}" -gt "${STALE_SECONDS}" ] && drop "${key}" "stale, rerun kept failing"
+                    fi
+                  fi
+                else
+                  drop "${key}" "no rerun: conclusion=${conclusion} attempt=${attempt}"
+                fi
+              done
+            resources:
+              limits:
+                cpu: 500m
+                memory: 200Mi
+          restartPolicy: Never

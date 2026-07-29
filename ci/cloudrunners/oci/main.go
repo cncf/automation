@@ -46,17 +46,28 @@ var args struct {
 	bootVolumeSizeGB   int64
 	runEnv             string
 	preemptible        bool
+	preemptionQueue    string
 
 	fallbackRegion             string
 	fallbackAvailabilityDomain string
 	fallbackSubnetId           string
 }
 
+// exitCodePreempted is the sentinel exit code the launcher uses when the
+// instance was reclaimed by OCI mid-job. The preemption-rerun CronJob in
+// ci/cluster/oci/hacks/ keys off this value; keep them in sync.
+const exitCodePreempted = 79
+
+var errPreempted = errors.New("instance preempted")
+
 func main() {
 	log.SetFlags(log.Flags() | log.Lshortfile)
 
 	if err := Cmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		if errors.Is(err, errPreempted) {
+			os.Exit(exitCodePreempted)
+		}
 		os.Exit(1)
 	}
 
@@ -206,6 +217,14 @@ func run(cmd *cobra.Command, argv []string) error {
 					(state == core.InstanceLifecycleStateTerminating || state == core.InstanceLifecycleStateTerminated) {
 					log.Printf("INSTANCE PREEMPTED: region=%s ad=%s shape=%s state=%s: instance was reclaimed by OCI while the job was running",
 						region.Region, region.AvailabilityDomain, shape, state)
+					if args.preemptionQueue != "" {
+						if reportErr := reportPreemption(context.Background(), args.preemptionQueue); reportErr != nil {
+							log.Printf("failed to record preemption for auto-rerun: %v", reportErr)
+						} else {
+							log.Printf("preemption recorded in %s for auto-rerun", args.preemptionQueue)
+						}
+					}
+					err = fmt.Errorf("%w (region=%s ad=%s shape=%s): %w", errPreempted, region.Region, region.AvailabilityDomain, shape, err)
 				}
 			}
 			return err
@@ -434,6 +453,12 @@ func init() {
 		"preemptible",
 		true,
 		"Launch preemptible (spot) instances for lower cost. Instance may be reclaimed by OCI at any time.",
+	)
+	flags.StringVar(
+		&args.preemptionQueue,
+		"preemption-queue-configmap",
+		"preemption-rerun-queue",
+		"ConfigMap (in this pod's namespace) recording preempted jobs for auto-rerun. Empty disables reporting.",
 	)
 	flags.Int64Var(
 		&args.bootVolumeSizeGB,
