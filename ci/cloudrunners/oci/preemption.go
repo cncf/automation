@@ -53,7 +53,10 @@ func reportPreemption(ctx context.Context, queueConfigMap string) error {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{RootCAs: caPool},
+			TLSClientConfig: &tls.Config{
+				RootCAs:    caPool,
+				MinVersion: tls.VersionTLS13,
+			},
 		},
 	}
 	apiServer := fmt.Sprintf("https://%s:%s",

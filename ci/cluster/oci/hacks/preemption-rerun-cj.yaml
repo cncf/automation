@@ -87,11 +87,25 @@ spec:
       template:
         spec:
           serviceAccountName: preemption-rerunner
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
           containers:
           - name: rerun
             image: docker.io/alpine/k8s:1.32.10
             imagePullPolicy: IfNotPresent
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
             env:
+            - name: HOME
+              value: /tmp
             - name: DRY_RUN
               value: "false"
             - name: MAX_ATTEMPTS
@@ -173,4 +187,10 @@ spec:
               limits:
                 cpu: 500m
                 memory: 200Mi
+            volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          volumes:
+          - name: tmp
+            emptyDir: {}
           restartPolicy: Never
