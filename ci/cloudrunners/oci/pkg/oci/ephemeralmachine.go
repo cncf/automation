@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/oracle/oci-go-sdk/v65/common"
 	"github.com/oracle/oci-go-sdk/v65/core"
+	"github.com/oracle/oci-go-sdk/v65/common"
 	"k8s.io/klog/v2"
 )
 
@@ -58,7 +58,7 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 		if err != nil {
 			// Handle rate limiting (429)
 			if svcErr, ok := common.IsServiceError(err); ok && svcErr.GetHTTPStatusCode() == 429 {
-				log.Info("rate limited by OCI API, retrying in 20 seconds", "instanceID", m.instanceID)
+				log.Info("rate limited by OCI API, retrying in 20 seconds","instanceID", m.instanceID)
 				time.Sleep(20 * time.Second)
 				continue
 			}
@@ -105,16 +105,6 @@ func (m *EphemeralMachine) WaitForInstanceReady(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func (m *EphemeralMachine) LifecycleState(ctx context.Context) (core.InstanceLifecycleStateEnum, error) {
-	getInstanceResponse, err := m.computeClient.GetInstance(ctx, core.GetInstanceRequest{
-		InstanceId: &m.instanceID,
-	})
-	if err != nil {
-		return "", fmt.Errorf("reading instance state: %w", err)
-	}
-	return getInstanceResponse.Instance.LifecycleState, nil
 }
 
 func (m *EphemeralMachine) Close() error {

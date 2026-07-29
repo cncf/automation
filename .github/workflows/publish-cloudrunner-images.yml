@@ -24,9 +24,6 @@ env:
   REGISTRY: ghcr.io
   # IMAGE_NAME maps to the Docker image name
   IMAGE_NAME: cncf/gha-cloudrunner
-  # Fork PRs get a read-only GITHUB_TOKEN and no secrets: build without
-  # pushing and skip jobs that need the pushed image or OCI credentials.
-  IS_FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
 
 jobs:
   build-cloudrunner-images:
@@ -57,10 +54,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
-      # Login against a Docker registry except on fork PRs
+      # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
-        if: env.IS_FORK_PR != 'true'
         uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
         with:
           registry: ${{ env.REGISTRY }}
@@ -86,7 +82,7 @@ jobs:
         with:
           context: ./ci/cloudrunners/
           platforms: linux/amd64
-          push: ${{ env.IS_FORK_PR != 'true' }}
+          push: true
           labels: ${{ steps.meta.outputs.labels }}
           file: ./ci/cloudrunners/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
@@ -150,7 +146,6 @@ jobs:
   # Test the published image by running it and see if the VM is created.
   test-image:
     needs: build-cloudrunner-images
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
