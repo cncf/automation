@@ -48,9 +48,9 @@ var args struct {
 	preemptible        bool
 	preemptionQueue    string
 
-	fallbackRegion             string
-	fallbackAvailabilityDomain string
-	fallbackSubnetId           string
+	fallbackRegions             []string
+	fallbackAvailabilityDomains []string
+	fallbackSubnetIds           []string
 }
 
 // exitCodePreempted is the sentinel exit code the launcher uses when the
@@ -155,15 +155,16 @@ func run(cmd *cobra.Command, argv []string) error {
 			SubnetID:           args.subnetId,
 		})
 	}
-	if args.fallbackRegion != "" {
-		if args.fallbackAvailabilityDomain == "" || args.fallbackSubnetId == "" {
-			return fmt.Errorf("--fallback-availability-domain and --fallback-subnet-id are required when --fallback-region is set")
-		}
-		for _, ad := range splitAndTrim(args.fallbackAvailabilityDomain) {
+	if len(args.fallbackRegions) != len(args.fallbackAvailabilityDomains) || len(args.fallbackRegions) != len(args.fallbackSubnetIds) {
+		return fmt.Errorf("--fallback-region, --fallback-availability-domain and --fallback-subnet-id must be repeated the same number of times (got %d/%d/%d)",
+			len(args.fallbackRegions), len(args.fallbackAvailabilityDomains), len(args.fallbackSubnetIds))
+	}
+	for i, fallbackRegion := range args.fallbackRegions {
+		for _, ad := range splitAndTrim(args.fallbackAvailabilityDomains[i]) {
 			regions = append(regions, regionConfig{
-				Region:             args.fallbackRegion,
+				Region:             fallbackRegion,
 				AvailabilityDomain: ad,
-				SubnetID:           args.fallbackSubnetId,
+				SubnetID:           args.fallbackSubnetIds[i],
 			})
 		}
 	}
@@ -466,22 +467,22 @@ func init() {
 		300,
 		"Boot volume size in GB",
 	)
-	flags.StringVar(
-		&args.fallbackRegion,
+	flags.StringArrayVar(
+		&args.fallbackRegions,
 		"fallback-region",
-		"us-ashburn-1",
-		"Fallback OCI region to try when primary is out of capacity",
+		[]string{"us-ashburn-1"},
+		"Fallback OCI region to try when primary is out of capacity. Repeat for multiple fallback regions, tried in order.",
 	)
-	flags.StringVar(
-		&args.fallbackAvailabilityDomain,
+	flags.StringArrayVar(
+		&args.fallbackAvailabilityDomains,
 		"fallback-availability-domain",
-		"bzBe:US-ASHBURN-AD-1,bzBe:US-ASHBURN-AD-2,bzBe:US-ASHBURN-AD-3",
-		"Comma-separated list of Availability Domains to try in order in the fallback region",
+		[]string{"bzBe:US-ASHBURN-AD-1,bzBe:US-ASHBURN-AD-2,bzBe:US-ASHBURN-AD-3"},
+		"Comma-separated list of Availability Domains for the matching --fallback-region occurrence. Repeat per fallback region.",
 	)
-	flags.StringVar(
-		&args.fallbackSubnetId,
+	flags.StringArrayVar(
+		&args.fallbackSubnetIds,
 		"fallback-subnet-id",
-		"ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q",
-		"Subnet ID for the fallback region",
+		[]string{"ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q"},
+		"Subnet ID for the matching --fallback-region occurrence. Repeat per fallback region.",
 	)
 }

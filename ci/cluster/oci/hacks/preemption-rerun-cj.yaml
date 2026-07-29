@@ -9,10 +9,18 @@ metadata:
   name: preemption-rerun-queue
   namespace: arc-systems
 ---
-# Lets the launcher pods (which run with the ARC "no permission" service
-# accounts) read their own EphemeralRunner and record preempted jobs in the
-# queue. Bound to all service accounts in arc-systems because each runner
-# scale set gets its own generated service account.
+# Shared identity for the vm-runner launcher pods (set as
+# serviceAccountName in each vm-runners AutoscalingRunnerSet template),
+# so the reporting grant below is scoped to launcher pods only rather
+# than every service account in the namespace.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cloudrunner-launcher
+  namespace: arc-systems
+---
+# Lets the launcher pods read their own EphemeralRunner and record
+# preempted jobs in the queue.
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -33,9 +41,9 @@ metadata:
   name: preemption-reporter
   namespace: arc-systems
 subjects:
-  - kind: Group
-    name: system:serviceaccounts:arc-systems
-    apiGroup: rbac.authorization.k8s.io
+  - kind: ServiceAccount
+    name: cloudrunner-launcher
+    namespace: arc-systems
 roleRef:
   kind: Role
   name: preemption-reporter

@@ -309,6 +309,9 @@ spec:
         - --fallback-region=us-ashburn-1
         - --fallback-availability-domain=bzBe:US-ASHBURN-AD-1,bzBe:US-ASHBURN-AD-2,bzBe:US-ASHBURN-AD-3
         - --fallback-subnet-id=ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q
+        - --fallback-region=us-chicago-1
+        - --fallback-availability-domain=bzBe:US-CHICAGO-1-AD-1,bzBe:US-CHICAGO-1-AD-2,bzBe:US-CHICAGO-1-AD-3
+        - --fallback-subnet-id=ocid1.subnet.oc1.us-chicago-1.aaaaaaaas4g2hefjefsztbnmeorimlvceikt4mxel26f4yihuvuixn3hw5uq
         env:
         - name: OCI_CONFIG_FILE
           value: /etc/oci/config
@@ -325,7 +328,7 @@ spec:
         fsGroup: 1001
         supplementalGroups:
         - 999
-      serviceAccountName: oracle-vm-16cpu-64gb-x86-64-gha-rs-no-permission
+      serviceAccountName: cloudrunner-launcher
       volumes:
       - name: oci-config
         secret:

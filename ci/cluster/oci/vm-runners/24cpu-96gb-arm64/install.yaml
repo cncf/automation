@@ -325,7 +325,7 @@ spec:
         fsGroup: 1001
         supplementalGroups:
         - 999
-      serviceAccountName: oracle-vm-24cpu-96gb-arm64-gha-rs-no-permission
+      serviceAccountName: cloudrunner-launcher
       volumes:
       - name: oci-config
         secret:
