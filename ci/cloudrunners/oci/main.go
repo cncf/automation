@@ -79,6 +79,26 @@ func isOutOfCapacityError(err error) bool {
 	return false
 }
 
+// splitAndTrim splits a comma-separated flag value into trimmed, non-empty items.
+func splitAndTrim(s string) []string {
+	var items []string
+	for _, item := range strings.Split(s, ",") {
+		if item = strings.TrimSpace(item); item != "" {
+			items = append(items, item)
+		}
+	}
+	return items
+}
+
+// vcpusPerOcpu returns how many vCPUs OCI exposes per OCPU for the given
+// shape: 1 for Ampere ARM shapes (no SMT), 2 for x86 shapes.
+func vcpusPerOcpu(shape string) float32 {
+	if strings.HasPrefix(shape, "VM.Standard.A") || strings.HasPrefix(shape, "BM.Standard.A") {
+		return 1
+	}
+	return 2
+}
+
 // findImage returns the latest GHA runner image available in the current region of the given compute client.
 func findImage(ctx context.Context, computeClient core.ComputeClient, compartmentId, arch, runEnv string) (*core.Image, error) {
 	osname := fmt.Sprintf("ubuntu-24.04-%s-gha-image", arch)
@@ -110,28 +130,31 @@ func run(cmd *cobra.Command, argv []string) error {
 	defer cancel()
 
 	// Parse the comma-separated shape list (single value is fine too).
-	shapes := strings.Split(args.shape, ",")
-	for i := range shapes {
-		shapes[i] = strings.TrimSpace(shapes[i])
-	}
+	shapes := splitAndTrim(args.shape)
 
-	// Build the ordered list of regions: primary (from flags) + fallbacks.
-	regions := []regionConfig{
-		{
+	// Build the ordered list of launch targets: every AD of the primary
+	// region (from flags), then every AD of the fallback region. ADs are
+	// comma-separated; subnets are regional in OCI so one subnet ID covers
+	// all ADs of its region.
+	var regions []regionConfig
+	for _, ad := range splitAndTrim(args.availabilityDomain) {
+		regions = append(regions, regionConfig{
 			Region:             args.region,
-			AvailabilityDomain: args.availabilityDomain,
+			AvailabilityDomain: ad,
 			SubnetID:           args.subnetId,
-		},
+		})
 	}
 	if args.fallbackRegion != "" {
 		if args.fallbackAvailabilityDomain == "" || args.fallbackSubnetId == "" {
 			return fmt.Errorf("--fallback-availability-domain and --fallback-subnet-id are required when --fallback-region is set")
 		}
-		regions = append(regions, regionConfig{
-			Region:             args.fallbackRegion,
-			AvailabilityDomain: args.fallbackAvailabilityDomain,
-			SubnetID:           args.fallbackSubnetId,
-		})
+		for _, ad := range splitAndTrim(args.fallbackAvailabilityDomain) {
+			regions = append(regions, regionConfig{
+				Region:             args.fallbackRegion,
+				AvailabilityDomain: ad,
+				SubnetID:           args.fallbackSubnetId,
+			})
+		}
 	}
 
 	// Create SSH key pair once — reused across retry attempts.
@@ -177,7 +200,15 @@ func run(cmd *cobra.Command, argv []string) error {
 			}()
 
 			log.Printf("instance launched successfully: region=%s shape=%s", region.Region, shape)
-			return runOnMachine(ctx, machine, sshKeyPair)
+			err = runOnMachine(ctx, machine, sshKeyPair)
+			if err != nil && args.preemptible {
+				if state, stateErr := machine.LifecycleState(context.Background()); stateErr == nil &&
+					(state == core.InstanceLifecycleStateTerminating || state == core.InstanceLifecycleStateTerminated) {
+					log.Printf("INSTANCE PREEMPTED: region=%s ad=%s shape=%s state=%s: instance was reclaimed by OCI while the job was running",
+						region.Region, region.AvailabilityDomain, shape, state)
+				}
+			}
+			return err
 		}
 	}
 
@@ -243,12 +274,14 @@ func tryLaunch(ctx context.Context, region regionConfig, shape string, sshKeyPai
 
 	// Only set flexible shape config when OCPUs/memory are specified and
 	// the shape is actually flexible.
-	// OCI counts 1 OCPU = 2 vCPUs. The flag accepts vCPUs for a 1:1 mapping,
-	// so we divide by 2 to get the OCPU value the API expects.
+	// The --shape-ocpus flag accepts vCPUs so runner labels map 1:1 to CPUs.
+	// On x86 shapes (E4/E5/E6) 1 OCPU = 2 vCPUs (SMT), so we divide by 2.
+	// On Ampere ARM shapes (A1/A2) there is no SMT: 1 OCPU = 1 vCPU, so the
+	// value is passed through unchanged.
 	if args.shapeMemoryInGBs > 0.0 && args.shapeOcpus > 0.0 && strings.Contains(shape, "Flex") {
 		launchDetails.ShapeConfig = &core.LaunchInstanceShapeConfigDetails{
 			MemoryInGBs: common.Float32(args.shapeMemoryInGBs),
-			Ocpus:       common.Float32(args.shapeOcpus / 2),
+			Ocpus:       common.Float32(args.shapeOcpus / vcpusPerOcpu(shape)),
 		}
 	}
 
@@ -358,7 +391,7 @@ func init() {
 		&args.availabilityDomain,
 		"availability-domain",
 		"bzBe:US-SANJOSE-1-AD-1",
-		"Availability Domain",
+		"Comma-separated list of Availability Domains to try in order",
 	)
 	flags.StringVar(
 		&args.compartmentId,
@@ -417,8 +450,8 @@ func init() {
 	flags.StringVar(
 		&args.fallbackAvailabilityDomain,
 		"fallback-availability-domain",
-		"bzBe:US-ASHBURN-AD-1",
-		"Availability domain for the fallback region",
+		"bzBe:US-ASHBURN-AD-1,bzBe:US-ASHBURN-AD-2,bzBe:US-ASHBURN-AD-3",
+		"Comma-separated list of Availability Domains to try in order in the fallback region",
 	)
 	flags.StringVar(
 		&args.fallbackSubnetId,
