@@ -80,6 +80,11 @@ roleRef:
   name: preemption-rerun
   apiGroup: rbac.authorization.k8s.io
 ---
+# Consumes the queue above and re-runs failed jobs of completed workflow runs.
+# Rerunning requires the GITHUB_TOKEN identity to have write access on each
+# target repo (GitHub answers 403 "Must have admin rights to Repository."
+# otherwise); denied entries are kept and retried until STALE_SECONDS, and
+# every failed attempt logs the HTTP status and API message.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -143,7 +148,9 @@ spec:
               }
 
               now=$(date +%s)
-              entries=$(kubectl -n "${NS}" get configmap "${QUEUE}" -o json | jq -r '.data // {} | to_entries[] | @base64')
+              entries=$(kubectl -n "${NS}" get configmap "${QUEUE}" -o json \
+                | jq -r '.data // {} | to_entries[] | @base64') \
+                || { echo "failed to read queue configmap ${QUEUE}"; exit 1; }
               [ -z "${entries}" ] && { echo "queue empty"; exit 0; }
 
               for e in ${entries}; do
@@ -179,11 +186,15 @@ spec:
                   if [ "${DRY_RUN}" = "true" ]; then
                     drop "${key}" "DRY_RUN: would rerun failed jobs of ${repo} run ${run_id} (attempt ${attempt})"
                   else
-                    if curl -sf -X POST "${AUTH[@]}" -H "Accept: application/vnd.github+json" \
-                      "https://api.github.com/repos/${repo}/actions/runs/${run_id}/rerun-failed-jobs" >/dev/null; then
+                    code=$(curl -s -o /tmp/rerun-response.json -w '%{http_code}' -X POST "${AUTH[@]}" \
+                      -H "Accept: application/vnd.github+json" \
+                      "https://api.github.com/repos/${repo}/actions/runs/${run_id}/rerun-failed-jobs")
+                    if [ "${code}" = "201" ]; then
                       drop "${key}" "rerun triggered for ${repo} run ${run_id} (was attempt ${attempt})"
                     else
-                      echo "rerun failed for ${repo} run ${run_id}, keeping ${key}"
+                      msg=$(jq -r '.message // "no message"' /tmp/rerun-response.json 2>/dev/null \
+                        || echo "unreadable response")
+                      echo "rerun failed for ${repo} run ${run_id} (HTTP ${code}: ${msg}), keeping ${key}"
                       [ "${age}" -gt "${STALE_SECONDS}" ] && drop "${key}" "stale, rerun kept failing"
                     fi
                   fi
@@ -191,6 +202,7 @@ spec:
                   drop "${key}" "no rerun: conclusion=${conclusion} attempt=${attempt}"
                 fi
               done
+              exit 0
             resources:
               limits:
                 cpu: 500m
