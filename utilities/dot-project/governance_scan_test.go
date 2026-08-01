@@ -28,8 +28,12 @@ func TestDiscoverGovernanceSuggestions(t *testing.T) {
 			"/repos/test-org/.github/contents/":
 			w.WriteHeader(http.StatusNotFound)
 
-		// Org repo listing: one own repo + one fork (the fork must be skipped)
+		// Org repo listing: one own repo + one fork (the fork must be skipped).
+		// The handler also verifies that only public repos are requested.
 		case "/orgs/test-org/repos":
+			if r.URL.Query().Get("type") != "public" {
+				t.Errorf("org repo listing must use type=public, got query: %s", r.URL.RawQuery)
+			}
 			json.NewEncoder(w).Encode([]map[string]any{
 				{"name": "other-repo", "fork": false, "size": 100},
 				{"name": "forked-repo", "fork": true, "size": 50},

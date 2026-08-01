@@ -256,7 +256,7 @@ func scanOrgReposForSuggestions(c *orgScanCollector, org, primaryRepo string, do
 
 	page := 1
 	for {
-		path := fmt.Sprintf("/orgs/%s/repos?per_page=100&page=%d", org, page)
+		path := fmt.Sprintf("/orgs/%s/repos?type=public&per_page=100&page=%d", org, page)
 		resp, err := doGet(path)
 		if err != nil || resp.StatusCode != http.StatusOK {
 			hint := ""
