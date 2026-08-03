@@ -682,7 +682,7 @@ build {
 				"sleep 30",
 				"export HISTSIZE=0 && sync",
 				"usermod -aG docker ubuntu",
-				"apt install -y libelf-dev linux-oracle",
+				"apt install -y libelf-dev linux-oracle libxtst6",
 				"apt-get clean",
 				"rm -rf /var/lib/apt/lists/*"
 			]`
