@@ -188,6 +188,14 @@ packer {
 	baseDir := strings.Split(filename, "/")[0]
 	installRunnerPackage(baseDir)
 
+	// Fix PSGallery not being registered in tar.gz-based PowerShell installations (ARM64)
+	psModulesScript := baseDir + "/images/ubuntu/scripts/build/Install-PowerShellModules.ps1"
+	if err := replaceInFileRegex(psModulesScript, map[*regexp.Regexp]string{
+		regexp.MustCompile(`Set-PSRepository -InstallationPolicy Trusted -Name PSGallery`): "Register-PSRepository -Default -ErrorAction SilentlyContinue\nSet-PSRepository -InstallationPolicy Trusted -Name PSGallery",
+	}); err != nil {
+		log.Fatalf("Failed to patch Install-PowerShellModules.ps1: %v", err)
+	}
+
 	command := exec.Command("packer", "build", "-var", "architecture=arm64", newFile)
 
 	command.Stdout = os.Stdout
