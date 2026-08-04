@@ -150,6 +150,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GHCupVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-FastlaneVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "bz2", "gz")
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-google-chrome.sh", "invoke_tests \"Browsers\" \"Chromium\"", "apt-get install -y libxtst6\ninvoke_tests \"Browsers\" \"Chromium\"")
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
@@ -682,7 +683,7 @@ build {
 				"sleep 30",
 				"export HISTSIZE=0 && sync",
 				"usermod -aG docker ubuntu",
-				"apt install -y libelf-dev linux-oracle libxtst6",
+				"apt install -y libelf-dev linux-oracle",
 				"apt-get clean",
 				"rm -rf /var/lib/apt/lists/*"
 			]`
