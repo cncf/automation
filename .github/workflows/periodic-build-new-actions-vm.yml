@@ -255,7 +255,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-x86, build-arm64]
     if: needs.build-x86.outputs.image_exists == 'false' || needs.build-arm64.outputs.image_exists == 'false'
-    timeout-minutes: 15
+    # must cover the 10 min queue wait plus the 15 min test-runner timeout
+    timeout-minutes: 30
     strategy:
       matrix:
         arch: [x86-64, arm64]
@@ -317,11 +318,17 @@ jobs:
           fi
           sed 's/oracle-vm-2cpu-8gb/oci-ci-test/g' $MANIFEST_FILE \
             | sed '/subnet-id/a \        - --running-environment=ci' \
+            | sed 's/E5.Flex/E4.Flex/g' \
             | sed '/nodeSelector/,+1d'| kubectl apply -f -
+
+          # new service account is needed.
+          kubectl apply -f ci/cluster/oci/hacks/preemption-rerun-cj.yaml
 
       - name: Wait for test-runner to complete
         run: |
           TARGET_JOB="test-runner (${{ matrix.arch }})"
+          PICKUP_TIMEOUT=600
+          START_TIME=$(date +%s)
           echo "Waiting for job: ${TARGET_JOB}"
 
           while true; do
@@ -333,6 +340,16 @@ jobs:
 
             JOB_STATUS=$(echo "$RESULT" | jq -r --arg job "$TARGET_JOB" '.jobs[] | select(.name == $job) | .status')
             JOB_CONCLUSION=$(echo "$RESULT" | jq -r --arg job "$TARGET_JOB" '.jobs[] | select(.name == $job) | .conclusion')
+
+            # GitHub's timeout-minutes only starts once a runner picks the job up,
+            # so guard the queued phase separately.
+            if [ "$JOB_STATUS" != "in_progress" ] && [ "$JOB_STATUS" != "completed" ]; then
+              ELAPSED=$(( $(date +%s) - START_TIME ))
+              if [ "$ELAPSED" -ge "$PICKUP_TIMEOUT" ]; then
+                echo "ERROR: ${TARGET_JOB} was not picked up by a runner within $(( PICKUP_TIMEOUT / 60 )) minutes"
+                exit 1
+              fi
+            fi
 
             if [ -z "$JOB_STATUS" ]; then
               echo "Job '${TARGET_JOB}' not found yet, waiting..."
