@@ -144,6 +144,9 @@ spec:
   githubConfigSecret: github-arc-secret
   maxRunners: 150
   minRunners: 0
+  runnerScaleSetLabels:
+  - oracle-vm-8cpu-32gb-x86-64
+  - cncf-ubuntu-24.04-8-32-x86
   listenerMetrics:
     counters:
       gha_started_jobs_total:
