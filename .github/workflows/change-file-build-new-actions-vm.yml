@@ -275,11 +275,11 @@ jobs:
           EOF
 
           if [ "${{ matrix.arch }}" = "x86-64" ]; then
-            MANIFEST_FILE=ci/cluster/oci/vm-runners/2cpu-8gb/install.yaml
+            MANIFEST_FILE=ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-x86.yaml
           else
-            MANIFEST_FILE=ci/cluster/oci/vm-runners/2cpu-8gb-arm64/install.yaml
+            MANIFEST_FILE=ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-arm.yaml
           fi
-          sed 's/oracle-vm-2cpu-8gb/oci-ci-test/g' $MANIFEST_FILE \
+          sed 's/cncf-ubuntu-2-8/oci-ci-test/g' $MANIFEST_FILE \
             | sed '/subnet-id/a \        - --running-environment=ci' \
             | sed 's/E5.Flex/E4.Flex/g' \
             | sed '/nodeSelector/,+1d'| kubectl apply -f -
