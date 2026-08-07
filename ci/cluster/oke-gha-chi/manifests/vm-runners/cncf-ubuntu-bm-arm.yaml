@@ -145,6 +145,8 @@ spec:
   maxRunners: 10
   minRunners: 0
   runnerGroup: "BareMetal"
+  runnerScaleSetLabels:
+  - cncf-ubuntu-24.04-bm-arm
   listenerMetrics:
     counters:
       gha_started_jobs_total:
