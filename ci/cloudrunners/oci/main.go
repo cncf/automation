@@ -357,7 +357,7 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 		"sudo rmmod algif_aead 2>/dev/null || true",
 		"tar -zxf /opt/runner-cache/actions-runner-linux-*.tar.gz",
 		"rm -rf \\$HOME",
-		"sudo chown -R 1000:1000 /etc/skel/",
+		"sudo chown -R ubuntu:ubuntu /etc/skel/",
 		"sudo mv /etc/skel/.cargo /home/ubuntu/",
 		"sudo mv /etc/skel/.nvm /home/ubuntu/",
 		"sudo mv /etc/skel/.rustup /home/ubuntu/",
