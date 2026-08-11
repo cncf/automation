@@ -249,9 +249,9 @@ func TestLabeler_ProcessFilePathRule(t *testing.T) {
 }
 
 // TestLabeler_ProcessFilePathRule_DoubleStar verifies that "**" patterns match
-// files nested arbitrarily deep. filepath.Match treated "**" as a single "*"
-// (never crossing "/"), so before the switch to doublestar a pattern like
-// "ci/**" would not match "ci/cluster/oke-gha-chi/manifests/hacks/foo.yaml".
+// files nested arbitrarily deep. filepath.Match has no doublestar semantics, and
+// "*" (and therefore "**" when treated literally) never crosses "/", so before
+// the switch to doublestar a pattern like
 func TestLabeler_ProcessFilePathRule_DoubleStar(t *testing.T) {
 	client := NewMockGitHubClient()
 	config := createTestConfig()
