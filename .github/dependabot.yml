@@ -71,12 +71,8 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "terraform"
-    directory: "/ci/cluster/akamai"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "terraform"
-    directory: "/ci/iac/cluster"
+    directories:
+      - "/ci/iac/*/*"
     schedule:
       interval: "weekly"
 
