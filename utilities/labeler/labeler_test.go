@@ -11,9 +11,9 @@ import (
 
 // MockGitHubClient implements GitHubClient for testing
 type MockGitHubClient struct {
-	Issues       map[int]*github.Issue
-	Labels       []*github.Label
-	IssueLabels  map[int][]*github.Label
+	Issues        map[int]*github.Issue
+	Labels        []*github.Label
+	IssueLabels   map[int][]*github.Label
 	CreatedLabels map[string]*github.Label
 	DeletedLabels []string
 	AppliedLabels map[int][]string
@@ -49,7 +49,7 @@ func (m *MockGitHubClient) AddLabelsToIssue(ctx context.Context, owner, repo str
 		m.AppliedLabels[number] = []string{}
 	}
 	m.AppliedLabels[number] = append(m.AppliedLabels[number], labels...)
-	
+
 	// Add to issue labels
 	for _, label := range labels {
 		labelObj := &github.Label{Name: &label}
@@ -63,7 +63,7 @@ func (m *MockGitHubClient) RemoveLabelForIssue(ctx context.Context, owner, repo 
 		m.RemovedLabels[number] = []string{}
 	}
 	m.RemovedLabels[number] = append(m.RemovedLabels[number], label)
-	
+
 	// Remove from issue labels
 	for i, lbl := range m.IssueLabels[number] {
 		if lbl.GetName() == label {
@@ -96,7 +96,7 @@ func (m *MockGitHubClient) EditLabel(ctx context.Context, owner, repo, name stri
 
 func (m *MockGitHubClient) DeleteLabel(ctx context.Context, owner, repo, name string) (*github.Response, error) {
 	m.DeletedLabels = append(m.DeletedLabels, name)
-	
+
 	// Remove from labels
 	for i, lbl := range m.Labels {
 		if lbl.GetName() == name {
@@ -248,6 +248,64 @@ func TestLabeler_ProcessFilePathRule(t *testing.T) {
 	}
 }
 
+// TestLabeler_ProcessFilePathRule_DoubleStar verifies that "**" patterns match
+// files nested arbitrarily deep. filepath.Match treated "**" as a single "*"
+// (never crossing "/"), so before the switch to doublestar a pattern like
+// "ci/**" would not match "ci/cluster/oke-gha-chi/manifests/hacks/foo.yaml".
+func TestLabeler_ProcessFilePathRule_DoubleStar(t *testing.T) {
+	client := NewMockGitHubClient()
+	config := createTestConfig()
+	config.Labels = append(config.Labels, Label{Name: "area/ci", Color: "7057FF", Description: "CI/CD infrastructure and automation"})
+	config.Ruleset = []Rule{
+		{
+			Name: "area-ci",
+			Kind: "filePath",
+			Spec: RuleSpec{
+				MatchPath: "ci/**",
+			},
+			Actions: []Action{
+				{
+					Kind: "apply-label",
+					Spec: ActionSpec{Label: "area/ci"},
+				},
+			},
+		},
+	}
+	labeler := NewLabeler(client, config)
+
+	tests := []struct {
+		name        string
+		changedFile string
+		wantMatch   bool
+	}{
+		{"deeply nested file", "ci/cluster/oke-gha-chi/manifests/hacks/preemption-rerun-cj.yaml", true},
+		{"file directly under dir", "ci/foo.yaml", true},
+		{"file outside dir", "docs/ci-notes.md", false},
+	}
+
+	for i, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			issueNumber := i + 1
+			req := &LabelRequest{
+				Owner:        "test-owner",
+				Repo:         "test-repo",
+				IssueNumber:  issueNumber,
+				ChangedFiles: []string{tt.changedFile},
+			}
+
+			if err := labeler.ProcessRequest(context.Background(), req); err != nil {
+				t.Fatalf("ProcessRequest failed: %v", err)
+			}
+
+			applied := sliceContains(client.AppliedLabels[issueNumber], "area/ci")
+			if applied != tt.wantMatch {
+				t.Errorf("file %q: applied=%v, want %v (labels: %v)",
+					tt.changedFile, applied, tt.wantMatch, client.AppliedLabels[issueNumber])
+			}
+		})
+	}
+}
+
 func TestLabeler_ProcessMatchRule_TriageCommand(t *testing.T) {
 	client := NewMockGitHubClient()
 	config := createTestConfig()
@@ -307,7 +365,7 @@ func TestLabeler_ProcessMatchRule_TagCommand(t *testing.T) {
 
 	// Check that both needs-triage and tag/developer-experience were applied
 	appliedLabels := client.AppliedLabels[1]
-	
+
 	if !sliceContains(appliedLabels, "tag/developer-experience") {
 		t.Errorf("Expected 'tag/developer-experience' label to be applied, got: %v", appliedLabels)
 	}
@@ -493,10 +551,10 @@ func TestLabeler_ProcessLabelRule_BracePattern(t *testing.T) {
 	}
 
 	cases := []struct {
-		name        string
-		existing    []*github.Label
-		wantApply   bool
-		wantRemove  bool
+		name       string
+		existing   []*github.Label
+		wantApply  bool
+		wantRemove bool
 	}{
 		{
 			name:       "no group label → needs-group applied",
@@ -704,7 +762,7 @@ func TestLabeler_ProcessMatchRule_InvalidArgument(t *testing.T) {
 	if !sliceContains(appliedLabels, "needs-triage") {
 		t.Errorf("Expected 'needs-triage' to be applied, got: %v", appliedLabels)
 	}
-	
+
 	// Should not contain any tag labels
 	for _, label := range appliedLabels {
 		if strings.HasPrefix(label, "tag/") {
