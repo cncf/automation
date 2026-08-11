@@ -16,6 +16,11 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "gomod"
+    directory: "/ci/gha-runner-vm-oci"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gomod"
     directory: "/utilities/dot-project"
     schedule:
       interval: "weekly"
