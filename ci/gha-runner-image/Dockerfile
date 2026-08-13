@@ -10,7 +10,7 @@ ARG TARGETOS
 ARG TARGETARCH
 
 RUN apt update -y \
-    && apt install curl unzip -y \
+    && apt-get install -y --no-install-recommends curl unzip ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,12 +26,13 @@ RUN curl -f -L -o runner-container-hooks.zip https://github.com/actions/runner-c
     && unzip ./runner-container-hooks.zip -d ./k8s \
     && rm runner-container-hooks.zip
 
+# Only the docker CLI is needed: dockerd/containerd/runc run in the dind sidecar.
 RUN export RUNNER_ARCH=${TARGETARCH} \
     && if [ "$RUNNER_ARCH" = "amd64" ]; then export DOCKER_ARCH=x86_64 ; fi \
     && if [ "$RUNNER_ARCH" = "arm64" ]; then export DOCKER_ARCH=aarch64 ; fi \
-    && curl -fLo docker.tgz https://download.docker.com/${TARGETOS}/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz \
-    && tar zxvf docker.tgz \
-    && rm -rf docker.tgz \
+    && curl -fLo /tmp/docker.tgz https://download.docker.com/${TARGETOS}/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz \
+    && tar -xzf /tmp/docker.tgz -C /usr/bin --strip-components=1 docker/docker \
+    && rm -f /tmp/docker.tgz \
     && mkdir -p /usr/local/lib/docker/cli-plugins \
     && curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx \
         "https://github.com/docker/buildx/releases/download/v${BUILDX_VERSION}/buildx-v${BUILDX_VERSION}.linux-${TARGETARCH}" \
@@ -46,6 +47,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_MANUALLY_TRAP_SIG=1
 ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
+ENV KIND_VERSION=v0.32.0
 
 # 'gpg-agent' and 'software-properties-common' are needed for the 'add-apt-repository' command that follows
 RUN apt update -y \
@@ -72,7 +74,7 @@ RUN apt update -y \
             xz-utils \
             file \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /usr/share/doc/* /usr/share/man/*
 
 RUN locale-gen en_US.UTF-8 \
     && echo "LANG=en_US.UTF-8" >> /etc/default/locale \
@@ -82,9 +84,10 @@ RUN locale-gen en_US.UTF-8 \
 # Configure git-core/ppa based on guidance here:  https://git-scm.com/download/linux
 RUN add-apt-repository ppa:git-core/ppa \
     && apt update -y \
-    && apt install -y git \
+    && apt-get install -y --no-install-recommends git \
+    && apt-get purge -y --auto-remove software-properties-common dirmngr \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /usr/share/doc/* /usr/share/man/*
 
 RUN adduser --disabled-password --gecos "" --uid 1001 runner \
     && groupadd docker --gid 123 \
@@ -96,22 +99,22 @@ RUN adduser --disabled-password --gecos "" --uid 1001 runner \
 WORKDIR /home/runner
 
 COPY --chown=runner:docker --from=build /actions-runner .
+COPY --from=build /usr/bin/docker /usr/bin/docker
 COPY --from=build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
 
-RUN install -o root -g root -m 755 docker/* /usr/bin/ && rm -rf docker
-
-RUN curl -LO https://go.dev/dl/go1.25.4.linux-${TARGETARCH}.tar.gz \
-    && tar -C /usr/local -xzf go1.25.4.linux-${TARGETARCH}.tar.gz \
-    && rm go1.25.4.linux-${TARGETARCH}.tar.gz \
+RUN curl -sSLo /tmp/go.tar.gz https://go.dev/dl/go1.25.4.linux-${TARGETARCH}.tar.gz \
+    && tar -C /usr/local -xzf /tmp/go.tar.gz \
+    && rm /tmp/go.tar.gz \
+    && rm -rf /usr/local/go/test /usr/local/go/api /usr/local/go/doc /usr/local/go/misc \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /etc/profile \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.profile \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.bashrc
+
+RUN curl -fsSLo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-${TARGETARCH} \
+    && chmod +x /usr/local/bin/kind
 
 ENV ENV=/etc/profile
 
 USER runner
 
-RUN pip3 install --user launchable~=1.0
-
-RUN export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin && \
-    go install sigs.k8s.io/kind@v0.32.0
+RUN pip3 install --user --no-cache-dir launchable~=1.0
