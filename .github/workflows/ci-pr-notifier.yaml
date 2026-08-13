@@ -2,15 +2,15 @@ name: Notify Slack on CI PRs
 
 on:
   pull_request_target:
-    types: [labeled, closed]
+    types: [opened, ready_for_review, closed]
+    paths:
+      - 'ci/**'
 
 jobs:
   notify:
     if: >
-      (github.event.action == 'labeled' && github.event.label.name == 'area/ci') ||
-      (github.event.action == 'closed' &&
-       github.event.pull_request.merged == true &&
-       contains(github.event.pull_request.labels.*.name, 'area/ci'))
+      github.event.action != 'closed' ||
+      github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Build Slack payload
