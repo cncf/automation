@@ -1,0 +1,70 @@
+name: Notify Slack on CI PRs
+
+on:
+  pull_request_target:
+    types: [labeled, closed]
+
+jobs:
+  notify:
+    if: >
+      (github.event.action == 'labeled' && github.event.label.name == 'area/ci') ||
+      (github.event.action == 'closed' &&
+       github.event.pull_request.merged == true &&
+       contains(github.event.pull_request.labels.*.name, 'area/ci'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Slack payload
+        id: payload
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const merged = context.payload.action === 'closed';
+
+            // GitHub markdown -> Slack mrkdwn (rough but covers the usual cases)
+            let body = pr.body || '_no description_';
+            body = body
+              .replace(/\r/g, '')
+              .replace(/^#{1,6}\s*(.+)$/gm, '*$1*')          // headings -> bold
+              .replace(/\*\*(.+?)\*\*/g, '*$1*')             // **bold** -> *bold*
+              .replace(/\[(.+?)\]\((https?:[^)]+)\)/g, '<$2|$1>'); // links
+            if (body.length > 2500) body = body.slice(0, 2500) + '…';
+
+            const labels = pr.labels.map(l => l.name).join(', ') || '—';
+            const reviewers = pr.requested_reviewers.map(r => '@' + r.login)
+              .concat((pr.requested_teams || []).map(t => '@' + t.slug))
+              .join(' ') || '—';
+
+            const payload = {
+              text: `Pull request ${merged ? 'merged' : 'opened'}: #${pr.number} ${pr.title}`, // fallback
+              blocks: [{
+                type: 'section',
+                text: { type: 'mrkdwn',
+                  text: `Pull request ${merged ? 'merged' : 'opened'} by <${pr.user.html_url}|${pr.user.login}>` }
+              }],
+              attachments: [{
+                color: merged ? '#6f42c1' : '#36a64f',
+                blocks: [
+                  { type: 'section',
+                    text: { type: 'mrkdwn', text: `*<${pr.html_url}|#${pr.number} ${pr.title}>*` } },
+                  { type: 'section',
+                    text: { type: 'mrkdwn', text: body } },
+                  { type: 'section', fields: [
+                      { type: 'mrkdwn', text: `*Reviewers*\n${reviewers}` },
+                      { type: 'mrkdwn', text: `*Labels*\n${labels}` }
+                  ]},
+                  { type: 'context', elements: [
+                      { type: 'mrkdwn',
+                        text: `<${context.payload.repository.html_url}|${context.payload.repository.full_name}>` }
+                  ]}
+                ]
+              }]
+            };
+            core.setOutput('payload', JSON.stringify(payload));
+
+      - name: Send to Slack
+        uses: slackapi/slack-github-action@v2
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_INFRA }}
+          webhook-type: incoming-webhook
+          payload: ${{ steps.payload.outputs.payload }}
