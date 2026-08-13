@@ -110,8 +110,11 @@ RUN curl -sSLo /tmp/go.tar.gz https://go.dev/dl/go1.25.4.linux-${TARGETARCH}.tar
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.profile \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/home/runner/go/bin:/home/runner/.local/bin' >> /home/runner/.bashrc
 
-RUN curl -fsSLo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-${TARGETARCH} \
-    && chmod +x /usr/local/bin/kind
+RUN curl -fsSLo /tmp/kind-linux-${TARGETARCH} https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-${TARGETARCH} \
+    && curl -fsSLo /tmp/kind-linux-${TARGETARCH}.sha256sum https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-${TARGETARCH}.sha256sum \
+    && (cd /tmp && sha256sum -c kind-linux-${TARGETARCH}.sha256sum) \
+    && install -m 0755 /tmp/kind-linux-${TARGETARCH} /usr/local/bin/kind \
+    && rm -f /tmp/kind-linux-${TARGETARCH} /tmp/kind-linux-${TARGETARCH}.sha256sum
 
 ENV ENV=/etc/profile
 
