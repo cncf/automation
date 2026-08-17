@@ -342,10 +342,10 @@ func TestWriteScaffold(t *testing.T) {
 		// Spot-check validate.yaml uses SHA-pinned refs
 		valData, _ := os.ReadFile(filepath.Join(dir, ".github", "workflows", "validate.yaml"))
 		valStr := string(valData)
-		if !strings.Contains(valStr, "@de0fac2e4500dabe0009e67214ff5f5447ce83dd") {
+		if !strings.Contains(valStr, "@3d3c42e5aac5ba805825da76410c181273ba90b1") {
 			t.Error("validate.yaml should SHA-pin actions/checkout")
 		}
-		if !strings.Contains(valStr, "@95d25b12337a14e4a74f690c856f6903584e839e") {
+		if !strings.Contains(valStr, "@53810a548b46f33421cd67e57d16e4b7251416d9") {
 			t.Error("validate.yaml should SHA-pin cncf/automation actions")
 		}
 		if strings.Contains(valStr, "@main") {
@@ -358,7 +358,7 @@ func TestWriteScaffold(t *testing.T) {
 		if !strings.Contains(lsStr, "LANDSCAPE_REPO_TOKEN") {
 			t.Error("update-landscape.yml should use LANDSCAPE_REPO_TOKEN secret")
 		}
-		if !strings.Contains(lsStr, "landscape-update@95d25b12337a14e4a74f690c856f6903584e839e") {
+		if !strings.Contains(lsStr, "landscape-update@53810a548b46f33421cd67e57d16e4b7251416d9") {
 			t.Error("update-landscape.yml should SHA-pin landscape-update action")
 		}
 		if strings.Contains(lsStr, "uses: cncf/automation/.github/workflows/") {
