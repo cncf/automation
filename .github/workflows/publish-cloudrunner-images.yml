@@ -30,6 +30,7 @@ env:
 
 jobs:
   build-cloudrunner-images:
+    if: github.repository == 'cncf/automation'
     outputs:
       image: ${{ steps.image.outputs.image }}
       digest: ${{ steps.build-and-push.outputs.digest }}

@@ -8,6 +8,7 @@ on:
 
 jobs:
   detect-drift:
+    if: github.repository == 'cncf/automation'
     runs-on: ubuntu-latest
     permissions:
       contents: read

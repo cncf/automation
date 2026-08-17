@@ -27,6 +27,7 @@ env:
 
 jobs:
   build-labeler-images:
+    if: github.repository == 'cncf/automation'
     outputs:
       images: ${{ steps.image.outputs.images }}
       digest: ${{ steps.build-and-push.outputs.digest }}
