@@ -63,7 +63,7 @@ jobs:
             core.setOutput('payload', JSON.stringify(payload));
 
       - name: Send to Slack
-        uses: slackapi/slack-github-action@v2
+        uses: slackapi/slack-github-action@v4
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_INFRA }}
           webhook-type: incoming-webhook
