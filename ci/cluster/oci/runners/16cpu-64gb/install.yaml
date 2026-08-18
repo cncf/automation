@@ -290,7 +290,6 @@ spec:
             3000.0,
             3600.0,
           ]
-
   listenerTemplate:
     spec:
       containers:
@@ -307,7 +306,7 @@ spec:
           value: unix:///var/run/docker.sock
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:bc0f43cb4fd68714ccf8762716629026d5339d97dc49569d503c613c93bba6a5
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:072ec0c6b43e657d85db23adfc4f39b4737f2368bdfdacb6caa408d61fa372bd
         name: runner
         resources:
           limits:
@@ -388,7 +387,7 @@ spec:
         - -R
         - "1777"
         - /tmp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:bc0f43cb4fd68714ccf8762716629026d5339d97dc49569d503c613c93bba6a5
+        image: docker.io/library/busybox:1.38.0
         name: chowner
         securityContext:
           capabilities:
@@ -410,7 +409,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:bc0f43cb4fd68714ccf8762716629026d5339d97dc49569d503c613c93bba6a5
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:072ec0c6b43e657d85db23adfc4f39b4737f2368bdfdacb6caa408d61fa372bd
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
@@ -434,26 +433,9 @@ spec:
         name: dind-sock
       - emptyDir: {}
         name: dind-externals
-      - ephemeral:
-          volumeClaimTemplate:
-            spec:
-              accessModes:
-              - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 50Gi
-              storageClassName: oci-bv
+      - emptyDir:
+          sizeLimit: 50Gi
         name: work
-      - ephemeral:
-          volumeClaimTemplate:
-            spec:
-              accessModes:
-              - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 10Gi
-              storageClassName: oci-bv
-        name: overlay
       tolerations:
       - key: "cncf.io/gha-runner"
         operator: "Exists"
