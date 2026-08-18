@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Build Slack payload
         id: payload
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -63,7 +63,7 @@ jobs:
             core.setOutput('payload', JSON.stringify(payload));
 
       - name: Send to Slack
-        uses: slackapi/slack-github-action@v2
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_INFRA }}
           webhook-type: incoming-webhook
