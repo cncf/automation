@@ -23,6 +23,7 @@ env:
 
 jobs:
   build-x86:
+    if: github.repository == 'cncf/automation'
     name: Build new Actions x86-64 VM
     runs-on: cncf-ubuntu-16-64-x86
     env:

@@ -385,10 +385,7 @@ provision_project() {
             gh api -X PUT "repos/${target_repo}/branches/main/protection" \
                 --input - <<'PROTECTION' || warn "Branch protection failed (may require admin access)"
 {
-  "required_status_checks": {
-    "strict": true,
-    "contexts": ["validate-project", "validate-maintainers"]
-  },
+  "required_status_checks": null,
   "enforce_admins": false,
   "required_pull_request_reviews": {
     "required_approving_review_count": 1
