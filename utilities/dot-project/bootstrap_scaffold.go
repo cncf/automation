@@ -202,22 +202,22 @@ jobs:
   validate-project:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-project@95d25b12337a14e4a74f690c856f6903584e839e
+      - uses: cncf/automation/.github/actions/validate-project@53810a548b46f33421cd67e57d16e4b7251416d9
         with:
           project_file: 'project.yaml'
 
   validate-maintainers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-maintainers@95d25b12337a14e4a74f690c856f6903584e839e
+      - uses: cncf/automation/.github/actions/validate-maintainers@53810a548b46f33421cd67e57d16e4b7251416d9
         with:
           maintainers_file: 'maintainers.yaml'
           # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
@@ -243,12 +243,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@95d25b12337a14e4a74f690c856f6903584e839e
+        uses: cncf/automation/.github/actions/landscape-update@53810a548b46f33421cd67e57d16e4b7251416d9
         with:
           project_file: 'project.yaml'
           token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}

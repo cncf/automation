@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   onboarding-report:
+    if: github.repository == 'cncf/automation'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

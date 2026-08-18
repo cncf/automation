@@ -285,7 +285,7 @@ All action references should be **SHA-pinned** for reproducibility.
 ### Using the Validate Project Action
 
 ```yaml
-- uses: cncf/automation/.github/actions/validate-project@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c
+- uses: cncf/automation/.github/actions/validate-project@53810a548b46f33421cd67e57d16e4b7251416d9
   with:
     project_file: 'project.yaml'
 ```
@@ -293,7 +293,7 @@ All action references should be **SHA-pinned** for reproducibility.
 ### Using the Validate Maintainers Action
 
 ```yaml
-- uses: cncf/automation/.github/actions/validate-maintainers@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c
+- uses: cncf/automation/.github/actions/validate-maintainers@53810a548b46f33421cd67e57d16e4b7251416d9
   with:
     maintainers_file: 'maintainers.yaml'
     # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
@@ -324,12 +324,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@979abb1e07fa1b6f2b4e77200f6a698cdd86e59c
+        uses: cncf/automation/.github/actions/landscape-update@53810a548b46f33421cd67e57d16e4b7251416d9
         with:
           project_file: 'project.yaml'
           token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}

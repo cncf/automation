@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   build:
+    if: github.repository == 'cncf/automation'
     name: Cleanup bucket objects
     runs-on: cncf-c-ubuntu-2-8-x86
     env:
