@@ -3,38 +3,37 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC Status](./pcc_projects.yaml) | [Landscape Status](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
-| Prometheus | prometheus | prometheus_del | graduated | graduated | graduated | graduated | graduated | graduated |
-| Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Metal³ | metal3 | metal3 | incubating | incubating | incubating | - | - | - |
+| Apicurio Registry | apicurio-registry | apicurio-registry | sandbox | sandbox | sandbox | - | sandbox | sandbox |
+| Cedar | cedar-policy | cedar | sandbox | sandbox | - | sandbox | - | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Curvine | curvine | curvine | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | llm-d | llm-d | - | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Open Workflow Specification | openworkflow | - | sandbox | - | - | sandbox | - | - |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| OSCAL Compass | trestlegrc | trestlegrc | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | service-mesh-performance | service-mesh-performance | sandbox | archived | - | - | - | archived |
-| TrestleGRC | trestlegrc | trestlegrc | sandbox | sandbox | - | - | sandbox | - |
 | <QHTTPX> | - | - | forming | - | - | - | - | - |
 | agentregistry | - | - | forming | - | - | - | - | - |
 | AI Runway | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
-| Apicurio Registry | - | apicurio-registry | forming | sandbox | sandbox | - | sandbox | sandbox |
 | BLAFS | - | - | forming | - | - | - | - | - |
 | CAIPE (Community AI Platform Engineering) | - | - | forming | - | - | - | - | - |
-| Cedar | - | cedar | forming | sandbox | - | sandbox | - | - |
 | CNCF Standards & Specifications | - | - | forming | - | - | - | - | - |
 | CNCF Toolbox | - | - | forming | - | - | - | - | - |
 | Conveyor CI | - | - | forming | - | - | - | - | - |
 | Cruise | - | - | forming | - | - | - | - | - |
 | CubeCOS | - | - | forming | - | - | - | - | - |
-| Curvine | - | - | forming | - | - | - | - | - |
 | DevOps AI Toolkit | - | - | forming | - | - | - | - | - |
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
 | Inference Gateway | - | - | forming | - | - | - | - | - |
-| kbind | - | - | forming | - | sandbox | - | sandbox | sandbox |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
+| Michelangelo | - | - | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
@@ -67,5 +66,6 @@
 | skooner | - | k8dash | archived | archived | - | - | - | archived |
 | SuperEdge | - | superedge | archived | archived | - | - | - | archived |
 | Teller | - | teller | archived | archived | - | - | - | archived |
-| Vineyard | - | vineyard | archived | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Vineyard | - | vineyard | archived | archived | - | - | - | archived |
 | Xline | - | xline | archived | archived | - | - | - | archived |
+| Agent Sandbox | - | - | prospect | - | - | - | - | - |
