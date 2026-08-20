@@ -5,36 +5,36 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
-| Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Metal³ | metal3 | metal3 | incubating | incubating | incubating | - | - | - |
+| Apicurio Registry | apicurio-registry | apicurio-registry | sandbox | sandbox | sandbox | - | sandbox | sandbox |
+| Cedar | cedar-policy | cedar | sandbox | sandbox | - | sandbox | - | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Curvine | curvine | curvine | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Open Workflow Specification | openworkflow | - | sandbox | - | - | sandbox | - | - |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| OSCAL Compass | trestlegrc | trestlegrc | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | service-mesh-performance | service-mesh-performance | sandbox | archived | - | - | - | archived |
-| TrestleGRC | trestlegrc | trestlegrc | sandbox | sandbox | - | - | sandbox | - |
 | <QHTTPX> | - | - | forming | - | - | - | - | - |
 | agentregistry | - | - | forming | - | - | - | - | - |
 | AI Runway | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
-| Apicurio Registry | - | apicurio-registry | forming | sandbox | sandbox | - | sandbox | sandbox |
 | BLAFS | - | - | forming | - | - | - | - | - |
 | CAIPE (Community AI Platform Engineering) | - | - | forming | - | - | - | - | - |
-| Cedar | - | cedar | forming | sandbox | - | sandbox | - | - |
 | CNCF Standards & Specifications | - | - | forming | - | - | - | - | - |
 | CNCF Toolbox | - | - | forming | - | - | - | - | - |
 | Conveyor CI | - | - | forming | - | - | - | - | - |
 | Cruise | - | - | forming | - | - | - | - | - |
 | CubeCOS | - | - | forming | - | - | - | - | - |
-| Curvine | - | - | forming | - | - | - | - | - |
 | DevOps AI Toolkit | - | - | forming | - | - | - | - | - |
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
 | Inference Gateway | - | - | forming | - | - | - | - | - |
-| kbind | - | - | forming | - | sandbox | - | sandbox | sandbox |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
+| Michelangelo | - | - | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
@@ -67,14 +67,16 @@
 | skooner | - | k8dash | archived | archived | - | - | - | archived |
 | SuperEdge | - | superedge | archived | archived | - | - | - | archived |
 | Teller | - | teller | archived | archived | - | - | - | archived |
-| Vineyard | - | vineyard | archived | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Vineyard | - | vineyard | archived | archived | - | - | - | archived |
 | Xline | - | xline | archived | archived | - | - | - | archived |
+| Agent Sandbox | - | - | prospect | - | - | - | - | - |
 
 ## Graduated
 
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Argo | argo | argo | graduated | graduated | graduated | graduated | graduated | graduated |
+| Buildpacks | buildpacks | buildpacks | graduated | graduated | graduated | graduated | graduated | graduated |
 | cert-manager | cert-manager | cert-manager | graduated | graduated | graduated | graduated | graduated | graduated |
 | Cilium | cilium | cilium | graduated | graduated | graduated | graduated | graduated | graduated |
 | CloudEvents | cloudevents | cloudevents | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -98,12 +100,13 @@
 | KEDA | KEDA | KEDA | graduated | graduated | graduated | graduated | graduated | graduated |
 | Knative | knative | knative | graduated | graduated | graduated | graduated | graduated | graduated |
 | KubeEdge | kubeedge | kubeedge | graduated | graduated | graduated | graduated | graduated | graduated |
+| Kubeflow | kubeflow | kubeflow | graduated | graduated | graduated | graduated | graduated | graduated |
 | Kubernetes | k8s | k8s | graduated | graduated | graduated | graduated | graduated | graduated |
 | Kyverno | kyverno | kyverno | graduated | graduated | graduated | graduated | graduated | graduated |
 | Linkerd | linkerd | linkerd | graduated | graduated | graduated | graduated | graduated | graduated |
 | Open Policy Agent | openpolicyagent | openpolicyagent | graduated | graduated | graduated | graduated | graduated | graduated |
 | OpenTelemetry | opentelemetry | opentelemetry | graduated | graduated | graduated | graduated | graduated | graduated |
-| Prometheus | prometheus | prometheus_del | graduated | graduated | graduated | graduated | graduated | graduated |
+| Prometheus | prometheus | prometheus | graduated | graduated | graduated | graduated | graduated | graduated |
 | Rook | rook | rook | graduated | graduated | graduated | graduated | graduated | graduated |
 | SPIFFE | spiffe | spiffe | graduated | graduated | graduated | graduated | graduated | graduated |
 | SPIRE | spire | spire | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -117,7 +120,6 @@
 |---|---|---|---|---|---|---|---|---|
 | Artifact Hub | artifact-hub | artifact-hub | incubating | incubating | incubating | incubating | incubating | incubating |
 | Backstage | backstage | backstage | incubating | incubating | incubating | incubating | incubating | incubating |
-| Buildpacks | buildpacks | buildpacks | incubating | incubating | incubating | incubating | incubating | incubating |
 | Chaos Mesh | ChaosMesh | ChaosMesh | incubating | incubating | incubating | incubating | incubating | incubating |
 | Cloud Custodian | c7n | c7n | incubating | incubating | incubating | incubating | incubating | incubating |
 | CNI | cni | cni | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -129,16 +131,17 @@
 | Fluid Project | fluid | fluid | incubating | incubating | incubating | incubating | incubating | incubating |
 | gRPC | grpc | grpc | incubating | incubating | incubating | incubating | incubating | incubating |
 | HAMi | hami | hami | incubating | incubating | incubating | incubating | incubating | incubating |
+| k8gb | k8gb | k8gb | incubating | incubating | incubating | incubating | incubating | incubating |
 | karmada | karmada | karmada | incubating | incubating | incubating | incubating | incubating | incubating |
 | Keycloak | keycloak | keycloak | incubating | incubating | incubating | incubating | incubating | incubating |
 | Kserve | kserve | kserve | incubating | incubating | incubating | incubating | incubating | incubating |
-| Kubeflow | kubeflow | kubeflow | incubating | incubating | incubating | incubating | incubating | incubating |
 | Kubescape | kubescape | kubescape | incubating | incubating | incubating | incubating | incubating | incubating |
 | KubeVela | kubevela | kubevela | incubating | incubating | incubating | incubating | incubating | incubating |
 | KubeVirt | kubevirt | kubevirt | incubating | incubating | incubating | incubating | incubating | incubating |
 | Lima | lima | lima | incubating | incubating | incubating | incubating | incubating | incubating |
 | LitmusChaos | litmuschaos | litmuschaos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Longhorn | longhorn | longhorn | incubating | incubating | incubating | incubating | incubating | incubating |
+| Metal³ | metal3 | metal3 | incubating | incubating | incubating | - | - | - |
 | Microcks | microcks | microcks | incubating | incubating | incubating | incubating | incubating | incubating |
 | NATS | nats | nats | incubating | incubating | incubating | incubating | incubating | incubating |
 | Notary | notary | notary | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -158,9 +161,10 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Aeraki Mesh | aerakimesh | aerakimesh | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | - |
+| Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Akri | akri | akri | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Antrea | antrea | antrea | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Apicurio Registry | apicurio-registry | apicurio-registry | sandbox | sandbox | sandbox | - | sandbox | sandbox |
 | Armada | armada | armada | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Athenz | athenz | athenz | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Atlantis | atlantis | atlantis | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -174,6 +178,7 @@
 | Cartography | cartography | cartography | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Carvel | carvel | carvel | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | cdk8s | cdk8s | cdk8s | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Cedar | cedar-policy | cedar | sandbox | sandbox | - | sandbox | - | - |
 | ChaosBlade | chaosblade | chaosblade | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | CloudNativePG | cloudnativepg | cloudnativepg | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Clusternet | clusternet | clusternet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -185,6 +190,7 @@
 | ContainerSSH | containerssh | containerssh | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Cozystack | cozystack | cozystack | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Curvine | curvine | curvine | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Dalec | dalec | dalec | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Devfile | devfile | devfile | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | DevSpace | devspace | devspace | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -204,13 +210,13 @@
 | interLink | interlink | interlink | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | k0s | k0s | k0s | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | k3s | k3s | k3s | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| k8gb | k8gb | k8gb | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | K8sGPT | k8sgpt | k8sgpt | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | K8up | k8up | k8up | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | kagent | kagent | kagent | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KAI Scheduler | kai-scheduler | kai-scheduler | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kairos | kairos | kairos | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kanister | kanister | kanister | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| kbind | kbind | kbind | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KCL | kcl | kcl | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | kcp | kcp | kcp | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kepler | kepler | kepler | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -237,7 +243,7 @@
 | Kubernetes AI Toolchain Operator (KAITO) | kaito | kaito | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KubeSlice | kubeslice | kubeslice | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KubeStellar | kubestellar | kubestellar | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| kubewarden | kubewarden | kubewarden | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Kubewarden | kubewarden | kubewarden | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KUDO | kudo | kudo | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kuma | kuma | kuma | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kured | kured | kured | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -253,6 +259,7 @@
 | OAuth2 Proxy | oauth2-proxy | oauth2-proxy | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Cluster Management | openclustermanagement | openclustermanagement | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Policy Registry (OPCR) | opcr | opcr | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Open Workflow Specification | openworkflow | - | sandbox | - | - | sandbox | - | - |
 | OpenChoreo | openchoreo | openchoreo | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenEBS | openebs | openebs | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -261,6 +268,7 @@
 | OpenGitOps | gitops-wg | gitops-wg | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenTofu | opentf | opentf | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ORAS (OCI Registry as Storage) | oras | oras | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| OSCAL Compass | trestlegrc | trestlegrc | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | OVN-Kubernetes | ovn-kubernetes | ovn-kubernetes | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Paralus | paralus | paralus | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -278,7 +286,6 @@
 | SchemaHero | schemahero | schemahero | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Score | score | score | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Serverless Devs | serverlessdevs | serverlessdevs | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Serverless Workflow Specification | serverlessworkflow | serverlessworkflow | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Service Mesh Performance | service-mesh-performance | service-mesh-performance | sandbox | archived | - | - | - | archived |
 | Shipwright | shipwright | shipwright | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | SlimFaaS | slimfaas | slimfaas | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -292,7 +299,6 @@
 | Tinkerbell | tinkerbell | tinkerbell | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Tokenetes | tratteria | tratteria | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Tremor | tremor | tremor | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| TrestleGRC | trestlegrc | trestlegrc | sandbox | sandbox | - | - | sandbox | - |
 | Trickster | trickster | trickster | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | urunc | urunc | urunc | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Velero | velero | velero | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -312,24 +318,20 @@
 | agentregistry | - | - | forming | - | - | - | - | - |
 | AI Runway | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
-| Apicurio Registry | - | apicurio-registry | forming | sandbox | sandbox | - | sandbox | sandbox |
 | BLAFS | - | - | forming | - | - | - | - | - |
 | CAIPE (Community AI Platform Engineering) | - | - | forming | - | - | - | - | - |
-| Cedar | - | cedar | forming | sandbox | - | sandbox | - | - |
 | CNCF Standards & Specifications | - | - | forming | - | - | - | - | - |
 | CNCF Toolbox | - | - | forming | - | - | - | - | - |
 | Conveyor CI | - | - | forming | - | - | - | - | - |
 | Cruise | - | - | forming | - | - | - | - | - |
 | CubeCOS | - | - | forming | - | - | - | - | - |
-| Curvine | - | - | forming | - | - | - | - | - |
 | DevOps AI Toolkit | - | - | forming | - | - | - | - | - |
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
 | Inference Gateway | - | - | forming | - | - | - | - | - |
-| kbind | - | - | forming | - | sandbox | - | sandbox | sandbox |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
-| Metal³ | - | metal3 | forming | incubating | incubating | - | - | - |
+| Michelangelo | - | - | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
@@ -367,10 +369,12 @@
 | skooner | - | k8dash | archived | archived | - | - | - | archived |
 | SuperEdge | - | superedge | archived | archived | - | - | - | archived |
 | Teller | - | teller | archived | archived | - | - | - | archived |
-| Vineyard | - | vineyard | archived | sandbox | sandbox | sandbox | sandbox | sandbox |
+| Vineyard | - | vineyard | archived | archived | - | - | - | archived |
 | Xline | - | xline | archived | archived | - | - | - | archived |
 
 ## Prospect
 
-_No entries._
+| Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
+|---|---|---|---|---|---|---|---|---|
+| Agent Sandbox | - | - | prospect | - | - | - | - | - |
 
