@@ -552,7 +552,7 @@ func fetchPinnedRepos(org, token string, client *http.Client, baseURL string) []
 	}
 
 	query, _ := json.Marshal(map[string]interface{}{
-		"query":     `query($org:String!){organization(login:$org){pinnedItems(first:6,types:REPOSITORY){nodes{... on Repository{url isArchived isPrivate}}}}}`,
+		"query":     `query($org:String!){organization(login:$org){pinnedItems(first:6,types:REPOSITORY){nodes{... on Repository{url isArchived isPrivate isFork isDisabled isTemplate}}}}}`,
 		"variables": map[string]string{"org": org},
 	})
 	req, err := http.NewRequest("POST", graphqlURL, bytes.NewReader(query))
@@ -580,6 +580,9 @@ func fetchPinnedRepos(org, token string, client *http.Client, baseURL string) []
 						URL        string `json:"url"`
 						IsArchived bool   `json:"isArchived"`
 						IsPrivate  bool   `json:"isPrivate"`
+						IsFork     bool   `json:"isFork"`
+						IsDisabled bool   `json:"isDisabled"`
+						IsTemplate bool   `json:"isTemplate"`
 					} `json:"nodes"`
 				} `json:"pinnedItems"`
 			} `json:"organization"`
@@ -591,9 +594,10 @@ func fetchPinnedRepos(org, token string, client *http.Client, baseURL string) []
 
 	var urls []string
 	for _, node := range result.Data.Organization.PinnedItems.Nodes {
-		if node.URL != "" && !node.IsArchived && !node.IsPrivate {
-			urls = append(urls, node.URL)
+		if node.URL == "" || node.IsArchived || node.IsPrivate || node.IsFork || node.IsDisabled || node.IsTemplate {
+			continue
 		}
+		urls = append(urls, node.URL)
 	}
 	return urls
 }
