@@ -44,9 +44,9 @@ func ProjectToLandscapeEntry(project Project) LandscapeEntry {
 		Extra:       make(map[string]interface{}),
 	}
 
-	// Use first repository as repo_url
-	if len(project.Repositories) > 0 {
-		entry.RepoURL = project.Repositories[0]
+	// Use primary repository as repo_url
+	if repoURL := PrimaryRepositoryURL(project.Repositories); repoURL != "" {
+		entry.RepoURL = repoURL
 	}
 
 	// Get twitter URL from social

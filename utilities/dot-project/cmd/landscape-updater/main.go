@@ -260,7 +260,7 @@ func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project, lines []
 	nameMatch := strings.EqualFold(nameNode.Value, project.Name)
 	repoMatch := false
 	for _, repo := range project.Repositories {
-		if strings.EqualFold(repoURLNode.Value, repo) {
+		if strings.EqualFold(repoURLNode.Value, repo.URL) {
 			repoMatch = true
 			break
 		}

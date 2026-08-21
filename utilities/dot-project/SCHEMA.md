@@ -20,7 +20,7 @@ This document defines the schema for CNCF `.project` repository metadata files.
 | `project_lead` | string \| string[] | No | One or more primary contact GitHub handles or teams. Accepts a plain string (single lead, backward-compatible) or a YAML list (multiple leads) | Non-empty if present; `@` prefix is stripped; each entry can be a GitHub handle (e.g., `jdoe`) or a GitHub team (e.g., `org/team-name`) |
 | `slack_channels` | SlackChannel[] | No | One or more CNCF Slack channels | Each `name` must start with `#`; at most one entry may set `primary: true` |
 | `maturity_log` | MaturityEntry[] | Yes | Maturity phase history | At least one entry; chronological order |
-| `repositories` | string[] | Yes | Repository URLs | At least one valid HTTP(S) URL |
+| `repositories` | (string \| RepositoryEntry)[] | Yes | Repository URLs with optional metadata. Each entry can be a plain URL string (backward-compatible) or an object with `url` and optional `tags` | At least one entry; each must have a valid HTTP(S) URL |
 | `website` | string | No | Project website | Valid HTTP(S) URL if present |
 | `adopters` | PathRef | No | Link to ADOPTERS.md or adopters list | Path must be non-empty if present |
 | `artwork` | string | No | Artwork/logo URL | Valid HTTP(S) URL if present |
@@ -40,6 +40,28 @@ This document defines the schema for CNCF `.project` repository metadata files.
 | `phase` | string | Yes | Maturity phase | One of: `sandbox`, `incubating`, `graduated`, `archived` |
 | `date` | datetime | Yes | Date of phase transition | ISO 8601 format |
 | `issue` | string | Yes | TOC issue URL | Non-empty |
+
+### RepositoryEntry
+
+Each entry in the `repositories` list can be either a plain URL string or an object:
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `url` | string | Yes | Repository URL | Valid HTTP(S) URL |
+| `tags` | string[] | No | Labels/categories for grouping (e.g., `core`, `sig-apps`, `tooling`) | Each tag must be non-empty |
+| `primary` | boolean | No | Whether this is the main project repository | At most one entry per project may be `true` |
+
+Example:
+
+```yaml
+repositories:
+  - url: "https://github.com/helm/helm"
+    primary: true
+  - url: "https://github.com/helm/chart-testing"
+    tags: [tooling]
+  - url: "https://github.com/helm/helm-www"
+    tags: [docs]
+```
 
 ### SlackChannel
 

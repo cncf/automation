@@ -1312,3 +1312,87 @@ func TestDiscoverSecurityPolicy(t *testing.T) {
 		}
 	})
 }
+
+func TestDetectPrimaryRepo(t *testing.T) {
+	tests := []struct {
+		name      string
+		repos     []string
+		slug      string
+		org       string
+		landscape *LandscapeData
+		github    *GitHubData
+		wantURL   string
+		wantSrc   string
+	}{
+		{
+			name:    "single repo is always primary",
+			repos:   []string{"https://github.com/helm/helm"},
+			slug:    "helm",
+			org:     "helm",
+			wantURL: "https://github.com/helm/helm",
+			wantSrc: "single_repo",
+		},
+		{
+			name:    "naming convention: slug matches repo name",
+			repos:   []string{"https://github.com/falcosecurity/charts", "https://github.com/falcosecurity/falco"},
+			slug:    "falco",
+			org:     "falcosecurity",
+			wantURL: "https://github.com/falcosecurity/falco",
+			wantSrc: "naming_convention",
+		},
+		{
+			name:    "naming convention: org matches repo name",
+			repos:   []string{"https://github.com/helm/chart-testing", "https://github.com/helm/helm"},
+			slug:    "helm",
+			org:     "helm",
+			wantURL: "https://github.com/helm/helm",
+			wantSrc: "naming_convention",
+		},
+		{
+			name:      "landscape fallback when no naming match",
+			repos:     []string{"https://github.com/org/api", "https://github.com/org/core"},
+			slug:      "myproject",
+			org:       "org",
+			landscape: &LandscapeData{RepoURL: "https://github.com/org/core"},
+			wantURL:   "https://github.com/org/core",
+			wantSrc:   "landscape",
+		},
+		{
+			name:    "github pinned fallback",
+			repos:   []string{"https://github.com/org/api", "https://github.com/org/core"},
+			slug:    "myproject",
+			org:     "org",
+			github:  &GitHubData{PinnedRepos: []string{"https://github.com/org/core"}},
+			wantURL: "https://github.com/org/core",
+			wantSrc: "github_pinned",
+		},
+		{
+			name:    "no match returns empty",
+			repos:   []string{"https://github.com/org/api", "https://github.com/org/core"},
+			slug:    "myproject",
+			org:     "org",
+			wantURL: "",
+			wantSrc: "",
+		},
+		{
+			name:    "empty repos",
+			repos:   nil,
+			slug:    "test",
+			org:     "test",
+			wantURL: "",
+			wantSrc: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotURL, gotSrc := detectPrimaryRepo(tt.repos, tt.slug, tt.org, tt.landscape, tt.github)
+			if gotURL != tt.wantURL {
+				t.Errorf("URL = %q, want %q", gotURL, tt.wantURL)
+			}
+			if gotSrc != tt.wantSrc {
+				t.Errorf("source = %q, want %q", gotSrc, tt.wantSrc)
+			}
+		})
+	}
+}
