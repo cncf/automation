@@ -141,7 +141,7 @@ jobs:
 
   build-arm64:
     name: Build new Actions ARM64 VM
-    runs-on: cncf-c-ubuntu-2-8-x86
+    runs-on: oracle-2cpu-8gb-x86-64
     env:
       PACKER_VERSION: 1.14.3
     outputs:
