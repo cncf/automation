@@ -39,10 +39,12 @@ maturity_log:
     date: "{{ formatTime .AcceptedDate }}"
     {{ if .TOCIssueURL }}issue: "{{ .TOCIssueURL }}"{{ if isAutoDetected .Sources "toc_issue_url" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}issue: "https://github.com/cncf/toc/issues/XXX" # TODO: Set TOC issue URL{{ end }}
 
-repositories:{{ if .Repositories }}{{ range .Repositories }}
-  - "{{ . }}"{{ end }}{{ else }}
+repositories:{{ if .Repositories }}{{ if isAutoDetected .Sources "primary_repo" }} # TODO: AUTO-DETECTED primary — please verify{{ end }}{{ range .Repositories }}
+  - url: "{{ . }}"{{ if isPrimaryRepo $.PrimaryRepo . }}
+    primary: true{{ end }}{{ end }}{{ else }}
   # TODO: Add repository URLs
-  - "https://github.com/{{ .GitHubOrg }}/{{ or .GitHubRepo .Slug }}"{{ end }}
+  - url: "https://github.com/{{ .GitHubOrg }}/{{ or .GitHubRepo .Slug }}"
+    primary: true{{ end }}
 {{ if .Website }}
 website: "{{ .Website }}"{{ else }}
 # TODO: Add project website
@@ -292,6 +294,9 @@ var templateFuncs = template.FuncMap{
 		}
 		_, ok := sources[key]
 		return ok
+	},
+	"isPrimaryRepo": func(primaryURL, repoURL string) bool {
+		return primaryURL != "" && strings.EqualFold(primaryURL, repoURL)
 	},
 }
 
