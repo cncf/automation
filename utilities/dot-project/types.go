@@ -1,6 +1,7 @@
 package projects
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -55,11 +56,103 @@ func (s StringOrSlice) MarshalYAML() (interface{}, error) {
 	}
 }
 
+// RepositoryEntry represents a project repository. It supports two YAML forms:
+//
+//	repositories:
+//	  - "https://github.com/org/repo"            # plain string (backward-compatible)
+//	  - url: "https://github.com/org/repo"       # expanded object with optional tags
+//	    tags: [core, sig-apps]
+type RepositoryEntry struct {
+	URL     string   `json:"url" yaml:"url"`
+	Tags    []string `json:"tags,omitempty" yaml:"tags,omitempty"`
+	Primary bool     `json:"primary,omitempty" yaml:"primary,omitempty"`
+}
+
+// UnmarshalYAML allows a repository entry to be either a plain string or a mapping.
+func (r *RepositoryEntry) UnmarshalYAML(value *yaml.Node) error {
+	switch value.Kind {
+	case yaml.ScalarNode:
+		r.URL = value.Value
+		return nil
+	case yaml.MappingNode:
+		var aux struct {
+			URL     string   `yaml:"url"`
+			Tags    []string `yaml:"tags"`
+			Primary bool     `yaml:"primary"`
+		}
+		if err := value.Decode(&aux); err != nil {
+			return err
+		}
+		r.URL = aux.URL
+		r.Tags = aux.Tags
+		r.Primary = aux.Primary
+		return nil
+	default:
+		return fmt.Errorf("expected string or mapping for repository entry, got YAML node type %v", value.Tag)
+	}
+}
+
+// MarshalYAML always serializes a RepositoryEntry as a mapping with a url key
+// for consistency, even when there are no tags.
+func (r RepositoryEntry) MarshalYAML() (interface{}, error) {
+	return struct {
+		URL     string   `yaml:"url"`
+		Tags    []string `yaml:"tags,omitempty"`
+		Primary bool     `yaml:"primary,omitempty"`
+	}{URL: r.URL, Tags: r.Tags, Primary: r.Primary}, nil
+}
+
+// UnmarshalJSON allows a repository entry to be either a plain string or an object.
+func (r *RepositoryEntry) UnmarshalJSON(data []byte) error {
+	// Try string first
+	var s string
+	if err := json.Unmarshal(data, &s); err == nil {
+		r.URL = s
+		return nil
+	}
+	// Try object
+	var aux struct {
+		URL     string   `json:"url"`
+		Tags    []string `json:"tags"`
+		Primary bool     `json:"primary"`
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	r.URL = aux.URL
+	r.Tags = aux.Tags
+	r.Primary = aux.Primary
+	return nil
+}
+
+// MarshalJSON always serializes as an object with url key.
+func (r RepositoryEntry) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		URL     string   `json:"url"`
+		Tags    []string `json:"tags,omitempty"`
+		Primary bool     `json:"primary,omitempty"`
+	}{URL: r.URL, Tags: r.Tags, Primary: r.Primary})
+}
+
+// PrimaryRepositoryURL returns the URL of the repo marked primary, or the
+// first repo URL if none is marked, or empty string if the list is empty.
+func PrimaryRepositoryURL(repos []RepositoryEntry) string {
+	for _, r := range repos {
+		if r.Primary {
+			return r.URL
+		}
+	}
+	if len(repos) > 0 {
+		return repos[0].URL
+	}
+	return ""
+}
+
 type Project struct {
 	Name         string            `json:"name" yaml:"name"`
 	Description  string            `json:"description" yaml:"description"`
 	MaturityLog  []MaturityEntry   `json:"maturity_log" yaml:"maturity_log"`
-	Repositories []string          `json:"repositories" yaml:"repositories"`
+	Repositories []RepositoryEntry `json:"repositories" yaml:"repositories"`
 	Social       map[string]string `json:"social" yaml:"social"`
 	Artwork      string            `json:"artwork" yaml:"artwork"`                       // Artwork URL
 	Website      string            `json:"website" yaml:"website"`                       // Project website URL

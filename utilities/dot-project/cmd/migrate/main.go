@@ -68,8 +68,12 @@ func main() {
 
 	// Build project
 	repoList := strings.Split(*repos, ",")
-	for i := range repoList {
-		repoList[i] = strings.TrimSpace(repoList[i])
+	var repoEntries []projects.RepositoryEntry
+	for _, r := range repoList {
+		r = strings.TrimSpace(r)
+		if r != "" {
+			repoEntries = append(repoEntries, projects.RepositoryEntry{URL: r})
+		}
 	}
 
 	project := projects.Project{
@@ -77,7 +81,7 @@ func main() {
 		Slug:          *slug,
 		Name:          *name,
 		Description:   *description,
-		Repositories:  repoList,
+		Repositories:  repoEntries,
 		MaturityLog: []projects.MaturityEntry{
 			{
 				Phase: *maturity,

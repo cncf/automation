@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestValidator(t *testing.T) {
@@ -28,7 +30,7 @@ func TestValidator(t *testing.T) {
 				Issue: "https://github.com/cncf/toc/issues/123",
 			},
 		},
-		Repositories: []string{"https://github.com/test/repo"},
+		Repositories: []RepositoryEntry{{URL: "https://github.com/test/repo"}},
 		Website:      "https://test.io",
 		Artwork:      "https://test.io/artwork",
 		Audits: []Audit{
@@ -50,7 +52,7 @@ func TestValidator(t *testing.T) {
 		Name:         "",                // Missing required field
 		Description:  "",                // Missing required field
 		MaturityLog:  []MaturityEntry{}, // Empty required field
-		Repositories: []string{},        // Empty required field
+		Repositories: []RepositoryEntry{},        // Empty required field
 		Website:      "invalid-url",     // Invalid URL
 		Artwork:      "also-invalid",    // Invalid URL
 	}
@@ -142,16 +144,16 @@ func TestAuditsValidation(t *testing.T) {
 
 func TestRepositoriesValidation(t *testing.T) {
 	project := validBaseProject()
-	project.Repositories = []string{
-		"https://github.com/test/repo", // Valid
-		"invalid-url",                  // Invalid
-		"",                             // Empty
+	project.Repositories = []RepositoryEntry{
+		{URL: "https://github.com/test/repo"}, // Valid
+		{URL: "invalid-url"},                  // Invalid
+		{URL: ""},                             // Empty
 	}
 
 	errors := validateProjectStruct(project)
 	expectedErrors := []string{
 		"repositories[1] is not a valid URL: invalid-url",
-		"repositories[2] is not a valid URL: ",
+		"repositories[2] has an empty URL",
 	}
 
 	for _, expectedError := range expectedErrors {
@@ -165,6 +167,78 @@ func TestRepositoriesValidation(t *testing.T) {
 		if !found {
 			t.Errorf("Expected error '%s' not found in: %v", expectedError, errors)
 		}
+	}
+}
+
+func TestRepositoryEntryUnmarshal(t *testing.T) {
+	yamlInput := `repositories:
+  - "https://github.com/org/repo1"
+  - url: "https://github.com/org/repo2"
+    tags: [core, sig-apps]
+  - url: "https://github.com/org/repo3"
+`
+	var project struct {
+		Repositories []RepositoryEntry `yaml:"repositories"`
+	}
+	if err := yaml.Unmarshal([]byte(yamlInput), &project); err != nil {
+		t.Fatalf("unmarshal error: %v", err)
+	}
+	if len(project.Repositories) != 3 {
+		t.Fatalf("expected 3 repos, got %d", len(project.Repositories))
+	}
+	if project.Repositories[0].URL != "https://github.com/org/repo1" {
+		t.Errorf("repo[0] URL = %q", project.Repositories[0].URL)
+	}
+	if len(project.Repositories[0].Tags) != 0 {
+		t.Errorf("repo[0] should have no tags, got %v", project.Repositories[0].Tags)
+	}
+	if project.Repositories[1].URL != "https://github.com/org/repo2" {
+		t.Errorf("repo[1] URL = %q", project.Repositories[1].URL)
+	}
+	if len(project.Repositories[1].Tags) != 2 || project.Repositories[1].Tags[0] != "core" {
+		t.Errorf("repo[1] tags = %v", project.Repositories[1].Tags)
+	}
+	if project.Repositories[2].URL != "https://github.com/org/repo3" {
+		t.Errorf("repo[2] URL = %q", project.Repositories[2].URL)
+	}
+}
+
+func TestRepositoryEntryMarshal(t *testing.T) {
+	repos := []RepositoryEntry{
+		{URL: "https://github.com/org/plain"},
+		{URL: "https://github.com/org/tagged", Tags: []string{"core"}},
+	}
+	out, err := yaml.Marshal(struct {
+		Repositories []RepositoryEntry `yaml:"repositories"`
+	}{Repositories: repos})
+	if err != nil {
+		t.Fatalf("marshal error: %v", err)
+	}
+	output := string(out)
+	// Both entries should have url: key
+	if strings.Count(output, "url:") != 2 {
+		t.Errorf("expected 2 url: keys in output:\n%s", output)
+	}
+	// Only tagged entry should have tags
+	if strings.Count(output, "tags:") != 1 {
+		t.Errorf("expected 1 tags: key in output:\n%s", output)
+	}
+}
+
+func TestRepositoryEntryTagsValidation(t *testing.T) {
+	project := validBaseProject()
+	project.Repositories = []RepositoryEntry{
+		{URL: "https://github.com/test/repo", Tags: []string{"valid", ""}},
+	}
+	errors := validateProjectStruct(project)
+	found := false
+	for _, e := range errors {
+		if e == "repositories[0].tags[1] must not be empty" {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("expected empty tag error, got: %v", errors)
 	}
 }
 
