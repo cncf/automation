@@ -41,10 +41,12 @@ maturity_log:
 
 repositories:{{ if .Repositories }}{{ if isAutoDetected .Sources "primary_repo" }} # TODO: AUTO-DETECTED primary — please verify{{ end }}{{ range .Repositories }}
   - url: "{{ . }}"{{ if isPrimaryRepo $.PrimaryRepo . }}
-    primary: true{{ end }}{{ end }}{{ else }}
+    primary: true
+    # tags: [core, sig-apps] # Optional{{ end }}{{ end }}{{ else }}
   # TODO: Add repository URLs
   - url: "https://github.com/{{ .GitHubOrg }}/{{ or .GitHubRepo .Slug }}"
-    primary: true{{ end }}
+    primary: true
+    # tags: [core, sig-apps] # Optional{{ end }}
 {{ if .Website }}
 website: "{{ .Website }}"{{ else }}
 # TODO: Add project website
