@@ -118,11 +118,25 @@ maintainers:
     {{ if .GitHubOrg }}org: "{{ .GitHubOrg }}"{{ else }}# TODO: Set GitHub organization
     # org: "my-org"{{ end }}
     teams:
-      - name: "project-maintainers"
+      - name: "maintainers"
         members:{{ if .Maintainers }}{{ range .Maintainers }}
           - {{ . }}{{ end }}{{ else }}
           # TODO: Add maintainer handles
           - github-handle{{ end }}
+      # Unmanaged teams: teams with "managed: false" are tracked in this
+      # file for documentation but are excluded from CNCF resource
+      # provisioning (mailing lists, service desk, Copilot seats, etc).
+      #
+      # Active contributors who do not need full CNCF resource access:
+      # - name: "reviewers"
+      #   managed: false
+      #   members:
+      #     - reviewer-handle
+      #
+      # Former maintainers (remove this section if not applicable):
+      # - name: "emeritus"
+      #   managed: false
+      #   members: []
 `
 
 // readmeTemplate generates the README.md for the .project directory.

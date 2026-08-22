@@ -112,7 +112,7 @@ func TestFormatMaintainersText(t *testing.T) {
 			{
 				ProjectID: "bad-project",
 				Valid:     false,
-				Errors:    []string{"project_id is required", "team 'project-maintainers' is required"},
+				Errors:    []string{"project_id is required", "at least one managed team is required (set managed: true or omit the managed field)"},
 			},
 			{ProjectID: "another-good", Valid: true},
 		}
@@ -131,8 +131,8 @@ func TestFormatMaintainersText(t *testing.T) {
 		if !strings.Contains(out, "  - project_id is required") {
 			t.Error("missing error bullet: project_id is required")
 		}
-		if !strings.Contains(out, "  - team 'project-maintainers' is required") {
-			t.Error("missing error bullet: team 'project-maintainers' is required")
+		if !strings.Contains(out, "  - at least one managed team is required") {
+			t.Error("missing error bullet: at least one managed team is required")
 		}
 		// Summary line
 		if !strings.Contains(out, "Summary: 3 maintainer entries validated, 1 with issues") {
@@ -460,7 +460,7 @@ func TestValidateMaintainersWithExclusion(t *testing.T) {
 
 // ---------------------------------------------------------------------------
 // validateMaintainerEntry – cover missing project_id, empty teams, no
-// project-maintainers team, and exclusion within the entry.
+// managed team, managed flag behavior, and exclusion within the entry.
 // ---------------------------------------------------------------------------
 
 func TestValidateMaintainerEntry(t *testing.T) {
@@ -476,7 +476,7 @@ func TestValidateMaintainerEntry(t *testing.T) {
 		entry := MaintainerEntry{
 			ProjectID: "",
 			Teams: []Team{
-				{Name: "project-maintainers", Members: []string{"alice"}},
+				{Name: "maintainers", Members: []string{"alice"}},
 			},
 		}
 		result := pv.validateMaintainerEntry(entry, false, nil)
@@ -505,66 +505,67 @@ func TestValidateMaintainerEntry(t *testing.T) {
 			t.Fatal("expected invalid result for empty teams")
 		}
 		foundEmpty := false
-		foundMissing := false
+		foundManaged := false
 		for _, e := range result.Errors {
 			if strings.Contains(e, "teams list cannot be empty") {
 				foundEmpty = true
 			}
-			if strings.Contains(e, "team 'project-maintainers' is required") {
-				foundMissing = true
+			if strings.Contains(e, "at least one managed team is required") {
+				foundManaged = true
 			}
 		}
 		if !foundEmpty {
 			t.Errorf("expected 'teams list cannot be empty' error, got: %v", result.Errors)
 		}
-		if !foundMissing {
-			t.Errorf("expected 'project-maintainers is required' error, got: %v", result.Errors)
+		if !foundManaged {
+			t.Errorf("expected 'at least one managed team is required' error, got: %v", result.Errors)
 		}
 	})
 
-	t.Run("no project-maintainers team", func(t *testing.T) {
+	t.Run("only unmanaged teams", func(t *testing.T) {
+		managedFalse := false
 		entry := MaintainerEntry{
 			ProjectID: "proj",
 			Teams: []Team{
-				{Name: "reviewers", Members: []string{"alice"}},
+				{Name: "emeritus", Members: []string{"alice"}, Managed: &managedFalse},
 			},
 		}
 		result := pv.validateMaintainerEntry(entry, false, nil)
 		if result.Valid {
-			t.Fatal("expected invalid when project-maintainers team is missing")
+			t.Fatal("expected invalid when no managed team exists")
 		}
 		found := false
 		for _, e := range result.Errors {
-			if strings.Contains(e, "team 'project-maintainers' is required") {
+			if strings.Contains(e, "at least one managed team is required") {
 				found = true
 				break
 			}
 		}
 		if !found {
-			t.Errorf("expected 'project-maintainers is required' error, got: %v", result.Errors)
+			t.Errorf("expected 'at least one managed team is required' error, got: %v", result.Errors)
 		}
 	})
 
-	t.Run("empty project-maintainers team", func(t *testing.T) {
+	t.Run("managed team with no members", func(t *testing.T) {
 		entry := MaintainerEntry{
 			ProjectID: "proj",
 			Teams: []Team{
-				{Name: "project-maintainers", Members: []string{}},
+				{Name: "maintainers", Members: []string{}},
 			},
 		}
 		result := pv.validateMaintainerEntry(entry, false, nil)
 		if result.Valid {
-			t.Fatal("expected invalid when project-maintainers has no members")
+			t.Fatal("expected invalid when managed team has no members")
 		}
 		found := false
 		for _, e := range result.Errors {
-			if strings.Contains(e, "team 'project-maintainers' cannot be empty") {
+			if strings.Contains(e, "at least one managed team must have members") {
 				found = true
 				break
 			}
 		}
 		if !found {
-			t.Errorf("expected 'project-maintainers cannot be empty' error, got: %v", result.Errors)
+			t.Errorf("expected 'at least one managed team must have members' error, got: %v", result.Errors)
 		}
 	})
 
@@ -572,7 +573,7 @@ func TestValidateMaintainerEntry(t *testing.T) {
 		entry := MaintainerEntry{
 			ProjectID: "proj",
 			Teams: []Team{
-				{Name: "project-maintainers", Members: []string{"alice", "bob"}},
+				{Name: "maintainers", Members: []string{"alice", "bob"}},
 			},
 		}
 		result := pv.validateMaintainerEntry(entry, false, nil)
@@ -584,6 +585,45 @@ func TestValidateMaintainerEntry(t *testing.T) {
 		}
 	})
 
+	t.Run("backward compat: project-maintainers team name still valid", func(t *testing.T) {
+		entry := MaintainerEntry{
+			ProjectID: "proj",
+			Teams: []Team{
+				{Name: "project-maintainers", Members: []string{"alice"}},
+			},
+		}
+		result := pv.validateMaintainerEntry(entry, false, nil)
+		if !result.Valid {
+			t.Errorf("expected valid result for project-maintainers team, got errors: %v", result.Errors)
+		}
+	})
+
+	t.Run("unmanaged teams skipped from verification", func(t *testing.T) {
+		t.Setenv("LFX_AUTH_TOKEN", "")
+		t.Setenv("MAINTAINER_API_ENDPOINT", "https://example.com/api")
+		t.Setenv("MAINTAINER_API_STUB", "fail")
+
+		managedFalse := false
+		entry := MaintainerEntry{
+			ProjectID: "proj",
+			Teams: []Team{
+				{Name: "maintainers", Members: []string{"alice"}},
+				{Name: "emeritus", Members: []string{"should-not-verify"}, Managed: &managedFalse},
+			},
+		}
+		// "fail" stub means any verified handle will fail — but emeritus should be skipped
+		result := pv.validateMaintainerEntry(entry, true, nil)
+		if result.VerificationPassed {
+			t.Error("expected verification to fail for managed team with stub=fail")
+		}
+		// Verify emeritus handle was NOT attempted
+		for _, e := range result.Errors {
+			if strings.Contains(e, "should-not-verify") {
+				t.Error("unmanaged team member should not be verified")
+			}
+		}
+	})
+
 	t.Run("verification with exclusion skips excluded handles", func(t *testing.T) {
 		t.Setenv("LFX_AUTH_TOKEN", "")
 		t.Setenv("MAINTAINER_API_ENDPOINT", "https://example.com/api")
@@ -592,7 +632,7 @@ func TestValidateMaintainerEntry(t *testing.T) {
 		entry := MaintainerEntry{
 			ProjectID: "proj",
 			Teams: []Team{
-				{Name: "project-maintainers", Members: []string{"alice", "bob", "carol"}},
+				{Name: "maintainers", Members: []string{"alice", "bob", "carol"}},
 			},
 		}
 		excluded := map[string]bool{"alice": true, "carol": true}
@@ -614,7 +654,7 @@ func TestValidateMaintainerEntry(t *testing.T) {
 		entry := MaintainerEntry{
 			ProjectID: "proj",
 			Teams: []Team{
-				{Name: "project-maintainers", Members: []string{"alice"}},
+				{Name: "maintainers", Members: []string{"alice"}},
 			},
 		}
 		result := pv.validateMaintainerEntry(entry, true, nil)
