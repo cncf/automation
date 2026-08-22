@@ -57,6 +57,10 @@ func (pv *ProjectValidator) ExtractHandles(path string) (map[string]bool, error)
 	handles := make(map[string]bool)
 	for _, entry := range config.Maintainers {
 		for _, team := range entry.Teams {
+			// Only extract handles from managed teams for resource provisioning
+			if !team.IsManaged() {
+				continue
+			}
 			for _, member := range team.Members {
 				trimmed := strings.TrimSpace(member)
 				trimmed = strings.TrimPrefix(trimmed, "@")
@@ -83,16 +87,22 @@ func (pv *ProjectValidator) validateMaintainerEntry(entry MaintainerEntry, verif
 		result.Errors = append(result.Errors, "teams list cannot be empty")
 	}
 
-	hasProjectMaintainers := false
+	hasManagedTeam := false
+	managedTeamHasMembers := false
 	var allVerifiedHandles []string
 	allPassed := true
 
 	for _, team := range entry.Teams {
-		if team.Name == "project-maintainers" {
-			hasProjectMaintainers = true
-			if len(team.Members) == 0 {
-				result.Errors = append(result.Errors, "team 'project-maintainers' cannot be empty")
+		if team.IsManaged() {
+			hasManagedTeam = true
+			if len(team.Members) > 0 {
+				managedTeamHasMembers = true
 			}
+		}
+
+		// Skip handle verification for unmanaged teams
+		if !team.IsManaged() {
+			continue
 		}
 
 		cleanHandles, duplicateErrors := normalizeHandles(team.Members)
@@ -118,8 +128,10 @@ func (pv *ProjectValidator) validateMaintainerEntry(entry MaintainerEntry, verif
 		}
 	}
 
-	if !hasProjectMaintainers {
-		result.Errors = append(result.Errors, "team 'project-maintainers' is required")
+	if !hasManagedTeam {
+		result.Errors = append(result.Errors, "at least one managed team is required (set managed: true or omit the managed field)")
+	} else if !managedTeamHasMembers {
+		result.Errors = append(result.Errors, "at least one managed team must have members")
 	}
 
 	if result.VerificationAttempted {
