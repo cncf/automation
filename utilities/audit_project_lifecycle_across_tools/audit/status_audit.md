@@ -3,15 +3,14 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC Status](./pcc_projects.yaml) | [Landscape Status](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
-| Metal³ | metal3 | metal3 | incubating | incubating | incubating | - | - | - |
-| Apicurio Registry | apicurio-registry | apicurio-registry | sandbox | sandbox | sandbox | - | sandbox | sandbox |
-| Cedar | cedar-policy | cedar | sandbox | sandbox | - | sandbox | - | - |
+| Metal³ | metal3 | metal3 | incubating | incubating | incubating | incubating | - | - |
+| Cedar | cedar-policy | cedar-policy | sandbox | sandbox | - | sandbox | - | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Curvine | curvine | curvine | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | llm-d | llm-d | - | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Open Workflow Specification | openworkflow | - | sandbox | - | - | sandbox | - | - |
+| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | - | - |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OSCAL Compass | trestlegrc | trestlegrc | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
