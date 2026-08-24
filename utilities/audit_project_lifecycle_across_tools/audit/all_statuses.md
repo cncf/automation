@@ -5,14 +5,13 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Etcd | etcd | etcd | graduated | graduated | graduated | - | graduated | graduated |
-| Metal³ | metal3 | metal3 | incubating | incubating | incubating | - | - | - |
-| Apicurio Registry | apicurio-registry | apicurio-registry | sandbox | sandbox | sandbox | - | sandbox | sandbox |
-| Cedar | cedar-policy | cedar | sandbox | sandbox | - | sandbox | - | - |
+| Metal³ | metal3 | metal3 | incubating | incubating | incubating | incubating | - | - |
+| Cedar | cedar-policy | cedar-policy | sandbox | sandbox | - | sandbox | - | - |
 | composefs | composefs | composefs | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Curvine | curvine | curvine | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Open Workflow Specification | openworkflow | - | sandbox | - | - | sandbox | - | - |
+| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | - | - |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OSCAL Compass | trestlegrc | trestlegrc | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -141,7 +140,7 @@
 | Lima | lima | lima | incubating | incubating | incubating | incubating | incubating | incubating |
 | LitmusChaos | litmuschaos | litmuschaos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Longhorn | longhorn | longhorn | incubating | incubating | incubating | incubating | incubating | incubating |
-| Metal³ | metal3 | metal3 | incubating | incubating | incubating | - | - | - |
+| Metal³ | metal3 | metal3 | incubating | incubating | incubating | incubating | - | - |
 | Microcks | microcks | microcks | incubating | incubating | incubating | incubating | incubating | incubating |
 | NATS | nats | nats | incubating | incubating | incubating | incubating | incubating | incubating |
 | Notary | notary | notary | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -152,6 +151,7 @@
 | OpenYurt | openyurt | openyurt | incubating | incubating | incubating | incubating | incubating | incubating |
 | Operator Framework | operator-sdk | operator-sdk | incubating | incubating | incubating | incubating | incubating | incubating |
 | Strimzi | strimzi | strimzi | incubating | incubating | incubating | incubating | incubating | incubating |
+| Tekton | tekton | tekton | incubating | incubating | incubating | incubating | incubating | incubating |
 | Thanos | thanos | thanos | incubating | incubating | incubating | incubating | incubating | incubating |
 | Volcano | Volcano | Volcano | incubating | incubating | incubating | incubating | incubating | incubating |
 | wasmCloud | wasmcloud | wasmcloud | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -164,7 +164,7 @@
 | Agones | agones | agones | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Akri | akri | akri | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Antrea | antrea | antrea | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Apicurio Registry | apicurio-registry | apicurio-registry | sandbox | sandbox | sandbox | - | sandbox | sandbox |
+| Apicurio Registry | apicurio-registry | apicurio-registry | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Armada | armada | armada | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Athenz | athenz | athenz | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Atlantis | atlantis | atlantis | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -178,7 +178,7 @@
 | Cartography | cartography | cartography | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Carvel | carvel | carvel | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | cdk8s | cdk8s | cdk8s | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Cedar | cedar-policy | cedar | sandbox | sandbox | - | sandbox | - | - |
+| Cedar | cedar-policy | cedar-policy | sandbox | sandbox | - | sandbox | - | - |
 | ChaosBlade | chaosblade | chaosblade | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | CloudNativePG | cloudnativepg | cloudnativepg | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Clusternet | clusternet | clusternet | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -259,7 +259,7 @@
 | OAuth2 Proxy | oauth2-proxy | oauth2-proxy | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Cluster Management | openclustermanagement | openclustermanagement | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Policy Registry (OPCR) | opcr | opcr | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Open Workflow Specification | openworkflow | - | sandbox | - | - | sandbox | - | - |
+| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | - | - |
 | OpenChoreo | openchoreo | openchoreo | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenEBS | openebs | openebs | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |

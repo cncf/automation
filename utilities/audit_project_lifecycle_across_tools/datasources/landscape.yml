@@ -1168,7 +1168,7 @@ landscape:
             additional_repos:
               - repo_url: https://github.com/cedar-policy/cedar-access-control-for-k8s
             extra:
-              lfx_slug: cedar
+              lfx_slug: cedar-policy
               accepted: '2025-10-08'
               clomonitor_name: cedar
           - item:
@@ -2090,6 +2090,13 @@ landscape:
             homepage_url: https://rad.security/
             logo: rad-security.svg
             crunchbase: https://www.crunchbase.com/organization/ksoc-labs-inc
+          - item:
+            name: Radware KWAAP
+            description: >-
+              Radware KWAAP (Kubernetes Web Application and API Protection) is a Kubernetes-native WAAP solution that protects cloud-native applications and APIs against OWASP Top 10 threats. Designed for Kubernetes environments, it integrates seamlessly with DevOps and DevSecOps workflows while supporting on-premises, cloud, and air-gapped deployments. KWAAP combines positive, negative, and behavioral security models to provide comprehensive protection for web applications, APIs, and microservices.
+            homepage_url: https://www.radware.com/products/kubernetes-waf/
+            logo: radware-kwaap.svg
+            crunchbase: https://www.crunchbase.com/organization/radware
           - item:
             name: Ratify
             description: A verification engine on Kubernetes which enables verification of artifact security metadata and admits for deployment only those that comply with policies you create.
@@ -3025,7 +3032,6 @@ landscape:
           - item:
             name: MinIO
             homepage_url: https://min.io/
-            repo_url: https://github.com/minio/minio
             logo: min-io.svg
             crunchbase: https://www.crunchbase.com/organization/minio-inc
           - item:
@@ -3639,6 +3645,7 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/cloud-native-computing-foundation
             second_path:
               - "Serverless / Installable Platform"
+            description: Virtual Kubelet is an open source Kubernetes kubelet implementation
             extra:
               lfx_slug: virtualkubelet
               accepted: '2018-12-04'
@@ -8048,21 +8055,21 @@ landscape:
               annual_review_date: '2023-04-26'
               slack_url: https://kubernetes.slack.com/messages/sealer
           - item:
-            name: Serverless Workflow
-            homepage_url: https://serverlessworkflow.io
+            name: Open Workflow Specification
+            homepage_url: https://open-workflow-specification.org
             project: sandbox
-            repo_url: https://github.com/serverlessworkflow/specification
+            repo_url: https://github.com/open-workflow-specification/specification
             logo: sws_logo.svg
             twitter: https://twitter.com/CNCFWorkflow
             crunchbase: https://www.crunchbase.com/organization/cloud-native-computing-foundation
             description: Standards-based DSL and open-source dev tools and runtimes are at the heart of the Serverless Workflow project
             extra:
-              lfx_slug: serverlessworkflow
+              lfx_slug: openworkflow
               accepted: '2020-07-14'
               annual_review_url: https://github.com/cncf/toc/pull/1099
               annual_review_date: '2023-06-27'
-              dev_stats_url: https://serverlessworkflow.devstats.cncf.io/
-              clomonitor_name: serverless-workflow
+              dev_stats_url: https://openworkflow.devstats.cncf.io/
+              clomonitor_name: openworkflow
               artwork_url: https://github.com/cncf/artwork/tree/master/projects/serverlessworkflow
           - item:
             name: ServiceComb
@@ -8186,6 +8193,7 @@ landscape:
             additional_repos:
               - repo_url: https://github.com/xregistry/spec
               - repo_url: https://github.com/xregistry/xregistry.github.io
+            twitter: https://twitter.com/xregistryio
             extra:
               lfx_slug: xregistry
               accepted: '2025-06-05'
@@ -9556,6 +9564,12 @@ landscape:
             homepage_url: https://metalstack.cloud
             logo: metalstack-cloud.svg
             crunchbase: https://www.crunchbase.com/organization/x-cellent-technologies
+          - item:
+            name: Nebius Managed Service for Kubernetes
+            description: A fully managed container orchestrator optimized for modern AI workloads.
+            homepage_url: https://nebius.com/compute/kubernetes
+            logo: nebius.svg
+            crunchbase: https://www.crunchbase.com/organization/nebius
           - item:
             name: NETWAYS Managed Kubernetes
             description: Build, deploy, and scale flexibly with NETWAYS Managed Kubernetes powered by OpenStack.
@@ -13807,7 +13821,7 @@ landscape:
           - item:
             name: YLD (KCSP)
             description: We modernise both practices and software. Applying expertise in a range of CNCF technologies and an inherent culture of innovation.
-            homepage_url: https://www.yld.io/
+            homepage_url: https://www.yld.com/partnerships/cncf
             logo: yld-kcsp.svg
             crunchbase: https://www.crunchbase.com/organization/yld
           - item:
@@ -16501,6 +16515,12 @@ landscape:
             crunchbase: https://www.crunchbase.com/organization/morgan-stanley
             joined: '2017-06-01'
           - item:
+            name: mydecisive.ai (member)
+            homepage_url: https://www.mydecisive.ai
+            logo: mydecisive.ai.svg
+            crunchbase: https://www.crunchbase.com/organization/mydecisive
+            joined: '2026-09-01'             
+          - item:
             name: MyFitnessPal (member)
             homepage_url: https://www.myfitnesspal.com/
             logo: myfitnesspal.svg
@@ -17581,12 +17601,6 @@ landscape:
             logo: terasky.svg
             crunchbase: https://www.crunchbase.com/organization/terasky
             joined: '2019-07-01'
-          - item:
-            name: Terracotta AI (member)
-            homepage_url: https://tryterracotta.com
-            logo: terracotta-ai.svg
-            crunchbase: https://www.crunchbase.com/organization/terracotta-ai
-            joined: '2025-05-01'
           - item:
             name: Terramate (member)
             homepage_url: https://www.terramate.io/
