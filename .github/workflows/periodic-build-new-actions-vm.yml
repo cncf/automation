@@ -263,7 +263,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        arch: [x86-64, arm64]
+        arch: [x86, arm]
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -315,7 +315,7 @@ jobs:
               key_file=/oci/oci_api_key.pem
           EOF
 
-          if [ "${{ matrix.arch }}" = "x86-64" ]; then
+          if [ "${{ matrix.arch }}" = "x86" ]; then
             MANIFEST_FILE=ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-x86.yaml
           else
             MANIFEST_FILE=ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-arm.yaml
