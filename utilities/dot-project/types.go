@@ -291,10 +291,20 @@ type MaintainerEntry struct {
 	Teams     []Team `json:"teams" yaml:"teams"`
 }
 
-// Team represents a GitHub team and its members
+// Team represents a GitHub team and its members.
+// Teams with Managed set to false are excluded from CNCF resource provisioning
+// (handle verification, mailing lists, service desk, Copilot seats).
+// If Managed is nil (omitted), the team is treated as managed by default.
 type Team struct {
 	Name    string   `json:"name" yaml:"name"`
 	Members []string `json:"members" yaml:"members"`
+	Managed *bool    `json:"managed,omitempty" yaml:"managed,omitempty"`
+}
+
+// IsManaged returns true if the team should be included in CNCF resource
+// automation. A nil Managed field defaults to true (backward compatible).
+func (t Team) IsManaged() bool {
+	return t.Managed == nil || *t.Managed
 }
 
 // MaintainerLifecycle represents maintainer lifecycle documentation

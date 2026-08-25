@@ -199,14 +199,15 @@ PathRef values should be **full GitHub URLs** (e.g., `https://github.com/org/rep
 |-------|------|----------|-------------|-------------|
 | `project_id` | string | Yes | Project slug | Must match `slug` in project.yaml |
 | `org` | string | No | GitHub organization | |
-| `teams` | Team[] | Yes | Team definitions | Must include `project-maintainers` team |
+| `teams` | Team[] | Yes | Team definitions | At least one managed team required |
 
 ### Team
 
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| `name` | string | Yes | Team name | `project-maintainers` is required |
-| `members` | string[] | Yes | GitHub handles | Non-empty for `project-maintainers`; normalized (trimmed, `@` stripped) |
+| `name` | string | Yes | Team name | Any descriptive name (e.g., `maintainers`, `committers`, `reviewers`, `emeritus`) |
+| `members` | string[] | Yes | GitHub handles | At least one managed team must have members; normalized (trimmed, `@` stripped) |
+| `managed` | bool | No | Whether team is provisioned to CNCF resources | Defaults to `true` if omitted. Teams with `managed: false` are excluded from handle verification, mailing lists, service desk, and Copilot seat provisioning |
 
 ## Validation Rules
 
@@ -216,4 +217,4 @@ PathRef values should be **full GitHub URLs** (e.g., `https://github.com/org/rep
 4. **Slug format** -- lowercase letters, digits, and hyphens; no leading/trailing hyphens
 5. **Maturity ordering** -- maturity_log entries must be in chronological order
 6. **Handle normalization** -- leading `@` and whitespace are stripped; duplicates are detected case-insensitively
-7. **Required teams** -- every maintainer entry must include a `project-maintainers` team with at least one member
+7. **Required managed team** -- every maintainer entry must include at least one team with `managed: true` (or `managed` omitted) that has at least one member
