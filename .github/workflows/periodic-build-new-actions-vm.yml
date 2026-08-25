@@ -386,7 +386,7 @@ jobs:
   test-runner:
     strategy:
       matrix:
-        arch: [x86-64, arm64]
+        arch: [x86, arm]
     runs-on: oci-ci-test-${{ matrix.arch }}
     needs: [build-x86, build-arm64]
     if: needs.build-x86.outputs.image_exists == 'false' || needs.build-arm64.outputs.image_exists == 'false'

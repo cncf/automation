@@ -349,7 +349,7 @@ jobs:
   test-runner:
     strategy:
       matrix:
-        arch: [x86-64, arm64]
+        arch: [x86, arm]
     runs-on: oci-ci-test-${{ matrix.arch }}
     needs: [build-x86, build-arm64]
     timeout-minutes: 15
