@@ -219,6 +219,9 @@ jobs:
   run-kind-with-arc:
     runs-on: ubuntu-latest
     needs: [build-x86, build-arm64]
+    permissions:
+      actions: write
+      contents: read
     # must cover the 10 min queue wait plus the 15 min test-runner timeout
     timeout-minutes: 30
     strategy:
@@ -291,7 +294,7 @@ jobs:
       - name: Wait for test-runner to complete
         run: |
           TARGET_JOB="test-runner (${{ matrix.arch }})"
-          PICKUP_TIMEOUT=600
+          PICKUP_TIMEOUT=900
           START_TIME=$(date +%s)
           echo "Waiting for job: ${TARGET_JOB}"
 
@@ -311,6 +314,9 @@ jobs:
               ELAPSED=$(( $(date +%s) - START_TIME ))
               if [ "$ELAPSED" -ge "$PICKUP_TIMEOUT" ]; then
                 echo "ERROR: ${TARGET_JOB} was not picked up by a runner within $(( PICKUP_TIMEOUT / 60 )) minutes"
+                # A queued job's timeout-minutes never starts, so cancel the run
+                # to avoid the test-runner job sitting queued for 24h.
+                gh api -X POST repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel || true
                 exit 1
               fi
             fi
