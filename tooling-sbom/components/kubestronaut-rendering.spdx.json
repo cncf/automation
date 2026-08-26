@@ -1,0 +1,412 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "Rendering",
+  "documentNamespace": "https://waybill.kusari.dev/spdx/RS6GZ3CH4WBEI2SG4RFZ3EOWQU4UJPJ3",
+  "creationInfo": {
+    "created": "2026-08-26T11:32:07Z",
+    "creators": [
+      "Tool: waybill-0.2.0",
+      "Organization: waybill contributors",
+      "Tool: waybill-0.2.0 source: git:https://github.com/cncf/automation.git#9a02d6aa1276c355b193c3f23ede48c81db85d41"
+    ],
+    "comment": "Scope: manifest (declared transitives included). Observed lifecycle phases: design. Per-component scope detail in waybill:sbom-tier annotations."
+  },
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-DocumentRoot-DVARXWAQHK2HWK7K",
+      "name": "cncf/automation/Kubestronaut/Rendering",
+      "versionInfo": "9a02d6aa1276c355b193c3f23ede48c81db85d41",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: waybill contributors",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:generic/cncf%2Fautomation%2FKubestronaut%2FRendering@9a02d6aa1276c355b193c3f23ede48c81db85d41"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:waybill:cncf_automation_kubestronaut_rendering:9a02d6aa1276c355b193c3f23ede48c81db85d41:*:*:*:*:*:*:*"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Z7YAECYWMXLJMAYF",
+      "name": "adjustText",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: PyPI",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/adjusttext"
+        }
+      ],
+      "annotations": [
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"design\"}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"requirements.txt\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:requirement-ranges\",\"value\":[\"adjustText\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"requirements.txt\",\"sha256\":\"8207536fc28d40dc7877da3855e96de9fed57b170d3305d5c2e79960fc7f2228\"}]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-BRFXB3WKLRF3LNH3",
+      "name": "cartopy",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: PyPI",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/cartopy"
+        }
+      ],
+      "annotations": [
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"design\"}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"requirements.txt\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:requirement-ranges\",\"value\":[\"cartopy\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"requirements.txt\",\"sha256\":\"8207536fc28d40dc7877da3855e96de9fed57b170d3305d5c2e79960fc7f2228\"}]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-75QGL423563UNZ45",
+      "name": "contextily",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: PyPI",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/contextily"
+        }
+      ],
+      "annotations": [
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"design\"}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"requirements.txt\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:requirement-ranges\",\"value\":[\"contextily\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"requirements.txt\",\"sha256\":\"8207536fc28d40dc7877da3855e96de9fed57b170d3305d5c2e79960fc7f2228\"}]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-UL2VK3QPMUFTOQMD",
+      "name": "geopandas",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: PyPI",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/geopandas"
+        }
+      ],
+      "annotations": [
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"design\"}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"requirements.txt\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:requirement-ranges\",\"value\":[\"geopandas\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"requirements.txt\",\"sha256\":\"8207536fc28d40dc7877da3855e96de9fed57b170d3305d5c2e79960fc7f2228\"}]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-PVMA7OOSDP6COFXZ",
+      "name": "matplotlib",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: PyPI",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/matplotlib"
+        }
+      ],
+      "annotations": [
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"design\"}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"requirements.txt\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:requirement-ranges\",\"value\":[\"matplotlib\"]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"requirements.txt\",\"sha256\":\"8207536fc28d40dc7877da3855e96de9fed57b170d3305d5c2e79960fc7f2228\"}]}"
+        },
+        {
+          "annotator": "Tool: waybill-0.2.0",
+          "annotationDate": "2026-08-26T11:32:07Z",
+          "annotationType": "OTHER",
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-DVARXWAQHK2HWK7K",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-DVARXWAQHK2HWK7K",
+      "relatedSpdxElement": "SPDXRef-Package-Z7YAECYWMXLJMAYF",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-DVARXWAQHK2HWK7K",
+      "relatedSpdxElement": "SPDXRef-Package-BRFXB3WKLRF3LNH3",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-DVARXWAQHK2HWK7K",
+      "relatedSpdxElement": "SPDXRef-Package-75QGL423563UNZ45",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-DVARXWAQHK2HWK7K",
+      "relatedSpdxElement": "SPDXRef-Package-UL2VK3QPMUFTOQMD",
+      "relationshipType": "DEPENDS_ON"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-DVARXWAQHK2HWK7K",
+      "relatedSpdxElement": "SPDXRef-Package-PVMA7OOSDP6COFXZ",
+      "relationshipType": "DEPENDS_ON"
+    }
+  ],
+  "annotations": [
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:generation-context\",\"value\":\"filesystem-scan\"}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cisa-2026-lifecycle\",\"value\":\"after-build\"}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:os-release-missing-fields\",\"value\":[\"ID\",\"VERSION_ID\"]}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:graph-completeness\",\"value\":\"partial\"}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:graph-completeness-reason\",\"value\":\"transitive-edges-unresolvable: pypi\"}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspaces-detected\",\"value\":\"[\\\".\\\"]\"}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-ring-buffer-overflows\",\"value\":\"0\"}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-events-dropped\",\"value\":\"0\"}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-uprobe-attach-failures\",\"value\":[]}"
+    },
+    {
+      "annotator": "Tool: waybill-0.2.0",
+      "annotationDate": "2026-08-26T11:32:07Z",
+      "annotationType": "OTHER",
+      "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-kprobe-attach-failures\",\"value\":[]}"
+    }
+  ],
+  "documentDescribes": [
+    "SPDXRef-DocumentRoot-DVARXWAQHK2HWK7K"
+  ]
+}
