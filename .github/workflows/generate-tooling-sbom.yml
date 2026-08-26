@@ -1,0 +1,98 @@
+name: Generate Tooling SBOM
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - tooling-sbom/**
+  pull_request:
+    paths-ignore:
+      - tooling-sbom/**
+  workflow_dispatch:
+
+env:
+  WAYBILL_VERSION: v0.2.0
+
+permissions:
+  contents: write
+
+jobs:
+  generate-tooling-sbom:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Read Go version
+        id: go-version
+        run: echo "version=$(cat .go-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ steps.go-version.outputs.version }}
+          cache: false
+
+      - name: Install Waybill
+        run: |
+          curl -sL "https://github.com/kusari-oss/waybill/releases/download/${WAYBILL_VERSION}/waybill-${WAYBILL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" -o /tmp/waybill.tar.gz
+          tar xzf /tmp/waybill.tar.gz -C /tmp
+          sudo install -m 755 /tmp/waybill-${WAYBILL_VERSION}-x86_64-unknown-linux-gnu/waybill /usr/local/bin/waybill
+          waybill --version
+
+      - name: Generate tooling SBOMs
+        run: |
+          chmod +x .github/scripts/generate-tooling-sbom.sh
+          .github/scripts/generate-tooling-sbom.sh --output-dir tooling-sbom-out
+
+      - name: Publish tooling SBOM into repository
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          mkdir -p tooling-sbom/components
+          cp tooling-sbom-out/*.json tooling-sbom/
+          cp tooling-sbom-out/components/*.json tooling-sbom/components/
+
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add tooling-sbom/
+
+          if git diff --cached --quiet; then
+            echo "No tooling SBOM changes to commit"
+            exit 0
+          fi
+
+          git commit -m "chore: refresh tooling SBOM snapshots [skip ci]"
+          git push origin HEAD:${GITHUB_REF_NAME}
+
+      - name: Write summary
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+        if: always()
+        run: |
+          {
+            echo "### Tooling SBOM"
+            echo ""
+            echo "| File | Description |"
+            echo "|------|-------------|"
+            echo "| \`tooling-repo.spdx.json\` | Waybill SBOM for this repository's committed tree |"
+            echo "| \`tooling-ci.spdx.json\` | SPDX inventory of the GitHub Actions and tools in the CI generation chain |"
+            echo "| \`components/*.spdx.json\` | One Waybill SBOM per Go module / Python utility |"
+            echo ""
+            if [ -d tooling-sbom ]; then
+              echo "Tracked snapshots on \`${REF_NAME}\`:"
+              echo "- [tooling-sbom/](https://github.com/${REPOSITORY}/tree/${REF_NAME}/tooling-sbom)"
+            else
+              echo "Snapshots are published on \`main\`; for PRs and manual runs use the workflow artifact."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload tooling SBOM artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: tooling-sbom-${{ github.sha }}
+          path: tooling-sbom-out/**
+          if-no-files-found: error
+          retention-days: 14

@@ -37,6 +37,24 @@ in the project, new level, and date. The workflow prepares a `move/<slug>-to-<le
 branch per repo and applies the correct per-repo edit, stopping at the diff for
 review (it does not commit or push).
 
+### Tooling SBOMs
+
+SBOMs for this repository's own tooling and CI chain, generated with
+[Waybill](https://github.com/kusari-oss/waybill) via
+[`generate-tooling-sbom.yml`](./.github/workflows/generate-tooling-sbom.yml) on every
+push, pull request, and manual run:
+
+- [`tooling-sbom/components/`](./tooling-sbom/components) — one SPDX 2.3 SBOM per
+  component (each Go module and Python utility)
+- [`tooling-sbom/tooling-repo.spdx.json`](./tooling-sbom/tooling-repo.spdx.json) —
+  repo-wide SBOM from the committed tree
+- [`tooling-sbom/tooling-ci.spdx.json`](./tooling-sbom/tooling-ci.spdx.json) — SPDX
+  inventory of the GitHub Actions and tools used in CI
+
+Snapshots in `tooling-sbom/` are refreshed automatically on pushes to `main`; each
+workflow run also uploads a `tooling-sbom-<sha>` artifact. Regenerate locally with
+`.github/scripts/generate-tooling-sbom.sh` (requires `waybill` and `jq` in `PATH`).
+
 ## Contributing
 
 Contributions to improve these automation tools are welcome! Please see our [contributing guidelines](CONTRIBUTING.md) for more details.
