@@ -1,0 +1,540 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "cncf/automation CI generation chain",
+  "documentNamespace": "https://github.com/cncf/automation/tooling-ci/b7f8693f422b710f75ba51ec582b5bde300acbe4",
+  "creationInfo": {
+    "created": "2026-08-26T11:38:40Z",
+    "creators": [
+      "Tool: .github/scripts/generate-tooling-sbom.sh",
+      "Tool: Waybill v0.2.0"
+    ]
+  },
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-Tooling-CI",
+      "name": "cncf/automation-ci-generation-chain",
+      "versionInfo": "b7f8693f422b710f75ba51ec582b5bde300acbe4",
+      "downloadLocation": "https://github.com/cncf/automation.git",
+      "filesAnalyzed": false,
+      "supplier": "Organization: CNCF",
+      "homepage": "https://github.com/cncf/automation",
+      "primaryPackagePurpose": "APPLICATION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef----GITHUB-ACTIONS-LABELER-ACTION",
+      "name": "Local action ./.github/actions/labeler-action",
+      "versionInfo": "b7f8693f422b710f75ba51ec582b5bde300acbe4",
+      "downloadLocation": "https://github.com/cncf/automation.git",
+      "filesAnalyzed": false,
+      "supplier": "Organization: CNCF",
+      "homepage": "https://github.com/cncf/automation/blob/b7f8693f422b710f75ba51ec582b5bde300acbe4/.github/actions/labeler-action",
+      "primaryPackagePurpose": "SOURCE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-CACHE-55CC8345863C7CC4C66A329AEC7E433D2D1C52A9",
+      "name": "GitHub Action actions/cache",
+      "versionInfo": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+      "downloadLocation": "https://github.com/actions/cache",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/cache",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-CHECKOUT-3D3C42E5AAC5BA805825DA76410C181273BA90B1",
+      "name": "GitHub Action actions/checkout",
+      "versionInfo": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "downloadLocation": "https://github.com/actions/checkout",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/checkout",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-CHECKOUT-DE0FAC2E4500DABE0009E67214FF5F5447CE83DD",
+      "name": "GitHub Action actions/checkout",
+      "versionInfo": "de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "downloadLocation": "https://github.com/actions/checkout",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/checkout",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-DOWNLOAD-ARTIFACT-3E5F45B2CFB9172054B4087A40E8E0B5A5461E7C",
+      "name": "GitHub Action actions/download-artifact",
+      "versionInfo": "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+      "downloadLocation": "https://github.com/actions/download-artifact",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/download-artifact",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-GITHUB-SCRIPT-3A2844B7E9C422D3C10D287C895573F7108DA1B3",
+      "name": "GitHub Action actions/github-script",
+      "versionInfo": "3a2844b7e9c422d3c10d287c895573f7108da1b3",
+      "downloadLocation": "https://github.com/actions/github-script",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/github-script",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-GITHUB-SCRIPT-F28E40C7F34BDE8B3046D885E986CB6290C5673B",
+      "name": "GitHub Action actions/github-script",
+      "versionInfo": "f28e40c7f34bde8b3046d885e986cb6290c5673b",
+      "downloadLocation": "https://github.com/actions/github-script",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/github-script",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-SETUP-GO-4A3601121DD01D1626A1E23E37211E3254C1C06C",
+      "name": "GitHub Action actions/setup-go",
+      "versionInfo": "4a3601121dd01d1626a1e23e37211e3254c1c06c",
+      "downloadLocation": "https://github.com/actions/setup-go",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/setup-go",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-SETUP-GO-B7AD1DAD31E06C5925EF5D2FC7AD053EF454303E",
+      "name": "GitHub Action actions/setup-go",
+      "versionInfo": "b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+      "downloadLocation": "https://github.com/actions/setup-go",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/setup-go",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-SETUP-PYTHON-5FDA3B95A4EA91299A34E894583C3862153E4B97",
+      "name": "GitHub Action actions/setup-python",
+      "versionInfo": "5fda3b95a4ea91299a34e894583c3862153e4b97",
+      "downloadLocation": "https://github.com/actions/setup-python",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/setup-python",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-ACTIONS-UPLOAD-ARTIFACT-043FB46D1A93C77AAE656E7C1C64A875D1FC6A0A",
+      "name": "GitHub Action actions/upload-artifact",
+      "versionInfo": "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+      "downloadLocation": "https://github.com/actions/upload-artifact",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/actions/upload-artifact",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-CNCF-AUTOMATION--GITHUB-ACTIONS-LABELER-ACTION-5251AD697EB04FC7B32D05ACCB8AEEA472164294",
+      "name": "GitHub Action cncf/automation/.github/actions/labeler-action",
+      "versionInfo": "5251ad697eb04fc7b32d05accb8aeea472164294",
+      "downloadLocation": "https://github.com/cncf/automation",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/cncf/automation",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-DOCKER-BUILD-PUSH-ACTION-53B7DF96C91F9C12DCC8A07BCB9CCACBED38856A",
+      "name": "GitHub Action docker/build-push-action",
+      "versionInfo": "53b7df96c91f9c12dcc8a07bcb9ccacbed38856a",
+      "downloadLocation": "https://github.com/docker/build-push-action",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/docker/build-push-action",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-DOCKER-LOGIN-ACTION-DBCB813823BDD20940B903ADDBD779551569679F",
+      "name": "GitHub Action docker/login-action",
+      "versionInfo": "dbcb813823bdd20940b903addbd779551569679f",
+      "downloadLocation": "https://github.com/docker/login-action",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/docker/login-action",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-DOCKER-METADATA-ACTION-DC802804100637A589FABCE1CB79FF13A1411302",
+      "name": "GitHub Action docker/metadata-action",
+      "versionInfo": "dc802804100637a589fabce1cb79ff13a1411302",
+      "downloadLocation": "https://github.com/docker/metadata-action",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/docker/metadata-action",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-DOCKER-SETUP-BUILDX-ACTION-BB05F3F5519DD87D3BA754CC423B652A5EDD6D2C",
+      "name": "GitHub Action docker/setup-buildx-action",
+      "versionInfo": "bb05f3f5519dd87d3ba754cc423b652a5edd6d2c",
+      "downloadLocation": "https://github.com/docker/setup-buildx-action",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/docker/setup-buildx-action",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-DOCKER-SETUP-QEMU-ACTION-96FE6EF7F33517B61C61BE40B68A1882F3264FB8",
+      "name": "GitHub Action docker/setup-qemu-action",
+      "versionInfo": "96fe6ef7f33517b61c61be40b68a1882f3264fb8",
+      "downloadLocation": "https://github.com/docker/setup-qemu-action",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/docker/setup-qemu-action",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-PETER-EVANS-CREATE-PULL-REQUEST-5F6978FAF089D4D20B00C7766989D076BB2FC7F1",
+      "name": "GitHub Action peter-evans/create-pull-request",
+      "versionInfo": "5f6978faf089d4d20b00c7766989d076bb2fc7f1",
+      "downloadLocation": "https://github.com/peter-evans/create-pull-request",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/peter-evans/create-pull-request",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-PETER-EVANS-SLASH-COMMAND-DISPATCH-9BDCD7914EC1B75590B790B844AA3B8EEE7C683A",
+      "name": "GitHub Action peter-evans/slash-command-dispatch",
+      "versionInfo": "9bdcd7914ec1b75590b790b844aa3b8eee7c683a",
+      "downloadLocation": "https://github.com/peter-evans/slash-command-dispatch",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/peter-evans/slash-command-dispatch",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-RTCAMP-ACTION-SLACK-NOTIFY-33CA3BE66C6F378FE1610FD1D5258632DBED5E58",
+      "name": "GitHub Action rtCamp/action-slack-notify",
+      "versionInfo": "33ca3be66c6f378fe1610fd1d5258632dbed5e58",
+      "downloadLocation": "https://github.com/rtCamp/action-slack-notify",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/rtCamp/action-slack-notify",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-SIGSTORE-COSIGN-INSTALLER-6F9F17788090DF1F26F669E9D70D6AE9567DEBA6",
+      "name": "GitHub Action sigstore/cosign-installer",
+      "versionInfo": "6f9f17788090df1f26f669e9d70d6ae9567deba6",
+      "downloadLocation": "https://github.com/sigstore/cosign-installer",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/sigstore/cosign-installer",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-SLACKAPI-SLACK-GITHUB-ACTION-DCB1066F776DD043E64D0E8BA94CA15CC7E1875D",
+      "name": "GitHub Action slackapi/slack-github-action",
+      "versionInfo": "dcb1066f776dd043e64d0e8ba94ca15cc7e1875d",
+      "downloadLocation": "https://github.com/slackapi/slack-github-action",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/slackapi/slack-github-action",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-SLSA-FRAMEWORK-SLSA-GITHUB-GENERATOR--GITHUB-WORKFLOWS-GENERATOR-CONTAINER-SLSA3-YML-V2-1-0",
+      "name": "GitHub Action slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml",
+      "versionInfo": "v2.1.0",
+      "downloadLocation": "https://github.com/slsa-framework/slsa-github-generator",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/slsa-framework/slsa-github-generator",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-VEGARDIT-FAST-APT-MIRROR-SH-806C59276ADFFF2DF420124AD5E4587F018C358A",
+      "name": "GitHub Action vegardit/fast-apt-mirror.sh",
+      "versionInfo": "806c59276adfff2df420124ad5e4587f018c358a",
+      "downloadLocation": "https://github.com/vegardit/fast-apt-mirror.sh",
+      "filesAnalyzed": false,
+      "supplier": "Organization: GitHub",
+      "homepage": "https://github.com/vegardit/fast-apt-mirror.sh",
+      "primaryPackagePurpose": "FRAMEWORK",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-ToolingWorkflow",
+      "name": "Local workflow .github/workflows/generate-tooling-sbom.yml",
+      "versionInfo": "b7f8693f422b710f75ba51ec582b5bde300acbe4",
+      "downloadLocation": "https://github.com/cncf/automation.git",
+      "filesAnalyzed": false,
+      "supplier": "Organization: CNCF",
+      "homepage": "https://github.com/cncf/automation/blob/b7f8693f422b710f75ba51ec582b5bde300acbe4/.github/workflows/generate-tooling-sbom.yml",
+      "primaryPackagePurpose": "SOURCE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-ToolingScript",
+      "name": "Local script .github/scripts/generate-tooling-sbom.sh",
+      "versionInfo": "b7f8693f422b710f75ba51ec582b5bde300acbe4",
+      "downloadLocation": "https://github.com/cncf/automation.git",
+      "filesAnalyzed": false,
+      "supplier": "Organization: CNCF",
+      "homepage": "https://github.com/cncf/automation/blob/b7f8693f422b710f75ba51ec582b5bde300acbe4/.github/scripts/generate-tooling-sbom.sh",
+      "primaryPackagePurpose": "SOURCE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Waybill",
+      "name": "Waybill",
+      "versionInfo": "v0.2.0",
+      "downloadLocation": "https://github.com/kusari-oss/waybill/releases/download/v0.2.0/waybill-v0.2.0-x86_64-unknown-linux-gnu.tar.gz",
+      "filesAnalyzed": false,
+      "supplier": "Organization: Kusari",
+      "homepage": "https://github.com/kusari-oss/waybill",
+      "primaryPackagePurpose": "APPLICATION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-GoToolchain",
+      "name": "Go toolchain",
+      "versionInfo": "1.26.1",
+      "downloadLocation": "https://go.dev/dl/",
+      "filesAnalyzed": false,
+      "supplier": "Organization: Go team",
+      "homepage": "https://go.dev/",
+      "primaryPackagePurpose": "APPLICATION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-Tooling-CI"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef----GITHUB-ACTIONS-LABELER-ACTION"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-CACHE-55CC8345863C7CC4C66A329AEC7E433D2D1C52A9"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-CHECKOUT-3D3C42E5AAC5BA805825DA76410C181273BA90B1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-CHECKOUT-DE0FAC2E4500DABE0009E67214FF5F5447CE83DD"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-DOWNLOAD-ARTIFACT-3E5F45B2CFB9172054B4087A40E8E0B5A5461E7C"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-GITHUB-SCRIPT-3A2844B7E9C422D3C10D287C895573F7108DA1B3"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-GITHUB-SCRIPT-F28E40C7F34BDE8B3046D885E986CB6290C5673B"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-SETUP-GO-4A3601121DD01D1626A1E23E37211E3254C1C06C"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-SETUP-GO-B7AD1DAD31E06C5925EF5D2FC7AD053EF454303E"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-SETUP-PYTHON-5FDA3B95A4EA91299A34E894583C3862153E4B97"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-ACTIONS-UPLOAD-ARTIFACT-043FB46D1A93C77AAE656E7C1C64A875D1FC6A0A"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-CNCF-AUTOMATION--GITHUB-ACTIONS-LABELER-ACTION-5251AD697EB04FC7B32D05ACCB8AEEA472164294"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-DOCKER-BUILD-PUSH-ACTION-53B7DF96C91F9C12DCC8A07BCB9CCACBED38856A"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-DOCKER-LOGIN-ACTION-DBCB813823BDD20940B903ADDBD779551569679F"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-DOCKER-METADATA-ACTION-DC802804100637A589FABCE1CB79FF13A1411302"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-DOCKER-SETUP-BUILDX-ACTION-BB05F3F5519DD87D3BA754CC423B652A5EDD6D2C"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-DOCKER-SETUP-QEMU-ACTION-96FE6EF7F33517B61C61BE40B68A1882F3264FB8"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-PETER-EVANS-CREATE-PULL-REQUEST-5F6978FAF089D4D20B00C7766989D076BB2FC7F1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-PETER-EVANS-SLASH-COMMAND-DISPATCH-9BDCD7914EC1B75590B790B844AA3B8EEE7C683A"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-RTCAMP-ACTION-SLACK-NOTIFY-33CA3BE66C6F378FE1610FD1D5258632DBED5E58"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-SIGSTORE-COSIGN-INSTALLER-6F9F17788090DF1F26F669E9D70D6AE9567DEBA6"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-SLACKAPI-SLACK-GITHUB-ACTION-DCB1066F776DD043E64D0E8BA94CA15CC7E1875D"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-SLSA-FRAMEWORK-SLSA-GITHUB-GENERATOR--GITHUB-WORKFLOWS-GENERATOR-CONTAINER-SLSA3-YML-V2-1-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-VEGARDIT-FAST-APT-MIRROR-SH-806C59276ADFFF2DF420124AD5E4587F018C358A"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-ToolingWorkflow"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-ToolingScript"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-Waybill"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-GoToolchain"
+    }
+  ]
+}
