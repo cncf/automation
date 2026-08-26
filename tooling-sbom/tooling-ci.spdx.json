@@ -3,9 +3,9 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "cncf/automation CI generation chain",
-  "documentNamespace": "https://github.com/cncf/automation/tooling-ci/9a02d6aa1276c355b193c3f23ede48c81db85d41",
+  "documentNamespace": "https://github.com/cncf/automation/tooling-ci/b7f8693f422b710f75ba51ec582b5bde300acbe4",
   "creationInfo": {
-    "created": "2026-08-26T11:32:00Z",
+    "created": "2026-08-26T11:38:40Z",
     "creators": [
       "Tool: .github/scripts/generate-tooling-sbom.sh",
       "Tool: Waybill v0.2.0"
@@ -15,12 +15,25 @@
     {
       "SPDXID": "SPDXRef-Package-Tooling-CI",
       "name": "cncf/automation-ci-generation-chain",
-      "versionInfo": "9a02d6aa1276c355b193c3f23ede48c81db85d41",
+      "versionInfo": "b7f8693f422b710f75ba51ec582b5bde300acbe4",
       "downloadLocation": "https://github.com/cncf/automation.git",
       "filesAnalyzed": false,
       "supplier": "Organization: CNCF",
       "homepage": "https://github.com/cncf/automation",
       "primaryPackagePurpose": "APPLICATION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "SPDXID": "SPDXRef----GITHUB-ACTIONS-LABELER-ACTION",
+      "name": "Local action ./.github/actions/labeler-action",
+      "versionInfo": "b7f8693f422b710f75ba51ec582b5bde300acbe4",
+      "downloadLocation": "https://github.com/cncf/automation.git",
+      "filesAnalyzed": false,
+      "supplier": "Organization: CNCF",
+      "homepage": "https://github.com/cncf/automation/blob/b7f8693f422b710f75ba51ec582b5bde300acbe4/.github/actions/labeler-action",
+      "primaryPackagePurpose": "SOURCE",
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION"
@@ -234,19 +247,6 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "SPDXID": "SPDXRef----GITHUB-ACTIONS-LABELER-ACTION",
-      "name": "Local action ./.github/actions/labeler-action",
-      "versionInfo": "9a02d6aa1276c355b193c3f23ede48c81db85d41",
-      "downloadLocation": "https://github.com/cncf/automation.git",
-      "filesAnalyzed": false,
-      "supplier": "Organization: CNCF",
-      "homepage": "https://github.com/cncf/automation/blob/9a02d6aa1276c355b193c3f23ede48c81db85d41/.github/actions/labeler-action",
-      "primaryPackagePurpose": "SOURCE",
-      "licenseConcluded": "NOASSERTION",
-      "licenseDeclared": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
       "SPDXID": "SPDXRef-PETER-EVANS-CREATE-PULL-REQUEST-5F6978FAF089D4D20B00C7766989D076BB2FC7F1",
       "name": "GitHub Action peter-evans/create-pull-request",
       "versionInfo": "5f6978faf089d4d20b00c7766989d076bb2fc7f1",
@@ -340,11 +340,11 @@
     {
       "SPDXID": "SPDXRef-Package-ToolingWorkflow",
       "name": "Local workflow .github/workflows/generate-tooling-sbom.yml",
-      "versionInfo": "9a02d6aa1276c355b193c3f23ede48c81db85d41",
+      "versionInfo": "b7f8693f422b710f75ba51ec582b5bde300acbe4",
       "downloadLocation": "https://github.com/cncf/automation.git",
       "filesAnalyzed": false,
       "supplier": "Organization: CNCF",
-      "homepage": "https://github.com/cncf/automation/blob/9a02d6aa1276c355b193c3f23ede48c81db85d41/.github/workflows/generate-tooling-sbom.yml",
+      "homepage": "https://github.com/cncf/automation/blob/b7f8693f422b710f75ba51ec582b5bde300acbe4/.github/workflows/generate-tooling-sbom.yml",
       "primaryPackagePurpose": "SOURCE",
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -353,11 +353,11 @@
     {
       "SPDXID": "SPDXRef-Package-ToolingScript",
       "name": "Local script .github/scripts/generate-tooling-sbom.sh",
-      "versionInfo": "9a02d6aa1276c355b193c3f23ede48c81db85d41",
+      "versionInfo": "b7f8693f422b710f75ba51ec582b5bde300acbe4",
       "downloadLocation": "https://github.com/cncf/automation.git",
       "filesAnalyzed": false,
       "supplier": "Organization: CNCF",
-      "homepage": "https://github.com/cncf/automation/blob/9a02d6aa1276c355b193c3f23ede48c81db85d41/.github/scripts/generate-tooling-sbom.sh",
+      "homepage": "https://github.com/cncf/automation/blob/b7f8693f422b710f75ba51ec582b5bde300acbe4/.github/scripts/generate-tooling-sbom.sh",
       "primaryPackagePurpose": "SOURCE",
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -395,6 +395,11 @@
       "spdxElementId": "SPDXRef-DOCUMENT",
       "relationshipType": "DESCRIBES",
       "relatedSpdxElement": "SPDXRef-Package-Tooling-CI"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Tooling-CI",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef----GITHUB-ACTIONS-LABELER-ACTION"
     },
     {
       "spdxElementId": "SPDXRef-Package-Tooling-CI",
@@ -475,11 +480,6 @@
       "spdxElementId": "SPDXRef-Package-Tooling-CI",
       "relationshipType": "DEPENDS_ON",
       "relatedSpdxElement": "SPDXRef-DOCKER-SETUP-QEMU-ACTION-96FE6EF7F33517B61C61BE40B68A1882F3264FB8"
-    },
-    {
-      "spdxElementId": "SPDXRef-Package-Tooling-CI",
-      "relationshipType": "DEPENDS_ON",
-      "relatedSpdxElement": "SPDXRef----GITHUB-ACTIONS-LABELER-ACTION"
     },
     {
       "spdxElementId": "SPDXRef-Package-Tooling-CI",
