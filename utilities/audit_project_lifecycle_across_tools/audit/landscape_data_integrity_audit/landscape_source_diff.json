@@ -83,6 +83,15 @@
       "findings": []
     },
     {
+      "name": "kbind",
+      "path": "Provisioning / Automation & Configuration",
+      "maturity": "sandbox",
+      "match_note": "clomonitor_name+lfx_slug",
+      "matched_pcc": true,
+      "matched_clomonitor": true,
+      "findings": []
+    },
+    {
       "name": "KitOps",
       "path": "Provisioning / Automation & Configuration",
       "maturity": "sandbox",
@@ -149,8 +158,8 @@
       "name": "metal3-io",
       "path": "Provisioning / Automation & Configuration",
       "maturity": "incubating",
-      "match_note": "clomonitor_name",
-      "matched_pcc": false,
+      "match_note": "clomonitor_name+lfx_slug",
+      "matched_pcc": true,
       "matched_clomonitor": true,
       "findings": []
     },
@@ -185,20 +194,10 @@
       "name": "Runme Notebooks",
       "path": "Provisioning / Automation & Configuration",
       "maturity": "sandbox",
-      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": "runme",
-          "pcc": null,
-          "clomonitor": "runme-notebooks",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('runme') ≠ CLOMonitor ('runme-notebooks')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "SuperEdge",
@@ -285,10 +284,29 @@
       "name": "Cedar",
       "path": "Provisioning / Security & Compliance",
       "maturity": "sandbox",
-      "match_note": "none",
-      "matched_pcc": false,
-      "matched_clomonitor": false,
-      "findings": []
+      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "matched_pcc": true,
+      "matched_clomonitor": true,
+      "findings": [
+        {
+          "field": "extra.clomonitor_name",
+          "landscape": "cedar",
+          "pcc": null,
+          "clomonitor": "cedar-policy",
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": false,
+          "message": "Landscape ('cedar') ≠ CLOMonitor ('cedar-policy')."
+        },
+        {
+          "field": "extra.dev_stats_url",
+          "landscape": null,
+          "pcc": null,
+          "clomonitor": "https://cedarpolicy.devstats.cncf.io/",
+          "pcc_clomonitor_agree": null,
+          "landscape_clomonitor_agree": false,
+          "message": "Landscape missing; CLOMonitor has 'https://cedarpolicy.devstats.cncf.io/'."
+        }
+      ]
     },
     {
       "name": "cert-manager",
@@ -615,6 +633,15 @@
       "findings": []
     },
     {
+      "name": "Curvine",
+      "path": "Runtime / Cloud Native Storage",
+      "maturity": "sandbox",
+      "match_note": "clomonitor_name+lfx_slug",
+      "matched_pcc": true,
+      "matched_clomonitor": true,
+      "findings": []
+    },
+    {
       "name": "HwameiStor",
       "path": "Runtime / Cloud Native Storage",
       "maturity": "sandbox",
@@ -689,10 +716,10 @@
     {
       "name": "Vineyard",
       "path": "Runtime / Cloud Native Storage",
-      "maturity": "sandbox",
-      "match_note": "clomonitor_name",
-      "matched_pcc": false,
-      "matched_clomonitor": true,
+      "maturity": "archived",
+      "match_note": "pcc_name",
+      "matched_pcc": true,
+      "matched_clomonitor": false,
       "findings": []
     },
     {
@@ -1039,7 +1066,7 @@
       "findings": []
     },
     {
-      "name": "hami",
+      "name": "HAMi",
       "path": "Orchestration & Management / Scheduling & Orchestration",
       "maturity": "incubating",
       "match_note": "clomonitor_name+lfx_slug",
@@ -1122,7 +1149,7 @@
     {
       "name": "Kubeflow",
       "path": "Orchestration & Management / Scheduling & Orchestration",
-      "maturity": "incubating",
+      "maturity": "graduated",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -1239,7 +1266,7 @@
     {
       "name": "k8gb",
       "path": "Orchestration & Management / Coordination & Service Discovery",
-      "maturity": "sandbox",
+      "maturity": "incubating",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -1357,29 +1384,10 @@
       "name": "Higress",
       "path": "Orchestration & Management / API Gateway",
       "maturity": "sandbox",
-      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "higress",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'higress'."
-        },
-        {
-          "field": "extra.dev_stats_url",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "https://higress.devstats.cncf.io/",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'https://higress.devstats.cncf.io/'."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "Kgateway",
@@ -1515,17 +1523,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.dev_stats_url",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "https://openeverest.devstats.cncf.io/",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'https://openeverest.devstats.cncf.io/'."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "openGemini",
@@ -1567,29 +1565,10 @@
       "name": "Apicurio Registry",
       "path": "App Definition and Development / Streaming & Messaging",
       "maturity": "sandbox",
-      "match_note": "clo_slug_guess",
-      "matched_pcc": false,
+      "match_note": "clomonitor_name+lfx_slug",
+      "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "apicurio-registry",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'apicurio-registry'."
-        },
-        {
-          "field": "extra.dev_stats_url",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "https://apicurioregistry.devstats.cncf.io/",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'https://apicurioregistry.devstats.cncf.io/'."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "CloudEvents",
@@ -1676,7 +1655,7 @@
     {
       "name": "Buildpacks",
       "path": "App Definition and Development / Application Definition & Image Build",
-      "maturity": "incubating",
+      "maturity": "graduated",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -1881,7 +1860,7 @@
       "findings": []
     },
     {
-      "name": "Serverless Workflow",
+      "name": "Open Workflow Specification",
       "path": "App Definition and Development / Application Definition & Image Build",
       "maturity": "sandbox",
       "match_note": "clomonitor_name+lfx_slug",
@@ -2007,6 +1986,15 @@
       "findings": []
     },
     {
+      "name": "Tekton",
+      "path": "App Definition and Development / Continuous Integration & Delivery",
+      "maturity": "incubating",
+      "match_note": "clomonitor_name+lfx_slug",
+      "matched_pcc": true,
+      "matched_clomonitor": true,
+      "findings": []
+    },
+    {
       "name": "werf",
       "path": "App Definition and Development / Continuous Integration & Delivery",
       "maturity": "sandbox",
@@ -2053,7 +2041,7 @@
     },
     {
       "name": "KubeElasti",
-      "path": "Serverless / Framework",
+      "path": "Serverless / Installable Platform",
       "maturity": "sandbox",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
@@ -2280,20 +2268,10 @@
       "name": "Prometheus",
       "path": "Observability and Analysis / Observability",
       "maturity": "graduated",
-      "match_note": "clomonitor_name+pcc_via_clo_name",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.lfx_slug",
-          "landscape": "prometheus_del",
-          "pcc": "prometheus",
-          "clomonitor": null,
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": null,
-          "message": "Landscape ('prometheus_del') ≠ PCC ('prometheus')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "Skooner",
@@ -2363,39 +2341,19 @@
       "name": "KAITO",
       "path": "Inference / Framework",
       "maturity": "sandbox",
-      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "kaito",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'kaito'."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "KServe",
       "path": "Inference / Framework",
       "maturity": "incubating",
-      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "kserve",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'kserve'."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "llm-d",
