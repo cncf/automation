@@ -445,9 +445,22 @@ jobs:
             --bucket-name ${{ env.BUCKET_NAME }} \
             --namespace ${{ env.BUCKET_NAMESPACE }} \
             --name ${OBJECT_NAME} \
-            --region ${{ secrets.OCI_CLI_REGION }} \
-            --wait-for-state AVAILABLE \
-            --max-wait-seconds 7200
+            --export-format OCI
+
+          while true; do
+            # "|| true" so a transient API failure retries instead of killing the job (set -e)
+            STATE=$(oci compute image get --image-id ${IMAGE_ID} --query 'data."lifecycle-state"' --raw-output || true)
+            if [ "$STATE" == "AVAILABLE" ]; then
+              echo "done exporting"
+              break
+            elif [ "$STATE" == "EXPORTING" ] || [ -z "$STATE" ]; then
+              echo "Image is still exporting, waiting..."
+            else
+              echo "Unexpected image state: $STATE"
+              exit 1
+            fi
+            sleep 30
+          done
           echo "${OBJECT_NAME}" > /tmp/object_name
 
       # Passed as an artifact: a job output containing a secret substring
