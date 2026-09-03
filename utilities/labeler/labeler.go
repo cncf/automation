@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"path"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/google/go-github/v55/github"
@@ -18,7 +20,6 @@ import (
 
 // GitHubClient interface to allow mocking
 type GitHubClient interface {
-	GetIssue(ctx context.Context, owner, repo string, number int) (*github.Issue, *github.Response, error)
 	ListLabelsByIssue(ctx context.Context, owner, repo string, number int, opts *github.ListOptions) ([]*github.Label, *github.Response, error)
 	AddLabelsToIssue(ctx context.Context, owner, repo string, number int, labels []string) ([]*github.Label, *github.Response, error)
 	RemoveLabelForIssue(ctx context.Context, owner, repo string, number int, label string) (*github.Response, error)
@@ -32,10 +33,6 @@ type GitHubClient interface {
 // GitHubClientWrapper wraps the actual GitHub client
 type GitHubClientWrapper struct {
 	client *github.Client
-}
-
-func (g *GitHubClientWrapper) GetIssue(ctx context.Context, owner, repo string, number int) (*github.Issue, *github.Response, error) {
-	return g.client.Issues.Get(ctx, owner, repo, number)
 }
 
 func (g *GitHubClientWrapper) ListLabelsByIssue(ctx context.Context, owner, repo string, number int, opts *github.ListOptions) ([]*github.Label, *github.Response, error) {
@@ -86,28 +83,27 @@ func NewLabeler(client GitHubClient, config *LabelsYAML) *Labeler {
 
 // ProcessRequest processes a labeling request
 func (l *Labeler) ProcessRequest(ctx context.Context, req *LabelRequest) error {
+	var errs []error
 	if l.config.AutoDelete {
 		if err := l.deleteUndefinedLabels(ctx, req.Owner, req.Repo); err != nil {
-			log.Printf("failed to delete undefined labels: %v", err)
+			errs = append(errs, fmt.Errorf("delete undefined labels: %w", err))
 		}
 	}
 
 	if l.config.AutoCreate {
 		if err := l.ensureDefinedLabelsExist(ctx, req.Owner, req.Repo); err != nil {
-			log.Printf("failed to ensure defined labels exist: %v", err)
+			errs = append(errs, fmt.Errorf("ensure defined labels exist: %w", err))
 		}
 	}
 
-	issue, _, err := l.client.GetIssue(ctx, req.Owner, req.Repo, req.IssueNumber)
-	if err != nil {
-		return fmt.Errorf("failed to fetch issue: %v", err)
-	}
-
 	if l.config.Debug {
-		log.Printf("Processing issue #%d: %s", *issue.Number, *issue.Title)
+		log.Printf("Processing issue #%d", req.IssueNumber)
 	}
 
-	return l.processRules(ctx, req, issue)
+	if err := l.processRules(ctx, req); err != nil {
+		errs = append(errs, err)
+	}
+	return errors.Join(errs...)
 }
 
 // LabelRequest represents a labeling request
@@ -119,13 +115,14 @@ type LabelRequest struct {
 	ChangedFiles []string
 }
 
-func (l *Labeler) processRules(ctx context.Context, req *LabelRequest, issue *github.Issue) error {
+func (l *Labeler) processRules(ctx context.Context, req *LabelRequest) error {
+	var errs []error
 	for _, rule := range l.config.Ruleset {
 		if err := l.processRule(ctx, req, rule); err != nil {
-			log.Printf("error processing rule %s: %v", rule.Name, err)
+			errs = append(errs, fmt.Errorf("rule %q: %w", rule.Name, err))
 		}
 	}
-	return nil
+	return errors.Join(errs...)
 }
 
 func (l *Labeler) processRule(ctx context.Context, req *LabelRequest, rule Rule) error {
@@ -149,24 +146,25 @@ func (l *Labeler) processFilePathRule(ctx context.Context, req *LabelRequest, ru
 		return nil
 	}
 
+	matchedAny := false
 	for _, file := range req.ChangedFiles {
 		matched, err := doublestar.Match(rule.Spec.MatchPath, file)
 		if err != nil {
 			return fmt.Errorf("error matching file path: %v", err)
 		}
 
-		shouldApply := matched
-		if rule.Spec.MatchCondition == "NOT" {
-			shouldApply = !matched
+		if matched {
+			matchedAny = true
+			break
 		}
+	}
 
-		if shouldApply {
-			for _, action := range rule.Actions {
-				if err := l.executeAction(ctx, req, action, nil); err != nil {
-					log.Printf("error executing action: %v", err)
-				}
-			}
-		}
+	shouldApply := matchedAny
+	if strings.EqualFold(rule.Spec.MatchCondition, "NOT") {
+		shouldApply = !matchedAny
+	}
+	if shouldApply {
+		return l.executeActions(ctx, req, rule.Actions, nil)
 	}
 	return nil
 }
@@ -185,31 +183,46 @@ func (l *Labeler) processMatchRule(ctx context.Context, req *LabelRequest, rule 
 
 	lines := strings.Split(req.CommentBody, "\n")
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, rule.Spec.Command) {
-			parts := strings.Fields(line)
-			argv := []string{}
-			if len(parts) > 1 {
-				argv = parts[1:]
+		parts := strings.Fields(line)
+		if len(parts) == 0 || parts[0] != rule.Spec.Command {
+			continue
+		}
+		argv := parts[1:]
+		if !l.commandAllowed(rule, argv) {
+			if l.config.Debug {
+				log.Printf("Invalid arguments %q for command %s", argv, rule.Spec.Command)
 			}
-
-			if len(rule.Spec.MatchList) > 0 && len(argv) > 0 {
-				if !slices.Contains(rule.Spec.MatchList, argv[0]) {
-					if l.config.Debug {
-						log.Printf("Invalid argument `%s` for command %s", argv[0], rule.Spec.Command)
-					}
-					continue
-				}
-			}
-
-			for _, action := range rule.Actions {
-				if err := l.executeAction(ctx, req, action, argv); err != nil {
-					log.Printf("error executing action: %v", err)
-				}
-			}
+			continue
+		}
+		if err := l.executeActions(ctx, req, rule.Actions, argv); err != nil {
+			return err
 		}
 	}
 	return nil
+}
+
+func (l *Labeler) commandAllowed(rule Rule, argv []string) bool {
+	if len(rule.Spec.Rules) == 0 && len(rule.Spec.MatchList) == 0 {
+		return true
+	}
+	values := append([]string(nil), rule.Spec.MatchList...)
+	for _, predicate := range rule.Spec.Rules {
+		values = append(values, predicate.Match)
+		values = append(values, predicate.MatchList...)
+	}
+	argument := ""
+	if len(argv) > 0 {
+		argument = argv[0]
+	}
+	if slices.Contains(values, argument) {
+		return true
+	}
+	for _, action := range rule.Actions {
+		if action.Kind == "apply-label" && slices.Contains(values, l.renderLabel(action.Spec.Label, argv)) {
+			return true
+		}
+	}
+	return false
 }
 
 func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule Rule) error {
@@ -258,13 +271,19 @@ func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule 
 	}
 
 	if shouldApply {
-		for _, action := range rule.Actions {
-			if err := l.executeAction(ctx, req, action, nil); err != nil {
-				log.Printf("error executing action: %v", err)
-			}
-		}
+		return l.executeActions(ctx, req, rule.Actions, nil)
 	}
 	return nil
+}
+
+func (l *Labeler) executeActions(ctx context.Context, req *LabelRequest, actions []Action, argv []string) error {
+	var errs []error
+	for _, action := range actions {
+		if err := l.executeAction(ctx, req, action, argv); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
 }
 
 func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action Action, argv []string) error {
@@ -550,21 +569,17 @@ func isLabelNotFoundError(err error) bool {
 }
 
 func (l *Labeler) ensureDefinedLabelsExist(ctx context.Context, owner, repo string) error {
+	var errs []error
 	for _, label := range l.config.Labels {
 		color, description, labelName := l.getLabelDefinition(label.Name)
 		if err := l.ensureLabelExists(ctx, owner, repo, labelName, color, description); err != nil {
-			log.Printf("skipping label %s due to error: %v", labelName, err)
+			errs = append(errs, fmt.Errorf("label %s: %w", labelName, err))
 		}
 	}
-	return nil
+	return errors.Join(errs...)
 }
 
 func (l *Labeler) deleteUndefinedLabels(ctx context.Context, owner, repo string) error {
-	existingLabels, _, err := l.client.ListLabels(ctx, owner, repo, nil)
-	if err != nil {
-		return fmt.Errorf("failed to fetch existing labels: %v", err)
-	}
-
 	definedLabels := map[string]bool{}
 	for _, label := range l.config.Labels {
 		definedLabels[label.Name] = true
@@ -573,14 +588,25 @@ func (l *Labeler) deleteUndefinedLabels(ctx context.Context, owner, repo string)
 		}
 	}
 
+	var existingLabels []*github.Label
+	for page := 1; page > 0; {
+		labels, response, err := l.client.ListLabels(ctx, owner, repo, &github.ListOptions{Page: page, PerPage: 100})
+		if err != nil {
+			return fmt.Errorf("failed to fetch existing labels: %w", err)
+		}
+		existingLabels = append(existingLabels, labels...)
+		if response == nil {
+			break
+		}
+		page = response.NextPage
+	}
 	for _, lbl := range existingLabels {
 		if !definedLabels[lbl.GetName()] {
 			if l.config.Debug {
 				log.Printf("deleting undefined label: %s", lbl.GetName())
 			}
-			_, err := l.client.DeleteLabel(ctx, owner, repo, lbl.GetName())
-			if err != nil {
-				log.Printf("failed to delete label %s: %v", lbl.GetName(), err)
+			if _, err := l.client.DeleteLabel(ctx, owner, repo, lbl.GetName()); err != nil {
+				return fmt.Errorf("delete label %s: %w", lbl.GetName(), err)
 			}
 		}
 	}
@@ -589,9 +615,13 @@ func (l *Labeler) deleteUndefinedLabels(ctx context.Context, owner, repo string)
 
 // LoadConfigFromURL loads configuration from a URL
 func LoadConfigFromURL(url string) (*LabelsYAML, error) {
-	resp, err := http.Get(url)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch labels.yaml from URL: %v", err)
+		return nil, fmt.Errorf("create labels.yaml request: %w", err)
+	}
+	resp, err := (&http.Client{Timeout: 30 * time.Second}).Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetch labels.yaml from URL: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -599,12 +629,50 @@ func LoadConfigFromURL(url string) (*LabelsYAML, error) {
 		return nil, fmt.Errorf("failed to fetch labels.yaml: HTTP %d", resp.StatusCode)
 	}
 
+	return loadConfig(resp.Body)
+}
+
+func loadConfig(r io.Reader) (*LabelsYAML, error) {
 	var cfg LabelsYAML
-	dec := yaml.NewDecoder(resp.Body)
+	dec := yaml.NewDecoder(r)
+	dec.KnownFields(true)
 	if err := dec.Decode(&cfg); err != nil {
-		return nil, fmt.Errorf("failed to decode labels.yaml: %v", err)
+		return nil, fmt.Errorf("decode labels.yaml: %w", err)
+	}
+	if err := validateConfig(&cfg); err != nil {
+		return nil, err
 	}
 	return &cfg, nil
+}
+
+func validateConfig(cfg *LabelsYAML) error {
+	for _, rule := range cfg.Ruleset {
+		switch rule.Kind {
+		case "match":
+			if !strings.HasPrefix(rule.Spec.Command, "/") {
+				return fmt.Errorf("rule %q: match rules require a slash command", rule.Name)
+			}
+		case "filePath":
+			if rule.Spec.MatchPath == "" {
+				return fmt.Errorf("rule %q: filePath rules require matchPath", rule.Name)
+			}
+		case "label":
+			if rule.Spec.Match == "" {
+				return fmt.Errorf("rule %q: label rules require match", rule.Name)
+			}
+		default:
+			return fmt.Errorf("rule %q: unknown kind %q", rule.Name, rule.Kind)
+		}
+		for _, action := range rule.Actions {
+			if action.Kind != "apply-label" && action.Kind != "remove-label" {
+				return fmt.Errorf("rule %q: unknown action kind %q", rule.Name, action.Kind)
+			}
+			if action.Spec.Label == "" && action.Spec.Match == "" {
+				return fmt.Errorf("rule %q: action %q requires label or match", rule.Name, action.Kind)
+			}
+		}
+	}
+	return nil
 }
 
 // CreateGitHubClient creates a new GitHub client

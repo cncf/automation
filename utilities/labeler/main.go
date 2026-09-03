@@ -12,7 +12,7 @@ import (
 func main() {
 	flag.Parse()
 
-	if len(flag.Args()) < 5 {
+	if len(flag.Args()) < 6 {
 		fmt.Println("Usage: labeler [flags] <labels_url> <owner> <repo> <issue_number> <comment_body> <changed_files>")
 		os.Exit(1)
 	}
