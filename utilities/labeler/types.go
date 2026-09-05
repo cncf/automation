@@ -25,11 +25,17 @@ type Action struct {
 // RuleSpec represents rule specifications
 type RuleSpec struct {
 	Command        string        `yaml:"command,omitempty"`
-	Rules          []interface{} `yaml:"rules,omitempty"`
+	Rules          []CommandRule `yaml:"rules,omitempty"`
 	Match          string        `yaml:"match,omitempty"`
 	MatchCondition string        `yaml:"matchCondition,omitempty"`
 	MatchPath      string        `yaml:"matchPath,omitempty"`
 	MatchList      []string      `yaml:"matchList,omitempty"`
+}
+
+// CommandRule limits the arguments accepted by a match rule.
+type CommandRule struct {
+	Match     string   `yaml:"match,omitempty"`
+	MatchList []string `yaml:"matchList,omitempty"`
 }
 
 // Rule represents a labeling rule

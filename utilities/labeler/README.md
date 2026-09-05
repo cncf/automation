@@ -11,7 +11,8 @@ Process slash commands in comments:
   kind: match
   spec:
     command: "/triage"
-    matchList: ["valid", "duplicate", "needs-information", "not-planned"]
+    rules:
+    - matchList: ["triage/valid", "triage/duplicate", "triage/needs-information", "triage/not-planned"]
   actions:
   - kind: remove-label
     spec:
@@ -20,6 +21,9 @@ Process slash commands in comments:
     spec:
       label: "triage/{{ argv.0 }}"
 ```
+
+Commands must occupy the first whitespace-delimited token of a line. A `rules.matchList`
+entry may be either the command argument or the label rendered by an `apply-label` action.
 
 ### 2. Label Rules (`kind: label`)
 Apply labels based on existing label presence:
