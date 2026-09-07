@@ -306,12 +306,12 @@ spec:
         - --shape-ocpus=16.0
         - --shape-memory-in-gbs=64.0
         - --compartment-id=ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
-        - --region=us-sanjose-1
-        - --availability-domain=bzBe:US-SANJOSE-1-AD-1
-        - --subnet-id=ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq
-        - --fallback-region=us-phoenix-1
-        - --fallback-availability-domain=bzBe:PHX-AD-3,bzBe:PHX-AD-1,bzBe:PHX-AD-2
-        - --fallback-subnet-id=ocid1.subnet.oc1.phx.aaaaaaaabmyvcputzxzy5hrkezavo6m7efa7ap54ztyrj5nvupayqyuw4kja
+        - --region=us-phoenix-1
+        - --availability-domain=bzBe:PHX-AD-3,bzBe:PHX-AD-1,bzBe:PHX-AD-2
+        - --subnet-id=ocid1.subnet.oc1.phx.aaaaaaaabmyvcputzxzy5hrkezavo6m7efa7ap54ztyrj5nvupayqyuw4kja
+        - --fallback-region=us-sanjose-1
+        - --fallback-availability-domain=bzBe:US-SANJOSE-1-AD-1
+        - --fallback-subnet-id=ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq
         env:
         - name: OCI_CONFIG_FILE
           value: /etc/oci/config
