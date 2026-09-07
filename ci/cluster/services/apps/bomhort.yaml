@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: ghcr.io/seebom-labs/bomhort/charts
     chart: bomhort
-    targetRevision: 0.6.0
+    targetRevision: 0.6.1
     helm:
       values: |
         cleanBatchJobs: false
@@ -44,27 +44,17 @@ spec:
         image:
           registry: ghcr.io
           repository: seebom-labs/bomhort
-          tag: 0.6.0
+          tag: 0.6.1
         sbomSource:
           mountPath: /data/sboms
           pvcName: bomhort-sbom-data
           storageSize: 20Gi
         seedJob:
-          cncfExceptionsURL: https://raw.githubusercontent.com/cncf/foundation/main/license-exceptions/exceptions.json
+          cncfExceptionsURL: https://cncf-license-exceptions.netlify.app/exceptions.json
           sbomBranch: main
           sbomRepo: https://github.com/cncf/sbom.git
         s3:
-          buckets: '[{"name":"cncf-subproject-sboms","endpoint":"axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com","region":"us-sanjose-1"},{"name":"cncf-project-sboms","endpoint":"axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com","region":"us-sanjose-1"}]'
-        dataMigration:
-          enabled: true
-          source:
-            host: chi-seebom-clickhouse-seebom-cluster-0-0.seebom.svc.cluster.local
-            port: 9000
-            database: seebom
-            user: default
-            passwordSecret:
-              secretName: clickhouse-migration-source
-              key: password
+          buckets: '[{"name":"cncf-subproject-sboms","endpoint":"linodeobjects.com","region":"us-iad-18"},{"name":"cncf-project-sboms","endpoint":"linodeobjects.com","region":"us-iad-18"}]'
   destination:
     server: https://kubernetes.default.svc
     namespace: bomhort
