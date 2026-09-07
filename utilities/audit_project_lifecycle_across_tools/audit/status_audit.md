@@ -10,7 +10,7 @@
 | Curvine | curvine | curvine | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | llm-d | llm-d | - | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | - | - |
+| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OSCAL Compass | trestlegrc | trestlegrc | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |

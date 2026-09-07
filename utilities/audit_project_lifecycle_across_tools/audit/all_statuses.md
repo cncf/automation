@@ -11,7 +11,7 @@
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Curvine | curvine | curvine | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | - | - |
+| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OSCAL Compass | trestlegrc | trestlegrc | sandbox | sandbox | sandbox | sandbox | - | sandbox |
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
@@ -96,6 +96,7 @@
 | in-toto | intoto | intoto | graduated | graduated | graduated | graduated | graduated | graduated |
 | Istio | istio | istio | graduated | graduated | graduated | graduated | graduated | graduated |
 | Jaeger | jaeger | jaeger | graduated | graduated | graduated | graduated | graduated | graduated |
+| karmada | karmada | karmada | graduated | graduated | graduated | graduated | graduated | graduated |
 | KEDA | KEDA | KEDA | graduated | graduated | graduated | graduated | graduated | graduated |
 | Knative | knative | knative | graduated | graduated | graduated | graduated | graduated | graduated |
 | KubeEdge | kubeedge | kubeedge | graduated | graduated | graduated | graduated | graduated | graduated |
@@ -131,7 +132,6 @@
 | gRPC | grpc | grpc | incubating | incubating | incubating | incubating | incubating | incubating |
 | HAMi | hami | hami | incubating | incubating | incubating | incubating | incubating | incubating |
 | k8gb | k8gb | k8gb | incubating | incubating | incubating | incubating | incubating | incubating |
-| karmada | karmada | karmada | incubating | incubating | incubating | incubating | incubating | incubating |
 | Keycloak | keycloak | keycloak | incubating | incubating | incubating | incubating | incubating | incubating |
 | Kserve | kserve | kserve | incubating | incubating | incubating | incubating | incubating | incubating |
 | Kubescape | kubescape | kubescape | incubating | incubating | incubating | incubating | incubating | incubating |
@@ -259,7 +259,7 @@
 | OAuth2 Proxy | oauth2-proxy | oauth2-proxy | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Cluster Management | openclustermanagement | openclustermanagement | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Policy Registry (OPCR) | opcr | opcr | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | - | - |
+| Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OpenChoreo | openchoreo | openchoreo | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenEBS | openebs | openebs | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
