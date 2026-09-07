@@ -54,7 +54,7 @@ spec:
           sbomBranch: main
           sbomRepo: https://github.com/cncf/sbom.git
         s3:
-          buckets: '[{"name":"cncf-subproject-sboms","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18"},{"name":"cncf-project-sboms","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18"}]'
+          buckets: '[{"name":"cncf-subproject-sboms","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18","usePathStyle":true},{"name":"cncf-project-sboms","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18","usePathStyle":true}]'
   destination:
     server: https://kubernetes.default.svc
     namespace: bomhort
