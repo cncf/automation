@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -11,33 +12,24 @@ import (
 
 // MockGitHubClient implements GitHubClient for testing
 type MockGitHubClient struct {
-	Issues        map[int]*github.Issue
-	Labels        []*github.Label
-	IssueLabels   map[int][]*github.Label
-	CreatedLabels map[string]*github.Label
-	DeletedLabels []string
-	AppliedLabels map[int][]string
-	RemovedLabels map[int][]string
-	GetLabelError error
+	Labels         []*github.Label
+	IssueLabels    map[int][]*github.Label
+	CreatedLabels  map[string]*github.Label
+	DeletedLabels  []string
+	AppliedLabels  map[int][]string
+	RemovedLabels  map[int][]string
+	GetLabelError  error
+	ListLabelsFunc func(opts *github.ListOptions) ([]*github.Label, *github.Response, error)
 }
 
 func NewMockGitHubClient() *MockGitHubClient {
 	return &MockGitHubClient{
-		Issues:        make(map[int]*github.Issue),
 		IssueLabels:   make(map[int][]*github.Label),
 		CreatedLabels: make(map[string]*github.Label),
 		DeletedLabels: []string{},
 		AppliedLabels: make(map[int][]string),
 		RemovedLabels: make(map[int][]string),
 	}
-}
-
-func (m *MockGitHubClient) GetIssue(ctx context.Context, owner, repo string, number int) (*github.Issue, *github.Response, error) {
-	if issue, exists := m.Issues[number]; exists {
-		return issue, nil, nil
-	}
-	title := "Test Issue"
-	return &github.Issue{Number: &number, Title: &title}, nil, nil
 }
 
 func (m *MockGitHubClient) ListLabelsByIssue(ctx context.Context, owner, repo string, number int, opts *github.ListOptions) ([]*github.Label, *github.Response, error) {
@@ -75,6 +67,9 @@ func (m *MockGitHubClient) RemoveLabelForIssue(ctx context.Context, owner, repo 
 }
 
 func (m *MockGitHubClient) ListLabels(ctx context.Context, owner, repo string, opts *github.ListOptions) ([]*github.Label, *github.Response, error) {
+	if m.ListLabelsFunc != nil {
+		return m.ListLabelsFunc(opts)
+	}
 	return m.Labels, nil, nil
 }
 
@@ -891,6 +886,138 @@ func TestEnsureLabelExists_GetLabelNon404Error(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "failed to check label") {
 		t.Fatalf("expected non-404 error to fail label check, got: %v", err)
+	}
+}
+
+func TestLoadProductionConfig(t *testing.T) {
+	configFile, err := os.Open("../../.github/labels.yaml")
+	if err != nil {
+		t.Fatalf("open production labels config: %v", err)
+	}
+	defer configFile.Close()
+
+	if _, err := loadConfig(configFile); err != nil {
+		t.Fatalf("load production labels config: %v", err)
+	}
+}
+
+func TestLoadConfigRejectsUnknownFields(t *testing.T) {
+	_, err := loadConfig(strings.NewReader("labels: []\nunknown: true\n"))
+	if err == nil || !strings.Contains(err.Error(), "field unknown") {
+		t.Fatalf("expected unknown field error, got: %v", err)
+	}
+}
+
+func TestLabeler_ProcessMatchRule_RequiresExactCommandAndAllowedArgument(t *testing.T) {
+	config := &LabelsYAML{
+		AutoCreate:         true,
+		DefinitionRequired: true,
+		Labels: []Label{
+			{Name: "needs-priority", Color: "ededed", Description: "Needs priority"},
+			{Name: "priority/high", Color: "ff0000", Description: "High priority"},
+		},
+		Ruleset: []Rule{{
+			Name: "priority",
+			Kind: "match",
+			Spec: RuleSpec{
+				Command: "/priority",
+				Rules:   []CommandRule{{MatchList: []string{"priority/high"}}},
+			},
+			Actions: []Action{
+				{Kind: "remove-label", Spec: ActionSpec{Match: "needs-priority"}},
+				{Kind: "apply-label", Spec: ActionSpec{Label: "priority/{{ argv.0 }}"}},
+			},
+		}},
+	}
+
+	for _, tc := range []struct {
+		name       string
+		comment    string
+		wantApply  bool
+		wantRemove bool
+	}{
+		{name: "accepted rendered label", comment: "/priority high", wantApply: true, wantRemove: true},
+		{name: "rejected argument", comment: "/priority invalid"},
+		{name: "prefix is not a command", comment: "/priority-high high"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			client := NewMockGitHubClient()
+			client.IssueLabels[1] = []*github.Label{{Name: stringPtr("needs-priority")}}
+			labeler := NewLabeler(client, config)
+			if err := labeler.ProcessRequest(context.Background(), &LabelRequest{Owner: "o", Repo: "r", IssueNumber: 1, CommentBody: tc.comment}); err != nil {
+				t.Fatalf("ProcessRequest failed: %v", err)
+			}
+			if got := sliceContains(client.AppliedLabels[1], "priority/high"); got != tc.wantApply {
+				t.Errorf("priority/high applied=%v, want %v", got, tc.wantApply)
+			}
+			if got := sliceContains(client.RemovedLabels[1], "needs-priority"); got != tc.wantRemove {
+				t.Errorf("needs-priority removed=%v, want %v", got, tc.wantRemove)
+			}
+		})
+	}
+}
+
+func TestLabeler_ProcessFilePathRule_NotRequiresNoMatches(t *testing.T) {
+	config := &LabelsYAML{
+		AutoCreate:         true,
+		DefinitionRequired: true,
+		Labels:             []Label{{Name: "needs-docs", Color: "ededed", Description: "Needs docs"}},
+		Ruleset: []Rule{{
+			Name:    "non-docs",
+			Kind:    "filePath",
+			Spec:    RuleSpec{MatchPath: "docs/**", MatchCondition: "NOT"},
+			Actions: []Action{{Kind: "apply-label", Spec: ActionSpec{Label: "needs-docs"}}},
+		}},
+	}
+	for _, tc := range []struct {
+		name  string
+		files []string
+		want  bool
+	}{
+		{name: "only nonmatching files", files: []string{"main.go"}, want: true},
+		{name: "mixed files", files: []string{"docs/readme.md", "main.go"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			client := NewMockGitHubClient()
+			labeler := NewLabeler(client, config)
+			if err := labeler.ProcessRequest(context.Background(), &LabelRequest{Owner: "o", Repo: "r", IssueNumber: 1, ChangedFiles: tc.files}); err != nil {
+				t.Fatalf("ProcessRequest failed: %v", err)
+			}
+			if got := sliceContains(client.AppliedLabels[1], "needs-docs"); got != tc.want {
+				t.Errorf("needs-docs applied=%v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestLabeler_ProcessRequest_ReturnsRuleErrors(t *testing.T) {
+	labeler := NewLabeler(NewMockGitHubClient(), &LabelsYAML{
+		Ruleset: []Rule{{Name: "unknown", Kind: "unknown"}},
+	})
+	if err := labeler.ProcessRequest(context.Background(), &LabelRequest{Owner: "o", Repo: "r", IssueNumber: 1}); err == nil {
+		t.Fatal("expected ProcessRequest to return an unknown-rule error")
+	}
+}
+
+func TestLabeler_DeleteUndefinedLabels_PaginatesBeforeDeleting(t *testing.T) {
+	client := NewMockGitHubClient()
+	client.ListLabelsFunc = func(opts *github.ListOptions) ([]*github.Label, *github.Response, error) {
+		switch opts.Page {
+		case 1:
+			return []*github.Label{{Name: stringPtr("defined")}, {Name: stringPtr("undefined-one")}}, &github.Response{NextPage: 2}, nil
+		case 2:
+			return []*github.Label{{Name: stringPtr("undefined-two")}}, &github.Response{}, nil
+		default:
+			t.Fatalf("unexpected page %d", opts.Page)
+			return nil, nil, nil
+		}
+	}
+	labeler := NewLabeler(client, &LabelsYAML{Labels: []Label{{Name: "defined"}}})
+	if err := labeler.deleteUndefinedLabels(context.Background(), "o", "r"); err != nil {
+		t.Fatalf("deleteUndefinedLabels failed: %v", err)
+	}
+	if !slicesEqual(client.DeletedLabels, []string{"undefined-one", "undefined-two"}) {
+		t.Errorf("deleted labels = %v, want both undefined labels", client.DeletedLabels)
 	}
 }
 

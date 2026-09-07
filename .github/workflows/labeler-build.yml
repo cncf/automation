@@ -45,6 +45,12 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Test labeler
+        working-directory: ./utilities/labeler
+        run: |
+          go test -v
+          go vet ./...
+
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
