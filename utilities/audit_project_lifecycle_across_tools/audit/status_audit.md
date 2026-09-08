@@ -38,6 +38,7 @@
 | ksctl | - | - | forming | - | - | - | - | - |
 | KubeRay | - | - | forming | - | - | - | - | - |
 | Michelangelo | - | - | forming | - | - | - | - | - |
+| OpenRL | - | - | forming | - | - | - | - | - |
 | OpenShell | - | - | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
 | Praxis | - | - | forming | - | - | - | - | - |
@@ -77,4 +78,3 @@
 | Xline | - | xline | archived | archived | - | - | - | archived |
 | Agent Sandbox | - | - | prospect | - | - | - | - | - |
 | MatrixHub | - | - | prospect | - | - | - | - | - |
-| OpenRL | - | - | prospect | - | - | - | - | - |

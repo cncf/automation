@@ -292,6 +292,7 @@
 | ksctl | forming | - | - |
 | KubeRay | forming | - | - |
 | Michelangelo | forming | Fair | 54 |
+| OpenRL | forming | - | - |
 | OpenShell | forming | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - |
 | Praxis | forming | - | - |
@@ -341,5 +342,4 @@
 |---|---|---|---|
 | Agent Sandbox | prospect | - | - |
 | MatrixHub | prospect | - | - |
-| OpenRL | prospect | - | - |
 
