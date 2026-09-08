@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -72,6 +73,13 @@ type MissingProject struct {
 	SuggestedEntry LandscapeProject
 }
 
+type LandscapeProjectIndex struct {
+	ByName map[string]LandscapeProject
+	ByRepo map[string]LandscapeProject
+}
+
+type repoResolver func(string) (string, error)
+
 func main() {
 	var (
 		outputFile   string
@@ -118,10 +126,13 @@ func main() {
 
 	// Extract all project names from landscape
 	landscapeProjects := extractLandscapeProjects(landscape)
-	fmt.Printf("   Found %d projects in landscape\n", len(landscapeProjects))
+	fmt.Printf("   Found %d projects in landscape\n", len(landscapeProjects.ByName))
 
 	fmt.Println("🔄 Comparing projects...")
-	missing := findMissingProjects(issues, landscapeProjects, verbose)
+	resolveRepo := func(repoURL string) (string, error) {
+		return resolveGitHubRepo(ctx, client, repoURL)
+	}
+	missing := findMissingProjects(issues, landscapeProjects, resolveRepo, verbose)
 	fmt.Printf("   Found %d projects potentially missing from landscape\n", len(missing))
 
 	if len(missing) == 0 {
@@ -291,15 +302,19 @@ func fetchLandscape() (*Landscape, error) {
 	return &landscape, nil
 }
 
-func extractLandscapeProjects(landscape *Landscape) map[string]LandscapeProject {
-	projects := make(map[string]LandscapeProject)
+func extractLandscapeProjects(landscape *Landscape) LandscapeProjectIndex {
+	projects := LandscapeProjectIndex{
+		ByName: make(map[string]LandscapeProject),
+		ByRepo: make(map[string]LandscapeProject),
+	}
 
 	for _, category := range landscape.Landscape {
 		for _, subcategory := range category.Subcategories {
 			for _, item := range subcategory.Items {
-				// Normalize name for comparison
-				normalizedName := strings.ToLower(strings.TrimSpace(item.Name))
-				projects[normalizedName] = item
+				projects.ByName[canonicalProjectName(item.Name)] = item
+				if repo, ok := parseGitHubRepo(item.RepoURL); ok {
+					projects.ByRepo[repo] = item
+				}
 			}
 		}
 	}
@@ -307,48 +322,86 @@ func extractLandscapeProjects(landscape *Landscape) map[string]LandscapeProject 
 	return projects
 }
 
-func findMissingProjects(issues []SandboxIssue, landscapeProjects map[string]LandscapeProject, verbose bool) []MissingProject {
+func canonicalProjectName(name string) string {
+	name = strings.ToLower(strings.TrimSpace(name))
+	return strings.NewReplacer("-", "", "_", "", " ", "").Replace(name)
+}
+
+func parseGitHubRepo(repoURL string) (string, bool) {
+	parsed, err := url.Parse(strings.TrimSpace(repoURL))
+	if err != nil || !strings.EqualFold(parsed.Hostname(), "github.com") {
+		return "", false
+	}
+
+	parts := strings.Split(strings.Trim(parsed.Path, "/"), "/")
+	if len(parts) < 2 || parts[0] == "" || parts[1] == "" {
+		return "", false
+	}
+
+	repo := strings.TrimSuffix(parts[1], ".git")
+	return strings.ToLower(parts[0] + "/" + repo), true
+}
+
+func resolveGitHubRepo(ctx context.Context, client *github.Client, repoURL string) (string, error) {
+	repoPath, ok := parseGitHubRepo(repoURL)
+	if !ok {
+		return "", fmt.Errorf("invalid GitHub repository URL %q", repoURL)
+	}
+
+	parts := strings.SplitN(repoPath, "/", 2)
+	repository, _, err := client.Repositories.Get(ctx, parts[0], parts[1])
+	if err != nil {
+		return "", fmt.Errorf("resolve GitHub repository %s: %w", repoPath, err)
+	}
+
+	return strings.ToLower(repository.GetFullName()), nil
+}
+
+func findMissingProjects(issues []SandboxIssue, landscapeProjects LandscapeProjectIndex, resolveRepo repoResolver, verbose bool) []MissingProject {
 	var missing []MissingProject
+	logf := func(format string, args ...any) {
+		if verbose {
+			fmt.Printf(format, args...)
+		}
+	}
 
 	for _, issue := range issues {
 		projectName := issue.ProjectName
-		normalizedName := strings.ToLower(strings.TrimSpace(projectName))
-
-		// Check various name variations
-		found := false
-		variations := []string{
-			normalizedName,
-			strings.ReplaceAll(normalizedName, "-", ""),
-			strings.ReplaceAll(normalizedName, " ", ""),
-			strings.ReplaceAll(normalizedName, "_", ""),
-		}
-
-		for _, variation := range variations {
-			if _, exists := landscapeProjects[variation]; exists {
-				found = true
-				if verbose {
-					fmt.Printf("   ✓ %s found in landscape\n", projectName)
-				}
-				break
-			}
-		}
+		_, found := landscapeProjects.ByName[canonicalProjectName(projectName)]
 
 		if !found {
-			if verbose {
-				fmt.Printf("   ✗ %s NOT found in landscape\n", projectName)
+			if repo, ok := parseGitHubRepo(issue.RepoURL); ok {
+				_, found = landscapeProjects.ByRepo[repo]
 			}
-
-			mp := MissingProject{
-				Issue: issue,
-				SuggestedEntry: LandscapeProject{
-					Name:        projectName,
-					HomepageURL: issue.WebsiteURL,
-					RepoURL:     issue.RepoURL,
-					Project:     "sandbox",
-				},
-			}
-			missing = append(missing, mp)
 		}
+
+		if !found && resolveRepo != nil && issue.RepoURL != "" {
+			repo, err := resolveRepo(issue.RepoURL)
+			if err != nil {
+				logf("   ! Could not resolve repository for %s: %v\n", projectName, err)
+			}
+			if err == nil {
+				_, found = landscapeProjects.ByRepo[strings.ToLower(repo)]
+			}
+		}
+
+		if found {
+			logf("   ✓ %s found in landscape\n", projectName)
+			continue
+		}
+
+		logf("   ✗ %s NOT found in landscape\n", projectName)
+
+		mp := MissingProject{
+			Issue: issue,
+			SuggestedEntry: LandscapeProject{
+				Name:        projectName,
+				HomepageURL: issue.WebsiteURL,
+				RepoURL:     issue.RepoURL,
+				Project:     "sandbox",
+			},
+		}
+		missing = append(missing, mp)
 	}
 
 	return missing
