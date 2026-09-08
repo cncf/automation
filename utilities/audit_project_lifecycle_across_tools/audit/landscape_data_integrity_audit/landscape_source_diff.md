@@ -5,10 +5,10 @@ When those two disagree, that is called out. **`landscape.yml` should be updated
 
 ## Summary
 
-- **CNCF landscape items in scope:** 256
+- **CNCF landscape items in scope:** 252
 - **With at least one drift / conflict row:** 2
 - **Findings where Landscape and CLOMonitor disagree:** 0
-- **No PCC and no CLOMonitor match:** 2
+- **No PCC and no CLOMonitor match:** 0
 
 ## Differences (sorted by field)
 
@@ -23,7 +23,4 @@ Each row is one detected mismatch. Sorted by `Field`, then `Project`.
 
 These are in-scope landscape projects that could not be matched to PCC or CLOMonitor; they are usually candidates for upstream/source alignment PRs.
 
-| Project | Maturity | Path |
-|---------|----------|------|
-| Service Mesh Interface (SMI) | archived | Orchestration & Management / Service Mesh |
-| Monocle | sandbox | Observability and Analysis / Observability |
+_All in-scope items resolved to at least PCC or CLOMonitor._
