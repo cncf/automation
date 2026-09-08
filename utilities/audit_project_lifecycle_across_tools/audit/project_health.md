@@ -269,6 +269,8 @@
 | Project | [PCC Status](./pcc_projects.yaml) | [Insights Health](../datasources/lfx_insights_health.yaml) | [Health Score](../datasources/lfx_insights_health.yaml) |
 |---|---|---|---|
 | <QHTTPX> | forming | - | - |
+| Agent Substrate | forming | - | - |
+| agent-airlock | forming | - | - |
 | agentregistry | forming | Fair | 69 |
 | AI Runway | forming | - | - |
 | AIBrix | forming | - | - |
@@ -282,17 +284,24 @@
 | DevOps AI Toolkit | forming | - | - |
 | Dexfile | forming | - | - |
 | Gthulhu | forming | Excellent - Partial | - |
+| gVisor | forming | - | - |
+| Hive Commons | forming | - | - |
 | Inference Gateway | forming | Healthy | 74 |
+| K2s | forming | - | - |
 | Kmesh | forming | Fair | 63 |
 | ksctl | forming | - | - |
+| KubeRay | forming | - | - |
 | Michelangelo | forming | Fair | 54 |
+| OpenShell | forming | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - |
+| Praxis | forming | - | - |
 | Schema Driven Configuration | forming | Healthy | 81 |
 | SecureBuild | forming | - | - |
 | SemaMesh | forming | - | - |
 | Sermant | forming | Fair | 50 |
 | ServiceRadar | forming | - | - |
 | Terrascan | forming | - | - |
+| Zeish | forming | - | - |
 
 ## Archived
 
@@ -331,15 +340,6 @@
 | Project | [PCC Status](./pcc_projects.yaml) | [Insights Health](../datasources/lfx_insights_health.yaml) | [Health Score](../datasources/lfx_insights_health.yaml) |
 |---|---|---|---|
 | Agent Sandbox | prospect | - | - |
-| Agent Substrate | prospect | - | - |
-| agent-airlock | prospect | - | - |
-| gVisor | prospect | - | - |
-| Hive Commons | prospect | - | - |
-| K2s | prospect | - | - |
-| KubeRay | prospect | - | - |
 | MatrixHub | prospect | - | - |
 | OpenRL | prospect | - | - |
-| OpenShell | prospect | - | - |
-| Praxis | prospect | - | - |
-| Zeish | prospect | - | - |
 
