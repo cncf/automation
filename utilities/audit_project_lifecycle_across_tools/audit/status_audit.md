@@ -9,7 +9,6 @@
 | Copa | copacetic | copacetic | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Curvine | curvine | curvine | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | kube-vip | kube-vip | kube-vip | sandbox | sandbox | sandbox | sandbox | sandbox | - |
-| llm-d | llm-d | - | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Open Workflow Specification | openworkflow | openworkflow | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OpenEverest | openeverest | openeverest | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | OSCAL Compass | trestlegrc | trestlegrc | sandbox | sandbox | sandbox | sandbox | - | sandbox |
@@ -68,3 +67,14 @@
 | Vineyard | - | vineyard | archived | archived | - | - | - | archived |
 | Xline | - | xline | archived | archived | - | - | - | archived |
 | Agent Sandbox | - | - | prospect | - | - | - | - | - |
+| Agent Substrate | - | - | prospect | - | - | - | - | - |
+| agent-airlock | - | - | prospect | - | - | - | - | - |
+| gVisor | - | - | prospect | - | - | - | - | - |
+| Hive Commons | - | - | prospect | - | - | - | - | - |
+| K2s | - | - | prospect | - | - | - | - | - |
+| KubeRay | - | - | prospect | - | - | - | - | - |
+| MatrixHub | - | - | prospect | - | - | - | - | - |
+| OpenRL | - | - | prospect | - | - | - | - | - |
+| OpenShell | - | - | prospect | - | - | - | - | - |
+| Praxis | - | - | prospect | - | - | - | - | - |
+| Zeish | - | - | prospect | - | - | - | - | - |

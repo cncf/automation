@@ -39,7 +39,7 @@
 | Crossplane | graduated | Fair | 64 |
 | CubeFS | graduated | Concerning | 48 |
 | Dapr | graduated | Healthy | 73 |
-| Dragonfly | graduated | Healthy | 71 |
+| Dragonfly | graduated | Healthy | 69 |
 | Envoy | graduated | Healthy | 74 |
 | Etcd | graduated | Healthy | 79 |
 | Falco | graduated | Fair | 68 |
@@ -51,10 +51,10 @@
 | Istio | graduated | Healthy | 82 |
 | Jaeger | graduated | Fair | 66 |
 | karmada | graduated | Fair | 68 |
-| KEDA | graduated | Fair | 64 |
+| KEDA | graduated | Fair | 65 |
 | Knative | graduated | Healthy | 74 |
 | KubeEdge | graduated | Fair | 58 |
-| Kubeflow | graduated | Healthy | 77 |
+| Kubeflow | graduated | Healthy | 78 |
 | Kubernetes | graduated | Healthy | 71 |
 | Kyverno | graduated | Fair | 60 |
 | Linkerd | graduated | Healthy | 75 |
@@ -93,7 +93,7 @@
 | KubeVirt | incubating | Healthy | 70 |
 | Lima | incubating | Healthy | 76 |
 | LitmusChaos | incubating | Concerning | 48 |
-| Longhorn | incubating | Healthy | 81 |
+| Longhorn | incubating | Healthy | 79 |
 | Metal³ | incubating | Healthy | 82 |
 | Microcks | incubating | Fair | 68 |
 | NATS | incubating | Fair | 68 |
@@ -139,7 +139,7 @@
 | Clusterpedia | sandbox | Concerning | 39 |
 | CoHDI | sandbox | Healthy - Partial | - |
 | composefs | sandbox | Fair | 53 |
-| Connect RPC | sandbox | Healthy | 79 |
+| Connect RPC | sandbox | Healthy | 77 |
 | container2wasm | sandbox | Fair | 59 |
 | ContainerSSH | sandbox | Concerning - Partial | - |
 | Copa | sandbox | Concerning | 35 |
@@ -174,10 +174,10 @@
 | KCL | sandbox | Concerning | 47 |
 | kcp | sandbox | Fair | 61 |
 | Kepler | sandbox | Fair | 57 |
-| Keylime | sandbox | Fair | 55 |
+| Keylime | sandbox | Fair | 62 |
 | kgateway | sandbox | Healthy | 72 |
 | KitOps | sandbox | Healthy | 81 |
-| ko | sandbox | Healthy | 76 |
+| ko | sandbox | Healthy | 80 |
 | Konveyor | sandbox | Healthy | 77 |
 | Koordinator | sandbox | Fair | 59 |
 | kpt | sandbox | Healthy | 83 |
@@ -189,7 +189,7 @@
 | kube-rs | sandbox | Healthy | 72 |
 | kube-vip | sandbox | Fair | 61 |
 | Kubean | sandbox | Concerning | 45 |
-| KubeArmor | sandbox | Concerning | 36 |
+| KubeArmor | sandbox | Concerning | 37 |
 | Kubeclipper | sandbox | Fair | 59 |
 | KubeElasti | sandbox | Healthy - Partial | - |
 | KubeFleet | sandbox | Healthy | 78 |
@@ -202,7 +202,7 @@
 | Kuma | sandbox | Healthy | 74 |
 | Kured | sandbox | Healthy | 76 |
 | KusionStack | sandbox | Fair - Partial | - |
-| llm-d | sandbox | Excellent | 86 |
+| llm-d | sandbox | Excellent | 89 |
 | Logging Operator | sandbox | Healthy | 80 |
 | LoxiLB | sandbox | Fair | 61 |
 | Meshery | sandbox | Healthy | 72 |
@@ -232,10 +232,10 @@
 | Piraeus-Datastore | sandbox | Fair | 68 |
 | Pixie | sandbox | Concerning | 41 |
 | Podman Container Tools | sandbox | Fair - Partial | - |
-| Podman Desktop | sandbox | Healthy | 70 |
+| Podman Desktop | sandbox | Healthy | 73 |
 | Porter | sandbox | Fair | 63 |
 | Radius | sandbox | Excellent | 88 |
-| Ratify | sandbox | Critical | 29 |
+| Ratify | sandbox | Critical | 28 |
 | Runme Notebooks | sandbox | Concerning | 45 |
 | SchemaHero | sandbox | Concerning | 36 |
 | Score | sandbox | Healthy | 73 |
@@ -247,7 +247,7 @@
 | SOPS | sandbox | Healthy | 75 |
 | Spiderpool | sandbox | Fair | 52 |
 | Spin | sandbox | Healthy | 77 |
-| stacker | sandbox | Concerning | 30 |
+| stacker | sandbox | Concerning | 28 |
 | Submariner | sandbox | Healthy | 78 |
 | Telepresence | sandbox | Concerning | 49 |
 | Tinkerbell | sandbox | Fair | 58 |
@@ -284,7 +284,7 @@
 | Gthulhu | forming | Excellent - Partial | - |
 | Inference Gateway | forming | Healthy | 74 |
 | Kmesh | forming | Fair | 63 |
-| ksctl | forming | Healthy - Partial | - |
+| ksctl | forming | - | - |
 | Michelangelo | forming | Fair | 54 |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - |
 | Schema Driven Configuration | forming | Healthy | 81 |
@@ -331,4 +331,15 @@
 | Project | [PCC Status](./pcc_projects.yaml) | [Insights Health](../datasources/lfx_insights_health.yaml) | [Health Score](../datasources/lfx_insights_health.yaml) |
 |---|---|---|---|
 | Agent Sandbox | prospect | - | - |
+| Agent Substrate | prospect | - | - |
+| agent-airlock | prospect | - | - |
+| gVisor | prospect | - | - |
+| Hive Commons | prospect | - | - |
+| K2s | prospect | - | - |
+| KubeRay | prospect | - | - |
+| MatrixHub | prospect | - | - |
+| OpenRL | prospect | - | - |
+| OpenShell | prospect | - | - |
+| Praxis | prospect | - | - |
+| Zeish | prospect | - | - |
 
