@@ -17,6 +17,8 @@
 | Oxia | oxia | oxia | sandbox | sandbox | sandbox | sandbox | sandbox | - |
 | Service Mesh Performance | service-mesh-performance | service-mesh-performance | sandbox | archived | - | - | - | archived |
 | <QHTTPX> | - | - | forming | - | - | - | - | - |
+| Agent Substrate | - | - | forming | - | - | - | - | - |
+| agent-airlock | - | - | forming | - | - | - | - | - |
 | agentregistry | - | - | forming | - | - | - | - | - |
 | AI Runway | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
@@ -30,17 +32,24 @@
 | DevOps AI Toolkit | - | - | forming | - | - | - | - | - |
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
+| gVisor | - | - | forming | - | - | - | - | - |
+| Hive Commons | - | - | forming | - | - | - | - | - |
 | Inference Gateway | - | - | forming | - | - | - | - | - |
+| K2s | - | - | forming | - | - | - | - | - |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
+| KubeRay | - | - | forming | - | - | - | - | - |
 | Michelangelo | - | - | forming | - | - | - | - | - |
+| OpenShell | - | - | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
+| Praxis | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
 | SemaMesh | - | - | forming | - | - | - | - | - |
 | Sermant | - | sermant | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ServiceRadar | - | - | forming | - | - | - | - | - |
 | Terrascan | - | - | forming | - | - | - | - | - |
+| Zeish | - | - | forming | - | - | - | - | - |
 | Brigade | - | brigade | archived | archived | - | - | - | archived |
 | CNI-Genie | - | cni-genie | archived | archived | - | - | - | - |
 | Curiefense | - | curiefense | archived | archived | - | - | - | archived |
@@ -69,17 +78,8 @@
 | Vineyard | - | vineyard | archived | archived | - | - | - | archived |
 | Xline | - | xline | archived | archived | - | - | - | archived |
 | Agent Sandbox | - | - | prospect | - | - | - | - | - |
-| Agent Substrate | - | - | prospect | - | - | - | - | - |
-| agent-airlock | - | - | prospect | - | - | - | - | - |
-| gVisor | - | - | prospect | - | - | - | - | - |
-| Hive Commons | - | - | prospect | - | - | - | - | - |
-| K2s | - | - | prospect | - | - | - | - | - |
-| KubeRay | - | - | prospect | - | - | - | - | - |
 | MatrixHub | - | - | prospect | - | - | - | - | - |
 | OpenRL | - | - | prospect | - | - | - | - | - |
-| OpenShell | - | - | prospect | - | - | - | - | - |
-| Praxis | - | - | prospect | - | - | - | - | - |
-| Zeish | - | - | prospect | - | - | - | - | - |
 
 ## Graduated
 
@@ -326,6 +326,8 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | <QHTTPX> | - | - | forming | - | - | - | - | - |
+| Agent Substrate | - | - | forming | - | - | - | - | - |
+| agent-airlock | - | - | forming | - | - | - | - | - |
 | agentregistry | - | - | forming | - | - | - | - | - |
 | AI Runway | - | - | forming | - | - | - | - | - |
 | AIBrix | - | - | forming | - | - | - | - | - |
@@ -339,17 +341,24 @@
 | DevOps AI Toolkit | - | - | forming | - | - | - | - | - |
 | Dexfile | - | - | forming | - | - | - | - | - |
 | Gthulhu | - | - | forming | - | - | - | - | - |
+| gVisor | - | - | forming | - | - | - | - | - |
+| Hive Commons | - | - | forming | - | - | - | - | - |
 | Inference Gateway | - | - | forming | - | - | - | - | - |
+| K2s | - | - | forming | - | - | - | - | - |
 | Kmesh | - | kmesh | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ksctl | - | - | forming | - | - | - | - | - |
+| KubeRay | - | - | forming | - | - | - | - | - |
 | Michelangelo | - | - | forming | - | - | - | - | - |
+| OpenShell | - | - | forming | - | - | - | - | - |
 | OptiFlow (AI‑OrchestrateX) | - | - | forming | - | - | - | - | - |
+| Praxis | - | - | forming | - | - | - | - | - |
 | Schema Driven Configuration | - | - | forming | - | - | - | - | - |
 | SecureBuild | - | - | forming | - | - | - | - | - |
 | SemaMesh | - | - | forming | - | - | - | - | - |
 | Sermant | - | sermant | forming | sandbox | sandbox | sandbox | sandbox | sandbox |
 | ServiceRadar | - | - | forming | - | - | - | - | - |
 | Terrascan | - | - | forming | - | - | - | - | - |
+| Zeish | - | - | forming | - | - | - | - | - |
 
 ## Archived
 
@@ -388,15 +397,6 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Agent Sandbox | - | - | prospect | - | - | - | - | - |
-| Agent Substrate | - | - | prospect | - | - | - | - | - |
-| agent-airlock | - | - | prospect | - | - | - | - | - |
-| gVisor | - | - | prospect | - | - | - | - | - |
-| Hive Commons | - | - | prospect | - | - | - | - | - |
-| K2s | - | - | prospect | - | - | - | - | - |
-| KubeRay | - | - | prospect | - | - | - | - | - |
 | MatrixHub | - | - | prospect | - | - | - | - | - |
 | OpenRL | - | - | prospect | - | - | - | - | - |
-| OpenShell | - | - | prospect | - | - | - | - | - |
-| Praxis | - | - | prospect | - | - | - | - | - |
-| Zeish | - | - | prospect | - | - | - | - | - |
 
