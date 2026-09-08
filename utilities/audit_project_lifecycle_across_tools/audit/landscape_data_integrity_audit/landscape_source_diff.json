@@ -284,29 +284,10 @@
       "name": "Cedar",
       "path": "Provisioning / Security & Compliance",
       "maturity": "sandbox",
-      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": "cedar",
-          "pcc": null,
-          "clomonitor": "cedar-policy",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('cedar') ≠ CLOMonitor ('cedar-policy')."
-        },
-        {
-          "field": "extra.dev_stats_url",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "https://cedarpolicy.devstats.cncf.io/",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'https://cedarpolicy.devstats.cncf.io/'."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "cert-manager",
@@ -807,20 +788,10 @@
       "name": "Podman Container Tools",
       "path": "Runtime / Container Runtime",
       "maturity": "sandbox",
-      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": "podman",
-          "pcc": null,
-          "clomonitor": "podman-container-tools",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('podman') ≠ CLOMonitor ('podman-container-tools')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "rkt",
@@ -1586,17 +1557,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "http://github.com/drasi-project/drasi-platform",
-          "pcc": "https://github.com/drasi-project",
-          "clomonitor": "https://github.com/drasi-project/drasi-platform",
-          "pcc_clomonitor_agree": true,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('http://github.com/drasi-project/drasi-platform') ≠ PCC ('https://github.com/drasi-project'). Landscape ('http://github.com/drasi-project/drasi-platform') ≠ CLOMonitor ('https://github.com/drasi-project/drasi-platform')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "NATS",
@@ -2359,38 +2320,10 @@
       "name": "llm-d",
       "path": "Inference / Framework",
       "maturity": "sandbox",
-      "match_note": "clo_slug_guess+pcc_name",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.lfx_slug",
-          "landscape": null,
-          "pcc": "llm-d",
-          "clomonitor": null,
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": null,
-          "message": "Landscape missing; PCC has 'llm-d'."
-        },
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "llm-d",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'llm-d'."
-        },
-        {
-          "field": "extra.dev_stats_url",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "https://llmd.devstats.cncf.io/",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'https://llmd.devstats.cncf.io/'."
-        }
-      ]
+      "findings": []
     }
   ]
 }
