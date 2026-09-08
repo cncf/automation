@@ -730,7 +730,8 @@ build {
   }`
 
 	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
-				"${path.root}/../scripts/build/install-runner-package.sh",`
+				"${path.root}/../scripts/build/install-runner-package.sh",
+				"${path.root}/../scripts/build/install-sbomit-tools.sh",`
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
 		provisioner "shell" {
@@ -753,16 +754,4 @@ build {
 
 	replacements[`destination = "${path.root}/../software-report.json"`] = `only = ["azure-arm.build_image"]
 			destination = "${path.root}/../software-report.json"`
-
-	// The SBOMit toolchain must be installed after the toolset provisioner which is where the Go toolchain is installed.
-	toolsetProvisioner := `    scripts          = ["${path.root}/../scripts/build/Install-Toolset.ps1", "${path.root}/../scripts/build/Configure-Toolset.ps1"]
-  }`
-
-	sbomitProvisioner := `  provisioner "shell" {
-    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
-    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    scripts          = ["${path.root}/../scripts/build/install-sbomit-tools.sh"]
-  }`
-
-	replacements[toolsetProvisioner] = toolsetProvisioner + "\n\n" + sbomitProvisioner
 }
