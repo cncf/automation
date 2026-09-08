@@ -69,6 +69,17 @@
 | Vineyard | - | vineyard | archived | archived | - | - | - | archived |
 | Xline | - | xline | archived | archived | - | - | - | archived |
 | Agent Sandbox | - | - | prospect | - | - | - | - | - |
+| Agent Substrate | - | - | prospect | - | - | - | - | - |
+| agent-airlock | - | - | prospect | - | - | - | - | - |
+| gVisor | - | - | prospect | - | - | - | - | - |
+| Hive Commons | - | - | prospect | - | - | - | - | - |
+| K2s | - | - | prospect | - | - | - | - | - |
+| KubeRay | - | - | prospect | - | - | - | - | - |
+| MatrixHub | - | - | prospect | - | - | - | - | - |
+| OpenRL | - | - | prospect | - | - | - | - | - |
+| OpenShell | - | - | prospect | - | - | - | - | - |
+| Praxis | - | - | prospect | - | - | - | - | - |
+| Zeish | - | - | prospect | - | - | - | - | - |
 
 ## Graduated
 
@@ -248,7 +259,7 @@
 | Kuma | kuma | kuma | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Kured | kured | kured | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | KusionStack | kusionstack | kusionstack | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
-| llm-d | llm-d | - | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
+| llm-d | llm-d | llm-d | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Logging Operator | logging-operator | logging-operator | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | LoxiLB | loxilb | loxilb | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
 | Meshery | meshery | meshery | sandbox | sandbox | sandbox | sandbox | sandbox | sandbox |
@@ -377,4 +388,15 @@
 | Project | [PCC Slug](./pcc_projects.yaml) | [Landscape Slug](https://github.com/cncf/landscape/blob/master/landscape.yml) | [PCC](./pcc_projects.yaml) | [Landscape](https://github.com/cncf/landscape/blob/master/landscape.yml) | [CLOMonitor](https://github.com/cncf/clomonitor/blob/main/data/cncf.yaml) | [Maintainers](https://github.com/cncf/foundation/blob/main/project-maintainers.csv) | [DevStats](https://devstats.cncf.io/) | [Artwork](https://raw.githubusercontent.com/cncf/artwork/main/README.md) |
 |---|---|---|---|---|---|---|---|---|
 | Agent Sandbox | - | - | prospect | - | - | - | - | - |
+| Agent Substrate | - | - | prospect | - | - | - | - | - |
+| agent-airlock | - | - | prospect | - | - | - | - | - |
+| gVisor | - | - | prospect | - | - | - | - | - |
+| Hive Commons | - | - | prospect | - | - | - | - | - |
+| K2s | - | - | prospect | - | - | - | - | - |
+| KubeRay | - | - | prospect | - | - | - | - | - |
+| MatrixHub | - | - | prospect | - | - | - | - | - |
+| OpenRL | - | - | prospect | - | - | - | - | - |
+| OpenShell | - | - | prospect | - | - | - | - | - |
+| Praxis | - | - | prospect | - | - | - | - | - |
+| Zeish | - | - | prospect | - | - | - | - | - |
 
