@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.9.0
 	github.com/oracle/oci-go-sdk/v65 v65.123.1
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 	google.golang.org/api v0.297.0
 	k8s.io/apimachinery v0.37.0
 	k8s.io/client-go v0.37.0
