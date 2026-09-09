@@ -45,7 +45,9 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: '1.22'
+          # Caller's repo is checked out here, so .go-version is unavailable.
+          # Keep in sync with /.go-version (enforced by .github/scripts/check-go-version.sh).
+          go-version: '1.27.1'
           cache: false
 
       - name: Install bom tool and go-licenses

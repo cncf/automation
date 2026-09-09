@@ -1,77 +1,52 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/*"
     schedule:
       interval: "weekly"
     labels:
       - "dependencies"
       - "github-actions"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
-    directory: "/ci/cloudrunners"
+    directories:
+      - "/ci/cloudrunners"
+      - "/ci/gha-runner-vm"
+      - "/ci/gha-runner-vm-oci"
+      - "/utilities/dot-project"
+      - "/utilities/labeler"
+      - "/utilities/landscape-mcp-server"
+      - "/utilities/landscape-sync"
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "gomod"
-    directory: "/ci/gha-runner-vm"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gomod"
-    directory: "/ci/gha-runner-vm-oci"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gomod"
-    directory: "/utilities/dot-project"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gomod"
-    directory: "/utilities/labeler"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gomod"
-    directory: "/utilities/landscape-mcp-server"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gomod"
-    directory: "/utilities/landscape-sync"
-    schedule:
-      interval: "weekly"
+    groups:
+      go-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "docker"
-    directory: "/ci/cloudrunners"
+    directories:
+      - "/ci/cloudrunners"
+      - "/ci/cloudrunners/gcp"
+      - "/ci/gha-runner-image"
+      - "/utilities/dot-project"
+      - "/utilities/labeler"
+      - "/utilities/landscape-mcp-server"
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "docker"
-    directory: "/ci/cloudrunners/gcp"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "docker"
-    directory: "/ci/gha-runner-image"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "docker"
-    directory: "/utilities/dot-project"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "docker"
-    directory: "/utilities/labeler"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "docker"
-    directory: "/utilities/landscape-mcp-server"
-    schedule:
-      interval: "weekly"
+    groups:
+      docker-base-images:
+        patterns:
+          - "*"
 
   - package-ecosystem: "terraform"
     directories:
@@ -80,21 +55,18 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "pip"
-    directory: "/Ambassadors"
+    directories:
+      - "/Ambassadors"
+      - "/Kubestronaut"
+      - "/Kubestronaut/Rendering"
+      - "/Kubestronaut/kubestronauts-coupons"
+      - "/utilities/audit_project_lifecycle_across_tools"
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "pip"
-    directory: "/Kubestronaut"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "pip"
-    directory: "/Kubestronaut/Rendering"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "pip"
-    directory: "/Kubestronaut/kubestronauts-coupons"
-    schedule:
-      interval: "weekly"
+    groups:
+      python-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

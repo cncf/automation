@@ -33,7 +33,7 @@ utilities/landscape-sync/
 
 ### Go version guard — critical
 
-`.go-version` pins **Go 1.26.1**. `.github/scripts/check-go-version.sh` is the guard script that enforces this — it **fails if any `go.mod` or any `FROM golang:` Dockerfile line doesn't match exactly**. When bumping Go, update `.go-version` plus every `go.mod` and every `Dockerfile` in one commit.
+`.go-version` is the single source of truth for the Go version (currently **1.27.1**). `.github/scripts/check-go-version.sh` enforces it and runs in CI via `.github/workflows/check-go-version.yml` on every PR — it **fails if any of these don't match exactly**: `go` directive in any `go.mod`, any `FROM golang:` Dockerfile line, any `go.dev/dl/goX.Y.Z` tarball URL in a Dockerfile (`ci/gha-runner-image`), or any hardcoded `go-version:` in `.github/**` (`reusable-generate-sbom.yml`, which can't use `go-version-file` because it checks out the caller's repo). When bumping Go, update all of them in one commit; run the script locally first. Dependabot bumps `FROM golang:` lines as one grouped PR, but that PR will fail the guard until `.go-version` and the `go.mod` files are bumped alongside it.
 
 ### Per-module test commands
 
@@ -47,7 +47,7 @@ Exceptions:
 ### Per-module quirks
 
 **`utilities/dot-project/`** — Read `utilities/dot-project/AGENT.md` (482 lines) and `SCHEMA.md` before editing. Key facts:
-- `make build` builds only 3 of 7 `cmd/` binaries (validator, landscape-updater, bootstrap). Build others explicitly: `go build -o bin/<name> ./cmd/<name>`.
+- `make build` builds all 8 `cmd/` binaries into `bin/`. The Docker image ships only `validator` and `landscape-updater`; CI runs `validator` and `onboarding-report`. The rest (`bootstrap`, `audit-checker`, `staleness-checker`, `generate-schema`, `migrate`) are manual-use tools.
 - Requires `REPO_ROOT` env var for `file://` config path resolution.
 - Lint: `golangci-lint run`; security: `gosec ./...` (both must be installed separately).
 - Docker image entrypoint is `validator`; override with `--entrypoint landscape-updater`.
@@ -56,7 +56,7 @@ Exceptions:
 
 **`utilities/labeler/`** — Makefile has only `run` and `image` targets, no `build` or `test`. Local test image tags as `gha-labeler:latest`; published image is `ghcr.io/cncf/gha-labeler`.
 
-**`ci/cloudrunners/`** — Dockerfile builds only `oci` and `kubevirt` binaries (not `gcp`). `CLOUDRUNNER_PROVIDER` env selects binary at runtime (`oci` default). OCI images are always created as `rc-<name>` (release candidates); a CI workflow promotes them to production names after tests pass.
+**`ci/cloudrunners/`** — Dockerfile builds only `oci` and `kubevirt` binaries. `gcp/` is a kept, manual-run provider with its own Dockerfile (`ci/cloudrunners/gcp/Dockerfile`) and is not shipped in the main image or run by any workflow. `CLOUDRUNNER_PROVIDER` env selects binary at runtime (`oci` default). OCI images are always created as `rc-<name>` (release candidates); a CI workflow promotes them to production names after tests pass.
 
 ---
 
@@ -105,11 +105,13 @@ No central manifest. Install per-folder:
 | `Kubestronaut/` | `pip install -r Kubestronaut/requirements.txt` |
 | `Kubestronaut/Rendering/` | `pip install -r Kubestronaut/Rendering/requirements.txt` |
 | `Kubestronaut/kubestronauts-coupons/` | `pip install -r Kubestronaut/kubestronauts-coupons/requirements.txt` |
-| `utilities/audit_project_lifecycle_across_tools/` | **No requirements.txt** — `pip install requests pyyaml beautifulsoup4` |
+| `utilities/audit_project_lifecycle_across_tools/` | `pip install -r utilities/audit_project_lifecycle_across_tools/requirements.txt` |
 
 `utilities/audit_project_lifecycle_across_tools/scripts/fetch_pcc_projects.py` requires `LFX_TOKEN` env (short-lived; see CI secret). Run scripts from the subdirectory: `python scripts/<name>.py`.
 
-`tests/syntax_check.py` is the CI-run test — it only does `py_compile` checks on two Kubestronaut files, mocking cred-dependent imports. It is not a general test suite.
+`tests/syntax_check.py` is the CI-run test — it `py_compile`s every tracked `.py` file under `Ambassadors/`, `Kubestronaut/`, `utilities/`, `.github/scripts/`, and `.github/actions/` (no imports executed, so credential files are not needed). It is a syntax gate, not a general test suite.
+
+Python version for workflows is pinned in `.python-version` (root); workflows use `python-version-file: .python-version` rather than hardcoded versions.
 
 ---
 

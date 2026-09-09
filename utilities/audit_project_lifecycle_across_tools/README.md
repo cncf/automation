@@ -72,7 +72,7 @@ This utility generates a canonical list of CNCF project statuses from the LFX PC
 
 ## Run locally
 
-Dependencies: Python 3.11+; `pip install requests pyyaml beautifulsoup4`
+Dependencies: Python 3.11+; `pip install -r requirements.txt` (run from this directory)
 
 **PCC YAML** (writes `datasources/pcc_projects.yaml`):
 
