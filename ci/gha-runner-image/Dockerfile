@@ -102,7 +102,7 @@ COPY --chown=runner:docker --from=build /actions-runner .
 COPY --from=build /usr/bin/docker /usr/bin/docker
 COPY --from=build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
 
-RUN curl -sSLo /tmp/go.tar.gz https://go.dev/dl/go1.25.4.linux-${TARGETARCH}.tar.gz \
+RUN curl -sSLo /tmp/go.tar.gz https://go.dev/dl/go1.27.1.linux-${TARGETARCH}.tar.gz \
     && tar -C /usr/local -xzf /tmp/go.tar.gz \
     && rm /tmp/go.tar.gz \
     && rm -rf /usr/local/go/test /usr/local/go/api /usr/local/go/doc /usr/local/go/misc \

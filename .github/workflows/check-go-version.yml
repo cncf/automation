@@ -1,0 +1,36 @@
+name: Check Go Version Consistency
+
+on:
+  pull_request:
+    paths:
+      - '.go-version'
+      - '**/go.mod'
+      - '**/Dockerfile'
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.github/scripts/check-go-version.sh'
+  push:
+    branches: [main]
+    paths:
+      - '.go-version'
+      - '**/go.mod'
+      - '**/Dockerfile'
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.github/scripts/check-go-version.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-go-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify go.mod, Dockerfile, and workflow Go versions match .go-version
+        run: bash .github/scripts/check-go-version.sh

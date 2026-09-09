@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# CI guard: ensures every go.mod and Dockerfile matches .go-version
+# CI guard: ensures every go.mod, Dockerfile (FROM golang / go.dev tarball),
+# and hardcoded go-version: in .github workflows matches .go-version
 
 set -euo pipefail
 
@@ -33,7 +34,19 @@ while IFS= read -r file; do
     version=$(echo "$line" | sed -n 's/.*golang:\([0-9]*\.[0-9]*\(\.[0-9]*\)\?\).*/\1/p')
     check "$file" "$version" || FAIL=1
   done < <(grep -E '^FROM golang:' "$file" || true)
+  while IFS= read -r line; do
+    version=$(echo "$line" | sed -n 's#.*go\.dev/dl/go\([0-9]*\.[0-9]*\(\.[0-9]*\)\?\)\..*#\1#p')
+    check "$file (go.dev/dl tarball)" "$version" || FAIL=1
+  done < <(grep -E 'go\.dev/dl/go[0-9]' "$file" || true)
 done < <(find "$ROOT" -name "Dockerfile" -not -path "*/vendor/*")
+
+echo "Checking hardcoded go-version in workflows and actions..."
+while IFS= read -r file; do
+  while IFS= read -r line; do
+    version=$(echo "$line" | sed -n "s/.*go-version:[[:space:]]*['\"]\?\([0-9][0-9.]*\)['\"]\?.*/\1/p")
+    check "$file" "$version" || FAIL=1
+  done < <(grep -E "^[[:space:]]*go-version:[[:space:]]*['\"]?[0-9]" "$file" || true)
+done < <(find "$ROOT/.github" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/node_modules/*")
 
 if [[ $FAIL -ne 0 ]]; then
   echo "FAILED: version mismatch found — update files to match .go-version ($WANT)"
