@@ -8,10 +8,6 @@ inputs:
     description: 'Output format: text, json, yaml'
     required: false
     default: 'text'
-  go_version:
-    description: 'DEPRECATED: no longer used. Version is read from utilities/dot-project/go.mod'
-    required: false
-    default: ''
 runs:
   using: 'composite'
   steps:

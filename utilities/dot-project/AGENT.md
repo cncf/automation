@@ -62,7 +62,6 @@ utilities/dot-project/
 └── workflows/
     ├── project-validator.yml                  # Main CI workflow for this tool
     ├── validate-maintainers.yaml              # Validates maintainers on PR
-    └── reusable-validate-maintainers.yaml     # Reusable workflow for external repos
 ```
 
 ## Build and Development
