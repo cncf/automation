@@ -188,6 +188,10 @@ packer {
 	baseDir := strings.Split(filename, "/")[0]
 	installRunnerPackage(baseDir)
 
+	if err := installSBOMitTools(baseDir); err != nil {
+		log.Fatalf("Failed to create SBOMit tools install script: %v", err)
+	}
+
 	// Fix PSGallery not being registered in tar.gz-based PowerShell installations (ARM64)
 	psModulesScript := baseDir + "/images/ubuntu/scripts/build/Install-PowerShellModules.ps1"
 	if err := replaceInFileRegex(psModulesScript, map[*regexp.Regexp]string{
@@ -453,6 +457,58 @@ mv "$archive_path" "/opt/runner-cache/$archive_name"
 	return nil
 }
 
+func installSBOMitTools(baseDir string) error {
+	log.Println("Creating SBOMit tools installation script...")
+
+	scriptContent := `#!/bin/bash -e
+################################################################################
+##  File:  install-sbomit-tools.sh
+##  Desc:  Build and install the SBOMit toolchain (witness, sbomit)
+################################################################################
+
+# Go is installed into the runner-images toolcache, not a fixed prefix, and the
+# toolset PATH is not visible to this non-login provisioner shell.
+if ! command -v go >/dev/null; then
+  go_bin=$(ls -d /opt/hostedtoolcache/go/*/*/bin 2>/dev/null | sort -V | tail -n1)
+  [ -n "$go_bin" ] && export PATH="$PATH:$go_bin"
+fi
+command -v go >/dev/null || { echo "go toolchain not found on PATH"; exit 1; }
+go version
+
+build_dir=$(mktemp -d)
+
+# --- witness -----------------------------------------------------------------
+# Built from source: the required ptrace fixes are not in a tagged release yet.
+git clone https://github.com/in-toto/witness.git "$build_dir/witness"
+git clone https://github.com/in-toto/go-witness.git "$build_dir/go-witness"
+
+cd "$build_dir/witness"
+go work init .
+go work use ../go-witness
+make build
+install -m 0755 ./bin/witness /usr/local/bin/witness
+
+# --- sbomit ------------------------------------------------------------------
+# GOBIN is set explicitly; otherwise this lands in root's GOPATH, which is not
+# on the runner user's PATH.
+GOBIN=/usr/local/bin go install github.com/sbomit/sbomit@latest
+
+# --- verify ------------------------------------------------------------------
+witness version
+command -v sbomit
+sbomit --help | head -n 1
+
+`
+
+	scriptPath := baseDir + "/images/ubuntu/scripts/build/install-sbomit-tools.sh"
+	if err := os.WriteFile(scriptPath, []byte(scriptContent), 0755); err != nil {
+		return fmt.Errorf("failed to create install-sbomit-tools.sh: %w", err)
+	}
+
+	log.Println("SBOMit tools installation script created successfully")
+	return nil
+}
+
 func init() {
 	flags := Cmd.Flags()
 
@@ -562,6 +618,17 @@ build {
 
 	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
 				"${path.root}/../scripts/build/install-runner-package.sh",`
+
+	// SBOMit tools need the Go toolchain, which only exists once the toolset is installed.
+	replacements[`scripts          = ["${path.root}/../scripts/build/Install-Toolset.ps1", "${path.root}/../scripts/build/Configure-Toolset.ps1"]
+  }`] = `scripts          = ["${path.root}/../scripts/build/Install-Toolset.ps1", "${path.root}/../scripts/build/Configure-Toolset.ps1"]
+  }
+
+  provisioner "shell" {
+    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "DEBIAN_FRONTEND=noninteractive"]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    scripts          = ["${path.root}/../scripts/build/install-sbomit-tools.sh"]
+  }`
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.oracle-oci.img"]
 		provisioner "shell" {
