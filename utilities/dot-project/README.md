@@ -278,6 +278,23 @@ Verifies all URLs referenced in a project are accessible.
 ./bin/audit-checker -project project.yaml
 ```
 
+### Migrate
+
+Scaffolds a minimal `project.yaml` from CLI flags (no network access, unlike `bootstrap`).
+
+```bash
+./bin/migrate -slug my-project -name "My Project" -description "..." \
+  -repos https://github.com/org/repo -maturity sandbox -output project.yaml
+```
+
+### Generate Schema
+
+Regenerates `schema/project.schema.json` from the Go types. Run after changing `types.go`.
+
+```bash
+./bin/generate-schema > schema/project.schema.json
+```
+
 ## GitHub Actions
 
 All action references should be **SHA-pinned** for reproducibility.

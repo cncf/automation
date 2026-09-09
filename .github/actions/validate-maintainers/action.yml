@@ -12,10 +12,6 @@ inputs:
     description: 'Verify maintainer handles against LFX (requires LFX_AUTH_TOKEN secret)'
     required: false
     default: 'false'
-  go_version:
-    description: 'DEPRECATED: no longer used. Version is read from utilities/dot-project/go.mod'
-    required: false
-    default: ''
 runs:
   using: 'composite'
   steps:
