@@ -1,0 +1,73 @@
+name: 'Setup OCI CLI'
+description: 'Install the OCI CLI and optionally write ~/.oci/config for tools that need a config file (Packer, OCI Go SDK)'
+inputs:
+  user:
+    description: 'OCI user OCID. When set together with key-content, a config file is written'
+    required: false
+    default: ''
+  tenancy:
+    description: 'OCI tenancy OCID'
+    required: false
+    default: ''
+  fingerprint:
+    description: 'API key fingerprint'
+    required: false
+    default: ''
+  region:
+    description: 'Default region'
+    required: false
+    default: ''
+  key-content:
+    description: 'PEM-encoded API private key'
+    required: false
+    default: ''
+  python-version:
+    description: 'Python version used to install the CLI'
+    required: false
+    default: '3.13'
+outputs:
+  config-file:
+    description: 'Path to the written OCI config file (empty if not written)'
+    value: ${{ steps.config.outputs.config-file }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install OCI CLI
+      shell: bash
+      run: pip install oci-cli
+
+    - name: Write OCI config
+      id: config
+      if: inputs.key-content != ''
+      shell: bash
+      env:
+        OCI_USER: ${{ inputs.user }}
+        OCI_TENANCY: ${{ inputs.tenancy }}
+        OCI_FINGERPRINT: ${{ inputs.fingerprint }}
+        OCI_REGION: ${{ inputs.region }}
+        OCI_KEY_CONTENT: ${{ inputs.key-content }}
+      run: |
+        set -euo pipefail
+        umask 077
+        mkdir -p "$HOME/.oci"
+        CONFIG_FILE="$HOME/.oci/config"
+        KEY_FILE="$HOME/.oci/oci_api_key.pem"
+
+        printf '%s\n' "$OCI_KEY_CONTENT" > "$KEY_FILE"
+        cat > "$CONFIG_FILE" <<EOF
+        [DEFAULT]
+        user=${OCI_USER}
+        fingerprint=${OCI_FINGERPRINT}
+        tenancy=${OCI_TENANCY}
+        region=${OCI_REGION}
+        key_file=${KEY_FILE}
+        EOF
+
+        echo "OCI_CONFIG_FILE=${CONFIG_FILE}" >> "$GITHUB_ENV"
+        echo "OCI_CLI_CONFIG_FILE=${CONFIG_FILE}" >> "$GITHUB_ENV"
+        echo "config-file=${CONFIG_FILE}" >> "$GITHUB_OUTPUT"
