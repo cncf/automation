@@ -3,21 +3,21 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "gha-runner-vm-oci",
-  "documentNamespace": "https://waybill.kusari.dev/spdx/P2SWP5XGAERH7L3ZID43CX2WNGJPORNJ",
+  "documentNamespace": "https://waybill.kusari.dev/spdx/AM6PH4HNKTQ7VC67CLYVLGJXS4UVN743",
   "creationInfo": {
-    "created": "2026-09-09T09:46:13Z",
+    "created": "2026-09-10T00:34:44Z",
     "creators": [
       "Tool: waybill-0.2.0",
       "Organization: waybill contributors",
-      "Tool: waybill-0.2.0 source: git:https://github.com/cncf/automation.git#2e71c92e14964a66feef09d8b29fea65f9081827"
+      "Tool: waybill-0.2.0 source: git:https://github.com/cncf/automation.git#cac8b103e45ddac50962a9a949957707b13f7a03"
     ],
     "comment": "Scope: manifest (declared transitives included). Observed lifecycle phases: pre-build. Per-component scope detail in waybill:sbom-tier annotations."
   },
   "packages": [
     {
-      "SPDXID": "SPDXRef-DocumentRoot-EUTFLT4M7KOYD7PD",
+      "SPDXID": "SPDXRef-DocumentRoot-DLXCGPLBC4E3Q7DN",
       "name": "cncf/automation/ci/gha-runner-vm-oci",
-      "versionInfo": "2e71c92e14964a66feef09d8b29fea65f9081827",
+      "versionInfo": "cac8b103e45ddac50962a9a949957707b13f7a03",
       "downloadLocation": "NOASSERTION",
       "supplier": "Organization: waybill contributors",
       "filesAnalyzed": false,
@@ -27,12 +27,12 @@
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:generic/cncf%2Fautomation%2Fci%2Fgha-runner-vm-oci@2e71c92e14964a66feef09d8b29fea65f9081827"
+          "referenceLocator": "pkg:generic/cncf%2Fautomation%2Fci%2Fgha-runner-vm-oci@cac8b103e45ddac50962a9a949957707b13f7a03"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:waybill:cncf_automation_ci_gha-runner-vm-oci:2e71c92e14964a66feef09d8b29fea65f9081827:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:waybill:cncf_automation_ci_gha-runner-vm-oci:cac8b103e45ddac50962a9a949957707b13f7a03:*:*:*:*:*:*:*"
         }
       ]
     },
@@ -71,61 +71,61 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/davecgh/go-spew@v1.1.1\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion\",\"value\":\"not-needed\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/davecgh\\\\/go-spew:github.com\\\\/davecgh\\\\/go-spew:v1.1.1:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/davecgh:github.com\\\\/davecgh\\\\/go-spew:v1.1.1:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion-derivation\",\"value\":\"go-mod-why\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"module-cache\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -166,49 +166,49 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/gofrs/flock@v0.13.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/gofrs\\\\/flock:github.com\\\\/gofrs\\\\/flock:v0.13.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/gofrs:github.com\\\\/gofrs\\\\/flock:v0.13.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -228,7 +228,7 @@
         }
       ],
       "licenseDeclared": "BSD-3-Clause",
-      "licenseConcluded": "BSD-3-Clause",
+      "licenseConcluded": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -249,61 +249,61 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/google/go-cmp@v0.7.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion\",\"value\":\"not-needed\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/google\\\\/go-cmp:github.com\\\\/google\\\\/go-cmp:v0.7.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/google:github.com\\\\/google\\\\/go-cmp:v0.7.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion-derivation\",\"value\":\"go-mod-why\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"module-cache\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -344,49 +344,49 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/google/go-github/v71@v71.0.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/google\\\\/go-github\\\\/v71:github.com\\\\/google\\\\/go-github\\\\/v71:v71.0.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/google\\\\/go-github:github.com\\\\/google\\\\/go-github\\\\/v71:v71.0.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -427,49 +427,49 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/google/go-querystring@v1.2.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/google\\\\/go-querystring:github.com\\\\/google\\\\/go-querystring:v1.2.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/google:github.com\\\\/google\\\\/go-querystring:v1.2.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -489,7 +489,7 @@
         }
       ],
       "licenseDeclared": "Apache-2.0",
-      "licenseConcluded": "Apache-2.0",
+      "licenseConcluded": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -510,49 +510,49 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/inconshreveable/mousetrap@v1.1.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/inconshreveable\\\\/mousetrap:github.com\\\\/inconshreveable\\\\/mousetrap:v1.1.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/inconshreveable:github.com\\\\/inconshreveable\\\\/mousetrap:v1.1.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"module-cache\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -593,49 +593,49 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/oracle/oci-go-sdk/v65@v65.124.1\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/oracle\\\\/oci-go-sdk\\\\/v65:github.com\\\\/oracle\\\\/oci-go-sdk\\\\/v65:v65.124.1:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/oracle\\\\/oci-go-sdk:github.com\\\\/oracle\\\\/oci-go-sdk\\\\/v65:v65.124.1:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -676,61 +676,61 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/pmezard/go-difflib@v1.0.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion\",\"value\":\"not-needed\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/pmezard\\\\/go-difflib:github.com\\\\/pmezard\\\\/go-difflib:v1.0.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/pmezard:github.com\\\\/pmezard\\\\/go-difflib:v1.0.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion-derivation\",\"value\":\"go-mod-why\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"module-cache\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -750,7 +750,7 @@
         }
       ],
       "licenseDeclared": "MIT",
-      "licenseConcluded": "MIT",
+      "licenseConcluded": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -771,49 +771,49 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/sony/gobreaker/v2@v2.4.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/sony\\\\/gobreaker\\\\/v2:github.com\\\\/sony\\\\/gobreaker\\\\/v2:v2.4.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/sony\\\\/gobreaker:github.com\\\\/sony\\\\/gobreaker\\\\/v2:v2.4.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -833,7 +833,7 @@
         }
       ],
       "licenseDeclared": "Apache-2.0",
-      "licenseConcluded": "Apache-2.0",
+      "licenseConcluded": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -854,49 +854,49 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/spf13/cobra@v1.10.2\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/spf13\\\\/cobra:github.com\\\\/spf13\\\\/cobra:v1.10.2:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/spf13:github.com\\\\/spf13\\\\/cobra:v1.10.2:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -916,7 +916,7 @@
         }
       ],
       "licenseDeclared": "BSD-3-Clause",
-      "licenseConcluded": "BSD-3-Clause",
+      "licenseConcluded": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -937,49 +937,49 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/spf13/pflag@v1.0.10\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/spf13\\\\/pflag:github.com\\\\/spf13\\\\/pflag:v1.0.10:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/spf13:github.com\\\\/spf13\\\\/pflag:v1.0.10:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"module-cache\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -1020,61 +1020,61 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/stretchr/objx@v0.5.2\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion\",\"value\":\"not-needed\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/stretchr\\\\/objx:github.com\\\\/stretchr\\\\/objx:v0.5.2:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/stretchr:github.com\\\\/stretchr\\\\/objx:v0.5.2:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion-derivation\",\"value\":\"go-mod-why\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"module-cache\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -1094,7 +1094,7 @@
         }
       ],
       "licenseDeclared": "MIT",
-      "licenseConcluded": "MIT",
+      "licenseConcluded": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -1115,61 +1115,61 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/stretchr/testify@v1.11.1\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion\",\"value\":\"not-needed\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/stretchr\\\\/testify:github.com\\\\/stretchr\\\\/testify:v1.11.1:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/stretchr:github.com\\\\/stretchr\\\\/testify:v1.11.1:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion-derivation\",\"value\":\"go-mod-why\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"module-cache\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -1189,7 +1189,7 @@
         }
       ],
       "licenseDeclared": "MIT",
-      "licenseConcluded": "MIT",
+      "licenseConcluded": "NOASSERTION",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
@@ -1210,65 +1210,65 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:github.com/youmark/pkcs8@v0.0.0-20240726163527-a2c0da244d78\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:github.com\\\\/youmark\\\\/pkcs8:github.com\\\\/youmark\\\\/pkcs8:v0.0.0-20240726163527-a2c0da244d78:*:*:*:*:*:*:*\",\"cpe:2.3:a:github.com\\\\/youmark:github.com\\\\/youmark\\\\/pkcs8:v0.0.0-20240726163527-a2c0da244d78:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
       ]
     },
     {
-      "SPDXID": "SPDXRef-Package-ZJDPEGOCKTERBKKJ",
+      "SPDXID": "SPDXRef-Package-77DG2G22WOXZTGMP",
       "name": "golang.org/x/crypto",
-      "versionInfo": "v0.53.0",
+      "versionInfo": "v0.56.0",
       "downloadLocation": "NOASSERTION",
       "supplier": "Organization: golang.org/x",
       "filesAnalyzed": false,
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "419e0cba8f131d7e828b3376bcf3dde5f0461f2a20add2bd7c6e302cf154b2da"
+          "checksumValue": "194879222e09e63b5cb1e48c891aabd635c2347a318de57d1667a4736a0bcba6"
         }
       ],
       "licenseDeclared": "BSD-3-Clause",
@@ -1277,138 +1277,138 @@
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:golang/golang.org/x/crypto@v0.53.0"
+          "referenceLocator": "pkg:golang/golang.org/x/crypto@v0.56.0"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:golang.org\\/x\\/crypto:golang.org\\/x\\/crypto:v0.53.0:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:golang.org\\/x\\/crypto:golang.org\\/x\\/crypto:v0.56.0:*:*:*:*:*:*:*"
         }
       ],
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:golang.org/x/crypto@v0.53.0\"}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:golang.org/x/crypto@v0.56.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:golang.org\\\\/x\\\\/crypto:golang.org\\\\/x\\\\/crypto:v0.53.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:golang.org\\\\/x:golang.org\\\\/x\\\\/crypto:v0.53.0:*:*:*:*:*:*:*\"]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:golang.org\\\\/x\\\\/crypto:golang.org\\\\/x\\\\/crypto:v0.56.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:golang.org\\\\/x:golang.org\\\\/x\\\\/crypto:v0.56.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
       ]
     },
     {
-      "SPDXID": "SPDXRef-Package-EHDANJZ5ZLOSO52Q",
+      "SPDXID": "SPDXRef-Package-SOUQWFFV3VUKZLKL",
       "name": "golang.org/x/sys",
-      "versionInfo": "v0.46.0",
+      "versionInfo": "v0.47.0",
       "downloadLocation": "NOASSERTION",
       "supplier": "Organization: golang.org/x",
       "filesAnalyzed": false,
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "9e849fd85aba17c0c1812f8bcac224c7bac8131a0d1c9b31380b4fa78aed857c"
+          "checksumValue": "a3b5c63af6500800c1410e18ed536ad9d456411ec998e516f0ac71e19b0d816b"
         }
       ],
       "licenseDeclared": "BSD-3-Clause",
-      "licenseConcluded": "NOASSERTION",
+      "licenseConcluded": "BSD-3-Clause AND LicenseRef-scancode-google-patent-license-golang",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:golang/golang.org/x/sys@v0.46.0"
+          "referenceLocator": "pkg:golang/golang.org/x/sys@v0.47.0"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:golang.org\\/x\\/sys:golang.org\\/x\\/sys:v0.46.0:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:golang.org\\/x\\/sys:golang.org\\/x\\/sys:v0.47.0:*:*:*:*:*:*:*"
         }
       ],
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:golang.org/x/sys@v0.46.0\"}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:golang.org/x/sys@v0.47.0\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:golang.org\\\\/x\\\\/sys:golang.org\\\\/x\\\\/sys:v0.46.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:golang.org\\\\/x:golang.org\\\\/x\\\\/sys:v0.46.0:*:*:*:*:*:*:*\"]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:golang.org\\\\/x\\\\/sys:golang.org\\\\/x\\\\/sys:v0.47.0:*:*:*:*:*:*:*\",\"cpe:2.3:a:golang.org\\\\/x:golang.org\\\\/x\\\\/sys:v0.47.0:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"go-mod-graph\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -1444,61 +1444,61 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:deps-dev-match\",\"value\":\"go:gopkg.in/yaml.v3@v3.0.1\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion\",\"value\":\"not-needed\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cpe-candidates\",\"value\":[\"cpe:2.3:a:gopkg.in\\\\/yaml.v3:gopkg.in\\\\/yaml.v3:v3.0.1:*:*:*:*:*:*:*\",\"cpe:2.3:a:gopkg.in:gopkg.in\\\\/yaml.v3:v3.0.1:*:*:*:*:*:*:*\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:build-inclusion-derivation\",\"value\":\"go-mod-why\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-source\",\"value\":\"module-cache\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -1527,31 +1527,31 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.sum\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"f104204ab70b03f838cf34d6e42e71f5e45caa3c5ddba13344b28e37e5a2a8fd\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.sum\",\"sha256\":\"fd35b94c12ee23a70987b7ec5c04926b81a3f16d827fbe2a40075c263407cfaf\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-09-09T09:46:13Z",
+          "annotationDate": "2026-09-10T00:34:44Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -1561,7 +1561,7 @@
   "relationships": [
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
-      "relatedSpdxElement": "SPDXRef-DocumentRoot-EUTFLT4M7KOYD7PD",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-DLXCGPLBC4E3Q7DN",
       "relationshipType": "DESCRIBES"
     },
     {
@@ -1571,7 +1571,7 @@
     },
     {
       "spdxElementId": "SPDXRef-Package-7SL63HPVT7AWIMYW",
-      "relatedSpdxElement": "SPDXRef-Package-EHDANJZ5ZLOSO52Q",
+      "relatedSpdxElement": "SPDXRef-Package-SOUQWFFV3VUKZLKL",
       "relationshipType": "DEPENDS_ON"
     },
     {
@@ -1641,12 +1641,12 @@
     },
     {
       "spdxElementId": "SPDXRef-Package-CIOKBDLTK6SKLT5F",
-      "relatedSpdxElement": "SPDXRef-Package-ZJDPEGOCKTERBKKJ",
+      "relatedSpdxElement": "SPDXRef-Package-77DG2G22WOXZTGMP",
       "relationshipType": "DEPENDS_ON"
     },
     {
       "spdxElementId": "SPDXRef-Package-CIOKBDLTK6SKLT5F",
-      "relatedSpdxElement": "SPDXRef-Package-EHDANJZ5ZLOSO52Q",
+      "relatedSpdxElement": "SPDXRef-Package-SOUQWFFV3VUKZLKL",
       "relationshipType": "DEPENDS_ON"
     },
     {
@@ -1726,31 +1726,31 @@
     },
     {
       "spdxElementId": "SPDXRef-Package-2R3X2G3CGT5Y7KNK",
-      "relatedSpdxElement": "SPDXRef-Package-ZJDPEGOCKTERBKKJ",
+      "relatedSpdxElement": "SPDXRef-Package-77DG2G22WOXZTGMP",
       "relationshipType": "DEPENDS_ON"
     },
     {
-      "spdxElementId": "SPDXRef-Package-ZJDPEGOCKTERBKKJ",
-      "relatedSpdxElement": "SPDXRef-Package-EHDANJZ5ZLOSO52Q",
+      "spdxElementId": "SPDXRef-Package-77DG2G22WOXZTGMP",
+      "relatedSpdxElement": "SPDXRef-Package-SOUQWFFV3VUKZLKL",
       "relationshipType": "DEPENDS_ON"
     },
     {
-      "spdxElementId": "SPDXRef-DocumentRoot-EUTFLT4M7KOYD7PD",
+      "spdxElementId": "SPDXRef-DocumentRoot-DLXCGPLBC4E3Q7DN",
       "relatedSpdxElement": "SPDXRef-Package-G36WGOAQGGYFOLQI",
       "relationshipType": "DEPENDS_ON"
     },
     {
-      "spdxElementId": "SPDXRef-DocumentRoot-EUTFLT4M7KOYD7PD",
+      "spdxElementId": "SPDXRef-DocumentRoot-DLXCGPLBC4E3Q7DN",
       "relatedSpdxElement": "SPDXRef-Package-CIOKBDLTK6SKLT5F",
       "relationshipType": "DEPENDS_ON"
     },
     {
-      "spdxElementId": "SPDXRef-DocumentRoot-EUTFLT4M7KOYD7PD",
+      "spdxElementId": "SPDXRef-DocumentRoot-DLXCGPLBC4E3Q7DN",
       "relatedSpdxElement": "SPDXRef-Package-ZGOZVHQZC2RMR6GZ",
       "relationshipType": "DEPENDS_ON"
     },
     {
-      "spdxElementId": "SPDXRef-DocumentRoot-EUTFLT4M7KOYD7PD",
+      "spdxElementId": "SPDXRef-DocumentRoot-DLXCGPLBC4E3Q7DN",
       "relatedSpdxElement": "SPDXRef-Package-KB3RXWKFWTJPSOZQ",
       "relationshipType": "DEPENDS_ON"
     }
@@ -1758,84 +1758,91 @@
   "annotations": [
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:generation-context\",\"value\":\"filesystem-scan\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cisa-2026-lifecycle\",\"value\":\"after-build\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:os-release-missing-fields\",\"value\":[\"ID\",\"VERSION_ID\"]}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:graph-completeness\",\"value\":\"complete\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspaces-detected\",\"value\":\"[\\\".\\\"]\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-cache-warming-mode\",\"value\":\"off\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-coverage\",\"value\":\"complete\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-fallback-count\",\"value\":\"0\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-ring-buffer-overflows\",\"value\":\"0\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-events-dropped\",\"value\":\"0\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-uprobe-attach-failures\",\"value\":[]}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-kprobe-attach-failures\",\"value\":[]}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-09-09T09:46:13Z",
+      "annotationDate": "2026-09-10T00:34:44Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"compositions\",\"value\":{\"complete_ecosystems\":[\"golang\"]}}"
     }
   ],
+  "hasExtractedLicensingInfos": [
+    {
+      "licenseId": "LicenseRef-scancode-google-patent-license-golang",
+      "extractedText": "License text not extracted by waybill. Consult the original package (e.g., /usr/share/licenses/<name>/ on Debian/RPM, or upstream project source) for the full text.",
+      "name": "scancode-google-patent-license-golang"
+    }
+  ],
   "documentDescribes": [
-    "SPDXRef-DocumentRoot-EUTFLT4M7KOYD7PD"
+    "SPDXRef-DocumentRoot-DLXCGPLBC4E3Q7DN"
   ]
 }
