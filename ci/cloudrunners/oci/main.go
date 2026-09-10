@@ -366,7 +366,26 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
 		"sudo sysctl fs.inotify.max_user_instances=1280",
 		"sudo sysctl fs.inotify.max_user_watches=655360",
-		"export PATH=$PATH:/home/ubuntu/.local/bin:/home/ubuntu/.cargo/bin:/home/ubuntu/.rustup/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash -x /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
+		// Run the GitHub Actions runner under witness to record an attestation of the job.
+		"export PATH=$PATH:/home/ubuntu/.local/bin:/home/ubuntu/.cargo/bin:/home/ubuntu/.rustup/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm" +
+			// Directory for witness files, and the runner work directory used as the witness working directory.
+			" && mkdir -p /tmp/witness /home/ubuntu/_work" +
+			// Key used to sign the attestation.
+			" && openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out /tmp/witness/key.pem" +
+			// CA for network tracing, added to the system trust store so TLS clients in the job accept it.
+			" && openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj \"/CN=witness-network-trace-ca\" -keyout /tmp/witness/ca.key -out /tmp/witness/ca.crt" +
+			" && sudo cp /tmp/witness/ca.crt /usr/local/share/ca-certificates/witness-network-trace-ca.crt && sudo update-ca-certificates" +
+			// witness runs as root.
+			" && sudo -E witness run --step gha-job" +
+			" --trace --attestor-command-run-trace-backend ebpf" +
+			" -a network-trace" +
+			" --attestor-network-trace-generate-ca=false" +
+			" --attestor-network-trace-ca-cert-path /tmp/witness/ca.crt" +
+			" --attestor-network-trace-ca-key-path /tmp/witness/ca.key" +
+			// Signing key, attestation output path, and working directory.
+			" --signer-file-key-path /tmp/witness/key.pem" +
+			" -o /tmp/witness/attestation.json --workingdir /home/ubuntu/_work" +
+			" -- sudo -E -u ubuntu env PATH=\"$PATH\" HOME=/home/ubuntu NVM_DIR=/home/ubuntu/.nvm bash -x /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
 	}
 
 	for _, cmd := range commands {
