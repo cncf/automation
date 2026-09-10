@@ -403,13 +403,13 @@ docker run --rm --entrypoint landscape-updater dot-project-validator --help
 maintainers:
   - project_id: "your-project"
     teams:
-      - name: "project-maintainers"
+      - name: "maintainers"
         members:
           - githubuser1
           - githubuser2
 ```
 
-Each maintainer entry must contain a `project-maintainers` team which cannot be empty. Handles are normalized (trimmed and stripped of leading `@`) before verification.
+Each maintainer entry must contain at least one team with `managed: true` (the default when `managed` is omitted) that has at least one member. Team names are free-form (e.g. `maintainers`, `committers`, `reviewers`, `emeritus`); set `managed: false` on teams that should be tracked but excluded from CNCF resource provisioning (handle verification, mailing lists, service desk, Copilot seats). Handles are normalized (trimmed and stripped of leading `@`) before verification.
 
 3. **Add GitHub Actions** to automatically validate changes (see GitHub Actions section above).
 

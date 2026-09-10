@@ -397,11 +397,12 @@ maintainers:
   - project_id: "project-id"
     org: "github-org"  # optional
     teams:
-      - name: "project-maintainers"  # required team
+      - name: "maintainers"  # managed: true by default; at least one managed team is required
         members:
           - alice
           - bob
-      - name: "other-team"
+      - name: "emeritus"
+        managed: false        # excluded from handle verification and CNCF resource provisioning
         members:
           - carol
 ```
