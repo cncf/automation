@@ -1,6 +1,7 @@
 package remote
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"time"
@@ -50,6 +51,23 @@ func (s *SSHClient) RunCommand(ctx context.Context, cmd string) ([]byte, error) 
 
 	output, err := session.CombinedOutput(cmd)
 	return output, err
+}
+
+// ReadFile returns the contents of a file on the remote host.
+func (s *SSHClient) ReadFile(ctx context.Context, path string) ([]byte, error) {
+	session, err := s.sshClient.NewSession()
+	if err != nil {
+		return nil, fmt.Errorf("creating ssh session: %w", err)
+	}
+	defer session.Close()
+
+	var stderr bytes.Buffer
+	session.Stderr = &stderr
+	out, err := session.Output(fmt.Sprintf("cat -- '%s'", path))
+	if err != nil {
+		return nil, fmt.Errorf("reading remote file %q: %w: %s", path, err, stderr.String())
+	}
+	return out, nil
 }
 
 func (s *SSHClient) WriteFile(ctx context.Context, dir string, file string, b []byte, mode string) error {
