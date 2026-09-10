@@ -53,6 +53,12 @@ runs:
         OCI_KEY_CONTENT: ${{ inputs.key-content }}
       run: |
         set -euo pipefail
+        for v in OCI_USER OCI_TENANCY OCI_FINGERPRINT OCI_REGION; do
+          if [ -z "${!v}" ]; then
+            echo "::error::setup-oci-cli: key-content was provided but ${v} is empty"
+            exit 1
+          fi
+        done
         umask 077
         mkdir -p "$HOME/.oci"
         CONFIG_FILE="$HOME/.oci/config"

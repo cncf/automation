@@ -55,7 +55,8 @@ jobs:
         with:
           go-version-file: ci/gha-runner-vm/go.mod
 
-      - name: Install OCI CLI
+      - name: Install OCI CLI and write ~/.oci/config
+        id: oci
         uses: ./.github/actions/setup-oci-cli
         with:
           user: ${{ secrets.OCI_CLI_USER }}
@@ -92,7 +93,7 @@ jobs:
       - name: Set up QEMU
         if: steps.check_latest.outputs.image_exists == 'false'
         run : |
-          sudo apt install qemu-system-x86 xorriso qemu-system-arm qemu-efi-aarch64
+          sudo apt install qemu-system-x86 xorriso
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
@@ -168,7 +169,8 @@ jobs:
         with:
           exclude-current: true
 
-      - name: Install OCI CLI
+      - name: Install OCI CLI and write ~/.oci/config
+        id: oci
         uses: ./.github/actions/setup-oci-cli
         with:
           user: ${{ secrets.OCI_CLI_USER }}
@@ -217,6 +219,7 @@ jobs:
         if: steps.check_latest.outputs.image_exists == 'false'
         run: |
           set -euo pipefail
+          test -f "${{ steps.oci.outputs.config-file }}"
           BASE_IMAGE_OCID=$(oci compute image list \
             --compartment-id ${{ env.COMPARTMENT_ID }} --all \
             --operating-system "Canonical Ubuntu" \
@@ -640,7 +643,8 @@ jobs:
           persist-credentials: false
           sparse-checkout: .github/actions/setup-oci-cli
 
-      - name: Install OCI CLI
+      - name: Install OCI CLI and write ~/.oci/config
+        id: oci
         uses: ./.github/actions/setup-oci-cli
         with:
           user: ${{ secrets.OCI_CLI_USER }}
@@ -681,8 +685,11 @@ jobs:
           echo "IMAGE_ID=${IMAGE_ID}" >> $GITHUB_ENV
 
       - name: Enable A10 shapes
+        env:
+          OCI_CONFIG_FILE: ${{ steps.oci.outputs.config-file }}
         run: |
           set -euo pipefail
+          test -f "${OCI_CONFIG_FILE}"
           oci raw-request --http-method PUT \
             --config-file ${OCI_CONFIG_FILE} \
             --target-uri https://iaas.${{ matrix.region }}.oraclecloud.com/20160918/images/${IMAGE_ID}/shapes/VM.GPU.A10.1 \
