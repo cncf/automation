@@ -25,13 +25,14 @@ jobs:
       COMPARTMENT_ID: ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
       PYTHONWARNINGS: "ignore::FutureWarning"
     steps:
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.13'
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
 
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
+      - name: Install OCI CLI
+        uses: ./.github/actions/setup-oci-cli
 
       - name: Cleanup bucket objects
         run: |

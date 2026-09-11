@@ -1,13 +1,23 @@
-name: Change File Build New Actions VM
+name: Build Actions VM Images
+
 on:
+  schedule:
+    - cron: "0 0 * * *"
   push:
     branches:
       - "main"
     paths:
-        - "ci/gha-runner-vm/**"
-        - "ci/gha-runner-vm-oci/**"
-        - ".github/workflows/change-file-build-new-actions-vm.yml"
-        - ".github/workflows/periodic-build-new-actions-vm.yml"
+      - "ci/gha-runner-vm/**"
+      - "ci/gha-runner-vm-oci/**"
+      - ".github/workflows/build-actions-vm.yml"
+      - ".github/actions/setup-oci-cli/**"
+  workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: 'Rebuild even if an image for the latest runner-images release already exists'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   actions: read
@@ -22,6 +32,7 @@ env:
   COMPARTMENT_ID: ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
   BUCKET_NAMESPACE: axtwf1hkrwcy
   BUCKET_NAME: bucket-20250428-1925
+  SKIP_IF_IMAGE_EXISTS: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.force_rebuild) }}
 
 jobs:
   build-x86:
@@ -31,7 +42,7 @@ jobs:
     env:
       PACKER_VERSION: 1.14.3
     outputs:
-      image_id: ${{ steps.build_image.outputs.image_id }}
+      image_exists: ${{ steps.check_latest.outputs.image_exists }}
     timeout-minutes: 180
 
     steps:
@@ -43,20 +54,56 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: ci/gha-runner-vm/go.mod
+
+      - name: Install OCI CLI and write ~/.oci/config
+        id: oci
+        uses: ./.github/actions/setup-oci-cli
+        with:
+          user: ${{ secrets.OCI_CLI_USER }}
+          tenancy: ${{ secrets.OCI_CLI_TENANCY }}
+          fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          region: ${{ secrets.OCI_CLI_REGION }}
+          key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+
+      - name: Verify OCI CLI
+        run: oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system runner-images --operating-system-version 123456
+
+      - name: Check latest release
+        id: check_latest
+        run: |
+          set -euo pipefail
+          if [ "${SKIP_IF_IMAGE_EXISTS}" != "true" ]; then
+            echo "image_exists=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu 24.04")) | .tag_name' | head -1)
+          IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-24.04-amd64-gha-image" --operating-system-version ${LATEST_RELEASE})
+          if [ -z "$IMAGE_EXISTS" ]; then
+            echo "image_exists=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "image_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Change Ubuntu mirrors
+        if: steps.check_latest.outputs.image_exists == 'false'
         uses: vegardit/fast-apt-mirror.sh@806c59276adfff2df420124ad5e4587f018c358a # v1.4.5
         with:
           exclude-current: true
+
       - name: Set up QEMU
+        if: steps.check_latest.outputs.image_exists == 'false'
         run : |
-          sudo apt install qemu-system-x86 xorriso qemu-system-arm qemu-efi-aarch64
+          sudo apt install qemu-system-x86 xorriso
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
       - name: Install dependencies
+        if: steps.check_latest.outputs.image_exists == 'false'
         run: cd ci/gha-runner-vm && go get .
+
       - name: Install Packer
+        if: steps.check_latest.outputs.image_exists == 'false'
         run: |
           curl -LO https://releases.hashicorp.com/packer/${{ env.PACKER_VERSION }}/packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
           unzip packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
@@ -66,47 +113,20 @@ jobs:
           packer plugins install github.com/hashicorp/oracle
           packer plugins install github.com/hashicorp/qemu
 
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version-file: .python-version
-
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
-
-      - name: Verify OCI CLI
-        run: oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system runner-images --operating-system-version 123456
-
       - name: Build VM Images
+        if: steps.check_latest.outputs.image_exists == 'false'
         id: build_image
         run: |
           set -euo pipefail
-          export OCI_CONFIG_FILE="${{ github.workspace }}/.oci/config"
-          export OCI_CLI_KEY_FILE="${{ github.workspace }}/.oci/oci_api_key.pem"
-          mkdir ${{ github.workspace }}/.oci
-
-          cat > ${OCI_CONFIG_FILE} << EOF
-          [DEFAULT]
-          user=${{ secrets.OCI_CLI_USER }}
-          fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}
-          tenancy=${{ secrets.OCI_CLI_TENANCY }}
-          region=${{ secrets.OCI_CLI_REGION }}
-          key_file=${OCI_CLI_KEY_FILE}
-          EOF
-
-          echo "${{ secrets.OCI_CLI_KEY_CONTENT }}" > ${OCI_CLI_KEY_FILE}
-
-          chmod 600 ${OCI_CONFIG_FILE}
-          chmod 600 ${OCI_CLI_KEY_FILE}
-
-          export PATH=$PATH:$HOME/bin && \
+          export PATH="$PATH:$HOME/.local/bin:$HOME/bin" && \
           export PACKER_PLUGIN_PATH=~/.config/packer/plugins && \
           cd ci/gha-runner-vm && \
-          PACKER_LOG=1 go run main.go \
+          PACKER_LOG=1 GITHUB_PERIODIC=${SKIP_IF_IMAGE_EXISTS} go run main.go \
             --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
             --arch amd64
 
       - name: Upload image OCID
+        if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: image-ocid-x86
@@ -131,6 +151,7 @@ jobs:
       PACKER_VERSION: 1.14.3
     outputs:
       image_id: ${{ steps.build_image.outputs.image_id }}
+      image_exists: ${{ steps.check_latest.outputs.image_exists }}
     timeout-minutes: 180
 
     steps:
@@ -148,10 +169,41 @@ jobs:
         with:
           exclude-current: true
 
+      - name: Install OCI CLI and write ~/.oci/config
+        id: oci
+        uses: ./.github/actions/setup-oci-cli
+        with:
+          user: ${{ secrets.OCI_CLI_USER }}
+          tenancy: ${{ secrets.OCI_CLI_TENANCY }}
+          fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          region: ${{ secrets.OCI_CLI_REGION }}
+          key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+
+      - name: Verify OCI CLI
+        run: oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system runner-images --operating-system-version 123456
+
+      - name: Check latest release
+        id: check_latest
+        run: |
+          set -euo pipefail
+          if [ "${SKIP_IF_IMAGE_EXISTS}" != "true" ]; then
+            echo "image_exists=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu 24.04")) | .tag_name' | head -1)
+          IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-24.04-arm64-gha-image" --operating-system-version ${LATEST_RELEASE})
+          if [ -z "$IMAGE_EXISTS" ]; then
+            echo "image_exists=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "image_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install dependencies
+        if: steps.check_latest.outputs.image_exists == 'false'
         run: cd ci/gha-runner-vm-oci && go get .
 
       - name: Install Packer
+        if: steps.check_latest.outputs.image_exists == 'false'
         run: |
           curl -LO https://releases.hashicorp.com/packer/${{ env.PACKER_VERSION }}/packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
           unzip packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
@@ -161,58 +213,34 @@ jobs:
           packer plugins install github.com/hashicorp/oracle
           packer plugins install github.com/hashicorp/qemu
 
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version-file: .python-version
-
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
-
-      - name: Verify OCI CLI
-        run: oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system runner-images --operating-system-version 123456
 
       - name: Build VM Images
         id: build_image
+        if: steps.check_latest.outputs.image_exists == 'false'
         run: |
           set -euo pipefail
-          export OCI_CONFIG_FILE=~/.oci/config
-          export OCI_CLI_KEY_FILE=~/.oci/oci_api_key.pem
-          mkdir -p ~/.oci
-
-          cat > ${OCI_CONFIG_FILE} << EOF
-          [DEFAULT]
-          user=${{ secrets.OCI_CLI_USER }}
-          fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}
-          tenancy=${{ secrets.OCI_CLI_TENANCY }}
-          region=${{ secrets.OCI_CLI_REGION }}
-          key_file=${OCI_CLI_KEY_FILE}
-          EOF
-
-          echo "${{ secrets.OCI_CLI_KEY_CONTENT }}" > ${OCI_CLI_KEY_FILE}
-
-          chmod 600 ${OCI_CONFIG_FILE}
-          chmod 600 ${OCI_CLI_KEY_FILE}
-
+          test -f "${{ steps.oci.outputs.config-file }}"
           BASE_IMAGE_OCID=$(oci compute image list \
             --compartment-id ${{ env.COMPARTMENT_ID }} --all \
             --operating-system "Canonical Ubuntu" \
             --operating-system-version "24.04" | jq -r '.data[] | select(."display-name" | contains("Canonical-Ubuntu-24.04-aarch64")) | .id' | head -1)
 
-          export PATH=$PATH:$HOME/bin && \
+          export PATH="$PATH:$HOME/.local/bin:$HOME/bin" && \
           export PACKER_PLUGIN_PATH=~/.config/packer/plugins && \
           cd ci/gha-runner-vm-oci && \
-          PACKER_LOG=1 go run main.go \
+          PACKER_LOG=1 GITHUB_PERIODIC=${SKIP_IF_IMAGE_EXISTS} go run main.go \
             --base-image-ocid ${BASE_IMAGE_OCID} \
             --arch arm64
 
       - name: Upload image OCID
+        if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: image-ocid-arm64
           path: /tmp/image_ocid
 
       - name: Upload image tag
+        if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: image-tag-arm64
@@ -224,6 +252,7 @@ jobs:
     permissions:
       actions: write
       contents: read
+    if: needs.build-x86.outputs.image_exists == 'false' || needs.build-arm64.outputs.image_exists == 'false'
     # must cover the 10 min queue wait plus the 15 min test-runner timeout
     timeout-minutes: 30
     strategy:
@@ -355,6 +384,7 @@ jobs:
         arch: [x86, arm]
     runs-on: oci-ci-test-${{ matrix.arch }}
     needs: [build-x86, build-arm64]
+    if: needs.build-x86.outputs.image_exists == 'false' || needs.build-arm64.outputs.image_exists == 'false'
     timeout-minutes: 15
     steps:
       - name: Checkout code
@@ -387,13 +417,14 @@ jobs:
         with:
           name: image-ocid-arm64
 
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.13'
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
 
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
+      - name: Install OCI CLI
+        uses: ./.github/actions/setup-oci-cli
 
       - name: Export Image to bucket for cross-region copy
         run: |
@@ -451,13 +482,14 @@ jobs:
         with:
           name: object-name-arm64
 
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.13'
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
 
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
+      - name: Install OCI CLI
+        uses: ./.github/actions/setup-oci-cli
 
       - name: Sync image to other regions
         run: |
@@ -490,17 +522,17 @@ jobs:
         with:
           name: image-tag-arm64
 
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.13'
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
 
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
+      - name: Install OCI CLI
+        uses: ./.github/actions/setup-oci-cli
 
       - name: Import Custom Image
         run: |
-          set -euo pipefail
           OBJECT_NAME=$(cat object_name)
           IMAGE_TAG=$(cat image_tag)
           IMAGE_ID=$(oci compute image import from-object \
@@ -540,13 +572,14 @@ jobs:
         with:
           name: object-name-x86
 
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.13'
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
 
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
+      - name: Install OCI CLI
+        uses: ./.github/actions/setup-oci-cli
 
       - name: Sync image to other regions
         run: |
@@ -571,13 +604,14 @@ jobs:
         with:
           name: image-ocid-x86
 
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.13'
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
 
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
+      - name: Install OCI CLI
+        uses: ./.github/actions/setup-oci-cli
 
       - name: Release
         run: |
@@ -603,17 +637,24 @@ jobs:
         with:
           name: image-tag-x86
 
-      - name: Install OCI CLI
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.13'
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
 
-      - name: Install OCI CLI packages
-        run: pip install oci-cli
+      - name: Install OCI CLI and write ~/.oci/config
+        id: oci
+        uses: ./.github/actions/setup-oci-cli
+        with:
+          user: ${{ secrets.OCI_CLI_USER }}
+          tenancy: ${{ secrets.OCI_CLI_TENANCY }}
+          fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          region: ${{ secrets.OCI_CLI_REGION }}
+          key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
 
       - name: Import Custom Image
         run: |
-          set -euo pipefail
           OBJECT_NAME=$(cat object_name)
           IMAGE_TAG=$(cat image_tag)
           IMAGE_ID=$(oci compute image import from-object \
@@ -644,26 +685,11 @@ jobs:
           echo "IMAGE_ID=${IMAGE_ID}" >> $GITHUB_ENV
 
       - name: Enable A10 shapes
+        env:
+          OCI_CONFIG_FILE: ${{ steps.oci.outputs.config-file }}
         run: |
           set -euo pipefail
-          export OCI_CONFIG_FILE="${{ github.workspace }}/.oci/config"
-          export OCI_CLI_KEY_FILE="${{ github.workspace }}/.oci/oci_api_key.pem"
-          mkdir -p ${{ github.workspace }}/.oci
-
-          cat > ${OCI_CONFIG_FILE} << EOF
-          [DEFAULT]
-          user=${{ secrets.OCI_CLI_USER }}
-          fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}
-          tenancy=${{ secrets.OCI_CLI_TENANCY }}
-          region=${{ secrets.OCI_CLI_REGION }}
-          key_file=${OCI_CLI_KEY_FILE}
-          EOF
-
-          echo "${{ secrets.OCI_CLI_KEY_CONTENT }}" > ${OCI_CLI_KEY_FILE}
-
-          chmod 600 ${OCI_CONFIG_FILE}
-          chmod 600 ${OCI_CLI_KEY_FILE}
-
+          test -f "${OCI_CONFIG_FILE}"
           oci raw-request --http-method PUT \
             --config-file ${OCI_CONFIG_FILE} \
             --target-uri https://iaas.${{ matrix.region }}.oraclecloud.com/20160918/images/${IMAGE_ID}/shapes/VM.GPU.A10.1 \
