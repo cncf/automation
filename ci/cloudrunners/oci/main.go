@@ -60,6 +60,10 @@ const exitCodePreempted = 79
 
 var errPreempted = errors.New("instance preempted")
 
+// errNoNestedVirt signals the launched host lacks hardware virtualization
+// (svm/vmx); the launch loop recycles the placement instead of failing mid-job.
+var errNoNestedVirt = errors.New("nested virtualization not available on instance")
+
 func main() {
 	log.SetFlags(log.Flags() | log.Lshortfile)
 
@@ -213,6 +217,13 @@ func run(cmd *cobra.Command, argv []string) error {
 
 			log.Printf("instance launched successfully: region=%s shape=%s", region.Region, shape)
 			err = runOnMachine(ctx, machine, sshKeyPair)
+			if errors.Is(err, errNoNestedVirt) {
+				log.Printf("nested virt missing: region=%s ad=%s shape=%s: terminating instance and recycling placement",
+					region.Region, region.AvailabilityDomain, shape)
+				cleanup()
+				lastErr = err
+				continue
+			}
 			if err != nil && args.preemptible {
 				if state, stateErr := machine.LifecycleState(context.Background()); stateErr == nil &&
 					(state == core.InstanceLifecycleStateTerminating || state == core.InstanceLifecycleStateTerminated) {
@@ -339,6 +350,19 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 		return fmt.Errorf("failed to connect to ssh on %q: %w", ip, err)
 	}
 	defer sshClient.Close()
+
+	// Fail fast if the host doesn't expose hardware virtualization so the
+	// caller can recycle the placement instead of failing mid-job.
+	// svm/vmx are x86 CPU flags; /dev/kvm confirms the KVM module loaded.
+	if args.arch == "amd64" {
+		virtCheck := "grep -qE 'svm|vmx' /proc/cpuinfo && test -c /dev/kvm"
+		log.Println("running ssh command", "command", virtCheck)
+		if output, err := sshClient.RunCommand(ctx, virtCheck); err != nil {
+			log.Println(err, "nested virtualization check failed", "command", virtCheck, "output", string(output))
+			return fmt.Errorf("%w: %s", errNoNestedVirt, ip)
+		}
+		log.Println("nested virtualization check passed")
+	}
 
 	if args.arch == "arm64" {
 		arm_command := "sudo nft insert rule ip filter INPUT iifname \"br-*\" accept && sudo nft insert rule ip filter FORWARD iifname \"br-*\" accept"
