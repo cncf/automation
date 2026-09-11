@@ -57,7 +57,7 @@ workflow run also uploads a `tooling-sbom-<sha>` artifact. Regenerate locally wi
 
 ## Contributing
 
-Contributions to improve these automation tools are welcome! Please see our [contributing guidelines](CONTRIBUTING.md) for more details.
+Contributions to improve these automation tools are welcome! Please see our [contributing guidelines](.github/CONTRIBUTING.md) for more details.
 
 ## License
 
