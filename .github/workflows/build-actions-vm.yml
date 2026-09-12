@@ -219,6 +219,8 @@ jobs:
       - name: Build VM Images
         id: build_image
         if: steps.check_latest.outputs.image_exists == 'false'
+        env:
+          OCI_CONFIG_FILE: ${{ steps.oci.outputs.config-file }}
         run: |
           set -euo pipefail
           test -f "${{ steps.oci.outputs.config-file }}"
