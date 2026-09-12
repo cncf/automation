@@ -116,6 +116,8 @@ jobs:
       - name: Build VM Images
         if: steps.check_latest.outputs.image_exists == 'false'
         id: build_image
+        env:
+          OCI_CONFIG_FILE: ${{ steps.oci.outputs.config-file }}
         run: |
           set -euo pipefail
           export PATH="$PATH:$HOME/.local/bin:$HOME/bin" && \

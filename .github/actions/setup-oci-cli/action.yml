@@ -60,9 +60,9 @@ runs:
           fi
         done
         umask 077
-        mkdir -p "$HOME/.oci"
-        CONFIG_FILE="$HOME/.oci/config"
-        KEY_FILE="$HOME/.oci/oci_api_key.pem"
+        mkdir -p "${{ github.workspace }}/.oci"
+        CONFIG_FILE="${{ github.workspace }}/.oci/config"
+        KEY_FILE="${{ github.workspace }}/.oci/oci_api_key.pem"
 
         printf '%s\n' "$OCI_KEY_CONTENT" > "$KEY_FILE"
         cat > "$CONFIG_FILE" <<EOF
