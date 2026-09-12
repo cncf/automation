@@ -107,6 +107,11 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatalf("Failed to open vars file: %s\n", err)
 	}
 
+	ociConfigFile := os.Getenv("OCI_CONFIG_FILE")
+	if ociConfigFile == "" {
+		ociConfigFile = os.Getenv("HOME") + "/.oci/config"
+	}
+
 	// Set oracle-oci source block now that imageName is available
 	regionLine := ""
 	if args.ociRegion != "" {
@@ -124,11 +129,12 @@ func run(cmd *cobra.Command, argv []string) error {
   ssh_username         = "ubuntu"
   communicator         = "ssh"
   image_launch_mode	   = "PARAVIRTUALIZED"
+	access_cfg_file      = "%s"
   shape_config {
     ocpus = 16
     memory_in_gbs = 64
   }
-}`, args.availabilityDomain, args.baseImageOCID, args.compartmentId, args.ociShape, args.subnetOCID, regionLine, imageName)
+}`, args.availabilityDomain, args.baseImageOCID, args.compartmentId, args.ociShape, args.subnetOCID, regionLine, imageName, ociConfigFile)
 
 	for key, value := range replacements {
 		log.Printf("Replacing %s with %s\n", key, value)
