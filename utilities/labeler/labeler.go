@@ -205,23 +205,70 @@ func (l *Labeler) commandAllowed(rule Rule, argv []string) bool {
 	if len(rule.Spec.Rules) == 0 && len(rule.Spec.MatchList) == 0 {
 		return true
 	}
-	values := append([]string(nil), rule.Spec.MatchList...)
+
+	var rawAllowlist []string
+	var renderedAllowlist []string
+
+	for _, m := range rule.Spec.MatchList {
+		if m != "" {
+			rawAllowlist = append(rawAllowlist, m)
+			renderedAllowlist = append(renderedAllowlist, m)
+		}
+	}
 	for _, predicate := range rule.Spec.Rules {
-		values = append(values, predicate.Match)
-		values = append(values, predicate.MatchList...)
+		if predicate.Match != "" {
+			rawAllowlist = append(rawAllowlist, predicate.Match)
+			renderedAllowlist = append(renderedAllowlist, predicate.Match)
+		}
+		for _, m := range predicate.MatchList {
+			if m != "" {
+				renderedAllowlist = append(renderedAllowlist, m)
+			}
+		}
 	}
-	argument := ""
-	if len(argv) > 0 {
-		argument = argv[0]
-	}
-	if slices.Contains(values, argument) {
+
+	if len(rawAllowlist) == 0 && len(renderedAllowlist) == 0 {
 		return true
 	}
+
+	requiresArg := false
 	for _, action := range rule.Actions {
-		if action.Kind == "apply-label" && slices.Contains(values, l.renderLabel(action.Spec.Label, argv)) {
+		if strings.Contains(action.Spec.Label, "{{") || strings.Contains(action.Spec.Match, "{{") {
+			requiresArg = true
+			break
+		}
+	}
+	if requiresArg && len(argv) == 0 {
+		return false
+	}
+
+	for _, action := range rule.Actions {
+		if action.Kind == "apply-label" {
+			rendered := l.renderLabel(action.Spec.Label, argv)
+			if !strings.Contains(rendered, "{{") && slices.Contains(renderedAllowlist, rendered) {
+				return true
+			}
+		}
+	}
+
+	if len(argv) > 0 {
+		arg := argv[0]
+		if slices.Contains(rawAllowlist, arg) {
+			for _, action := range rule.Actions {
+				if action.Kind == "apply-label" && strings.Contains(action.Spec.Label, "{{") {
+					rendered := l.renderLabel(action.Spec.Label, argv)
+					if strings.Contains(rendered, "{{") {
+						return false
+					}
+					if l.config.DefinitionRequired && !l.isValidLabel(rendered) {
+						return false
+					}
+				}
+			}
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -277,6 +324,19 @@ func (l *Labeler) processLabelRule(ctx context.Context, req *LabelRequest, rule 
 }
 
 func (l *Labeler) executeActions(ctx context.Context, req *LabelRequest, actions []Action, argv []string) error {
+	// Preflight all apply-label actions before executing any actions (to prevent partial removals).
+	for _, action := range actions {
+		if action.Kind == "apply-label" {
+			label := l.renderLabel(action.Spec.Label, argv)
+			if strings.Contains(label, "{{") {
+				return fmt.Errorf("action apply-label has unresolved template: %q", label)
+			}
+			_, _, resolvedLabel := l.getLabelDefinition(label)
+			if resolvedLabel == "" {
+				return fmt.Errorf("label %s is not defined in labels.yaml and auto-create is disabled", label)
+			}
+		}
+	}
 	var errs []error
 	for _, action := range actions {
 		if err := l.executeAction(ctx, req, action, argv); err != nil {
@@ -647,6 +707,12 @@ func loadConfig(r io.Reader) (*LabelsYAML, error) {
 
 func validateConfig(cfg *LabelsYAML) error {
 	for _, rule := range cfg.Ruleset {
+		if rule.Spec.MatchCondition != "" {
+			upper := strings.ToUpper(rule.Spec.MatchCondition)
+			if upper != "AND" && upper != "NOT" {
+				return fmt.Errorf("rule %q: invalid matchCondition %q (must be AND or NOT)", rule.Name, rule.Spec.MatchCondition)
+			}
+		}
 		switch rule.Kind {
 		case "match":
 			if !strings.HasPrefix(rule.Spec.Command, "/") {

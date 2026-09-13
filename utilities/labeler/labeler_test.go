@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -938,6 +939,8 @@ func TestLabeler_ProcessMatchRule_RequiresExactCommandAndAllowedArgument(t *test
 	}{
 		{name: "accepted rendered label", comment: "/priority high", wantApply: true, wantRemove: true},
 		{name: "rejected argument", comment: "/priority invalid"},
+		{name: "bare command rejected", comment: "/priority"},
+		{name: "rendered label as argument rejected", comment: "/priority priority/high"},
 		{name: "prefix is not a command", comment: "/priority-high high"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1018,6 +1021,51 @@ func TestLabeler_DeleteUndefinedLabels_PaginatesBeforeDeleting(t *testing.T) {
 	}
 	if !slicesEqual(client.DeletedLabels, []string{"undefined-one", "undefined-two"}) {
 		t.Errorf("deleted labels = %v, want both undefined labels", client.DeletedLabels)
+	}
+}
+
+func TestLoadConfigRejectsInvalidMatchCondition(t *testing.T) {
+	for _, invalid := range []string{"ADN", "NTO", "or", "invalid"} {
+		t.Run(invalid, func(t *testing.T) {
+			yamlStr := fmt.Sprintf("ruleset:\n- name: test\n  kind: label\n  spec:\n    match: foo/*\n    matchCondition: %s\n  actions:\n  - kind: apply-label\n    spec:\n      label: bar\n", invalid)
+			_, err := loadConfig(strings.NewReader(yamlStr))
+			if err == nil || !strings.Contains(err.Error(), "invalid matchCondition") {
+				t.Fatalf("expected invalid matchCondition error for %q, got: %v", invalid, err)
+			}
+		})
+	}
+}
+
+func TestLabeler_PreflightPreventsRemovalsOnInvalidLabel(t *testing.T) {
+	config := &LabelsYAML{
+		AutoCreate:         false,
+		DefinitionRequired: true,
+		Labels: []Label{
+			{Name: "needs-priority", Color: "ededed", Description: "Needs priority"},
+		},
+		Ruleset: []Rule{{
+			Name: "priority",
+			Kind: "match",
+			Spec: RuleSpec{
+				Command: "/priority",
+			},
+			Actions: []Action{
+				{Kind: "remove-label", Spec: ActionSpec{Match: "needs-priority"}},
+				{Kind: "apply-label", Spec: ActionSpec{Label: "priority/{{ argv.0 }}"}},
+			},
+		}},
+	}
+	client := NewMockGitHubClient()
+	client.IssueLabels[1] = []*github.Label{{Name: stringPtr("needs-priority")}}
+	labeler := NewLabeler(client, config)
+	err := labeler.ProcessRequest(context.Background(), &LabelRequest{
+		Owner: "o", Repo: "r", IssueNumber: 1, CommentBody: "/priority nonexistent",
+	})
+	if err == nil {
+		t.Fatal("expected error on undefined label apply")
+	}
+	if sliceContains(client.RemovedLabels[1], "needs-priority") {
+		t.Error("needs-priority was removed despite preflight failure")
 	}
 }
 
