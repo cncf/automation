@@ -76,4 +76,6 @@ runs:
 
         echo "OCI_CONFIG_FILE=${CONFIG_FILE}" >> "$GITHUB_ENV"
         echo "OCI_CLI_CONFIG_FILE=${CONFIG_FILE}" >> "$GITHUB_ENV"
+        # raw-request needs key_file in the CLI's env overlay; OCI_CLI_KEY_CONTENT alone (workflow env) causes KeyError: 'key_file'
+        echo "OCI_CLI_KEY_FILE=${KEY_FILE}" >> "$GITHUB_ENV"
         echo "config-file=${CONFIG_FILE}" >> "$GITHUB_OUTPUT"

@@ -116,8 +116,6 @@ jobs:
       - name: Build VM Images
         if: steps.check_latest.outputs.image_exists == 'false'
         id: build_image
-        env:
-          OCI_CONFIG_FILE: ${{ steps.oci.outputs.config-file }}
         run: |
           set -euo pipefail
           export PATH="$PATH:$HOME/.local/bin:$HOME/bin" && \
@@ -219,8 +217,6 @@ jobs:
       - name: Build VM Images
         id: build_image
         if: steps.check_latest.outputs.image_exists == 'false'
-        env:
-          OCI_CLI_CONFIG_FILE: ${{ steps.oci.outputs.config-file }}
         run: |
           set -euo pipefail
           test -f "${{ steps.oci.outputs.config-file }}"
@@ -689,8 +685,6 @@ jobs:
           echo "IMAGE_ID=${IMAGE_ID}" >> $GITHUB_ENV
 
       - name: Enable A10 shapes
-        env:
-          OCI_CONFIG_FILE: ${{ steps.oci.outputs.config-file }}
         run: |
           set -euo pipefail
           test -f "${OCI_CONFIG_FILE}"
