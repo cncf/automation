@@ -412,11 +412,6 @@ jobs:
     env:
       OS_NAME: ubuntu-24.04-arm64-gha-image
     steps:
-      - name: Download image OCID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: image-ocid-arm64
-
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -425,6 +420,11 @@ jobs:
 
       - name: Install OCI CLI
         uses: ./.github/actions/setup-oci-cli
+
+      - name: Download image OCID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: image-ocid-arm64
 
       - name: Export Image to bucket for cross-region copy
         run: |
@@ -512,6 +512,15 @@ jobs:
     env:
       OS_NAME: ubuntu-24.04-arm64-gha-image
     steps:
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
+
+      - name: Install OCI CLI
+        uses: ./.github/actions/setup-oci-cli
+
       - name: Download Object Name
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
@@ -521,15 +530,6 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: image-tag-arm64
-
-      - name: Checkout setup-oci-cli action
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          sparse-checkout: .github/actions/setup-oci-cli
-
-      - name: Install OCI CLI
-        uses: ./.github/actions/setup-oci-cli
 
       - name: Import Custom Image
         run: |
@@ -567,11 +567,6 @@ jobs:
       matrix:
         region: [us-phoenix-1, us-chicago-1]
     steps:
-      - name: Download Object Name
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: object-name-x86
-
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -580,6 +575,11 @@ jobs:
 
       - name: Install OCI CLI
         uses: ./.github/actions/setup-oci-cli
+
+      - name: Download Object Name
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: object-name-x86
 
       - name: Sync image to other regions
         run: |
@@ -599,11 +599,6 @@ jobs:
     env:
       OS_NAME: ubuntu-24.04-amd64-gha-image
     steps:
-      - name: Download image OCID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: image-ocid-x86
-
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -612,6 +607,11 @@ jobs:
 
       - name: Install OCI CLI
         uses: ./.github/actions/setup-oci-cli
+
+      - name: Download image OCID
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: image-ocid-x86
 
       - name: Release
         run: |
@@ -627,16 +627,6 @@ jobs:
     env:
       OS_NAME: ubuntu-24.04-amd64-gha-image
     steps:
-      - name: Download Object Name
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: object-name-x86
-
-      - name: Download image tag
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: image-tag-x86
-
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -652,6 +642,16 @@ jobs:
           fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
           region: ${{ secrets.OCI_CLI_REGION }}
           key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+
+      - name: Download Object Name
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: object-name-x86
+
+      - name: Download image tag
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: image-tag-x86
 
       - name: Import Custom Image
         run: |
