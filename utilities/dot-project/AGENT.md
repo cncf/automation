@@ -452,12 +452,15 @@ audits:
     url: "https://project.io/audit.pdf"
 ```
 
-### Template Files (`template/`)
+### Example Files (`example/`)
 
-The `template/` directory contains starter files for new `.project` repositories:
+The `example/` directory contains starter files for new `.project` repositories
+(a filled-in, realistic Kubernetes example — copy and replace values):
 - `project.yaml` - Example project metadata
 - `maintainers.yaml` - Example maintainers configuration
+- `projectlist.yaml` - Example project list entry (used by validator tests)
 - `.github/workflows/validate.yaml` - CI workflow to validate project files
+- `.github/workflows/update-landscape.yml` - CI workflow to sync changes to the CNCF Landscape
 
 ## Common Tasks
 

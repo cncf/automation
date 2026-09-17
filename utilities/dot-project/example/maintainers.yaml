@@ -1,5 +1,5 @@
 # Example maintainer roster for Kubernetes
-# This is a realistic, filled-in example. For a blank starter, see ../template/
+# This is a realistic, filled-in example.
 #
 # Documentation: https://github.com/cncf/automation/tree/main/utilities/dot-project
 
@@ -18,3 +18,17 @@ maintainers:
           - justaugustus
           - cpanato
           - saschagrunert
+      # Unmanaged teams: teams with "managed: false" are tracked here for
+      # documentation but are excluded from CNCF resource provisioning
+      # (mailing lists, service desk, Copilot seats, handle verification).
+      #
+      # Active contributors who do not need full CNCF resource access:
+      - name: "reviewers"
+        managed: false
+        members:
+          - reviewer-handle
+      #
+      # Former maintainers:
+      - name: "emeritus"
+        managed: false
+        members: []

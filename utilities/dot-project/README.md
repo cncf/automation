@@ -6,9 +6,9 @@ Every CNCF project maintains a `.project` repository in their GitHub organizatio
 
 For CNCF projects adopting `.project`:
 
-1. Copy the `template/` directory contents into your `.project` repo
-2. Fill in your project details in `project.yaml` and `maintainers.yaml`
-3. The included GitHub Actions workflow will validate on every PR
+1. Copy the `example/` directory contents into your `.project` repo
+2. Replace the example values in `project.yaml` and `maintainers.yaml` with your project's details
+3. The included GitHub Actions workflows (`.github/workflows/`) will validate on every PR and sync changes to the CNCF Landscape
 
 ## Schema (v1.0.0)
 
@@ -66,7 +66,7 @@ repositories:
 
 ### Example: Full `project.yaml`
 
-See `example/project.yaml` for a complete filled-in example, or `template/project.yaml` for a blank starter.
+See `example/project.yaml` for a complete filled-in example to copy and adapt.
 
 ## Tools
 
