@@ -160,69 +160,6 @@ jobs:
       # TODO (github.com/slsa-framework/slsa-verifier/issues/92):
       #       Add step to verify using slsa-verifier
 
-  # Test the published image by running it and see if the VM is created.
-  test-image:
-    needs: build-cloudrunner-images
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      REGION: us-sanjose-1
-      AVAILABILITY_DOMAIN: bzBe:US-SANJOSE-1-AD-1
-      SUBNET_ID: ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq
-      FALLBACK_REGION: us-ashburn-1
-      FALLBACK_AVAILABILITY_DOMAIN: bzBe:US-ASHBURN-AD-2
-      FALLBACK_SUBNET_ID: ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q
-    strategy:
-      fail-fast: false
-      matrix:
-        runner: ["gpu-a10-1", "gpu-a10-2"]
-        include:
-          - runner: "gpu-a10-1"
-            arch: "amd64"
-            shape: "VM.GPU.A10.1"
-            ocpus: 0   # Not a flex type, so ocpus and memory are determined by the shape
-            memory: 0
-            preemptible: false
-          - runner: "gpu-a10-2"
-            arch: "amd64"
-            shape: "VM.GPU.A10.2"
-            ocpus: 0   # Not a flex type, so ocpus and memory are determined by the shape
-            memory: 0
-            preemptible: false
-    steps:
-      - name: Test the published Cloudrunner Docker image
-        run: |
-          OCI_CONFIG_FILE="${{ github.workspace}}/.oci/config"
-          OCI_KEY_FILE="${{ github.workspace}}/.oci/oci_api_key.pem"
-          mkdir -p "${{ github.workspace}}/.oci"
-
-          cat > ${OCI_CONFIG_FILE} << EOF
-          [DEFAULT]
-          user=${{ secrets.OCI_CLI_USER }}
-          fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}
-          tenancy=${{ secrets.OCI_CLI_TENANCY }}
-          region=${{ secrets.OCI_CLI_REGION }}
-          key_file=/root/.oci/oci_api_key.pem
-          EOF
-
-          echo "${{ secrets.OCI_CLI_KEY_CONTENT }}" > ${OCI_KEY_FILE}
-
-          chmod 600 ${OCI_KEY_FILE} ${OCI_CONFIG_FILE}
-
-          docker run -v ${{ github.workspace}}/.oci:/root/.oci \
-            ${{ needs.build-cloudrunner-images.outputs.image }}@${{ needs.build-cloudrunner-images.outputs.digest }} \
-            --arch=${{ matrix.arch }} \
-            --shape=${{ matrix.shape }} \
-            --shape-ocpus=${{ matrix.ocpus }} \
-            --shape-memory-in-gbs=${{ matrix.memory }} \
-            --region=${{ env.REGION }} \
-            --availability-domain=${{ env.AVAILABILITY_DOMAIN }} \
-            --subnet-id=${{ env.SUBNET_ID }} \
-            --fallback-region=${{ env.FALLBACK_REGION }} \
-            --fallback-availability-domain=${{ env.FALLBACK_AVAILABILITY_DOMAIN }} \
-            --fallback-subnet-id=${{ env.FALLBACK_SUBNET_ID }} \
-            --preemptible=${{ matrix.preemptible }}
-
   # Test the published image end-to-end: ARC in kind spawns an OCI VM runner
   # from it, which then picks up the test-runner job below.
   run-kind-with-arc:
