@@ -1,5 +1,5 @@
 name: 'Run kind with ARC'
-description: 'Start a kind cluster with ARC, deploy an OCI VM runner scale set for CI testing, and wait for the matching test-runner job to complete'
+description: 'Start a kind cluster with ARC, deploy an OCI VM runner scale set for CI testing, and wait for the matching test-runner job to complete. Requires kind, kubectl, helm and docker on the runner (all preinstalled on ubuntu-latest).'
 inputs:
   arch:
     description: 'Runner architecture to test (x86 or arm)'
@@ -168,4 +168,7 @@ runs:
           sleep 30
         done
 
-        kind delete cluster
+    - name: Delete kind cluster
+      if: ${{ always() }}
+      shell: bash
+      run: kind delete cluster || true

@@ -58,7 +58,7 @@ jobs:
         with:
           persist-credentials: false
           # pull_request_target defaults to the base branch; test the PR code
-          ref: ${{ github.event.pull_request.head.sha || '' }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -86,9 +86,11 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # sha/branch tags use github.sha|ref, which point at the BASE branch
+          # under pull_request_target — PR runs must only produce pr-N tags.
           tags: |
-            type=sha
-            type=ref,event=branch
+            type=sha,enable=${{ github.event_name != 'pull_request_target' }}
+            type=ref,event=branch,enable=${{ github.event_name != 'pull_request_target' }}
             type=ref,event=pr
 
       # Build and push Docker image with Buildx
@@ -178,7 +180,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha || '' }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Run kind with ARC and wait for test-runner
         uses: ./.github/actions/run-kind-with-arc
@@ -206,7 +208,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha || '' }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Run uname to verify architecture
         run: |
