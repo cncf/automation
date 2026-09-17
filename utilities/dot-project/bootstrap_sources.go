@@ -18,7 +18,9 @@ const (
 	cloMonitorSearchPath    = "/api/projects/search"
 	defaultCLOMonitorURL    = "https://clomonitor.io"
 	defaultLandscapeYAMLURL = "https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml"
-	landscapeLogoBaseURL    = "https://landscape.cncf.io/logos/"
+	// landscapeLogoBaseURL is the raw-content base for SVG logo assets stored
+	// in the cncf/landscape repo's hosted_logos directory.
+	landscapeLogoBaseURL = "https://raw.githubusercontent.com/cncf/landscape/master/hosted_logos/"
 
 	// bootstrapUserAgent identifies this tool to the GitHub API, which requires
 	// a User-Agent header on every request.
