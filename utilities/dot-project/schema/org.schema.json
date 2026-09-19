@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/cncf/automation/utilities/dot-project/schema/v1.0.0/org.json",
+  "title": "CNCF Project Organization Index",
+  "description": "Schema for CNCF .project repository org.yaml files, which index the CNCF projects hosted in one GitHub organization",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "org",
+    "projects"
+  ],
+  "properties": {
+    "org": {
+      "type": "string",
+      "description": "GitHub organization that owns this repository"
+    },
+    "projects": {
+      "type": "array",
+      "description": "The CNCF projects hosted in this organization. Each owns a directory containing its own project.yaml and maintainers.yaml.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Project identifier, and by default the directory name. Must match the project's slug and its maintainers' project_id.",
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$"
+          },
+          "path": {
+            "type": "string",
+            "description": "Directory holding the project, when it differs from id. Relative, exactly one level deep.",
+            "pattern": "^[^./][^/]*$"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "org.yaml schema version",
+      "enum": [
+        "1.0.0"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
