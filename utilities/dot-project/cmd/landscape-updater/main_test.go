@@ -46,8 +46,8 @@ func TestUpdateLandscape(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update to return true")
 	}
 
@@ -97,10 +97,56 @@ func TestNoChanges(t *testing.T) {
 		},
 	}
 
-	_, updated := updateLandscape(root, project, lines)
-	if updated {
-		t.Fatal("Expected no update when values are identical")
+	_, status := updateLandscape(root, project, lines)
+	if status != statusNoChanges {
+		t.Fatalf("expected statusNoChanges when values are identical, got %v", status)
 	}
+}
+
+// A project whose name does not match any landscape item must be
+// distinguishable from one that is simply already up to date: both leave the
+// file untouched, but only the former is a misconfiguration worth warning
+// about.
+func TestNoMatchingEntry(t *testing.T) {
+	landscapeYAML := `landscape:
+  - category:
+    name: Orchestration
+    subcategories:
+      - subcategory:
+        name: Scheduling
+        items:
+          - item:
+            name: MyProject
+            repo_url: https://github.com/org/myproject
+            homepage_url: https://myproject.io`
+
+	t.Run("name does not match", func(t *testing.T) {
+		root, lines := setupTest(landscapeYAML)
+		project := &projects.Project{
+			Name:         "TypoProject",
+			Website:      "https://changed.example",
+			Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/myproject"}},
+		}
+
+		_, status := updateLandscape(root, project, lines)
+		if status != statusNoMatch {
+			t.Fatalf("expected statusNoMatch for an unknown project name, got %v", status)
+		}
+	})
+
+	t.Run("no repository in common", func(t *testing.T) {
+		root, lines := setupTest(landscapeYAML)
+		project := &projects.Project{
+			Name:         "MyProject",
+			Website:      "https://changed.example",
+			Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/other"}},
+		}
+
+		_, status := updateLandscape(root, project, lines)
+		if status != statusNoMatch {
+			t.Fatalf("expected statusNoMatch when no repo_url matches, got %v", status)
+		}
+	})
 }
 
 func TestUpdateExistingField(t *testing.T) {
@@ -126,8 +172,8 @@ func TestUpdateExistingField(t *testing.T) {
 		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -163,8 +209,8 @@ func TestInsertNewField(t *testing.T) {
 		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for new description")
 	}
 
@@ -204,8 +250,8 @@ func TestUpdateExtraField(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for extra field")
 	}
 
@@ -242,8 +288,8 @@ func TestInsertNewExtraField(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for new extra field")
 	}
 
@@ -281,8 +327,8 @@ func TestCreateExtraBlock(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for new extra block")
 	}
 
@@ -320,8 +366,8 @@ func TestMultiLineDescriptionReplacement(t *testing.T) {
 		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for multi-line description")
 	}
 
@@ -370,8 +416,8 @@ func TestUnrelatedLinesUntouched(t *testing.T) {
 		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/target"}},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -604,8 +650,8 @@ func TestPR4820_Meshery(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -640,8 +686,8 @@ func TestPR4821_OpenEBS(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -671,8 +717,8 @@ func TestPR4822_OCM(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -702,8 +748,8 @@ func TestPR4823_kcp(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -733,8 +779,8 @@ func TestPR4827_ORAS(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -764,8 +810,8 @@ func TestPR4829_k0s(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -872,8 +918,8 @@ func TestAllPRsNoNoiseRegression(t *testing.T) {
 			root, origLines := setupTestWithNoise(realisticLandscapeYAML)
 			proj := tc.proj
 
-			newLines, updated := updateLandscape(root, &proj, origLines)
-			if !updated {
+			newLines, status := updateLandscape(root, &proj, origLines)
+			if status != statusUpdated {
 				t.Fatalf("Expected update for %s", tc.name)
 			}
 
