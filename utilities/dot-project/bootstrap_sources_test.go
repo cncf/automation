@@ -577,7 +577,7 @@ func TestFetchFromLandscape(t *testing.T) {
 		if result == nil {
 			t.Fatal("expected match")
 		}
-		expected := "https://landscape.cncf.io/logos/prometheus.svg"
+		expected := "https://raw.githubusercontent.com/cncf/landscape/master/hosted_logos/prometheus.svg"
 		if result.LogoURL != expected {
 			t.Errorf("LogoURL = %q, want %q", result.LogoURL, expected)
 		}
