@@ -17,16 +17,26 @@ func (pv *ProjectValidator) ValidateMaintainersFile(path string, verify bool) ([
 	return pv.ValidateMaintainersFileWithExclusion(path, verify, nil)
 }
 
-// ValidateMaintainersFileWithExclusion validates a maintainers configuration file, optionally excluding some handles from verification
-func (pv *ProjectValidator) ValidateMaintainersFileWithExclusion(path string, verify bool, excludedHandles map[string]bool) ([]MaintainerValidationResult, error) {
+// LoadMaintainersFromFile reads and parses a maintainers.yaml file.
+func LoadMaintainersFromFile(path string) (MaintainersConfig, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read maintainers file: %w", err)
+		return MaintainersConfig{}, fmt.Errorf("failed to read maintainers file: %w", err)
 	}
 
 	var config MaintainersConfig
 	if err := yaml.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("failed to parse maintainers YAML: %w", err)
+		return MaintainersConfig{}, fmt.Errorf("failed to parse maintainers YAML: %w", err)
+	}
+
+	return config, nil
+}
+
+// ValidateMaintainersFileWithExclusion validates a maintainers configuration file, optionally excluding some handles from verification
+func (pv *ProjectValidator) ValidateMaintainersFileWithExclusion(path string, verify bool, excludedHandles map[string]bool) ([]MaintainerValidationResult, error) {
+	config, err := LoadMaintainersFromFile(path)
+	if err != nil {
+		return nil, err
 	}
 
 	if len(config.Maintainers) == 0 {
@@ -44,14 +54,9 @@ func (pv *ProjectValidator) ValidateMaintainersFileWithExclusion(path string, ve
 
 // ExtractHandles reads a maintainers file and returns a set of all handles
 func (pv *ProjectValidator) ExtractHandles(path string) (map[string]bool, error) {
-	data, err := os.ReadFile(path)
+	config, err := LoadMaintainersFromFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read maintainers file: %w", err)
-	}
-
-	var config MaintainersConfig
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("failed to parse maintainers YAML: %w", err)
+		return nil, err
 	}
 
 	handles := make(map[string]bool)
@@ -71,6 +76,41 @@ func (pv *ProjectValidator) ExtractHandles(path string) (map[string]bool, error)
 		}
 	}
 	return handles, nil
+}
+
+// ExtractHandlesFrom returns the union of every handle found at path.
+//
+// path may be a single maintainers.yaml or a repository root, in which case
+// every maintainers.yaml at the root or one level below it contributes. The
+// union is what --base-maintainers needs: a handle that already existed
+// anywhere in the repository is not new, so it does not need re-verification,
+// even if its roster has since moved to a different file.
+func (pv *ProjectValidator) ExtractHandlesFrom(path string) (map[string]bool, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read maintainers path: %w", err)
+	}
+
+	if !info.IsDir() {
+		return pv.ExtractHandles(path)
+	}
+
+	files, err := FindMaintainersFiles(path)
+	if err != nil {
+		return nil, err
+	}
+
+	union := make(map[string]bool)
+	for _, file := range files {
+		handles, err := pv.ExtractHandles(file)
+		if err != nil {
+			return nil, err
+		}
+		for handle := range handles {
+			union[handle] = true
+		}
+	}
+	return union, nil
 }
 
 func (pv *ProjectValidator) validateMaintainerEntry(entry MaintainerEntry, verify bool, excludedHandles map[string]bool) MaintainerValidationResult {

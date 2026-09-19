@@ -5,6 +5,118 @@
 
 This document defines the schema for CNCF `.project` repository metadata files.
 
+## Repository layouts
+
+A `.project` repository uses one of two layouts.
+
+**Single-project (default).** `project.yaml` and `maintainers.yaml` sit at the
+repository root. This is what almost every CNCF project needs, and it remains
+the layout produced when nothing indicates otherwise.
+
+```
+.project/
+├── project.yaml
+├── maintainers.yaml
+└── .github/workflows/
+```
+
+**Multi-project.** A few GitHub organizations host more than one distinct CNCF
+project — `spiffe` holds both SPIFFE and SPIRE, and `spinframework` holds both
+Spin and SpinKube. These are separately accepted projects with their own
+maturity, their own landscape entry, and frequently their own maintainers, so
+they cannot share a single `project.yaml`. Such a repository declares an
+`org.yaml` index at its root and gives every project its own directory:
+
+```
+.project/
+├── org.yaml
+├── spiffe/
+│   ├── project.yaml
+│   └── maintainers.yaml
+├── spire/
+│   ├── project.yaml
+│   └── maintainers.yaml
+└── .github/workflows/
+```
+
+The presence of `org.yaml` is the only thing that selects the multi-project
+layout; every tool detects it automatically. The two layouts are mutually
+exclusive: when `org.yaml` exists, a root `project.yaml` or `maintainers.yaml`
+is an error, because it would be ambiguous which project it described.
+
+Project directories are exactly one level deep. That is what lets workflows use
+an unambiguous `*/project.yaml` path filter rather than a recursive glob that
+would also match unrelated files.
+
+## org.yaml
+
+`org.yaml` is deliberately *only* an index. It names the projects in the
+repository and where they live, and carries no project metadata of its own.
+
+Shared values are not hoisted into it even when several projects genuinely share
+them. A value that looks shared today — a security contact, an adopters list —
+is routinely project-specific tomorrow (SPIRE maintainers handle their own
+security reports while the SPIFFE Steering Committee handles the rest), and
+hoisting it would mean no single file fully describes a project. Every
+`project.yaml` therefore stands alone, exactly as it does in the single-project
+layout.
+
+### Top-Level Fields
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `schema_version` | string | Yes | `org.yaml` schema version | Must be a supported version (currently `"1.0.0"`) |
+| `org` | string | Yes | The GitHub organization that owns this repository | Non-empty |
+| `projects` | OrgProjectEntry[] | Yes | The CNCF projects in this organization | At least two entries; `id` values must be unique |
+
+`org.yaml` has its own version line, independent of `project.yaml`. The
+multi-project layout introduced no change to the `project.yaml` schema, so
+`project.yaml` stays at `1.0.0`.
+
+### OrgProjectEntry
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `id` | string | Yes | Project identifier, and by default the directory name | Lowercase alphanumeric and hyphens only, no leading/trailing hyphens; unique within the file |
+| `path` | string | No | Directory holding the project, when it differs from `id` | Relative, exactly one level deep, no `.`/`..` segments, not dot-prefixed |
+
+Use `path` only when a directory has to be named something other than the
+project id. Omitting it is the norm.
+
+### Example
+
+```yaml
+schema_version: "1.0.0"
+org: "spiffe"
+
+projects:
+  # SPIFFE (graduated)
+  - id: "spiffe"
+  # SPIRE (graduated)
+  - id: "spire"
+```
+
+### Validation
+
+When `org.yaml` is present:
+
+- A root `project.yaml` or `maintainers.yaml` is an error.
+- Every declared project must have a directory containing both `project.yaml`
+  and `maintainers.yaml`.
+- A directory that looks like a project directory but is not declared in
+  `org.yaml` is an error — silently ignoring it would let a project drop out of
+  every automation without anyone noticing.
+- Each `project.yaml`'s `slug` and each `maintainers.yaml`'s `project_id` must
+  match the directory's project id, so that the routing key is the same
+  everywhere.
+- A `slug` may not be reused across projects in the repository.
+
+A team name may appear in more than one project. GitHub teams are org-scoped, so
+one team that appears twice is one team whose membership is the union of both
+definitions. This is legitimate — a shared steering committee, or an
+"authentication" team staffed partly from each project — so it is reported as a
+warning, never an error, when the member lists differ.
+
 ## project.yaml
 
 ### Top-Level Fields
@@ -205,7 +317,7 @@ PathRef values should be **full GitHub URLs** (e.g., `https://github.com/org/rep
 
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| `name` | string | Yes | Team name | Any descriptive name (e.g., `maintainers`, `committers`, `reviewers`, `emeritus`) |
+| `name` | string | Yes | Team name | Any descriptive name (e.g., `maintainers`, `committers`, `reviewers`, `emeritus`). In a multi-project repository the same name may appear in several projects; GitHub teams are org-scoped, so the team's membership is the union of those definitions |
 | `members` | string[] | Yes | GitHub handles | At least one managed team must have members; normalized (trimmed, `@` stripped) |
 | `managed` | bool | No | Whether team is provisioned to CNCF resources | Defaults to `true` if omitted. Teams with `managed: false` are excluded from handle verification, mailing lists, service desk, and Copilot seat provisioning |
 
@@ -218,3 +330,14 @@ PathRef values should be **full GitHub URLs** (e.g., `https://github.com/org/rep
 5. **Maturity ordering** -- maturity_log entries must be in chronological order
 6. **Handle normalization** -- leading `@` and whitespace are stripped; duplicates are detected case-insensitively
 7. **Required managed team** -- every maintainer entry must include at least one team with `managed: true` (or `managed` omitted) that has at least one member
+8. **`name` is the landscape key** -- the landscape updater matches a landscape item by `name` *and* repository URL. If `name` does not match the item's name in `cncf/landscape`, the updater finds nothing to update and emits a warning rather than silently succeeding. This matters most in a multi-project repository, where two sibling projects have similar names and it is easy to give one of them the other's landscape name.
+
+### Multi-project repositories
+
+These rules apply additionally when `org.yaml` is present; see
+[Repository layouts](#repository-layouts) for the full list.
+
+9. **No root metadata** -- a root `project.yaml` or `maintainers.yaml` is an error
+10. **Declared and present must agree** -- every declared project needs a directory with both files, and every undeclared project-shaped directory is an error
+11. **Identity must match the directory** -- `slug` and `project_id` must both equal the project's `id`
+12. **Slugs are unique** -- no two projects in the repository may share a slug
