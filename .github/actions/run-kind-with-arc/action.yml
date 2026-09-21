@@ -7,8 +7,8 @@ inputs:
   manifest-file:
     description: 'Path to the runner scale set manifest to deploy'
     required: true
-  runner-image-tag:
-    description: 'Override the gha-cloudrunner image reference in the manifest; accepts a tag or a sha256:... digest (defaults to the pinned digest)'
+  runner-image:
+    description: 'Override the gha-cloudrunner image reference in the manifest with a full reference, e.g. ghcr.io/cncf/gha-cloudrunner-pr@sha256:... (defaults to the pinned image)'
     required: false
     default: ''
   oci-user:
@@ -44,7 +44,7 @@ runs:
       env:
         ARCH: ${{ inputs.arch }}
         MANIFEST_FILE: ${{ inputs.manifest-file }}
-        RUNNER_IMAGE_TAG: ${{ inputs.runner-image-tag }}
+        RUNNER_IMAGE: ${{ inputs.runner-image }}
         OCI_USER: ${{ inputs.oci-user }}
         OCI_TENANCY: ${{ inputs.oci-tenancy }}
         OCI_FINGERPRINT: ${{ inputs.oci-fingerprint }}
@@ -95,17 +95,13 @@ runs:
             key_file=/oci/oci_api_key.pem
         EOF
 
-        # the manifest pins the image by digest; swap in the tag or digest when one is given
-        if [ -n "$RUNNER_IMAGE_TAG" ]; then
-          case "$RUNNER_IMAGE_TAG" in
-            sha256:*) SEP='@' ;;
-            *) SEP=':' ;;
-          esac
-          sed -i -E "s|(image: ghcr.io/cncf/gha-cloudrunner)[@:][^[:space:]]+|\1${SEP}${RUNNER_IMAGE_TAG}|" "$MANIFEST_FILE"
+        # the manifest pins the prod image by digest; swap in the full reference when one is given
+        if [ -n "$RUNNER_IMAGE" ]; then
+          sed -i -E "s|image: ghcr.io/cncf/gha-cloudrunner[@:][^[:space:]]+|image: ${RUNNER_IMAGE}|" "$MANIFEST_FILE"
         fi
 
-        sed 's/cncf-ubuntu-2-8/oci-ci-test/g' "$MANIFEST_FILE" \
-          | sed '/subnet-id/a \        - --running-environment=ci' \
+        sed 's/cncf-ubuntu-2-8/oci-ci-test-${{ github.run_id }}/g' "$MANIFEST_FILE" \
+          | sed '/--subnet-id/a \        - --running-environment=ci' \
           | sed 's/E5.Flex/E4.Flex/g' \
           | sed '/nodeSelector/,+1d' \
           | sed '/runnerScaleSetLabels/,+2d' | kubectl apply -f -
@@ -156,7 +152,7 @@ runs:
           fi
 
           if [ "$JOB_STATUS" = "completed" ]; then
-            if [ "$JOB_CONCLUSION" = "failure" ]; then
+            if [ "$JOB_CONCLUSION" != "success" ]; then
               echo "ERROR: ${TARGET_JOB} failed"
               exit 1
             fi
@@ -171,4 +167,6 @@ runs:
     - name: Delete kind cluster
       if: ${{ always() }}
       shell: bash
-      run: kind delete cluster || true
+      run: |
+        kubectl delete autoscalingrunnerset -n arc-systems --all --timeout=120s || true
+        kind delete cluster || true

@@ -12,6 +12,8 @@ on:
     paths:
       - 'ci/cloudrunners/Dockerfile*'
       - 'ci/cloudrunners/oci/**'
+      - '.github/actions/run-kind-with-arc/**'
+      - '.github/scripts/test_with_kind_cluster.sh'
   # pull_request_target (not pull_request) so fork PRs get the secrets needed
   # by the test jobs; the authorize job below gates fork PRs behind a manual
   # environment approval before any of their code runs with those secrets.
@@ -20,13 +22,19 @@ on:
     paths:
       - 'ci/cloudrunners/Dockerfile*'
       - 'ci/cloudrunners/oci/**'
+      - '.github/actions/run-kind-with-arc/**'
+      - '.github/scripts/test_with_kind_cluster.sh'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # IMAGE_NAME maps to the Docker image name
-  IMAGE_NAME: cncf/gha-cloudrunner
+  # PR builds (approved fork code) go to a separate package so their mutable
+  # pr-N tags never land in the production image.
+  IMAGE_NAME: ${{ github.event_name == 'pull_request_target' && 'cncf/gha-cloudrunner-pr' || 'cncf/gha-cloudrunner' }}
 
 jobs:
   # Fork PRs run with secrets under pull_request_target, so require a manual
@@ -84,13 +92,14 @@ jobs:
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        env:
+          # under pull_request_target github.sha is the BASE branch; tag with the PR head SHA instead
+          DOCKER_METADATA_PR_HEAD_SHA: true
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          # sha/branch tags use github.sha|ref, which point at the BASE branch
-          # under pull_request_target — PR runs must only produce pr-N tags.
           tags: |
-            type=sha,enable=${{ github.event_name != 'pull_request_target' }}
-            type=ref,event=branch,enable=${{ github.event_name != 'pull_request_target' }}
+            type=sha
+            type=ref,event=branch
             type=ref,event=pr
 
       # Build and push Docker image with Buildx
@@ -187,7 +196,7 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
           manifest-file: ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-${{ matrix.arch }}.yaml
-          runner-image-tag: ${{ needs.build-cloudrunner-images.outputs.digest }}
+          runner-image: ${{ needs.build-cloudrunner-images.outputs.image }}@${{ needs.build-cloudrunner-images.outputs.digest }}
           oci-user: ${{ secrets.OCI_CLI_USER }}
           oci-tenancy: ${{ secrets.OCI_CLI_TENANCY }}
           oci-fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
@@ -200,7 +209,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86, arm]
-    runs-on: oci-ci-test-${{ matrix.arch }}
+    runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.arch }}
     needs: build-cloudrunner-images
     timeout-minutes: 15
     steps:
@@ -219,7 +228,7 @@ jobs:
       - name: Build a dummy Docker image
         run: |
           cat <<EOF > Dockerfile.dummy
-          FROM alpine:3.22
+          FROM public.ecr.aws/docker/library/alpine:3.22
           RUN echo "hello from ${{ matrix.arch }}" > /hello.txt
           CMD ["cat", "/hello.txt"]
           EOF
