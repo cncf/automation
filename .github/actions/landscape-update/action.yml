@@ -20,11 +20,13 @@ runs:
   steps:
     - name: Checkout Automation Repo
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      env:
+        ACTION_REF: ${{ github.action_ref }}
       with:
         persist-credentials: false
         repository: cncf/automation
         path: .cncf-automation-tool
-        ref: main
+        ref: ${{ env.ACTION_REF }}
 
     - name: Checkout Landscape Repo
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -33,9 +33,9 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: false
+          fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-project@main
+      - uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         # No project_file input: the action discovers the repository layout,
         # so this step is identical for single- and multi-project repositories.
 
@@ -47,7 +47,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-maintainers@main
+      - uses: cncf/automation/.github/actions/validate-maintainers@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
           # No maintainers_file input: the action discovers every maintainers
           # file in the repository.
