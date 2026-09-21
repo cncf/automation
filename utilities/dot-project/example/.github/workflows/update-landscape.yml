@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@main
+        uses: cncf/automation/.github/actions/landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
           # No project_file input: the action discovers every project and
           # opens one landscape pull request per project.

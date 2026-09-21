@@ -395,13 +395,13 @@ input is set in a repository that has an `org.yaml`.
 ### Using the Validate Project Action
 
 ```yaml
-- uses: cncf/automation/.github/actions/validate-project@main
+- uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
 ```
 
 ### Using the Validate Maintainers Action
 
 ```yaml
-- uses: cncf/automation/.github/actions/validate-maintainers@main
+- uses: cncf/automation/.github/actions/validate-maintainers@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
   with:
     # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
     verify_maintainers: 'false'
@@ -438,7 +438,7 @@ jobs:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@main
+        uses: cncf/automation/.github/actions/landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
           token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}
 ```

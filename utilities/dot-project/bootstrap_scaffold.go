@@ -250,7 +250,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-project@main
+      - uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         # No project_file input: the action discovers the repository layout,
         # so this step is identical for single- and multi-project repositories.
 
@@ -261,7 +261,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-maintainers@main
+      - uses: cncf/automation/.github/actions/validate-maintainers@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
           # No maintainers_file input: the action discovers every maintainers
           # file in the repository.
@@ -297,7 +297,7 @@ jobs:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@main
+        uses: cncf/automation/.github/actions/landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
           # No project_file input: the action discovers every project and
           # opens one landscape pull request per project.

@@ -339,21 +339,18 @@ func TestWriteScaffold(t *testing.T) {
 			t.Error("CODEOWNERS should contain @alice")
 		}
 
-		// Spot-check validate.yaml pins third-party actions and points the
-		// cncf/automation actions at main.
+		// Spot-check validate.yaml SHA-pins both third-party actions and the
+		// cncf/automation actions
 		valData, _ := os.ReadFile(filepath.Join(dir, ".github", "workflows", "validate.yaml"))
 		valStr := string(valData)
 		if !strings.Contains(valStr, "@3d3c42e5aac5ba805825da76410c181273ba90b1") {
 			t.Error("validate.yaml should SHA-pin actions/checkout")
 		}
-		// The cncf/automation actions track main so that a scaffolded workflow
-		// and the action it calls are never out of step. See AGENT.md,
-		// "Touching Anything Layout-Aware".
-		if !strings.Contains(valStr, "cncf/automation/.github/actions/validate-project@main") {
-			t.Error("validate.yaml should reference validate-project@main")
+		if !strings.Contains(valStr, "cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b") {
+			t.Error("validate.yaml should SHA-pin validate-project")
 		}
-		if !strings.Contains(valStr, "cncf/automation/.github/actions/validate-maintainers@main") {
-			t.Error("validate.yaml should reference validate-maintainers@main")
+		if !strings.Contains(valStr, "cncf/automation/.github/actions/validate-maintainers@85e0bcd298817a6e26e286d6b22615f8c81b4e4b") {
+			t.Error("validate.yaml should SHA-pin validate-maintainers")
 		}
 
 		// Spot-check update-landscape.yml uses the correct secret and ref
@@ -362,8 +359,8 @@ func TestWriteScaffold(t *testing.T) {
 		if !strings.Contains(lsStr, "LANDSCAPE_REPO_TOKEN") {
 			t.Error("update-landscape.yml should use LANDSCAPE_REPO_TOKEN secret")
 		}
-		if !strings.Contains(lsStr, "landscape-update@main") {
-			t.Error("update-landscape.yml should reference landscape-update@main")
+		if !strings.Contains(lsStr, "landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b") {
+			t.Error("update-landscape.yml should SHA-pin landscape-update")
 		}
 		if strings.Contains(lsStr, "uses: cncf/automation/.github/workflows/") {
 			t.Error("update-landscape.yml should use composite action pattern, not reusable workflow")
