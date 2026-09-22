@@ -50,9 +50,20 @@ spec:
           pvcName: bomhort-sbom-data
           storageSize: 20Gi
         seedJob:
-          cncfExceptionsURL: https://cncf-license-exceptions.netlify.app/exceptions.json
           sbomBranch: main
           sbomRepo: https://github.com/cncf/sbom.git
+        licenseExceptions:
+          # 0.7.0 removed seedJob.cncfExceptionsURL: exceptions are no longer
+          # downloaded at runtime, they are a reviewed ConfigMap. The upstream
+          # cncf/foundation file does not parse under 0.7.0, so no approvals are
+          # in effect for now - revisit once BOMHort reads it directly.
+          enabled: true
+          custom: |
+            { "blanketExceptions": [], "exceptions": [] }
+        originalStore:
+          # Explicit: `auto` would resolve to s3 and write originals into the
+          # first bucket below, which these credentials cannot write to.
+          backend: none
         s3:
           buckets:
             - name: cncf-project-sboms
@@ -60,16 +71,19 @@ spec:
               region: us-iad-18
               usePathStyle: true
               tags: ["projects"]
+              pathLayout: "project"
             - name: cncf-subproject-sboms
               endpoint: https://us-iad-18.linodeobjects.com
               region: us-iad-18
               usePathStyle: true
               tags: ["subprojects"]
+              pathLayout: "namespace/project"
             - name: sandbox-reviews
               endpoint: https://us-iad-18.linodeobjects.com
               region: us-iad-18
               usePathStyle: true
               tags: ["sandbox-applications"]
+              pathLayout: "_/_/project"
   destination:
     server: https://kubernetes.default.svc
     namespace: bomhort
