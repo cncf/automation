@@ -6,7 +6,7 @@ When those two disagree, that is called out. **`landscape.yml` should be updated
 ## Summary
 
 - **CNCF landscape items in scope:** 252
-- **With at least one drift / conflict row:** 1
+- **With at least one drift / conflict row:** 2
 - **Findings where Landscape and CLOMonitor disagree:** 0
 - **No PCC and no CLOMonitor match:** 0
 
@@ -16,6 +16,7 @@ Each row is one detected mismatch. Sorted by `Field`, then `Project`.
 
 | Field | Project | Maturity | Landscape | PCC | CLOMonitor | Landscape≈CLO? | Note |
 |---|---|---|---|---|---|---|---|
+| project (maturity) | Meshery | incubating | incubating | sandbox | incubating | Yes | PCC ('sandbox') and CLOMonitor ('incubating') disagree. L… |
 | project (maturity) | Service Mesh Performance | archived | archived | sandbox | — | — | Landscape ('archived') ≠ PCC ('sandbox'). |
 
 ## No datasource match
