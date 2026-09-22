@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: ghcr.io/seebom-labs/bomhort/charts
     chart: bomhort
-    targetRevision: 0.6.1
+    targetRevision: 0.7.0
     helm:
       values: |
         cleanBatchJobs: false
@@ -44,7 +44,7 @@ spec:
         image:
           registry: ghcr.io
           repository: seebom-labs/bomhort
-          tag: 0.6.1
+          tag: 0.7.0
         sbomSource:
           mountPath: /data/sboms
           pvcName: bomhort-sbom-data
@@ -54,7 +54,22 @@ spec:
           sbomBranch: main
           sbomRepo: https://github.com/cncf/sbom.git
         s3:
-          buckets: '[{"name":"sandbox-reviews","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18","usePathStyle":true},{"name":"cncf-subproject-sboms","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18","usePathStyle":true},{"name":"cncf-project-sboms","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18","usePathStyle":true}]'
+          buckets:
+            - name: cncf-project-sboms
+              endpoint: https://us-iad-18.linodeobjects.com
+              region: us-iad-18
+              usePathStyle: true
+              tags: ["projects"]
+            - name: cncf-subproject-sboms
+              endpoint: https://us-iad-18.linodeobjects.com
+              region: us-iad-18
+              usePathStyle: true
+              tags: ["subprojects"]
+            - name: sandbox-reviews
+              endpoint: https://us-iad-18.linodeobjects.com
+              region: us-iad-18
+              usePathStyle: true
+              tags: ["sandbox-applications"]
   destination:
     server: https://kubernetes.default.svc
     namespace: bomhort
