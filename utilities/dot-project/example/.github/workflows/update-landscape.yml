@@ -8,7 +8,11 @@ on:
   push:
     branches: [main]
     paths:
+      - 'org.yaml'
       - 'project.yaml'
+      # Multi-project repositories keep each project in its own directory,
+      # exactly one level deep.
+      - '*/project.yaml'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +31,8 @@ jobs:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@53810a548b46f33421cd67e57d16e4b7251416d9
+        uses: cncf/automation/.github/actions/landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
-          project_file: 'project.yaml'
+          # No project_file input: the action discovers every project and
+          # opens one landscape pull request per project.
           token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}

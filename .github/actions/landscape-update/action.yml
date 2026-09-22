@@ -2,8 +2,12 @@ name: 'Update CNCF Landscape'
 description: 'Updates the CNCF Landscape based on project metadata changes'
 inputs:
   project_file:
-    description: 'Path to the project YAML file'
-    required: true
+    description: >-
+      Path to a single project.yaml. Leave empty (recommended) to discover
+      every project in the repository; each one gets its own branch and pull
+      request. Ignored when org.yaml exists.
+    required: false
+    default: ''
   landscape_repo:
     description: 'Landscape repository (e.g., cncf/landscape)'
     required: false
@@ -55,8 +59,23 @@ runs:
         PROJECT_FILE: ${{ inputs.project_file }}
         LANDSCAPE_REPO: ${{ inputs.landscape_repo }}
       run: |
+        set -euo pipefail
+
+        # See validate-project: with org.yaml the repository holds several
+        # projects, and each needs its own landscape pull request.
+        if [ -f org.yaml ] && [ -n "${PROJECT_FILE}" ]; then
+          echo "::warning::org.yaml is present, so the landscape is updated for every project in the repository and the project_file input (${PROJECT_FILE}) is ignored. Remove that input from this workflow."
+          PROJECT_FILE=""
+        fi
+
+        if [ -z "${PROJECT_FILE}" ]; then
+          SELECTOR=(--repo-root .)
+        else
+          SELECTOR=(--project "${PROJECT_FILE}")
+        fi
+
         ./.cncf-landscape-updater \
-          --project "${PROJECT_FILE}" \
+          "${SELECTOR[@]}" \
           --landscape ".cncf-landscape/landscape.yml" \
           --landscape-repo "${LANDSCAPE_REPO}" \
           --create-pr

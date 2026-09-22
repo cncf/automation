@@ -339,27 +339,28 @@ func TestWriteScaffold(t *testing.T) {
 			t.Error("CODEOWNERS should contain @alice")
 		}
 
-		// Spot-check validate.yaml uses SHA-pinned refs
+		// Spot-check validate.yaml SHA-pins both third-party actions and the
+		// cncf/automation actions
 		valData, _ := os.ReadFile(filepath.Join(dir, ".github", "workflows", "validate.yaml"))
 		valStr := string(valData)
 		if !strings.Contains(valStr, "@3d3c42e5aac5ba805825da76410c181273ba90b1") {
 			t.Error("validate.yaml should SHA-pin actions/checkout")
 		}
-		if !strings.Contains(valStr, "@53810a548b46f33421cd67e57d16e4b7251416d9") {
-			t.Error("validate.yaml should SHA-pin cncf/automation actions")
+		if !strings.Contains(valStr, "cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b") {
+			t.Error("validate.yaml should SHA-pin validate-project")
 		}
-		if strings.Contains(valStr, "@main") {
-			t.Error("validate.yaml should not reference @main for cncf/automation actions")
+		if !strings.Contains(valStr, "cncf/automation/.github/actions/validate-maintainers@85e0bcd298817a6e26e286d6b22615f8c81b4e4b") {
+			t.Error("validate.yaml should SHA-pin validate-maintainers")
 		}
 
-		// Spot-check update-landscape.yml uses correct secret and SHA-pinned refs
+		// Spot-check update-landscape.yml uses the correct secret and ref
 		lsData, _ := os.ReadFile(filepath.Join(dir, ".github", "workflows", "update-landscape.yml"))
 		lsStr := string(lsData)
 		if !strings.Contains(lsStr, "LANDSCAPE_REPO_TOKEN") {
 			t.Error("update-landscape.yml should use LANDSCAPE_REPO_TOKEN secret")
 		}
-		if !strings.Contains(lsStr, "landscape-update@53810a548b46f33421cd67e57d16e4b7251416d9") {
-			t.Error("update-landscape.yml should SHA-pin landscape-update action")
+		if !strings.Contains(lsStr, "landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b") {
+			t.Error("update-landscape.yml should SHA-pin landscape-update")
 		}
 		if strings.Contains(lsStr, "uses: cncf/automation/.github/workflows/") {
 			t.Error("update-landscape.yml should use composite action pattern, not reusable workflow")

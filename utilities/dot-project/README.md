@@ -10,6 +10,42 @@ For CNCF projects adopting `.project`:
 2. Replace the example values in `project.yaml` and `maintainers.yaml` with your project's details
 3. The included GitHub Actions workflows (`.github/workflows/`) will validate on every PR and sync changes to the CNCF Landscape
 
+## Repository Layouts
+
+A `.project` repository uses one of two layouts, and every tool here detects
+which one it is looking at.
+
+**Single-project** is the default and what almost every project needs:
+`project.yaml` and `maintainers.yaml` at the repository root.
+
+**Multi-project** is for the few GitHub organizations that host more than one
+distinct CNCF project — `spiffe` holds both SPIFFE and SPIRE, `spinframework`
+holds both Spin and SpinKube. These are separately accepted projects with their
+own maturity and their own landscape entry, so they each need their own
+metadata. Such a repository declares an `org.yaml` index at its root and gives
+every project a directory:
+
+```
+.project/
+├── org.yaml            # index: which projects live here
+├── spiffe/
+│   ├── project.yaml
+│   └── maintainers.yaml
+├── spire/
+│   ├── project.yaml
+│   └── maintainers.yaml
+└── .github/workflows/
+```
+
+`org.yaml` is the only marker; its presence switches the repository to the
+multi-project layout. When it exists, a root `project.yaml` or
+`maintainers.yaml` is an error, since it would be ambiguous which project it
+described. Project directories are exactly one level deep.
+
+The same workflows and the same actions serve both layouts — there is no
+multi-project variant to adopt. See [SCHEMA.md](SCHEMA.md) for the `org.yaml`
+fields and the full validation rules.
+
 ## Schema (v1.0.0)
 
 ### Required Fields
@@ -81,6 +117,9 @@ make build
 # Validate with defaults
 ./bin/validator
 
+# Validate a .project repository, whichever layout it uses
+./bin/validator -repo-root .
+
 # Validate specific files
 ./bin/validator -config testdata/projectlist.yaml -maintainers testdata/maintainers.yaml
 
@@ -98,12 +137,18 @@ make build
 
 | Flag | Default | Description |
 |------|---------|-------------|
+| `-repo-root` | | Path to a `.project` repository. Detects the layout and validates every project it contains, plus the repository structure itself. Mutually exclusive with `-config`/`-maintainers` |
 | `-config` | `testdata/projectlist.yaml` | Path to project list configuration |
 | `-maintainers` | `testdata/maintainers.yaml` | Path to maintainers file (empty to skip) |
-| `-base-maintainers` | | Base maintainers file for diff validation |
+| `-base-maintainers` | | Base maintainers file or directory, for diff validation |
 | `-cache` | `.cache` | Cache directory |
 | `-output` | `text` | Output format: `text`, `json`, `yaml` |
 | `-verify-maintainers` | `false` | Verify handles via LFX API |
+
+`-repo-root` is what the GitHub Actions use. It reports the detected layout,
+checks the repository structure (see [SCHEMA.md](SCHEMA.md#validation)), then
+validates each project found. Pass `-config=/dev/null` alongside it to validate
+maintainers only, or `-maintainers=` to validate projects only.
 
 ### Landscape Updater
 
@@ -115,17 +160,25 @@ The `landscape-updater` tool automates the process of updating the CNCF Landscap
 
 # Apply changes and create a PR
 ./bin/landscape-updater --project ./project.yaml --landscape ./landscape.yml --create-pr
+
+# Update every project in a .project repository, whichever layout it uses
+./bin/landscape-updater --repo-root . --landscape ./landscape.yml --create-pr
 ```
 
 #### Flags
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--project` | | Path to the project's `project.yaml` file (required) |
+| `--project` | | Path to the project's `project.yaml` file (required unless `--repo-root` is given) |
+| `--repo-root` | | Path to a `.project` repository; processes every project it contains, one branch and one PR per project |
 | `--landscape` | | Path to the `landscape.yml` file (required) |
 | `--landscape-repo` | `cncf/landscape` | Target repository for the PR |
 | `--create-pr` | `false` | Create a Pull Request with the changes |
 | `--dry-run` | `false` | Print diff and PR details without executing |
+
+A project whose `name` matches no landscape item produces a warning annotation
+rather than a silent no-op, and does not stop the remaining projects from being
+processed.
 
 ### Bootstrap
 
@@ -149,6 +202,22 @@ All generated files use:
 - **SHA-pinned action refs** for deterministic CI
 - **`LANDSCAPE_REPO_TOKEN`** as the standardized secret name
 
+**Multi-project organizations.** Before generating anything, bootstrap scans the
+CNCF landscape for every active project in the given organization. If it finds
+more than one, it runs the whole pipeline once per project and writes the
+[multi-project layout](#repository-layouts) instead: an `org.yaml` index, a
+directory per project, and one shared set of repository-level files. Generated
+team names are always prefixed with the project slug (`spire-maintainers`, not
+`maintainers`), because GitHub teams are org-scoped and two projects that both
+scaffolded a team called `maintainers` would silently share it.
+
+The landscape is the only reliable signal here — nothing in a GitHub
+organization itself says "these two repositories are separately accepted CNCF
+projects". Use `-layout` to override the detection: `-layout single` forces the
+flat layout, and `-layout multi` forces the directory layout for an
+organization whose split the CNCF has not recorded in the landscape yet, leaving
+the remaining projects to be added to `org.yaml` by hand.
+
 ```bash
 # Dry run: preview generated YAML on stdout
 ./bin/bootstrap -name "My Project" -github-org my-org -dry-run
@@ -158,6 +227,9 @@ All generated files use:
 
 # Generate into a specific directory
 ./bin/bootstrap -name "Envoy" -github-org envoyproxy -github-repo envoy -output-dir ./envoy/.project
+
+# A multi-project org: detected from the landscape, no extra flags needed
+./bin/bootstrap -github-org spiffe -output-dir ./spiffe/.project
 
 # Skip external API lookups (GitHub-only)
 ./bin/bootstrap -github-org my-org -skip-clomonitor
@@ -185,6 +257,7 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 | `-github-token` | | GitHub token (or set `GITHUB_TOKEN` env, or a `.env` file) |
 | `-env-file` | `.env` | Path to a `.env` file to load (real env vars take precedence) |
 | `-output-dir` | `.` | Directory to write scaffold output |
+| `-layout` | `auto` | Repository layout: `auto` (detect from the landscape), `single`, or `multi` |
 | `-skip-landscape` | `false` | Skip CNCF landscape YAML lookup |
 | `-skip-clomonitor` | `false` | Skip CLOMonitor API lookup |
 | `-skip-github` | `false` | Skip GitHub API lookup |
@@ -268,6 +341,9 @@ Checks if maintainer data hasn't been updated within a threshold.
 
 ```bash
 ./bin/staleness-checker -project project.yaml -threshold 180
+
+# Check every project in a .project repository (the default when -project is omitted)
+./bin/staleness-checker -repo-root .
 ```
 
 ### Audit Checker
@@ -276,7 +352,15 @@ Verifies all URLs referenced in a project are accessible.
 
 ```bash
 ./bin/audit-checker -project project.yaml
+
+# Check every project in a .project repository (the default when -project is omitted)
+./bin/audit-checker -repo-root .
 ```
+
+Both checkers default `-repo-root` to `.` when `-project` is omitted, so a bare
+invocation inside a `.project` repository does the right thing in either layout.
+Each project is reported separately and the command fails if any project fails,
+so one project's broken link never hides another's result.
 
 ### Migrate
 
@@ -289,30 +373,36 @@ Scaffolds a minimal `project.yaml` from CLI flags (no network access, unlike `bo
 
 ### Generate Schema
 
-Regenerates `schema/project.schema.json` from the Go types. Run after changing `types.go`.
+Regenerates the JSON Schemas from the Go types. Run after changing `types.go`
+or `org.go`.
 
 ```bash
 ./bin/generate-schema > schema/project.schema.json
+./bin/generate-schema -target org > schema/org.schema.json
 ```
 
 ## GitHub Actions
 
 All action references should be **SHA-pinned** for reproducibility.
 
+Each action's file inputs are optional. Leave them unset and the action
+discovers the repository layout for itself, validating a root `project.yaml` or
+every project directory as appropriate. Setting them pins the action to one
+file, which in a multi-project repository would silently skip the other
+projects — so the actions emit a warning and fall back to discovery if a file
+input is set in a repository that has an `org.yaml`.
+
 ### Using the Validate Project Action
 
 ```yaml
-- uses: cncf/automation/.github/actions/validate-project@53810a548b46f33421cd67e57d16e4b7251416d9
-  with:
-    project_file: 'project.yaml'
+- uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
 ```
 
 ### Using the Validate Maintainers Action
 
 ```yaml
-- uses: cncf/automation/.github/actions/validate-maintainers@53810a548b46f33421cd67e57d16e4b7251416d9
+- uses: cncf/automation/.github/actions/validate-maintainers@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
   with:
-    maintainers_file: 'maintainers.yaml'
     # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
     verify_maintainers: 'false'
   env:
@@ -327,7 +417,9 @@ on:
   push:
     branches: [main]
     paths:
+      - 'org.yaml'
       - 'project.yaml'
+      - '*/project.yaml'
   workflow_dispatch:
 
 permissions:
@@ -346,11 +438,14 @@ jobs:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@53810a548b46f33421cd67e57d16e4b7251416d9
+        uses: cncf/automation/.github/actions/landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
-          project_file: 'project.yaml'
           token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}
 ```
+
+The `*/project.yaml` filter covers the multi-project layout; it is harmless in a
+single-project repository and costs nothing to keep. In a multi-project
+repository the action opens one pull request per changed project.
 
 ## Maintainer Verification
 
@@ -403,13 +498,18 @@ docker run --rm --entrypoint landscape-updater dot-project-validator --help
 maintainers:
   - project_id: "your-project"
     teams:
-      - name: "maintainers"
+      - name: "your-project-maintainers"
         members:
           - githubuser1
           - githubuser2
 ```
 
 Each maintainer entry must contain at least one team with `managed: true` (the default when `managed` is omitted) that has at least one member. Team names are free-form (e.g. `maintainers`, `committers`, `reviewers`, `emeritus`); set `managed: false` on teams that should be tracked but excluded from CNCF resource provisioning (handle verification, mailing lists, service desk, Copilot seats). Handles are normalized (trimmed and stripped of leading `@`) before verification.
+
+Prefixing the team name with the project slug is what the bootstrap tool
+generates. GitHub teams are org-scoped, so in an organization that hosts (or one
+day may host) more than one CNCF project, an unprefixed `maintainers` team would
+collide.
 
 3. **Add GitHub Actions** to automatically validate changes (see GitHub Actions section above).
 
@@ -430,9 +530,17 @@ Each maintainer entry must contain at least one team with `managed: true` (the d
 | `CONTRIBUTING.md` | Recommended | Contribution guidelines |
 | `GOVERNANCE.md` | Recommended | Project governance document |
 
+In a [multi-project repository](#repository-layouts), `project.yaml` and
+`maintainers.yaml` live in each project's directory rather than at the root, and
+an `org.yaml` index at the root is required.
+
 ## Schema Versioning
 
 The `schema_version` field is required and validated. Currently supported: `1.0.0`.
+
+`org.yaml` carries its own independent `schema_version`, also currently `1.0.0`.
+The multi-project layout introduced no change to the `project.yaml` schema, so
+existing files did not need a version bump.
 
 New schema versions will be added as the format evolves. The validator supports multiple versions simultaneously to allow gradual migration.
 

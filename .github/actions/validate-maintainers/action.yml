@@ -2,10 +2,18 @@ name: 'Validate Maintainers'
 description: 'Validate a maintainers.yaml file against the CNCF .project schema'
 inputs:
   maintainers_file:
-    description: 'Path to the maintainers.yaml file to validate'
-    required: true
+    description: >-
+      Path to a single maintainers.yaml to validate. Leave empty (recommended)
+      to discover every maintainers file in the repository, which works for
+      both single-project and multi-project layouts. Ignored when org.yaml
+      exists.
+    required: false
+    default: ''
   base_maintainers_file:
-    description: 'Path to the base maintainers file for diff validation (optional)'
+    description: >-
+      Path to the base maintainers file, or to a base repository root, for
+      diff validation (optional). A directory is scanned for the root file and
+      one level of project directories, and the handles are unioned.
     required: false
     default: ''
   verify_maintainers:
@@ -47,14 +55,30 @@ runs:
         BASE_MAINTAINERS_FILE: ${{ inputs.base_maintainers_file }}
         VERIFY_MAINTAINERS: ${{ inputs.verify_maintainers }}
       run: |
-        ARGS="-config /dev/null -maintainers ${MAINTAINERS_FILE}"
+        set -euo pipefail
+
+        # See validate-project: org.yaml means the repository holds several
+        # projects, each with its own maintainers.yaml, so a single explicit
+        # path cannot describe it.
+        if [ -f org.yaml ] && [ -n "${MAINTAINERS_FILE}" ]; then
+          echo "::warning::org.yaml is present, so all maintainers files in the repository are validated and the maintainers_file input (${MAINTAINERS_FILE}) is ignored. Remove that input from this workflow."
+          MAINTAINERS_FILE=""
+        fi
+
+        if [ -z "${MAINTAINERS_FILE}" ]; then
+          ARGS=(-repo-root . -config=/dev/null)
+        else
+          ARGS=(-config /dev/null -maintainers "${MAINTAINERS_FILE}")
+        fi
+
         if [ -n "${BASE_MAINTAINERS_FILE}" ]; then
-          ARGS="$ARGS -base-maintainers ${BASE_MAINTAINERS_FILE}"
+          ARGS+=(-base-maintainers "${BASE_MAINTAINERS_FILE}")
         fi
         if [ "${VERIFY_MAINTAINERS}" = "true" ]; then
-          ARGS="$ARGS -verify-maintainers"
+          ARGS+=(-verify-maintainers)
         fi
-        "${WORKSPACE}/_cncf-validator" $ARGS
+
+        "${WORKSPACE}/_cncf-validator" "${ARGS[@]}"
 
     - name: Cleanup
       shell: bash

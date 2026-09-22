@@ -2,8 +2,12 @@ name: 'Validate Project'
 description: 'Validate a project.yaml file against the CNCF .project schema'
 inputs:
   project_file:
-    description: 'Path to the project.yaml file to validate'
-    required: true
+    description: >-
+      Path to a single project.yaml to validate. Leave empty (recommended) to
+      discover every project in the repository, which works for both
+      single-project and multi-project layouts. Ignored when org.yaml exists.
+    required: false
+    default: ''
   output_format:
     description: 'Output format: text, json, yaml'
     required: false
@@ -35,24 +39,40 @@ runs:
         cd _cncf-automation/utilities/dot-project
         go build -o "${WORKSPACE}/_cncf-validator" ./cmd/validator
 
-    - name: Create project list
+    - name: Validate project
       shell: bash
       env:
         WORKSPACE: ${{ github.workspace }}
         PROJECT_FILE: ${{ inputs.project_file }}
+        OUTPUT_FORMAT: ${{ inputs.output_format }}
       run: |
+        set -euo pipefail
+
+        # A repository that declares org.yaml holds several projects, so a
+        # single explicit path cannot describe it. Repos onboarded before
+        # multi-project support still pass project_file: 'project.yaml';
+        # honouring that literally would validate a root file that must not
+        # exist in this layout, and would skip every real project.
+        if [ -f org.yaml ] && [ -n "${PROJECT_FILE}" ]; then
+          echo "::warning::org.yaml is present, so all projects in the repository are validated and the project_file input (${PROJECT_FILE}) is ignored. Remove that input from this workflow."
+          PROJECT_FILE=""
+        fi
+
+        if [ -z "${PROJECT_FILE}" ]; then
+          # Discovery resolves the layout from disk and validates the
+          # repository structure as well as each project.
+          exec "${WORKSPACE}/_cncf-validator" \
+            -repo-root . \
+            -maintainers= \
+            -output "${OUTPUT_FORMAT}"
+        fi
+
         cat > _project-list.yaml << PROJEOF
         projects:
           - url: "file://${WORKSPACE}/${PROJECT_FILE}"
             id: "project"
         PROJEOF
 
-    - name: Validate project
-      shell: bash
-      env:
-        WORKSPACE: ${{ github.workspace }}
-        OUTPUT_FORMAT: ${{ inputs.output_format }}
-      run: |
         "${WORKSPACE}/_cncf-validator" \
           -config _project-list.yaml \
           -maintainers "" \

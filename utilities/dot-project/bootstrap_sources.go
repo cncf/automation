@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -131,13 +132,34 @@ type landscapeYAMLItem struct {
 	Extra       map[string]interface{} `yaml:"extra,omitempty"`
 }
 
-// fetchFromLandscape fetches the CNCF landscape.yml from GitHub and searches for
-// a CNCF project by name. Only items with a "project" field (indicating CNCF membership)
-// are considered. baseURL overrides the landscape YAML URL (use "" for default).
-// Returns nil if no match is found.
-func fetchFromLandscape(name string, client *http.Client, baseURL string) (*LandscapeData, error) {
+// landscapeCache memoizes the parsed landscape.yml for the lifetime of the
+// process, the same way the foundation maintainers CSV is read once for a
+// whole batch. The file is several megabytes and every project bootstrapped
+// from it reads the identical copy, so an org with several projects — or a
+// batch onboarding run — would otherwise download it once per project.
+//
+// Keyed by resolved URL so that tests pointing at a local server, and any
+// future run against a landscape mirror, stay isolated from each other. Only
+// successful fetches are cached; an error is retried on the next call.
+var (
+	landscapeCacheMu sync.Mutex
+	landscapeCache   = map[string]*landscapeYAMLRoot{}
+)
+
+// fetchLandscapeRoot fetches and parses the CNCF landscape.yml. baseURL
+// overrides the default location (use "" for default).
+func fetchLandscapeRoot(client *http.Client, baseURL string) (*landscapeYAMLRoot, error) {
 	if baseURL == "" {
 		baseURL = defaultLandscapeYAMLURL
+	}
+
+	// The lock is held across the download so that concurrent callers wait for
+	// the first fetch instead of each starting their own.
+	landscapeCacheMu.Lock()
+	defer landscapeCacheMu.Unlock()
+
+	if cached, ok := landscapeCache[baseURL]; ok {
+		return cached, nil
 	}
 
 	resp, err := client.Get(baseURL)
@@ -158,6 +180,27 @@ func fetchFromLandscape(name string, client *http.Client, baseURL string) (*Land
 	var root landscapeYAMLRoot
 	if err := yaml.Unmarshal(body, &root); err != nil {
 		return nil, fmt.Errorf("parsing landscape YAML: %w", err)
+	}
+	landscapeCache[baseURL] = &root
+	return &root, nil
+}
+
+// ResetLandscapeCache drops the memoized landscape.yml. It exists for tests
+// that serve changing content from the same URL.
+func ResetLandscapeCache() {
+	landscapeCacheMu.Lock()
+	defer landscapeCacheMu.Unlock()
+	landscapeCache = map[string]*landscapeYAMLRoot{}
+}
+
+// fetchFromLandscape fetches the CNCF landscape.yml from GitHub and searches for
+// a CNCF project by name. Only items with a "project" field (indicating CNCF membership)
+// are considered. baseURL overrides the landscape YAML URL (use "" for default).
+// Returns nil if no match is found.
+func fetchFromLandscape(name string, client *http.Client, baseURL string) (*LandscapeData, error) {
+	root, err := fetchLandscapeRoot(client, baseURL)
+	if err != nil {
+		return nil, err
 	}
 
 	// Collect all CNCF project items (those with a "project" field set)
