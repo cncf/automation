@@ -37,7 +37,6 @@ jobs:
           mkdir -p datasources
           curl -fsSL https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml -o datasources/landscape.yml
           curl -fsSL https://raw.githubusercontent.com/cncf/clomonitor/main/data/cncf.yaml -o datasources/clomonitor.yaml
-          curl -fsSL https://raw.githubusercontent.com/cncf/foundation/main/project-maintainers.csv -o datasources/project-maintainers.csv
           curl -fsSL https://devstats.cncf.io/ -o datasources/devstats.html
           curl -fsSL https://raw.githubusercontent.com/cncf/artwork/main/README.md -o datasources/artwork.md
         working-directory: ./utilities/audit_project_lifecycle_across_tools
@@ -85,7 +84,6 @@ jobs:
             - LFX PCC API (project-service/v1/projects, Foundation: CNCF a0941000002wBz4AAE)
             - CNCF Landscape
             - CLOMonitor
-            - Foundation Maintainers CSV
             - DevStats
             - Artwork README
             - [LFX Insights](https://insights.linuxfoundation.org/) **Insights Health** tier and numeric **Health Score** (from `datasources/lfx_insights_health.yaml` when present; weekly workflow can populate it)
