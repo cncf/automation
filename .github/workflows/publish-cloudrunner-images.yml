@@ -12,25 +12,43 @@ on:
     paths:
       - 'ci/cloudrunners/Dockerfile*'
       - 'ci/cloudrunners/oci/**'
-  pull_request:
+      - '.github/actions/run-kind-with-arc/**'
+      - '.github/scripts/test_with_kind_cluster.sh'
+  # pull_request_target (not pull_request) so fork PRs get the secrets needed
+  # by the test jobs; the authorize job below gates fork PRs behind a manual
+  # environment approval before any of their code runs with those secrets.
+  pull_request_target:
     branches: [main]
     paths:
       - 'ci/cloudrunners/Dockerfile*'
       - 'ci/cloudrunners/oci/**'
+      - '.github/actions/run-kind-with-arc/**'
+      - '.github/scripts/test_with_kind_cluster.sh'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # IMAGE_NAME maps to the Docker image name
-  IMAGE_NAME: cncf/gha-cloudrunner
-  # Fork PRs get a read-only GITHUB_TOKEN and no secrets: build without
-  # pushing and skip jobs that need the pushed image or OCI credentials.
-  IS_FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+  # PR builds (approved fork code) go to a separate package so their mutable
+  # pr-N tags never land in the production image.
+  IMAGE_NAME: ${{ github.event_name == 'pull_request_target' && 'cncf/gha-cloudrunner-pr' || 'cncf/gha-cloudrunner' }}
 
 jobs:
-  build-cloudrunner-images:
+  # Fork PRs run with secrets under pull_request_target, so require a manual
+  # review via the protected environment before anything else runs. Same-repo
+  # PRs, pushes and dispatches pass through the unprotected environment.
+  authorize:
     if: github.repository == 'cncf/automation'
+    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'cloudrunner-tests-fork' || 'cloudrunner-tests' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "authorized"
+
+  build-cloudrunner-images:
+    needs: authorize
     outputs:
       image: ${{ steps.image.outputs.image }}
       digest: ${{ steps.build-and-push.outputs.digest }}
@@ -47,21 +65,22 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # pull_request_target defaults to the base branch; test the PR code
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
-        if: github.event_name != 'pull_request'
+        if: ${{ !startsWith(github.event_name, 'pull_request') }}
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
       - name: Set up QEMU
         uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4.3.0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
 
-      # Login against a Docker registry except on fork PRs
+      # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
-        if: env.IS_FORK_PR != 'true'
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.REGISTRY }}
@@ -73,11 +92,15 @@ jobs:
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        env:
+          # under pull_request_target github.sha is the BASE branch; tag with the PR head SHA instead
+          DOCKER_METADATA_PR_HEAD_SHA: true
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha
             type=ref,event=branch
+            type=ref,event=pr
 
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
@@ -87,7 +110,7 @@ jobs:
         with:
           context: ./ci/cloudrunners/
           platforms: linux/amd64
-          push: ${{ env.IS_FORK_PR != 'true' }}
+          push: true
           labels: ${{ steps.meta.outputs.labels }}
           file: ./ci/cloudrunners/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
@@ -95,7 +118,7 @@ jobs:
       # Uses the identity token to provision an ephemeral certificate
       # against the sigstore community Fulcio instance.
       - name: Sign the published Cloudrunner Docker image
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ !startsWith(github.event_name, 'pull_request') }}
         run: cosign sign -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
 
       - name: Output image
@@ -105,7 +128,7 @@ jobs:
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io
   provenance:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ !startsWith(github.event_name, 'pull_request') }}
     needs: [build-cloudrunner-images]
     permissions:
       id-token: write  # For signing.
@@ -129,7 +152,7 @@ jobs:
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ !startsWith(github.event_name, 'pull_request') }}
     steps:
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
@@ -148,78 +171,69 @@ jobs:
       # TODO (github.com/slsa-framework/slsa-verifier/issues/92):
       #       Add step to verify using slsa-verifier
 
-  # Test the published image by running it and see if the VM is created.
-  test-image:
+  # Test the published image end-to-end: ARC in kind spawns an OCI VM runner
+  # from it, which then picks up the test-runner job below.
+  run-kind-with-arc:
     needs: build-cloudrunner-images
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      REGION: us-sanjose-1
-      AVAILABILITY_DOMAIN: bzBe:US-SANJOSE-1-AD-1
-      SUBNET_ID: ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq
-      FALLBACK_REGION: us-ashburn-1
-      FALLBACK_AVAILABILITY_DOMAIN: bzBe:US-ASHBURN-AD-2
-      FALLBACK_SUBNET_ID: ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q
+    permissions:
+      actions: write
+      contents: read
+    # must cover the 10 min queue wait plus the 15 min test-runner timeout
+    timeout-minutes: 30
     strategy:
-      fail-fast: false
       matrix:
-        runner: ["amd64", "arm64", "gpu-a10-1", "gpu-a10-2"]
-        include:
-          - runner: "amd64"
-            arch: "amd64"
-            shape: "VM.Standard.E5.Flex,VM.Standard.E4.Flex"
-            ocpus: 2
-            memory: 8.0
-            preemptible: true
-          - runner: "arm64"
-            arch: "arm64"
-            shape: "VM.Standard.A1.Flex"
-            ocpus: 2
-            memory: 8.0
-            preemptible: true
-          - runner: "gpu-a10-1"
-            arch: "amd64"
-            shape: "VM.GPU.A10.1"
-            ocpus: 0   # Not a flex type, so ocpus and memory are determined by the shape
-            memory: 0
-            preemptible: false
-          - runner: "gpu-a10-2"
-            arch: "amd64"
-            shape: "VM.GPU.A10.2"
-            ocpus: 0   # Not a flex type, so ocpus and memory are determined by the shape
-            memory: 0
-            preemptible: false
+        arch: [x86, arm]
     steps:
-      - name: Test the published Cloudrunner Docker image
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Run kind with ARC and wait for test-runner
+        uses: ./.github/actions/run-kind-with-arc
+        with:
+          arch: ${{ matrix.arch }}
+          manifest-file: ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-${{ matrix.arch }}.yaml
+          runner-image: ${{ needs.build-cloudrunner-images.outputs.image }}@${{ needs.build-cloudrunner-images.outputs.digest }}
+          oci-user: ${{ secrets.OCI_CLI_USER }}
+          oci-tenancy: ${{ secrets.OCI_CLI_TENANCY }}
+          oci-fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          oci-region: ${{ secrets.OCI_CLI_REGION }}
+          oci-key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          arc-github-token: ${{ secrets.GHA_PAT }}
+          github-token: ${{ github.token }}
+
+  test-runner:
+    strategy:
+      matrix:
+        arch: [x86, arm]
+    runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.arch }}
+    needs: build-cloudrunner-images
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Run uname to verify architecture
         run: |
-          OCI_CONFIG_FILE="${{ github.workspace}}/.oci/config"
-          OCI_KEY_FILE="${{ github.workspace}}/.oci/oci_api_key.pem"
-          mkdir -p "${{ github.workspace}}/.oci"
+          uname -a
+          lsb_release -a
+          cat /proc/cpuinfo
 
-          cat > ${OCI_CONFIG_FILE} << EOF
-          [DEFAULT]
-          user=${{ secrets.OCI_CLI_USER }}
-          fingerprint=${{ secrets.OCI_CLI_FINGERPRINT }}
-          tenancy=${{ secrets.OCI_CLI_TENANCY }}
-          region=${{ secrets.OCI_CLI_REGION }}
-          key_file=/root/.oci/oci_api_key.pem
+      - name: Build a dummy Docker image
+        run: |
+          cat <<EOF > Dockerfile.dummy
+          FROM public.ecr.aws/docker/library/alpine:3.22
+          RUN echo "hello from ${{ matrix.arch }}" > /hello.txt
+          CMD ["cat", "/hello.txt"]
           EOF
+          docker build -f Dockerfile.dummy -t dummy-test:local .
+          docker run --rm dummy-test:local
 
-          echo "${{ secrets.OCI_CLI_KEY_CONTENT }}" > ${OCI_KEY_FILE}
-
-          chmod 600 ${OCI_KEY_FILE} ${OCI_CONFIG_FILE}
-
-          docker run -v ${{ github.workspace}}/.oci:/root/.oci \
-            ${{ needs.build-cloudrunner-images.outputs.image }}@${{ needs.build-cloudrunner-images.outputs.digest }} \
-            --arch=${{ matrix.arch }} \
-            --shape=${{ matrix.shape }} \
-            --shape-ocpus=${{ matrix.ocpus }} \
-            --shape-memory-in-gbs=${{ matrix.memory }} \
-            --region=${{ env.REGION }} \
-            --availability-domain=${{ env.AVAILABILITY_DOMAIN }} \
-            --subnet-id=${{ env.SUBNET_ID }} \
-            --fallback-region=${{ env.FALLBACK_REGION }} \
-            --fallback-availability-domain=${{ env.FALLBACK_AVAILABILITY_DOMAIN }} \
-            --fallback-subnet-id=${{ env.FALLBACK_SUBNET_ID }} \
-            --preemptible=${{ matrix.preemptible }}
+      - name: Run kind cluster
+        run: ${{ github.workspace }}/.github/scripts/test_with_kind_cluster.sh
