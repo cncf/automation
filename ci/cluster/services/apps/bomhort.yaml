@@ -15,7 +15,7 @@ spec:
       chart: bomhort
       targetRevision: 0.7.1
       helm:
-        valuesFiles:
+        valueFiles:
           - $values/ci/cluster/services/helm-values/bomhort-values.yaml
     - repoURL: https://github.com/cncf/automation.git
       targetRevision: HEAD
