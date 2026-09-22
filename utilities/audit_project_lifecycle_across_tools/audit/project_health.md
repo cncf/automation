@@ -237,6 +237,7 @@
 | Radius | sandbox | Excellent | 88 |
 | Ratify | sandbox | Critical | 28 |
 | Runme Notebooks | sandbox | Concerning | 45 |
+| Schema Driven Configuration | sandbox | Healthy | 81 |
 | SchemaHero | sandbox | Concerning | 36 |
 | Score | sandbox | Healthy | 73 |
 | Serverless Devs | sandbox | Concerning - Partial | - |
@@ -291,17 +292,19 @@
 | Kmesh | forming | Fair | 63 |
 | ksctl | forming | - | - |
 | KubeRay | forming | - | - |
+| MatrixHub | forming | - | - |
 | Michelangelo | forming | Fair | 54 |
 | OpenRL | forming | - | - |
 | OpenShell | forming | - | - |
 | OptiFlow (AI‑OrchestrateX) | forming | - | - |
 | Praxis | forming | - | - |
-| Schema Driven Configuration | forming | Healthy | 81 |
+| RollingZero | forming | - | - |
 | SecureBuild | forming | - | - |
 | SemaMesh | forming | - | - |
 | Sermant | forming | Fair | 50 |
 | ServiceRadar | forming | - | - |
 | Terrascan | forming | - | - |
+| Unbounded | forming | - | - |
 | Zeish | forming | - | - |
 
 ## Archived
@@ -341,5 +344,4 @@
 | Project | [PCC Status](./pcc_projects.yaml) | [Insights Health](../datasources/lfx_insights_health.yaml) | [Health Score](../datasources/lfx_insights_health.yaml) |
 |---|---|---|---|
 | Agent Sandbox | prospect | - | - |
-| MatrixHub | prospect | - | - |
 
