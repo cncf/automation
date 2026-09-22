@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: ghcr.io/seebom-labs/bomhort/charts
     chart: bomhort
-    targetRevision: 0.7.0
+    targetRevision: 0.7.1
     helm:
       values: |
         cleanBatchJobs: false
@@ -44,7 +44,7 @@ spec:
         image:
           registry: ghcr.io
           repository: seebom-labs/bomhort
-          tag: 0.7.0
+          tag: 0.7.1
         sbomSource:
           mountPath: /data/sboms
           pvcName: bomhort-sbom-data
@@ -53,10 +53,13 @@ spec:
           sbomBranch: main
           sbomRepo: https://github.com/cncf/sbom.git
         licenseExceptions:
-          # 0.7.0 removed seedJob.cncfExceptionsURL: exceptions are no longer
-          # downloaded at runtime, they are a reviewed ConfigMap. The upstream
-          # cncf/foundation file does not parse under 0.7.0, so no approvals are
-          # in effect for now - revisit once BOMHort reads it directly.
+          # seedJob.cncfExceptionsURL was removed in 0.7.0: exceptions are no
+          # longer downloaded at runtime, they are a reviewed ConfigMap.
+          # 0.7.1 parses the cncf/foundation file as-is, so this can be filled
+          # from license-exceptions/exceptions.json - see the PR discussion for
+          # how to wire it up without inlining 180 KB here. Empty until then,
+          # which matches the effective behaviour on 0.6.1 (the file never
+          # parsed, so no approvals were ever in effect).
           enabled: true
           custom: |
             { "blanketExceptions": [], "exceptions": [] }
