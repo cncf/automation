@@ -1,6 +1,6 @@
 # Project Status Audit
 
-This utility generates a canonical list of CNCF project statuses from the LFX PCC API and audits that source of truth against multiple public datasets (CNCF Landscape, CLOMonitor, Foundation Maintainers CSV, DevStats, Artwork) plus optional [LFX Insights](https://insights.linuxfoundation.org/) health metrics. Results are published as unified human-readable tables.
+This utility generates a canonical list of CNCF project statuses from the LFX PCC API and audits that source of truth against multiple public datasets (CNCF Landscape, CLOMonitor, DevStats, Artwork) plus optional [LFX Insights](https://insights.linuxfoundation.org/) health metrics. Results are published as unified human-readable tables.
 
 ## What it does
 
@@ -9,13 +9,13 @@ This utility generates a canonical list of CNCF project statuses from the LFX PC
   - `forming_projects` (status: “Formation - Exploratory”)
   - `archived_projects` (anything not Active or Forming)
 - Downloads a reproducible snapshot of public sources into `datasources/`:
-  - `landscape.yml`, `clomonitor.yaml`, `project-maintainers.csv`, `devstats.html`, `artwork.md`
+  - `landscape.yml`, `clomonitor.yaml`, `devstats.html`, `artwork.md`
 - Optionally uses **`datasources/lfx_insights_health.yaml`** when present (from the weekly Insights workflow): **Insights Health** (tier label, e.g. Excellent, or **Archived** when LFX Insights shows the project archived) and **Health Score** (numeric when applicable). Missing file or per-project gaps show “-”; these columns are **informational only** and **never** affect anomaly detection.
 - Audits and writes:
   - `audit/status_audit.md` — anomalies only; sorted Graduated → Incubating → Sandbox → Forming → Archived, A–Z within each
   - `audit/all_statuses.md` — all projects; anomalies section first, then the same status sections
 - Missing values are rendered as “-”. A project is included in **Anomalies** if:
-  - Any **lifecycle** source is missing (“-” for Landscape, empty for CLOMonitor / Maintainers / DevStats / Artwork), OR
+  - Any **lifecycle** source is missing (“-” for Landscape, empty for CLOMonitor / DevStats / Artwork), OR
   - Any of those sources reports a status different from PCC.
 
 ## Files
@@ -44,7 +44,6 @@ This utility generates a canonical list of CNCF project statuses from the LFX PC
 - **PCC:** LFX `project-service` API (see `fetch_pcc_projects.py`)
 - **Landscape:** `https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml`
 - **CLOMonitor:** `https://raw.githubusercontent.com/cncf/clomonitor/main/data/cncf.yaml`
-- **Foundation Maintainers CSV:** `https://raw.githubusercontent.com/cncf/foundation/main/project-maintainers.csv`
 - **DevStats:** `https://devstats.cncf.io/`
 - **Artwork README:** `https://raw.githubusercontent.com/cncf/artwork/main/README.md`
 - **LFX Insights:** Project overview HTML ([insights.linuxfoundation.org](https://insights.linuxfoundation.org/)) plus the public badge; slug candidates follow PCC **name** then **`slug`** when they differ (see Notes).
