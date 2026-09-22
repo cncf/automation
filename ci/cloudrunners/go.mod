@@ -3,11 +3,11 @@ module github.com/cncf/automation/cloudrunners
 go 1.27.1
 
 require (
-	cloud.google.com/go/compute/metadata v0.9.0
-	github.com/oracle/oci-go-sdk/v65 v65.124.2
+	cloud.google.com/go/compute/metadata v0.9.1
+	github.com/oracle/oci-go-sdk/v65 v65.125.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/crypto v0.57.0
-	google.golang.org/api v0.297.0
+	google.golang.org/api v0.298.0
 	k8s.io/apimachinery v0.37.0
 	k8s.io/client-go v0.37.0
 	k8s.io/klog/v2 v2.140.0
