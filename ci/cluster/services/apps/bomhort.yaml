@@ -10,51 +10,16 @@ metadata:
     cluster: oke-cncf-automation
 spec:
   project: default
-  source:
-    repoURL: ghcr.io/seebom-labs/bomhort/charts
-    chart: bomhort
-    targetRevision: 0.6.1
-    helm:
-      values: |
-        cleanBatchJobs: false
-        clickhouse:
-          database: bomhort
-          host: chi-bomhort-clickhouse-bomhort-cluster-0-0
-          installation:
-            podTemplate:
-              containerImage: docker.io/clickhouse/clickhouse-server:24.8
-              resources:
-                limits:
-                  cpu: "4"
-                  memory: 16Gi
-                requests:
-                  cpu: "2"
-                  memory: 8Gi
-            volumeClaimTemplate:
-              dataStorage: 500Gi
-              logStorage: 10Gi
-          port: 9000
-          user: default
-          userPasswordSecret:
-            enabled: true
-            key: password
-            secretName: clickhouse-password
-        gitSync:
-          enabled: false
-        image:
-          registry: ghcr.io
-          repository: seebom-labs/bomhort
-          tag: 0.6.1
-        sbomSource:
-          mountPath: /data/sboms
-          pvcName: bomhort-sbom-data
-          storageSize: 20Gi
-        seedJob:
-          cncfExceptionsURL: https://cncf-license-exceptions.netlify.app/exceptions.json
-          sbomBranch: main
-          sbomRepo: https://github.com/cncf/sbom.git
-        s3:
-          buckets: '[{"name":"sandbox-reviews","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18","usePathStyle":true},{"name":"cncf-subproject-sboms","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18","usePathStyle":true},{"name":"cncf-project-sboms","endpoint":"https://us-iad-18.linodeobjects.com","region":"us-iad-18","usePathStyle":true}]'
+  sources:
+    - repoURL: ghcr.io/seebom-labs/bomhort/charts
+      chart: bomhort
+      targetRevision: 0.7.1
+      helm:
+        valuesFiles:
+          - $values/ci/cluster/services/helm-values/bomhort-values.yaml
+    - repoURL: https://github.com/cncf/automation.git
+      targetRevision: HEAD
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: bomhort
