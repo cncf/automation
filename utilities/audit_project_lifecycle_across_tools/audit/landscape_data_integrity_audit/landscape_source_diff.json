@@ -148,11 +148,21 @@
     {
       "name": "Meshery",
       "path": "Provisioning / Automation & Configuration",
-      "maturity": "sandbox",
+      "maturity": "incubating",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": []
+      "findings": [
+        {
+          "field": "project (maturity)",
+          "landscape": "incubating",
+          "pcc": "sandbox",
+          "clomonitor": "incubating",
+          "pcc_clomonitor_agree": false,
+          "landscape_clomonitor_agree": true,
+          "message": "PCC ('sandbox') and CLOMonitor ('incubating') disagree. Landscape ('incubating') ≠ PCC ('sandbox')."
+        }
+      ]
     },
     {
       "name": "metal3-io",
