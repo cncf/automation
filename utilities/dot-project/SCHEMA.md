@@ -220,7 +220,7 @@ At least one of `email` or `advisory_url` must be provided when the `contact` se
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
 | `email` | string | No* | Security contact email | Valid email address (RFC 5322) if present |
-| `advisory_url` | string | No* | GitHub Security Advisory form URL | Must match `https://github.com/{org}/{repo}/security/advisories/new` |
+| `advisory_url` | string | No* | GitHub URL for reporting security issues (e.g., the repo's Security Advisory form or a SECURITY.md file) | Must be a `https://github.com/{org}/{repo}/...` URL |
 
 \* At least one of `email` or `advisory_url` is required when the section is present.
 

@@ -19,9 +19,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// githubAdvisoryURLPattern matches GitHub Security Advisory URLs of the form:
-// https://github.com/{org}/{repo}/security/advisories/new
-var githubAdvisoryURLPattern = regexp.MustCompile(`^https://github\.com/[^/]+/[^/]+/security/advisories/new$`)
+// githubAdvisoryURLPattern matches any GitHub URL, e.g. a repository's
+// Security Advisory form (https://github.com/{org}/{repo}/security/advisories/new)
+// or a SECURITY.md file. Projects publish security contact instructions in
+// different places, so any github.com URL is accepted.
+var githubAdvisoryURLPattern = regexp.MustCompile(`^https://github\.com/[^/]+/[^/]+(/.*)?$`)
 
 // NewProjectValidator creates a new project validator
 func NewProjectValidator(configPath string) (*ProjectValidator, error) {
@@ -401,7 +403,7 @@ func validateProjectStruct(project Project) []string {
 			}
 			if project.Security.Contact.AdvisoryURL != "" {
 				if !githubAdvisoryURLPattern.MatchString(project.Security.Contact.AdvisoryURL) {
-					errors = append(errors, fmt.Sprintf("security.contact.advisory_url must be a valid GitHub Security Advisory URL (https://github.com/{org}/{repo}/security/advisories/new), got: %s", project.Security.Contact.AdvisoryURL))
+					errors = append(errors, fmt.Sprintf("security.contact.advisory_url must be a valid GitHub URL (https://github.com/{org}/{repo}/...), got: %s", project.Security.Contact.AdvisoryURL))
 				}
 			}
 		}
