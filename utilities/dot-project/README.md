@@ -351,16 +351,6 @@ invocation inside a `.project` repository does the right thing in either layout.
 Each project is reported separately and the command fails if any project fails,
 so one project's broken link never hides another's result.
 
-### Generate Schema
-
-Regenerates the JSON Schemas from the Go types. Run after changing `types.go`
-or `org.go`.
-
-```bash
-./bin/generate-schema > schema/project.schema.json
-./bin/generate-schema -target org > schema/org.schema.json
-```
-
 ## GitHub Actions
 
 All action references should be **SHA-pinned** for reproducibility.
