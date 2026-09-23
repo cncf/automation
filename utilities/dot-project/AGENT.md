@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a Go-based utility for validating CNCF project metadata and maintainer rosters. It validates project YAML manifests against structured schema requirements, reconciles maintainer lists against canonical sources, surfaces changes via cached diffs, converts project metadata to CNCF landscape format, checks maintainer data staleness, and audits URL accessibility in project references.
+This is a Go-based utility for validating CNCF project metadata and maintainer rosters. It validates project YAML manifests against structured schema requirements, reconciles maintainer lists against canonical sources, surfaces changes via cached diffs, converts project metadata to CNCF landscape format, and audits URL accessibility in project references.
 
 ### Repository layouts
 
@@ -38,7 +38,6 @@ utilities/dot-project/
 ├── cmd/
 │   ├── validator/              # Main CLI validator tool
 │   ├── landscape-updater/      # Tool to convert project.yaml to landscape format
-│   ├── staleness-checker/      # Tool to check maintainer data freshness
 │   ├── audit-checker/          # Tool to verify referenced URLs are accessible
 │   └── bootstrap/              # Tool to auto-generate project scaffolds from external data
 ├── template/                   # Template files for new .project repositories
@@ -64,7 +63,6 @@ utilities/dot-project/
 ├── validator.go                # Project validation logic
 ├── maintainers.go              # Maintainer validation logic with LFX integration
 ├── landscape.go                # Landscape entry conversion and comparison
-├── staleness.go                # Maintainer staleness detection
 ├── audit.go                    # URL accessibility audit
 ├── validator_test.go           # Core validation tests
 ├── bootstrap_parsers_test.go   # CODEOWNERS/OWNERS/MAINTAINERS parser tests
@@ -75,7 +73,6 @@ utilities/dot-project/
 ├── security_test.go            # Security contact email validation tests
 ├── social_test.go              # Social links URL validation tests
 ├── landscape_test.go           # Landscape conversion and diff tests
-├── staleness_test.go           # Staleness detection tests
 ├── audit_test.go               # URL audit tests
 ├── integration_test.go         # YAML fixture integration tests
 ├── test_helpers_test.go        # Shared test helpers (validBaseProject, etc.)
@@ -129,11 +126,10 @@ docker build -t dot-project-validator .
 make clean
 ```
 
-Note: The Makefile `build` target builds the `validator`, `landscape-updater`, and `bootstrap` binaries. The other CLI tools (`staleness-checker`, `audit-checker`) must be built manually:
+Note: The Makefile `build` target builds the `validator`, `landscape-updater`, and `bootstrap` binaries. The other CLI tool (`audit-checker`) must be built manually:
 
 ```bash
 go build -o bin/landscape-updater ./cmd/landscape-updater
-go build -o bin/staleness-checker ./cmd/staleness-checker
 go build -o bin/audit-checker ./cmd/audit-checker
 ```
 
@@ -234,29 +230,6 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 - `-skip-github` - Skip GitHub API lookup (default: false)
 - `-dry-run` - Print generated YAML without writing files (default: false)
 
-### Running the Staleness Checker
-
-Checks if a project's maintainer data has become stale based on a configurable threshold.
-
-```bash
-./bin/staleness-checker --project path/to/project.yaml
-
-# Custom threshold (default: 180 days)
-./bin/staleness-checker --project project.yaml --threshold 90
-
-# Override last update date instead of using file modification time
-./bin/staleness-checker --project project.yaml --last-update 2025-01-15
-
-# Output formats: text (default), json, yaml
-./bin/staleness-checker --project project.yaml --output json
-```
-
-`--repo-root` checks every project in a `.project` repository and defaults to
-`.` when `--project` is omitted, so a bare invocation inside a repository works
-in either layout. The two flags are mutually exclusive.
-
-Exit code 1 if the project is stale.
-
 ### Running the Audit Checker
 
 Verifies that all URLs referenced in a project (website, artwork, repositories, audit reports, security/governance/documentation paths) are accessible via HTTP HEAD requests.
@@ -299,7 +272,6 @@ go tool cover -html=coverage.out -o coverage.html
 - `security_test.go` - Security contact email validation tests
 - `social_test.go` - Social links URL validation tests
 - `landscape_test.go` - Landscape entry conversion and diff comparison tests
-- `staleness_test.go` - Staleness detection threshold tests
 - `audit_test.go` - URL accessibility audit tests
 - `integration_test.go` - YAML fixture integration tests (loads files from `testdata/` and `example/`)
 - `test_helpers_test.go` - Shared test helpers (`validBaseProject()` factory function)
@@ -377,7 +349,6 @@ Additional types in domain-specific files:
 - `org.go` contains `LoadOrgFromFile` and `ValidateOrgStruct` for the `org.yaml` index
 - `discovery.go` contains `Discover`, which returns the layout and the projects in the repository. It reports the layout, not correctness — it succeeds on repositories `ValidateRepo` rejects
 - `repo_validate.go` contains `ValidateRepo`, which enforces every cross-file rule (no root metadata in multi mode, declared vs. present directories, slug/`project_id` matching the directory, unique slugs) and returns errors *and* warnings. Shared team names across projects are a warning, never an error
-- `staleness.go` contains `CheckStaleness` and `FormatStalenessResults`
 - `audit.go` contains `AuditProject` and `FormatAuditResult`
 - Handle normalization strips whitespace and leading `@` symbols
 - All URLs are validated for proper format
@@ -410,13 +381,6 @@ Additional types in domain-specific files:
 - `--output` - Output format: text, json, yaml (default: `text`)
 - `--dry-run` - Show changes without applying (default: true)
 
-**staleness-checker** (`cmd/staleness-checker/main.go`):
-- `--project` - Path to project.yaml file
-- `--repo-root` - Path to a `.project` repository; defaults to `.` when `--project` is omitted
-- `--threshold` - Days before considering maintainers stale (default: 180)
-- `--last-update` - Override last update date (YYYY-MM-DD format)
-- `--output` - Output format: text, json, yaml (default: `text`)
-
 **audit-checker** (`cmd/audit-checker/main.go`):
 - `--project` - Path to project.yaml file
 - `--repo-root` - Path to a `.project` repository; defaults to `.` when `--project` is omitted
@@ -442,7 +406,7 @@ The Dockerfile uses a multi-stage build:
 1. `golang:1.24-alpine` builder stage (builds only the `validator` binary)
 2. `alpine:3.20` runtime with `git` and `ca-certificates`
 
-Note: The Docker image includes `validator` and `landscape-updater` binaries. The other CLI tools (bootstrap, staleness-checker, audit-checker, etc.) are not built in the Dockerfile.
+Note: The Docker image includes `validator` and `landscape-updater` binaries. The other CLI tools (bootstrap, audit-checker, etc.) are not built in the Dockerfile.
 
 ## Configuration Files
 

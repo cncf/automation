@@ -9,10 +9,6 @@ const (
 	// clients (validator, bootstrap sources, etc.).
 	DefaultHTTPTimeout = 30 * time.Second
 
-	// DefaultStalenessThresholdDays is the number of days after which a
-	// project's maintainer data is considered stale.
-	DefaultStalenessThresholdDays = 180
-
 	// DefaultDCOCommitSampleSize is how many recent commits we fetch when
 	// detecting whether a repo uses DCO (Signed-off-by).
 	DefaultDCOCommitSampleSize = 20
@@ -35,9 +31,6 @@ const (
 
 	// DefaultGitHubGraphQLURL is the GitHub GraphQL API endpoint.
 	DefaultGitHubGraphQLURL = "https://api.github.com/graphql"
-
-	// DefaultEnterprise is the GitHub Enterprise slug for CNCF.
-	DefaultEnterprise = "cncf"
 
 	// OrgFileName is the org.yaml index found at the root of a .project
 	// repository whose GitHub organization hosts multiple CNCF projects.
