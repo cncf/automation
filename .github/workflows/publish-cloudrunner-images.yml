@@ -65,8 +65,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          # pull_request_target defaults to the base branch; test the PR code
+          # pull_request_target defaults to the base branch; test the PR code.
+          # Safe to opt in: fork runs are gated by the cloudrunner-tests-fork
+          # environment approval in the authorize job.
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          allow-unsafe-pr-checkout: true
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -190,6 +193,8 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # fork runs are gated by the cloudrunner-tests-fork environment approval
+          allow-unsafe-pr-checkout: true
 
       - name: Run kind with ARC and wait for test-runner
         uses: ./.github/actions/run-kind-with-arc
@@ -218,6 +223,8 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # fork runs are gated by the cloudrunner-tests-fork environment approval
+          allow-unsafe-pr-checkout: true
 
       - name: Run uname to verify architecture
         run: |
