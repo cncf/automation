@@ -129,7 +129,7 @@ jobs:
   # Upload the provenance to ghcr.io
   provenance:
     if: ${{ !startsWith(github.event_name, 'pull_request') }}
-    needs: [build-cloudrunner-images]
+    needs: [build-cloudrunner-images, run-kind-with-arc, test-runner]
     permissions:
       id-token: write  # For signing.
       actions: read    # For reading workflow info.
