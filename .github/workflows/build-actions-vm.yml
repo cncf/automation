@@ -270,6 +270,8 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
           manifest-file: ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-${{ matrix.arch }}.yaml
+          # test the freshly built rc-ubuntu images
+          running-environment: ci
           oci-user: ${{ secrets.OCI_CLI_USER }}
           oci-tenancy: ${{ secrets.OCI_CLI_TENANCY }}
           oci-fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
