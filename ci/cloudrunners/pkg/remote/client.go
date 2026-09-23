@@ -32,7 +32,6 @@ func DialWithRetry(ctx context.Context, network, addr string, sshConfig *ssh.Cli
 			return nil, fmt.Errorf("failed to connect to ssh on %q: %w", addr, err)
 		}
 		log.Info("retrying ssh connection", "attempt", attempt, "error", err)
-		attempt++
 		time.Sleep(2 * time.Second)
 	}
 }

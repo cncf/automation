@@ -1,43 +1,43 @@
-import sys
-from unittest.mock import MagicMock
+"""Syntax gate: py_compile every tracked Python file in the automation directories.
 
-# Mock dependencies that require credentials or external systems
-sys.modules["pygsheets"] = MagicMock()
-sys.modules["gdown"] = MagicMock()
-sys.modules["dotenv"] = MagicMock()
-
-# Mock the specific files that are opened globally
-import builtins
-original_open = builtins.open
-
-def mocked_open(file, *args, **kwargs):
-    if "people.json" in str(file):
-        return original_open("tests/mock_people.json", *args, **kwargs)
-    if "Kubestronaut.tsv" in str(file):
-        return original_open("tests/mock_kubestronaut.tsv", *args, **kwargs)
-    return original_open(file, *args, **kwargs)
-
-# We can't easily mock open() globally for the script execution without more complex patching 
-# because the script runs immediately on import.
-# So we will just check for SyntaxErrors by compiling the files.
+Files are compiled, never imported, so credential files and network access are not needed.
+"""
 
 import py_compile
-import os
+import subprocess
+import sys
 
-files_to_check = [
-    "Kubestronaut/CNCFInsertKubestronautInPeople_json.py",
-    "Kubestronaut/AddNewWeeklyyKubestronautsInReceivers.py"
-]
+CHECK_ROOTS = ("Ambassadors", "Kubestronaut", "utilities", ".github/scripts", ".github/actions", "tests")
 
-print("Verifying syntax...")
-for f in files_to_check:
-    try:
-        py_compile.compile(f, doraise=True)
-        print(f"✅ {os.path.basename(f)} passed syntax check.")
-    except Exception as e:
-        print(f"❌ {os.path.basename(f)} FAILED syntax check: {e}")
-        sys.exit(1)
 
-print("\nVerifying importability (with mocks)...")
-# We won't actually import them because they have side effects (argparse, file I/O) at top level.
-# The syntax check is the most important for now given the constraints.
+def tracked_python_files() -> list[str]:
+    out = subprocess.run(
+        ["git", "ls-files", "--", *(f"{root}/*.py" for root in CHECK_ROOTS)],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    return sorted(line for line in out.splitlines() if line)
+
+
+def main() -> int:
+    files = tracked_python_files()
+    if not files:
+        print("No Python files found to check.", file=sys.stderr)
+        return 1
+
+    failures = 0
+    for path in files:
+        try:
+            py_compile.compile(path, doraise=True)
+            print(f"OK   {path}")
+        except py_compile.PyCompileError as exc:
+            failures += 1
+            print(f"FAIL {path}: {exc.msg}")
+
+    print(f"\n{len(files) - failures}/{len(files)} files passed syntax check.")
+    return 1 if failures else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

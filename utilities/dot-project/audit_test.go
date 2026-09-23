@@ -53,7 +53,7 @@ func TestAuditProject(t *testing.T) {
 
 	project := validBaseProject()
 	project.Website = server.URL + "/ok"
-	project.Repositories = []string{server.URL + "/repo"}
+	project.Repositories = []RepositoryEntry{{URL: server.URL + "/repo"}}
 	project.Artwork = server.URL + "/not-found"
 
 	result := AuditProject(project, server.Client())

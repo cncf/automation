@@ -1,6 +1,7 @@
 package projects
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +9,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -16,9 +18,10 @@ import (
 const (
 	cloMonitorSearchPath    = "/api/projects/search"
 	defaultCLOMonitorURL    = "https://clomonitor.io"
-	defaultGitHubAPIURL     = "https://api.github.com"
 	defaultLandscapeYAMLURL = "https://raw.githubusercontent.com/cncf/landscape/master/landscape.yml"
-	landscapeLogoBaseURL    = "https://landscape.cncf.io/logos/"
+	// landscapeLogoBaseURL is the raw-content base for SVG logo assets stored
+	// in the cncf/landscape repo's hosted_logos directory.
+	landscapeLogoBaseURL = "https://raw.githubusercontent.com/cncf/landscape/master/hosted_logos/"
 
 	// bootstrapUserAgent identifies this tool to the GitHub API, which requires
 	// a User-Agent header on every request.
@@ -129,13 +132,34 @@ type landscapeYAMLItem struct {
 	Extra       map[string]interface{} `yaml:"extra,omitempty"`
 }
 
-// fetchFromLandscape fetches the CNCF landscape.yml from GitHub and searches for
-// a CNCF project by name. Only items with a "project" field (indicating CNCF membership)
-// are considered. baseURL overrides the landscape YAML URL (use "" for default).
-// Returns nil if no match is found.
-func fetchFromLandscape(name string, client *http.Client, baseURL string) (*LandscapeData, error) {
+// landscapeCache memoizes the parsed landscape.yml for the lifetime of the
+// process, the same way the foundation maintainers CSV is read once for a
+// whole batch. The file is several megabytes and every project bootstrapped
+// from it reads the identical copy, so an org with several projects — or a
+// batch onboarding run — would otherwise download it once per project.
+//
+// Keyed by resolved URL so that tests pointing at a local server, and any
+// future run against a landscape mirror, stay isolated from each other. Only
+// successful fetches are cached; an error is retried on the next call.
+var (
+	landscapeCacheMu sync.Mutex
+	landscapeCache   = map[string]*landscapeYAMLRoot{}
+)
+
+// fetchLandscapeRoot fetches and parses the CNCF landscape.yml. baseURL
+// overrides the default location (use "" for default).
+func fetchLandscapeRoot(client *http.Client, baseURL string) (*landscapeYAMLRoot, error) {
 	if baseURL == "" {
 		baseURL = defaultLandscapeYAMLURL
+	}
+
+	// The lock is held across the download so that concurrent callers wait for
+	// the first fetch instead of each starting their own.
+	landscapeCacheMu.Lock()
+	defer landscapeCacheMu.Unlock()
+
+	if cached, ok := landscapeCache[baseURL]; ok {
+		return cached, nil
 	}
 
 	resp, err := client.Get(baseURL)
@@ -156,6 +180,27 @@ func fetchFromLandscape(name string, client *http.Client, baseURL string) (*Land
 	var root landscapeYAMLRoot
 	if err := yaml.Unmarshal(body, &root); err != nil {
 		return nil, fmt.Errorf("parsing landscape YAML: %w", err)
+	}
+	landscapeCache[baseURL] = &root
+	return &root, nil
+}
+
+// ResetLandscapeCache drops the memoized landscape.yml. It exists for tests
+// that serve changing content from the same URL.
+func ResetLandscapeCache() {
+	landscapeCacheMu.Lock()
+	defer landscapeCacheMu.Unlock()
+	landscapeCache = map[string]*landscapeYAMLRoot{}
+}
+
+// fetchFromLandscape fetches the CNCF landscape.yml from GitHub and searches for
+// a CNCF project by name. Only items with a "project" field (indicating CNCF membership)
+// are considered. baseURL overrides the landscape YAML URL (use "" for default).
+// Returns nil if no match is found.
+func fetchFromLandscape(name string, client *http.Client, baseURL string) (*LandscapeData, error) {
+	root, err := fetchLandscapeRoot(client, baseURL)
+	if err != nil {
+		return nil, err
 	}
 
 	// Collect all CNCF project items (those with a "project" field set)
@@ -254,6 +299,9 @@ type GitHubData struct {
 	// Slack channels discovered across the org
 	SlackChannels []string `json:"slack_channels,omitempty"`
 
+	// Pinned repositories on the GitHub org profile
+	PinnedRepos []string `json:"pinned_repos,omitempty"`
+
 	// Package managers detected from manifest files (registry → identifier)
 	PackageManagers map[string]string `json:"package_managers,omitempty"`
 }
@@ -277,7 +325,7 @@ func (g *GitHubData) addPackageManager(registry, identifier string) {
 // baseURL overrides the GitHub API URL (use "" for default).
 func fetchFromGitHub(org, repo, token string, client *http.Client, baseURL string) (*GitHubData, error) {
 	if baseURL == "" {
-		baseURL = defaultGitHubAPIURL
+		baseURL = DefaultGitHubAPIURL
 	}
 
 	result := &GitHubData{}
@@ -322,6 +370,11 @@ func fetchFromGitHub(org, repo, token string, client *http.Client, baseURL strin
 				result.Org = &orgData
 			}
 		}
+	}
+
+	// Fetch pinned repositories via GraphQL
+	if token != "" {
+		result.PinnedRepos = fetchPinnedRepos(org, token, client, baseURL)
 	}
 
 	// Fetch community profile (non-fatal if fails)
@@ -533,6 +586,115 @@ func FetchFromCLOMonitor(name string, client *http.Client, baseURL string) (*CLO
 	return fetchFromCLOMonitor(name, client, baseURL)
 }
 
+// fetchPinnedRepos fetches an organization's pinned repositories via the GitHub
+// GraphQL API. Returns the HTML URLs of pinned repos, or nil on any error.
+// Only includes public, non-archived repositories.
+func fetchPinnedRepos(org, token string, client *http.Client, baseURL string) []string {
+	graphqlURL := DefaultGitHubGraphQLURL
+	// For test servers, use the same base URL with /graphql path
+	if baseURL != "" && baseURL != DefaultGitHubAPIURL {
+		graphqlURL = strings.TrimRight(baseURL, "/") + "/graphql"
+	}
+
+	query, _ := json.Marshal(map[string]interface{}{
+		"query":     `query($org:String!){organization(login:$org){pinnedItems(first:6,types:REPOSITORY){nodes{... on Repository{url isArchived isPrivate isFork isDisabled isTemplate}}}}}`,
+		"variables": map[string]string{"org": org},
+	})
+	req, err := http.NewRequest("POST", graphqlURL, bytes.NewReader(query))
+	if err != nil {
+		return nil
+	}
+	req.Header.Set("Authorization", "bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", bootstrapUserAgent)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil
+	}
+
+	var result struct {
+		Data struct {
+			Organization struct {
+				PinnedItems struct {
+					Nodes []struct {
+						URL        string `json:"url"`
+						IsArchived bool   `json:"isArchived"`
+						IsPrivate  bool   `json:"isPrivate"`
+						IsFork     bool   `json:"isFork"`
+						IsDisabled bool   `json:"isDisabled"`
+						IsTemplate bool   `json:"isTemplate"`
+					} `json:"nodes"`
+				} `json:"pinnedItems"`
+			} `json:"organization"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil
+	}
+
+	var urls []string
+	for _, node := range result.Data.Organization.PinnedItems.Nodes {
+		if node.URL == "" || node.IsArchived || node.IsPrivate || node.IsFork || node.IsDisabled || node.IsTemplate {
+			continue
+		}
+		urls = append(urls, node.URL)
+	}
+	return urls
+}
+
+// detectPrimaryRepo determines which repository URL should be marked as primary.
+// Detection order: naming convention (org/slug match) → landscape repo_url → GitHub pinned repos (first).
+// Returns the primary URL and the detection source, or empty strings if none detected.
+func detectPrimaryRepo(repos []string, slug string, org string, landscape *LandscapeData, github *GitHubData) (primaryURL, source string) {
+	if len(repos) == 0 {
+		return "", ""
+	}
+
+	// Single repo is always primary
+	if len(repos) == 1 {
+		return repos[0], "single_repo"
+	}
+
+	// 1. Naming convention: repo URL ends with /{org}/{slug} or /{org}/{org}
+	slugSuffix := "/" + strings.ToLower(org) + "/" + strings.ToLower(slug)
+	orgSuffix := "/" + strings.ToLower(org) + "/" + strings.ToLower(org)
+	for _, u := range repos {
+		lower := strings.ToLower(strings.TrimSuffix(u, "/"))
+		if strings.HasSuffix(lower, slugSuffix) || strings.HasSuffix(lower, orgSuffix) {
+			return u, "naming_convention"
+		}
+	}
+
+	// 2. Landscape repo_url
+	if landscape != nil && landscape.RepoURL != "" {
+		for _, u := range repos {
+			if strings.EqualFold(u, landscape.RepoURL) {
+				return u, "landscape"
+			}
+		}
+	}
+
+	// 3. GitHub pinned repos (first pinned repo that appears in our list)
+	if github != nil && len(github.PinnedRepos) > 0 {
+		repoSet := make(map[string]string) // lowercase → original
+		for _, u := range repos {
+			repoSet[strings.ToLower(strings.TrimSuffix(u, "/"))] = u
+		}
+		for _, pinned := range github.PinnedRepos {
+			if orig, ok := repoSet[strings.ToLower(strings.TrimSuffix(pinned, "/"))]; ok {
+				return orig, "github_pinned"
+			}
+		}
+	}
+
+	return "", ""
+}
+
 // FetchFromGitHub is the exported wrapper for fetchFromGitHub.
 func FetchFromGitHub(org, repo, token string, client *http.Client, baseURL string) (*GitHubData, error) {
 	return fetchFromGitHub(org, repo, token, client, baseURL)
@@ -643,7 +805,7 @@ func fuzzyMatch(query string, candidates []string) (best string, score float64) 
 // Returns (hasDCO, hasCLA, error). Errors are non-fatal; returns (false, false, nil) on failure.
 func detectDCOCLA(org, repo, token string, client *http.Client, baseURL string) (bool, bool, error) {
 	if baseURL == "" {
-		baseURL = defaultGitHubAPIURL
+		baseURL = DefaultGitHubAPIURL
 	}
 
 	doGet := func(path string) (*http.Response, error) {
@@ -714,7 +876,7 @@ func detectDCOCLA(org, repo, token string, client *http.Client, baseURL string) 
 // Returns the best-match issue URL, or "" if none found.
 func SearchTOCIssues(projectName, orgName, token string, client *http.Client, baseURL string) (string, error) {
 	if baseURL == "" {
-		baseURL = defaultGitHubAPIURL
+		baseURL = DefaultGitHubAPIURL
 	}
 
 	// Search queries to try, in order of specificity
@@ -844,6 +1006,12 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 	} else if github != nil && github.Repo != nil && github.Repo.HTMLURL != "" {
 		result.Repositories = []string{github.Repo.HTMLURL}
 		result.Sources["repositories"] = "github"
+	}
+
+	// Detect primary repository
+	if primaryURL, source := detectPrimaryRepo(result.Repositories, slug, result.GitHubOrg, landscape, github); primaryURL != "" {
+		result.PrimaryRepo = primaryURL
+		result.Sources["primary_repo"] = source
 	}
 
 	// Maturity: landscape > clomonitor

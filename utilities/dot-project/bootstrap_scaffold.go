@@ -39,10 +39,14 @@ maturity_log:
     date: "{{ formatTime .AcceptedDate }}"
     {{ if .TOCIssueURL }}issue: "{{ .TOCIssueURL }}"{{ if isAutoDetected .Sources "toc_issue_url" }} # TODO: AUTO-DETECTED — please verify{{ end }}{{ else }}issue: "https://github.com/cncf/toc/issues/XXX" # TODO: Set TOC issue URL{{ end }}
 
-repositories:{{ if .Repositories }}{{ range .Repositories }}
-  - "{{ . }}"{{ end }}{{ else }}
+repositories:{{ if .Repositories }}{{ if isAutoDetected .Sources "primary_repo" }} # TODO: AUTO-DETECTED primary — please verify{{ end }}{{ range .Repositories }}
+  - url: "{{ . }}"{{ if isPrimaryRepo $.PrimaryRepo . }}
+    primary: true
+    # tags: [core, sig-apps] # Optional{{ end }}{{ end }}{{ else }}
   # TODO: Add repository URLs
-  - "https://github.com/{{ .GitHubOrg }}/{{ or .GitHubRepo .Slug }}"{{ end }}
+  - url: "https://github.com/{{ .GitHubOrg }}/{{ or .GitHubRepo .Slug }}"
+    primary: true
+    # tags: [core, sig-apps] # Optional{{ end }}
 {{ if .Website }}
 website: "{{ .Website }}"{{ else }}
 # TODO: Add project website
@@ -114,29 +118,61 @@ maintainers:
     {{ if .GitHubOrg }}org: "{{ .GitHubOrg }}"{{ else }}# TODO: Set GitHub organization
     # org: "my-org"{{ end }}
     teams:
-      - name: "project-maintainers"
+      - name: "{{ .Slug }}-maintainers"
         members:{{ if .Maintainers }}{{ range .Maintainers }}
           - {{ . }}{{ end }}{{ else }}
           # TODO: Add maintainer handles
           - github-handle{{ end }}
+      # Unmanaged teams: teams with "managed: false" are tracked in this
+      # file for documentation but are excluded from CNCF resource
+      # provisioning (mailing lists, service desk, Copilot seats, etc).
+      #
+      # Active contributors who do not need full CNCF resource access:
+      # - name: "reviewers"
+      #   managed: false
+      #   members:
+      #     - reviewer-handle
+      #
+      # Former maintainers (remove this section if not applicable):
+      # - name: "emeritus"
+      #   managed: false
+      #   members: []
 `
 
 // readmeTemplate generates the README.md for the .project directory.
-const readmeTemplate = `# {{ .Name }} ` + "`.project`" + `
+const readmeTemplate = `# {{ if .Projects }}{{ .GitHubOrg }}{{ else }}{{ .Name }}{{ end }} ` + "`.project`" + `
 
 ` + "`.project`" + ` (dot-project) is a CNCF initiative to centralize and automate metadata management for all CNCF projects.
-This repository holds the canonical metadata for [{{ .Name }}]({{ or .Website (printf "https://github.com/%s/%s" .GitHubOrg (or .GitHubRepo .Slug)) }}) and is maintained by the CNCF automation tooling.
+{{ if .Projects }}This repository holds the canonical metadata for the CNCF projects maintained in the ` + "`{{ .GitHubOrg }}`" + ` organization, and is maintained by the CNCF automation tooling.{{ else }}This repository holds the canonical metadata for [{{ .Name }}]({{ or .Website (printf "https://github.com/%s/%s" .GitHubOrg (or .GitHubRepo .Slug)) }}) and is maintained by the CNCF automation tooling.{{ end }}
 
 ## What's in this repo
 
 | File | Purpose |
 |------|---------|
-| ` + "`project.yaml`" + ` | Canonical project metadata (name, maturity, repositories, governance links, …) |
+{{ if .Projects }}| ` + "`org.yaml`" + ` | Index of the CNCF projects maintained in this organization |
+| ` + "`<project>/project.yaml`" + ` | Canonical metadata for one project (name, maturity, repositories, governance links, …) |
+| ` + "`<project>/maintainers.yaml`" + ` | Maintainer and reviewer roster for one project |
+{{ else }}| ` + "`project.yaml`" + ` | Canonical project metadata (name, maturity, repositories, governance links, …) |
 | ` + "`maintainers.yaml`" + ` | Maintainer and reviewer roster used for drift detection and mailing-list sync |
-| ` + "`CODEOWNERS`" + ` | Ensures PRs to this repo require maintainer approval |
+{{ end }}| ` + "`CODEOWNERS`" + ` | Ensures PRs to this repo require maintainer approval |
 | ` + "`.github/workflows/validate.yaml`" + ` | CI — validates ` + "`project.yaml`" + ` and ` + "`maintainers.yaml`" + ` on every PR |
 | ` + "`.github/workflows/update-landscape.yml`" + ` | Automatically proposes landscape updates when ` + "`project.yaml`" + ` changes |
+{{ if .Projects }}
+## Projects in this repository
 
+This GitHub organization maintains more than one CNCF project. Each is a
+separate project from CNCF's point of view — its own maturity, its own
+landscape entry — so each owns a directory with its own metadata, and
+` + "`org.yaml`" + ` indexes them:
+
+| Project | Directory |
+|---------|-----------|
+{{ range .Projects }}| {{ .Name }} | ` + "`{{ .Slug }}/`" + ` |
+{{ end }}
+Add or remove a project by editing ` + "`org.yaml`" + ` and its directory together;
+validation fails if the two disagree. See the
+[repository layouts reference](https://github.com/cncf/automation/tree/main/utilities/dot-project#repository-layouts).
+{{ end }}
 ## Keeping metadata up to date
 
 Open a pull request against this repository to update any metadata field.
@@ -189,37 +225,46 @@ const validateWorkflowContent = `name: Validate Project Metadata
 on:
   pull_request:
     paths:
+      - 'org.yaml'
       - 'project.yaml'
       - 'maintainers.yaml'
+      # Multi-project repositories keep each project in its own directory,
+      # exactly one level deep.
+      - '*/project.yaml'
+      - '*/maintainers.yaml'
   push:
     branches: [main]
     paths:
+      - 'org.yaml'
       - 'project.yaml'
       - 'maintainers.yaml'
+      - '*/project.yaml'
+      - '*/maintainers.yaml'
   workflow_dispatch:
 
 jobs:
   validate-project:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-project@95d25b12337a14e4a74f690c856f6903584e839e
-        with:
-          project_file: 'project.yaml'
+      - uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
+        # No project_file input: the action discovers the repository layout,
+        # so this step is identical for single- and multi-project repositories.
 
   validate-maintainers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: cncf/automation/.github/actions/validate-maintainers@95d25b12337a14e4a74f690c856f6903584e839e
+      - uses: cncf/automation/.github/actions/validate-maintainers@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
-          maintainers_file: 'maintainers.yaml'
+          # No maintainers_file input: the action discovers every maintainers
+          # file in the repository.
           # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
           verify_maintainers: 'false'
         env:
@@ -232,7 +277,11 @@ on:
   push:
     branches: [main]
     paths:
+      - 'org.yaml'
       - 'project.yaml'
+      # Multi-project repositories keep each project in its own directory,
+      # exactly one level deep.
+      - '*/project.yaml'
   workflow_dispatch:
 
 jobs:
@@ -243,14 +292,15 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@95d25b12337a14e4a74f690c856f6903584e839e
+        uses: cncf/automation/.github/actions/landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
-          project_file: 'project.yaml'
+          # No project_file input: the action discovers every project and
+          # opens one landscape pull request per project.
           token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}
 `
 
@@ -293,6 +343,9 @@ var templateFuncs = template.FuncMap{
 		_, ok := sources[key]
 		return ok
 	},
+	"isPrimaryRepo": func(primaryURL, repoURL string) bool {
+		return primaryURL != "" && strings.EqualFold(primaryURL, repoURL)
+	},
 }
 
 // writeScaffoldConfig holds options for WriteScaffold.
@@ -308,12 +361,6 @@ type WriteScaffoldOption func(*writeScaffoldConfig)
 // metadata files (project.yaml, maintainers.yaml).
 func WithForce() WriteScaffoldOption {
 	return func(c *writeScaffoldConfig) { c.force = true }
-}
-
-// protectedFiles are never overwritten, even with --force.
-var protectedFiles = map[string]bool{
-	"project.yaml":     true,
-	"maintainers.yaml": true,
 }
 
 // GenerateProjectYAML produces the project.yaml content from a BootstrapResult.
@@ -375,81 +422,169 @@ func GenerateMaintainersYAML(result *BootstrapResult) ([]byte, error) {
 	return []byte(output), nil
 }
 
-// WriteScaffold writes the complete .project scaffold (8 files) to the
-// specified directory. It will not overwrite existing project.yaml or
-// maintainers.yaml files. Other files are skipped if they exist unless
-// force is true.
+
+// scaffoldFile is one generated file and the rule for overwriting it.
+type scaffoldFile struct {
+	path     string
+	generate func() ([]byte, error)
+	// protected marks the core metadata files. They are never overwritten,
+	// not even with --force: they hold hand-maintained content that no
+	// regeneration can reproduce.
+	protected bool
+}
+
+// tmplGen builds a generator that renders tmplContent against result.
+//
+// projects is supplied only for repository-level templates that must describe
+// every project in a multi-project repository; it is empty otherwise, which is
+// what those templates branch on.
+func tmplGen(tmplName, tmplContent string, result *BootstrapResult, projects ...OrgProject) func() ([]byte, error) {
+	return func() ([]byte, error) {
+		tmpl, err := template.New(tmplName).Funcs(templateFuncs).Parse(tmplContent)
+		if err != nil {
+			return nil, fmt.Errorf("parsing %s template: %w", tmplName, err)
+		}
+		view := struct {
+			*BootstrapResult
+			Name     string
+			Projects []OrgProject
+		}{BootstrapResult: result, Name: result.Name, Projects: projects}
+		if view.Name == "" {
+			view.Name = result.Slug
+		}
+		var buf bytes.Buffer
+		if err := tmpl.Execute(&buf, view); err != nil {
+			return nil, fmt.Errorf("executing %s template: %w", tmplName, err)
+		}
+		return []byte(cleanBlankLines(buf.String())), nil
+	}
+}
+
+func staticGen(content string) func() ([]byte, error) {
+	return func() ([]byte, error) { return []byte(content), nil }
+}
+
+// projectScaffoldFiles returns the files that describe a single project.
+//
+// prefix is empty in a single-project repository and the project's directory
+// in a multi-project one, which is the only structural difference between the
+// two layouts.
+func projectScaffoldFiles(prefix string, result *BootstrapResult) []scaffoldFile {
+	return []scaffoldFile{
+		{
+			path:      filepath.Join(prefix, ProjectFileName),
+			generate:  func() ([]byte, error) { return GenerateProjectYAML(result) },
+			protected: true,
+		},
+		{
+			path:      filepath.Join(prefix, MaintainersFileName),
+			generate:  func() ([]byte, error) { return GenerateMaintainersYAML(result) },
+			protected: true,
+		},
+	}
+}
+
+// readmeData is the template input for the generated README. It carries the
+// repository's project list alongside one project's metadata, because the
+// README describes the repository rather than any single project. Projects is
+// empty in a single-project repository, which is what the template branches on.
+type readmeData struct {
+	*BootstrapResult
+	Projects []OrgProject
+}
+
+// repoScaffoldFiles returns the files that describe the repository as a whole.
+// They exist once, at the root, in both layouts — including the workflows,
+// which discover the layout at run time rather than being generated per
+// project.
+//
+// entries is nil for a single-project repository.
+func repoScaffoldFiles(dir string, result *BootstrapResult, entries []OrgProject) []scaffoldFile {
+	files := []scaffoldFile{
+		{path: "README.md", generate: tmplGen("readme", readmeTemplate, result, entries...)},
+		{path: ".gitignore", generate: staticGen(gitignoreContent)},
+		{path: ".github/workflows/validate.yaml", generate: staticGen(validateWorkflowContent)},
+		{path: ".github/workflows/update-landscape.yml", generate: staticGen(updateLandscapeWorkflowContent)},
+	}
+
+	// Skip SECURITY.md if an existing security policy was discovered.
+	if result.SecurityPolicyURL == "" {
+		files = append(files, scaffoldFile{path: "SECURITY.md", generate: tmplGen("security", securityMDTemplate, result)})
+	}
+
+	// Skip CODEOWNERS if it already exists on disk.
+	if _, err := os.Stat(filepath.Join(dir, "CODEOWNERS")); os.IsNotExist(err) {
+		files = append(files, scaffoldFile{path: "CODEOWNERS", generate: tmplGen("codeowners", codeownersTemplate, result)})
+	}
+
+	return files
+}
+
+// WriteScaffold writes the complete .project scaffold for a single-project
+// repository. It will not overwrite existing project.yaml or maintainers.yaml
+// files. Other files are skipped if they exist unless force is true.
 func WriteScaffold(dir string, result *BootstrapResult, opts ...WriteScaffoldOption) error {
 	cfg := writeScaffoldConfig{}
 	for _, o := range opts {
 		o(&cfg)
 	}
-	// Helper: generate content from a Go template string
-	tmplGen := func(tmplName, tmplContent string) func() ([]byte, error) {
-		return func() ([]byte, error) {
-			tmpl, err := template.New(tmplName).Funcs(templateFuncs).Parse(tmplContent)
-			if err != nil {
-				return nil, fmt.Errorf("parsing %s template: %w", tmplName, err)
-			}
-			view := struct {
-				*BootstrapResult
-				Name string
-			}{BootstrapResult: result, Name: result.Name}
-			if view.Name == "" {
-				view.Name = result.Slug
-			}
-			var buf bytes.Buffer
-			if err := tmpl.Execute(&buf, view); err != nil {
-				return nil, fmt.Errorf("executing %s template: %w", tmplName, err)
-			}
-			return []byte(cleanBlankLines(buf.String())), nil
+
+	files := append(projectScaffoldFiles("", result), repoScaffoldFiles(dir, result, nil)...)
+	return writeScaffoldFiles(dir, files, cfg)
+}
+
+// WriteMultiScaffold writes a repository that holds several CNCF projects:
+// an org.yaml index, one directory per project containing that project's
+// metadata, and a single shared set of repository-level files.
+//
+// results must be in the same order as entries, one per project.
+func WriteMultiScaffold(dir, org string, entries []OrgProject, results []*BootstrapResult, opts ...WriteScaffoldOption) error {
+	if len(entries) != len(results) {
+		return fmt.Errorf("got %d projects but %d bootstrap results", len(entries), len(results))
+	}
+	if len(entries) == 0 {
+		return fmt.Errorf("cannot write a multi-project scaffold with no projects")
+	}
+
+	cfg := writeScaffoldConfig{}
+	for _, o := range opts {
+		o(&cfg)
+	}
+
+	// org.yaml is protected for the same reason as project.yaml: once a
+	// repository declares its projects, regenerating the index could silently
+	// drop one that was added by hand.
+	files := []scaffoldFile{{
+		path:      OrgFileName,
+		generate:  func() ([]byte, error) { return GenerateOrgYAML(org, entries) },
+		protected: true,
+	}}
+
+	for i, entry := range entries {
+		if msg := validateProjectDirName(entry.Slug); msg != "" {
+			return fmt.Errorf("project %q: %s", entry.Name, msg)
 		}
+		files = append(files, projectScaffoldFiles(entry.Slug, results[i])...)
 	}
 
-	// Helper: return static content
-	staticGen := func(content string) func() ([]byte, error) {
-		return func() ([]byte, error) { return []byte(content), nil }
-	}
+	// Repository-level files are generated from the first project only
+	// because they describe the repository, not any one project. The README
+	// lists every project separately.
+	files = append(files, repoScaffoldFiles(dir, results[0], entries)...)
 
-	type scaffoldFile struct {
-		path     string
-		generate func() ([]byte, error)
-	}
+	return writeScaffoldFiles(dir, files, cfg)
+}
 
-	// Core files: always generated
-	files := []scaffoldFile{
-		{"project.yaml", func() ([]byte, error) { return GenerateProjectYAML(result) }},
-		{"maintainers.yaml", func() ([]byte, error) { return GenerateMaintainersYAML(result) }},
-		{"README.md", tmplGen("readme", readmeTemplate)},
-		{".gitignore", staticGen(gitignoreContent)},
-		{".github/workflows/validate.yaml", staticGen(validateWorkflowContent)},
-		{".github/workflows/update-landscape.yml", staticGen(updateLandscapeWorkflowContent)},
-	}
-
-	// Conditional: SECURITY.md — skip if an existing security policy was discovered
-	if result.SecurityPolicyURL == "" {
-		files = append(files, scaffoldFile{"SECURITY.md", tmplGen("security", securityMDTemplate)})
-	}
-
-	// Conditional: CODEOWNERS — skip if it already exists on disk
-	if _, err := os.Stat(filepath.Join(dir, "CODEOWNERS")); os.IsNotExist(err) {
-		files = append(files, scaffoldFile{"CODEOWNERS", tmplGen("codeowners", codeownersTemplate)})
-	}
-
-	// Check if any protected files exist
-	protectedExist := false
-	for f := range protectedFiles {
-		if _, err := os.Stat(filepath.Join(dir, f)); err == nil {
-			protectedExist = true
-			break
-		}
-	}
-
-	// If protected files exist and force is NOT set, error out
-	if protectedExist && !cfg.force {
-		for f := range protectedFiles {
-			if _, err := os.Stat(filepath.Join(dir, f)); err == nil {
-				return fmt.Errorf("%s already exists in %s; refusing to overwrite (use --force to regenerate auxiliary files)", f, dir)
+func writeScaffoldFiles(dir string, files []scaffoldFile, cfg writeScaffoldConfig) error {
+	// If any protected file already exists and force is not set, refuse the
+	// whole run rather than half-writing a repository.
+	if !cfg.force {
+		for _, f := range files {
+			if !f.protected {
+				continue
+			}
+			if _, err := os.Stat(filepath.Join(dir, f.path)); err == nil {
+				return fmt.Errorf("%s already exists in %s; refusing to overwrite (use --force to regenerate auxiliary files)", f.path, dir)
 			}
 		}
 	}
@@ -457,12 +592,10 @@ func WriteScaffold(dir string, result *BootstrapResult, opts ...WriteScaffoldOpt
 	for _, f := range files {
 		fullPath := filepath.Join(dir, f.path)
 
-		// Check if file already exists on disk
 		existingData, existsErr := os.ReadFile(fullPath)
 		fileExists := existsErr == nil
 
 		if fileExists {
-			// Generate the content so we can compare
 			newContent, err := f.generate()
 			if err != nil {
 				return fmt.Errorf("generating %s: %w", f.path, err)
@@ -470,8 +603,7 @@ func WriteScaffold(dir string, result *BootstrapResult, opts ...WriteScaffoldOpt
 
 			identical := bytes.Equal(existingData, newContent)
 
-			// Never overwrite protected files
-			if protectedFiles[f.path] {
+			if f.protected {
 				if !identical {
 					log.Printf("Skipping %s: protected file differs from generated version", f.path)
 					logDiffSummary(f.path, existingData, newContent)
@@ -479,7 +611,6 @@ func WriteScaffold(dir string, result *BootstrapResult, opts ...WriteScaffoldOpt
 				continue
 			}
 
-			// Skip existing auxiliary files unless force is set
 			if !cfg.force {
 				if !identical {
 					log.Printf("Skipping %s: file differs from generated version (use --force to overwrite)", f.path)
@@ -488,7 +619,6 @@ func WriteScaffold(dir string, result *BootstrapResult, opts ...WriteScaffoldOpt
 				continue
 			}
 
-			// force is set — overwrite auxiliary, but skip if identical
 			if identical {
 				continue
 			}
@@ -503,7 +633,6 @@ func WriteScaffold(dir string, result *BootstrapResult, opts ...WriteScaffoldOpt
 			continue
 		}
 
-		// File does not exist — generate and write
 		if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
 			return fmt.Errorf("creating directory for %s: %w", f.path, err)
 		}

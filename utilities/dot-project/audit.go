@@ -82,7 +82,7 @@ func collectProjectURLs(project Project) []AuditCheck {
 
 	// Repositories
 	for i, repo := range project.Repositories {
-		checks = append(checks, AuditCheck{Field: fmt.Sprintf("repositories[%d]", i), URL: repo})
+		checks = append(checks, AuditCheck{Field: fmt.Sprintf("repositories[%d]", i), URL: repo.URL})
 	}
 
 	// Audit report URLs

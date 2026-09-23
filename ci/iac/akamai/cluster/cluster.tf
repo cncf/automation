@@ -11,7 +11,7 @@ resource "linode_lke_cluster" "github_runners" {
   region      = var.region
   tags        = local.common_tags
   vpc_id      = linode_vpc.main.id
-  subnet_id   = linode_vpc_subnet.cluster.id
+  # subnet_id   = linode_vpc_subnet.cluster.id
 
   control_plane {
     high_availability = true
@@ -28,7 +28,7 @@ resource "linode_lke_cluster" "github_runners" {
     type            = var.node_type
     count           = var.node_count
     disk_encryption = "enabled"
-    firewall_id     = linode_firewall.cluster.id
+    # firewall_id     = linode_firewall.cluster.id
 
     autoscaler {
       min = var.autoscaler_min

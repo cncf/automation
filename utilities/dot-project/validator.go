@@ -326,10 +326,24 @@ func validateProjectStruct(project Project) []string {
 	if len(project.Repositories) == 0 {
 		errors = append(errors, "repositories is required and cannot be empty")
 	} else {
+		primaryRepoCount := 0
 		for i, repo := range project.Repositories {
-			if !isValidURL(repo) {
-				errors = append(errors, fmt.Sprintf("repositories[%d] is not a valid URL: %s", i, repo))
+			if repo.URL == "" {
+				errors = append(errors, fmt.Sprintf("repositories[%d] has an empty URL", i))
+			} else if !isValidURL(repo.URL) {
+				errors = append(errors, fmt.Sprintf("repositories[%d] is not a valid URL: %s", i, repo.URL))
 			}
+			for j, tag := range repo.Tags {
+				if tag == "" {
+					errors = append(errors, fmt.Sprintf("repositories[%d].tags[%d] must not be empty", i, j))
+				}
+			}
+			if repo.Primary {
+				primaryRepoCount++
+			}
+		}
+		if primaryRepoCount > 1 {
+			errors = append(errors, fmt.Sprintf("at most one repository may be marked primary, found %d", primaryRepoCount))
 		}
 	}
 

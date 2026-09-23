@@ -1,5 +1,5 @@
 cluster_name        = "lke-cncf-gha-iad2"
-kubernetes_version  = "1.35"
+kubernetes_version  = "1.36"
 region              = "us-iad-2"
 node_count          = 3
 node_type           = "g8-dedicated-16-4"

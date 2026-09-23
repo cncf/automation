@@ -57,7 +57,10 @@ def normalize_slug(s: Any) -> str:
 
 
 def normalize_key(name: str) -> str:
-    return " ".join(str(name or "").lower().split())
+    # Strip parenthetical suffixes/aliases like "Service Mesh Interface (SMI)" so
+    # landscape names still match PCC's canonical (parenthetical-free) name.
+    stripped = re.sub(r"\s*\([^)]*\)", "", str(name or ""))
+    return " ".join(stripped.lower().split())
 
 
 def normalize_url(u: str) -> str:
@@ -597,6 +600,12 @@ def build_report() -> Dict[str, Any]:
         extra = get_extra(item)
         path = f"{cat_name} / {sub_name}" if cat_name or sub_name else ""
         pcc, clo, match_note = resolve_pcc_clo(item, pcc_by_slug, pcc_by_name, clo_by_name)
+
+        # PCC is the authoritative CNCF project list. Landscape items with a
+        # `project:` lifecycle marker but no PCC row are non-CNCF LF projects
+        # (e.g. LF AI & Data) and are out of scope for this audit.
+        if pcc is None:
+            continue
 
         land_repo = str(item.get("repo_url") or "").strip()
         land_slug = str(extra.get("lfx_slug") or "").strip()

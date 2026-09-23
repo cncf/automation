@@ -96,7 +96,7 @@ artwork: "https://artwork.example.com/logo.svg"
 	if proj.Website != "https://test-proj.io" {
 		t.Errorf("expected website, got %q", proj.Website)
 	}
-	if len(proj.Repositories) != 1 || proj.Repositories[0] != "https://github.com/test/repo" {
+	if len(proj.Repositories) != 1 || proj.Repositories[0].URL != "https://github.com/test/repo" {
 		t.Errorf("unexpected repositories: %v", proj.Repositories)
 	}
 	if len(proj.MaturityLog) != 1 || proj.MaturityLog[0].Phase != "sandbox" {

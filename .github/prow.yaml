@@ -122,7 +122,21 @@ labels:
       description: Indicates that a PR should not merge because it is a work in progress.
 
   labels:
-    - landscape-sync
+    - name: landscape-sync
+      color: ededed
+      description: Applied by the landscape-sync workflow to automated report issues/PRs
+    - name: docker
+      color: 21ceff
+      description: Pull requests that update docker code
+    - name: github-actions
+      color: '000000'
+      description: Pull requests that update GitHub Actions code
+    - name: go
+      color: 16e2e2
+      description: Pull requests that update go code
+    - name: terraform
+      color: 5C4EE5
+      description: Pull requests that update terraform code
 
 require_matching_label:
   - regexp: ^kind/

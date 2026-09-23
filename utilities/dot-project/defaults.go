@@ -38,4 +38,17 @@ const (
 
 	// DefaultEnterprise is the GitHub Enterprise slug for CNCF.
 	DefaultEnterprise = "cncf"
+
+	// OrgFileName is the org.yaml index found at the root of a .project
+	// repository whose GitHub organization hosts multiple CNCF projects.
+	OrgFileName = "org.yaml"
+
+	// ProjectFileName is the per-project metadata file. It lives at the
+	// repository root in single-project repos, and inside each project
+	// directory in multi-project repos.
+	ProjectFileName = "project.yaml"
+
+	// MaintainersFileName is the per-project maintainer roster, colocated
+	// with its ProjectFileName.
+	MaintainersFileName = "maintainers.yaml"
 )

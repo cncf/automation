@@ -23,93 +23,215 @@ type fieldEdit struct {
 	exists   bool // true = update existing field, false = insert new field
 }
 
+// updateStatus reports the outcome of scanning the landscape for a project.
+type updateStatus int
+
+const (
+	// statusNoMatch means no landscape item matched the project. The most
+	// likely cause is that project.yaml's name differs from the landscape
+	// item name, which is what the matcher keys on.
+	statusNoMatch updateStatus = iota
+	// statusNoChanges means a landscape item matched and is already current.
+	statusNoChanges
+	// statusUpdated means a landscape item matched and was edited.
+	statusUpdated
+)
+
 func main() {
-	projectPath := flag.String("project", "", "Path to project.yaml")
+	projectPath := flag.String("project", "", "Path to a single project.yaml; defaults to every project in the current directory")
+	repoRoot := flag.String("repo-root", "", "Root of a .project repository; updates the landscape for every project it contains (default \".\")")
 	landscapePath := flag.String("landscape", "", "Path to landscape.yml")
 	landscapeRepo := flag.String("landscape-repo", "cncf/landscape", "Target repository for the PR (e.g. cncf/landscape)")
 	createPR := flag.Bool("create-pr", false, "Create a Pull Request with the changes")
 	dryRun := flag.Bool("dry-run", false, "Print changes and PR details without executing")
 	flag.Parse()
 
-	if *projectPath == "" || *landscapePath == "" {
-		log.Fatal("Both --project and --landscape flags are required")
+	if *landscapePath == "" {
+		log.Fatal("The --landscape flag is required")
 	}
 
-	// Load Project
-	projectData, err := os.ReadFile(*projectPath)
+	switch {
+	case *projectPath == "" && *repoRoot == "":
+		*repoRoot = "."
+	case *projectPath != "" && *repoRoot != "":
+		log.Fatal("The --project and --repo-root flags are mutually exclusive")
+	}
+
+	projectPaths := []string{*projectPath}
+	if *repoRoot != "" {
+		d, err := projects.Discover(*repoRoot)
+		if err != nil {
+			log.Fatalf("Discovery failed: %v", err)
+		}
+		projectPaths = d.ProjectPaths()
+	}
+
+	// Each project gets its own branch and pull request so the landscape
+	// maintainers can review and merge them independently. That means every
+	// project must start from the same clean checkout, otherwise the second PR
+	// would also contain the first one's commit.
+	//
+	// Without --create-pr nothing is pushed, so the edits are meant to
+	// accumulate in the working tree; resetting between projects there would
+	// silently discard everything but the last project's change.
+	baseRef := ""
+	if len(projectPaths) > 1 && *createPR && !*dryRun {
+		ref, err := landscapeHeadRef(*landscapePath)
+		if err != nil {
+			log.Fatalf("Failed to determine the landscape base revision: %v", err)
+		}
+		baseRef = ref
+	}
+
+	failed := false
+	for i, path := range projectPaths {
+		if baseRef != "" && i > 0 {
+			if err := restoreLandscape(*landscapePath, baseRef); err != nil {
+				log.Fatalf("Failed to reset the landscape checkout before %s: %v", path, err)
+			}
+		}
+
+		if err := processProject(path, *landscapePath, *landscapeRepo, *createPR, *dryRun); err != nil {
+			// One project's failure must not hide its siblings, so report and
+			// keep going, then fail the run at the end.
+			log.Printf("::error::%s: %v", path, err)
+			failed = true
+		}
+	}
+
+	if failed {
+		os.Exit(1)
+	}
+}
+
+// processProject applies one project's metadata to the landscape and, when
+// requested, opens a pull request for it.
+func processProject(projectPath, landscapePath, landscapeRepo string, createPR, dryRun bool) error {
+	projectData, err := os.ReadFile(projectPath)
 	if err != nil {
-		log.Fatalf("Failed to read project file: %v", err)
+		return fmt.Errorf("failed to read project file: %w", err)
 	}
 	var project projects.Project
 	if err := yaml.Unmarshal(projectData, &project); err != nil {
-		log.Fatalf("Failed to parse project YAML: %v", err)
+		return fmt.Errorf("failed to parse project YAML: %w", err)
 	}
 
-	// Load Landscape
-	landscapeData, err := os.ReadFile(*landscapePath)
+	landscapeData, err := os.ReadFile(landscapePath)
 	if err != nil {
-		log.Fatalf("Failed to read landscape file: %v", err)
+		return fmt.Errorf("failed to read landscape file: %w", err)
 	}
 	var root yaml.Node
 	if err := yaml.Unmarshal(landscapeData, &root); err != nil {
-		log.Fatalf("Failed to parse landscape YAML: %v", err)
+		return fmt.Errorf("failed to parse landscape YAML: %w", err)
 	}
 
 	lines := strings.Split(string(landscapeData), "\n")
 
-	// Update using line-level edits
-	newLines, updated := updateLandscape(&root, &project, lines)
-	if !updated {
-		log.Printf("No matching entry found or no changes needed for project %s", project.Name)
-		os.Exit(0)
+	newLines, status := updateLandscape(&root, &project, lines)
+	switch status {
+	case statusNoMatch:
+		// Printed as a workflow annotation rather than a log line: a silent
+		// success here is indistinguishable from a working sync, and in a
+		// multi-project repository the sibling project's run still passes.
+		fmt.Printf("::warning::No landscape entry matched project %q. The landscape item name must match the name in %s, and one of its repo_url values must appear in repositories.\n",
+			project.Name, projectPath)
+		return nil
+	case statusNoChanges:
+		log.Printf("Landscape entry for %s is already up to date", project.Name)
+		return nil
 	}
 
 	output := strings.Join(newLines, "\n")
 
-	if *dryRun {
-		tmpFile, err := os.CreateTemp("", "landscape-*.yml")
-		if err != nil {
-			log.Fatalf("Failed to create temp file: %v", err)
-		}
-		defer func() {
-			if err := os.Remove(tmpFile.Name()); err != nil {
-				log.Printf("Warning: failed to remove temp file: %v", err)
-			}
-		}()
-
-		if _, err := tmpFile.WriteString(output); err != nil {
-			log.Fatalf("Failed to write temp file: %v", err)
-		}
-		if err := tmpFile.Close(); err != nil {
-			log.Fatalf("Failed to close temp file: %v", err)
-		}
-
-		cmd := exec.Command("diff", "-u", *landscapePath, tmpFile.Name())
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		fmt.Println("--- Diff ---")
-		_ = cmd.Run()
-
-		fmt.Println("\n--- Pull Request Details ---")
-		fmt.Printf("Title: Update %s metadata\n", project.Name)
-		fmt.Printf("Body: Automated update for %s from cncf/automation\n", project.Name)
-		fmt.Printf("Branch: update-%s-%d\n", strings.ReplaceAll(strings.ToLower(project.Name), " ", "-"), time.Now().Unix())
-		fmt.Printf("Target Repo: %s\n", *landscapeRepo)
-		fmt.Println("Commit will be signed off for DCO compliance")
-		return
+	if dryRun {
+		return printDryRun(landscapePath, landscapeRepo, output, &project)
 	}
 
-	// Save
-	if err := os.WriteFile(*landscapePath, []byte(output), 0644); err != nil {
-		log.Fatalf("Failed to write landscape file: %v", err)
+	if err := os.WriteFile(landscapePath, []byte(output), 0644); err != nil {
+		return fmt.Errorf("failed to write landscape file: %w", err)
 	}
 	log.Printf("Successfully updated landscape.yml for project %s", project.Name)
 
-	if *createPR {
-		if err := createPullRequest(*landscapePath, *landscapeRepo, &project); err != nil {
-			log.Fatalf("Failed to create PR: %v", err)
+	if createPR {
+		if err := createPullRequest(landscapePath, landscapeRepo, &project); err != nil {
+			return fmt.Errorf("failed to create PR: %w", err)
 		}
 	}
+	return nil
+}
+
+func printDryRun(landscapePath, landscapeRepo, output string, project *projects.Project) error {
+	tmpFile, err := os.CreateTemp("", "landscape-*.yml")
+	if err != nil {
+		return fmt.Errorf("failed to create temp file: %w", err)
+	}
+	defer func() {
+		if err := os.Remove(tmpFile.Name()); err != nil {
+			log.Printf("Warning: failed to remove temp file: %v", err)
+		}
+	}()
+
+	if _, err := tmpFile.WriteString(output); err != nil {
+		return fmt.Errorf("failed to write temp file: %w", err)
+	}
+	if err := tmpFile.Close(); err != nil {
+		return fmt.Errorf("failed to close temp file: %w", err)
+	}
+
+	cmd := exec.Command("diff", "-u", landscapePath, tmpFile.Name())
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	fmt.Println("--- Diff ---")
+	_ = cmd.Run()
+
+	fmt.Println("\n--- Pull Request Details ---")
+	fmt.Printf("Title: Update %s metadata\n", project.Name)
+	fmt.Printf("Body: Automated update for %s from cncf/automation\n", project.Name)
+	fmt.Printf("Branch: update-%s-%d\n", strings.ReplaceAll(strings.ToLower(project.Name), " ", "-"), time.Now().Unix())
+	fmt.Printf("Target Repo: %s\n", landscapeRepo)
+	fmt.Println("Commit will be signed off for DCO compliance")
+	return nil
+}
+
+// landscapeHeadRef resolves the commit every project's branch should start
+// from.
+func landscapeHeadRef(landscapePath string) (string, error) {
+	dir, err := landscapeDir(landscapePath)
+	if err != nil {
+		return "", err
+	}
+	cmd := exec.Command("git", "rev-parse", "HEAD")
+	cmd.Dir = dir
+	out, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("git rev-parse HEAD failed: %w", err)
+	}
+	return strings.TrimSpace(string(out)), nil
+}
+
+// restoreLandscape returns the checkout to baseRef, discarding the previous
+// project's edit so the next pull request contains only its own change.
+func restoreLandscape(landscapePath, baseRef string) error {
+	dir, err := landscapeDir(landscapePath)
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command("git", "checkout", "--force", baseRef)
+	cmd.Dir = dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("git checkout --force %s failed: %w", baseRef, err)
+	}
+	return nil
+}
+
+func landscapeDir(landscapePath string) (string, error) {
+	abs, err := filepath.Abs(landscapePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to get absolute path: %w", err)
+	}
+	return filepath.Dir(abs), nil
 }
 
 func createPullRequest(landscapePath, landscapeRepo string, project *projects.Project) error {
@@ -176,9 +298,13 @@ func createPullRequest(landscapePath, landscapeRepo string, project *projects.Pr
 
 // updateLandscape navigates the YAML node tree to find the matching project
 // entry, then applies line-level edits to the raw file lines.
-func updateLandscape(root *yaml.Node, project *projects.Project, lines []string) ([]string, bool) {
+//
+// It distinguishes "no item matched this project" from "the matching item is
+// already up to date": both leave the file untouched, but only the first is a
+// misconfiguration.
+func updateLandscape(root *yaml.Node, project *projects.Project, lines []string) ([]string, updateStatus) {
 	if root.Kind != yaml.DocumentNode {
-		return lines, false
+		return lines, statusNoMatch
 	}
 
 	var landscapeSeq *yaml.Node
@@ -194,8 +320,10 @@ func updateLandscape(root *yaml.Node, project *projects.Project, lines []string)
 	}
 
 	if landscapeSeq == nil {
-		return lines, false
+		return lines, statusNoMatch
 	}
+
+	matchedAny := false
 
 	for _, categoryNode := range landscapeSeq.Content {
 		var subcategoriesSeq *yaml.Node
@@ -226,20 +354,27 @@ func updateLandscape(root *yaml.Node, project *projects.Project, lines []string)
 			}
 
 			for _, itemNode := range itemsSeq.Content {
-				newLines, matched := matchAndUpdateItem(itemNode, project, lines)
+				newLines, matched, changed := matchAndUpdateItem(itemNode, project, lines)
+				if changed {
+					return newLines, statusUpdated
+				}
 				if matched {
-					return newLines, true
+					matchedAny = true
 				}
 			}
 		}
 	}
 
-	return lines, false
+	if matchedAny {
+		return lines, statusNoChanges
+	}
+	return lines, statusNoMatch
 }
 
 // matchAndUpdateItem checks if the given item node matches the project (by name
 // and repo_url), and if so, detects changes and applies line-level edits.
-func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project, lines []string) ([]string, bool) {
+// It reports whether the item matched and, separately, whether it was changed.
+func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project, lines []string) ([]string, bool, bool) {
 	var nameNode *yaml.Node
 	var repoURLNode *yaml.Node
 
@@ -254,29 +389,29 @@ func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project, lines []
 	}
 
 	if nameNode == nil || repoURLNode == nil {
-		return lines, false
+		return lines, false, false
 	}
 
 	nameMatch := strings.EqualFold(nameNode.Value, project.Name)
 	repoMatch := false
 	for _, repo := range project.Repositories {
-		if strings.EqualFold(repoURLNode.Value, repo) {
+		if strings.EqualFold(repoURLNode.Value, repo.URL) {
 			repoMatch = true
 			break
 		}
 	}
 
 	if !nameMatch || !repoMatch {
-		return lines, false
+		return lines, false, false
 	}
 
 	edits := detectChanges(itemNode, project)
 	if len(edits) == 0 {
-		return lines, false
+		return lines, true, false
 	}
 
 	newLines := applyItemEdits(lines, edits, itemNode)
-	return newLines, true
+	return newLines, true, true
 }
 
 // detectChanges compares the YAML node tree values against the project and

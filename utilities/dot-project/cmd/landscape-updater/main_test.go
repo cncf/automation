@@ -38,9 +38,7 @@ func TestUpdateLandscape(t *testing.T) {
 		Name:        "Kubernetes",
 		Description: "New description",
 		Website:     "https://kubernetes.io",
-		Repositories: []string{
-			"https://github.com/kubernetes/kubernetes",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/kubernetes/kubernetes"}},
 		Social: map[string]string{
 			"twitter":  "https://twitter.com/kubernetesio",
 			"slack":    "https://kubernetes.slack.com",
@@ -48,8 +46,8 @@ func TestUpdateLandscape(t *testing.T) {
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update to return true")
 	}
 
@@ -93,18 +91,62 @@ func TestNoChanges(t *testing.T) {
 		Name:        "MyProject",
 		Description: "My project description",
 		Website:     "https://myproject.io",
-		Repositories: []string{
-			"https://github.com/org/myproject",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/myproject"}},
 		Social: map[string]string{
 			"twitter": "https://twitter.com/myproject",
 		},
 	}
 
-	_, updated := updateLandscape(root, project, lines)
-	if updated {
-		t.Fatal("Expected no update when values are identical")
+	_, status := updateLandscape(root, project, lines)
+	if status != statusNoChanges {
+		t.Fatalf("expected statusNoChanges when values are identical, got %v", status)
 	}
+}
+
+// A project whose name does not match any landscape item must be
+// distinguishable from one that is simply already up to date: both leave the
+// file untouched, but only the former is a misconfiguration worth warning
+// about.
+func TestNoMatchingEntry(t *testing.T) {
+	landscapeYAML := `landscape:
+  - category:
+    name: Orchestration
+    subcategories:
+      - subcategory:
+        name: Scheduling
+        items:
+          - item:
+            name: MyProject
+            repo_url: https://github.com/org/myproject
+            homepage_url: https://myproject.io`
+
+	t.Run("name does not match", func(t *testing.T) {
+		root, lines := setupTest(landscapeYAML)
+		project := &projects.Project{
+			Name:         "TypoProject",
+			Website:      "https://changed.example",
+			Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/myproject"}},
+		}
+
+		_, status := updateLandscape(root, project, lines)
+		if status != statusNoMatch {
+			t.Fatalf("expected statusNoMatch for an unknown project name, got %v", status)
+		}
+	})
+
+	t.Run("no repository in common", func(t *testing.T) {
+		root, lines := setupTest(landscapeYAML)
+		project := &projects.Project{
+			Name:         "MyProject",
+			Website:      "https://changed.example",
+			Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/other"}},
+		}
+
+		_, status := updateLandscape(root, project, lines)
+		if status != statusNoMatch {
+			t.Fatalf("expected statusNoMatch when no repo_url matches, got %v", status)
+		}
+	})
 }
 
 func TestUpdateExistingField(t *testing.T) {
@@ -127,13 +169,11 @@ func TestUpdateExistingField(t *testing.T) {
 		Name:        "Proj",
 		Description: "Old desc",
 		Website:     "https://new.proj.io",
-		Repositories: []string{
-			"https://github.com/org/proj",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -166,13 +206,11 @@ func TestInsertNewField(t *testing.T) {
 		Name:        "Proj",
 		Description: "A new description",
 		Website:     "https://proj.io",
-		Repositories: []string{
-			"https://github.com/org/proj",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for new description")
 	}
 
@@ -206,16 +244,14 @@ func TestUpdateExtraField(t *testing.T) {
 	project := &projects.Project{
 		Name:    "Proj",
 		Website: "https://proj.io",
-		Repositories: []string{
-			"https://github.com/org/proj",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 		Social: map[string]string{
 			"slack": "https://new-slack.com",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for extra field")
 	}
 
@@ -245,17 +281,15 @@ func TestInsertNewExtraField(t *testing.T) {
 	project := &projects.Project{
 		Name:    "Proj",
 		Website: "https://proj.io",
-		Repositories: []string{
-			"https://github.com/org/proj",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 		Social: map[string]string{
 			"slack":    "https://slack.com",
 			"linkedin": "https://linkedin.com/proj",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for new extra field")
 	}
 
@@ -287,16 +321,14 @@ func TestCreateExtraBlock(t *testing.T) {
 	project := &projects.Project{
 		Name:    "Proj",
 		Website: "https://proj.io",
-		Repositories: []string{
-			"https://github.com/org/proj",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 		Social: map[string]string{
 			"slack": "https://slack.com/proj",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for new extra block")
 	}
 
@@ -331,13 +363,11 @@ func TestMultiLineDescriptionReplacement(t *testing.T) {
 		Name:        "Proj",
 		Description: "Short new description",
 		Website:     "https://proj.io",
-		Repositories: []string{
-			"https://github.com/org/proj",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/proj"}},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update for multi-line description")
 	}
 
@@ -383,13 +413,11 @@ func TestUnrelatedLinesUntouched(t *testing.T) {
 	project := &projects.Project{
 		Name:    "Target",
 		Website: "https://new.target.io",
-		Repositories: []string{
-			"https://github.com/org/target",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/org/target"}},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -616,16 +644,14 @@ func TestPR4820_Meshery(t *testing.T) {
 		Name:        "Meshery",
 		Description: "Infrastructure by Design",
 		Website:     "https://meshery.io",
-		Repositories: []string{
-			"https://github.com/meshery/meshery",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/meshery/meshery"}},
 		Social: map[string]string{
 			"twitter": "https://twitter.com/mesheryio",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -654,16 +680,14 @@ func TestPR4821_OpenEBS(t *testing.T) {
 		Name:        "OpenEBS",
 		Description: "Open Source Container Attached Storage, built using Cloud Native Architecture, simplifies running Stateful Applications on Kubernetes",
 		Website:     "https://www.openebs.io/",
-		Repositories: []string{
-			"https://github.com/openebs/openebs",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/openebs/openebs"}},
 		Social: map[string]string{
 			"twitter": "https://twitter.com/openebs",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -687,16 +711,14 @@ func TestPR4822_OCM(t *testing.T) {
 		Name:        "Open Cluster Management",
 		Description: "Make working with many Kubernetes clusters super easy regardless of where they are deployed",
 		Website:     "https://open-cluster-management.io/",
-		Repositories: []string{
-			"https://github.com/open-cluster-management-io/ocm",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/open-cluster-management-io/ocm"}},
 		Social: map[string]string{
 			"twitter": "https://twitter.com/ocm_io",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -720,16 +742,14 @@ func TestPR4823_kcp(t *testing.T) {
 		Name:        "kcp",
 		Description: "Kubernetes-like control planes for form-factors and use-cases beyond Kubernetes and container workloads.",
 		Website:     "https://kcp.io",
-		Repositories: []string{
-			"https://github.com/kcp-dev/kcp",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/kcp-dev/kcp"}},
 		Social: map[string]string{
 			"twitter": "https://twitter.com/kcp",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -753,16 +773,14 @@ func TestPR4827_ORAS(t *testing.T) {
 		Name:        "ORAS",
 		Description: "ORAS is the tool for working with OCI Artifacts",
 		Website:     "https://oras.land/",
-		Repositories: []string{
-			"https://github.com/oras-project/oras",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/oras-project/oras"}},
 		Social: map[string]string{
 			"twitter": "https://twitter.com/orasproject",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -786,16 +804,14 @@ func TestPR4829_k0s(t *testing.T) {
 		Name:        "k0s",
 		Description: "k0s is a CNCF-certified lightweight, Kubernetes distribution with zero dependencies and zero opinion.",
 		Website:     "https://k0sproject.io/",
-		Repositories: []string{
-			"https://github.com/k0sproject/k0s",
-		},
+		Repositories: []projects.RepositoryEntry{{URL: "https://github.com/k0sproject/k0s"}},
 		Social: map[string]string{
 			"twitter": "https://x.com/k0sproject",
 		},
 	}
 
-	newLines, updated := updateLandscape(root, project, lines)
-	if !updated {
+	newLines, status := updateLandscape(root, project, lines)
+	if status != statusUpdated {
 		t.Fatal("Expected update")
 	}
 
@@ -867,32 +883,32 @@ func TestAllPRsNoNoiseRegression(t *testing.T) {
 	}{
 		{"Meshery", projects.Project{
 			Name: "Meshery", Description: "Infrastructure by Design",
-			Website: "https://meshery.io", Repositories: []string{"https://github.com/meshery/meshery"},
+			Website: "https://meshery.io", Repositories: []projects.RepositoryEntry{{URL: "https://github.com/meshery/meshery"}},
 			Social: map[string]string{"twitter": "https://twitter.com/mesheryio"},
 		}},
 		{"OpenEBS", projects.Project{
 			Name: "OpenEBS", Description: "Container Attached Storage",
-			Website: "https://www.openebs.io/", Repositories: []string{"https://github.com/openebs/openebs"},
+			Website: "https://www.openebs.io/", Repositories: []projects.RepositoryEntry{{URL: "https://github.com/openebs/openebs"}},
 			Social: map[string]string{"twitter": "https://twitter.com/openebs"},
 		}},
 		{"Open Cluster Management", projects.Project{
 			Name: "Open Cluster Management", Description: "Multi-cluster management",
-			Website: "https://open-cluster-management.io/", Repositories: []string{"https://github.com/open-cluster-management-io/ocm"},
+			Website: "https://open-cluster-management.io/", Repositories: []projects.RepositoryEntry{{URL: "https://github.com/open-cluster-management-io/ocm"}},
 			Social: map[string]string{"twitter": "https://twitter.com/ocm_io"},
 		}},
 		{"kcp", projects.Project{
 			Name: "kcp", Description: "Kubernetes-like control planes",
-			Website: "https://kcp.io", Repositories: []string{"https://github.com/kcp-dev/kcp"},
+			Website: "https://kcp.io", Repositories: []projects.RepositoryEntry{{URL: "https://github.com/kcp-dev/kcp"}},
 			Social: map[string]string{"twitter": "https://twitter.com/kcp"},
 		}},
 		{"ORAS", projects.Project{
 			Name: "ORAS", Description: "OCI Artifacts tool",
-			Website: "https://oras.land/", Repositories: []string{"https://github.com/oras-project/oras"},
+			Website: "https://oras.land/", Repositories: []projects.RepositoryEntry{{URL: "https://github.com/oras-project/oras"}},
 			Social: map[string]string{"twitter": "https://twitter.com/orasproject"},
 		}},
 		{"k0s", projects.Project{
 			Name: "k0s", Description: "Lightweight Kubernetes distribution",
-			Website: "https://k0sproject.io/", Repositories: []string{"https://github.com/k0sproject/k0s"},
+			Website: "https://k0sproject.io/", Repositories: []projects.RepositoryEntry{{URL: "https://github.com/k0sproject/k0s"}},
 			Social: map[string]string{"twitter": "https://x.com/k0sproject"},
 		}},
 	}
@@ -902,8 +918,8 @@ func TestAllPRsNoNoiseRegression(t *testing.T) {
 			root, origLines := setupTestWithNoise(realisticLandscapeYAML)
 			proj := tc.proj
 
-			newLines, updated := updateLandscape(root, &proj, origLines)
-			if !updated {
+			newLines, status := updateLandscape(root, &proj, origLines)
+			if status != statusUpdated {
 				t.Fatalf("Expected update for %s", tc.name)
 			}
 

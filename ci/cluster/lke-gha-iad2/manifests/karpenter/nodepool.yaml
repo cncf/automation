@@ -45,3 +45,6 @@ spec:
       expireAfter: Never
   limits:
     cpu: 1000
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 5m

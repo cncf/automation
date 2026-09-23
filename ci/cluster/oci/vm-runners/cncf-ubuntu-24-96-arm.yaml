@@ -144,6 +144,9 @@ spec:
   githubConfigSecret: github-arc-secret
   maxRunners: 100
   minRunners: 0
+  runnerScaleSetLabels:
+  - oracle-vm-24cpu-96gb-arm64
+  - cncf-ubuntu-24.04-24-96-arm
   listenerMetrics:
     counters:
       gha_started_jobs_total:
@@ -296,7 +299,7 @@ spec:
     spec:
       containers:
       - name: runner
-        image: ghcr.io/cncf/gha-cloudrunner@sha256:0ed9e6456f09c1b441c7ca2dca03680b00e3e130dd5d3563aceea08754cf75f5
+        image: ghcr.io/cncf/gha-cloudrunner@sha256:323d42520e8544b71ec1061d40c60fd0f6b4fcc6f9468ec2dbc98332ca8fb797
         args:
         - --arch=arm64
         - --shape=VM.Standard.A1.Flex

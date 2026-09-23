@@ -18,6 +18,7 @@ func main() {
 		githubRepo     = flag.String("github-repo", "", "Primary GitHub repository name (e.g., 'kubernetes')")
 		githubToken    = flag.String("github-token", "", "GitHub personal access token (or set GITHUB_TOKEN env)")
 		outputDir      = flag.String("output-dir", ".", "Directory to write scaffold output")
+		layout         = flag.String("layout", "auto", "Repository layout: auto (detect from the landscape), single, or multi")
 		skipLandscape  = flag.Bool("skip-landscape", false, "Skip CNCF landscape YAML lookup")
 		skipCLO        = flag.Bool("skip-clomonitor", false, "Skip CLOMonitor API lookup")
 		skipGH         = flag.Bool("skip-github", false, "Skip GitHub API lookup")
@@ -27,6 +28,13 @@ func main() {
 		envFile        = flag.String("env-file", ".env", "Path to a .env file to load (e.g. GITHUB_TOKEN=...); real env vars take precedence")
 	)
 	flag.Parse()
+
+	switch *layout {
+	case "auto", "single", "multi":
+	default:
+		fmt.Fprintf(os.Stderr, "Error: -layout must be auto, single, or multi (got %q)\n", *layout)
+		os.Exit(1)
+	}
 
 	// Load a .env file (if present) before resolving the token below. Real
 	// environment variables always take precedence over file values.
@@ -84,18 +92,7 @@ func main() {
 	}
 
 	// Slug: lowercase, hyphenated
-	slug := strings.ToLower(strings.ReplaceAll(projectName, " ", "-"))
-	slug = strings.Map(func(r rune) rune {
-		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' {
-			return r
-		}
-		return -1
-	}, slug)
-	// Clean up multiple consecutive hyphens
-	for strings.Contains(slug, "--") {
-		slug = strings.ReplaceAll(slug, "--", "-")
-	}
-	slug = strings.Trim(slug, "-")
+	slug := projects.Slugify(projectName)
 
 	// GitHub token from env if not provided via flag (GITHUB_TOKEN, then GH_TOKEN). The value
 	// may come from the shell or from the .env file loaded above.
@@ -116,6 +113,159 @@ func main() {
 	}
 
 	client := &http.Client{Timeout: projects.DefaultHTTPTimeout}
+
+
+	entries, multi := detectOrgProjects(*layout, org, projectName, slug, repo, client)
+
+	// A repository that holds several CNCF projects needs one metadata
+	// directory per project, so run the whole pipeline once per project.
+	if multi {
+		if err := runMultiProject(entries, org, *outputDir, *dryRun, *force, pipelineInputs{
+			token:          token,
+			client:         client,
+			skipLandscape:  *skipLandscape,
+			skipCLO:        *skipCLO,
+			skipGH:         *skipGH,
+			maintainersCSV: *maintainersCSV,
+		}); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	result, suggestions := buildResult(pipelineInputs{
+		projectName:    projectName,
+		org:            org,
+		repo:           repo,
+		slug:           slug,
+		token:          token,
+		client:         client,
+		skipLandscape:  *skipLandscape,
+		skipCLO:        *skipCLO,
+		skipGH:         *skipGH,
+		maintainersCSV: *maintainersCSV,
+	})
+
+	// Phase 5: Generate output
+	if *dryRun {
+		fmt.Fprintln(os.Stderr, "\n--- project.yaml ---")
+		projectYAML, err := projects.GenerateProjectYAML(result)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error generating project.yaml: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println(string(projectYAML))
+
+		fmt.Fprintln(os.Stderr, "--- maintainers.yaml ---")
+		maintainersYAML, err := projects.GenerateMaintainersYAML(result)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error generating maintainers.yaml: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println(string(maintainersYAML))
+	} else {
+		fmt.Fprintf(os.Stderr, "  Writing scaffold to %s...\n", *outputDir)
+		var opts []projects.WriteScaffoldOption
+		if *force {
+			opts = append(opts, projects.WithForce())
+		}
+		if err := projects.WriteScaffold(*outputDir, result, opts...); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stderr, "\nScaffold written to %s:\n", *outputDir)
+		fmt.Fprintf(os.Stderr, "  - project.yaml\n")
+		fmt.Fprintf(os.Stderr, "  - maintainers.yaml\n")
+		fmt.Fprintf(os.Stderr, "  - README.md\n")
+		if result.SecurityPolicyURL == "" {
+			fmt.Fprintf(os.Stderr, "  - SECURITY.md\n")
+		} else {
+			fmt.Fprintf(os.Stderr, "  - SECURITY.md (skipped: using %s)\n", result.SecurityPolicyURL)
+		}
+		fmt.Fprintf(os.Stderr, "  - CODEOWNERS\n")
+		fmt.Fprintf(os.Stderr, "  - .gitignore\n")
+		fmt.Fprintf(os.Stderr, "  - .github/workflows/validate.yaml\n")
+		fmt.Fprintf(os.Stderr, "  - .github/workflows/update-landscape.yml\n")
+
+		// Report discovered file URLs
+		if result.SecurityPolicyURL != "" || result.ContributingURL != "" || result.CodeOfConductURL != "" || result.LicenseURL != "" {
+			fmt.Fprintln(os.Stderr, "\nDiscovered existing files:")
+			if result.SecurityPolicyURL != "" {
+				fmt.Fprintf(os.Stderr, "  SECURITY.md: %s\n", result.SecurityPolicyURL)
+			}
+			if result.ContributingURL != "" {
+				fmt.Fprintf(os.Stderr, "  CONTRIBUTING.md: %s\n", result.ContributingURL)
+			}
+			if result.CodeOfConductURL != "" {
+				fmt.Fprintf(os.Stderr, "  CODE_OF_CONDUCT: %s\n", result.CodeOfConductURL)
+			}
+			if result.LicenseURL != "" {
+				fmt.Fprintf(os.Stderr, "  LICENSE: %s\n", result.LicenseURL)
+			}
+		}
+	}
+
+	if section := projects.BuildSuggestionsSection(suggestions); section != "" {
+		fmt.Fprintf(os.Stderr, "\nMaintainer suggestions (from org governance files, not yet in the CSV):\n\n%s\n", section)
+		if !*dryRun {
+			if path, err := projects.WriteSuggestionsFile(*outputDir, suggestions); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not write suggestions file: %v\n", err)
+			} else if path != "" {
+				fmt.Fprintf(os.Stderr, "  Wrote maintainer suggestions to %s\n", path)
+			}
+		}
+	}
+
+	// Show TODOs
+	if len(result.TODOs) > 0 {
+		fmt.Fprintln(os.Stderr, "\nRemaining TODOs:")
+		for _, todo := range result.TODOs {
+			fmt.Fprintf(os.Stderr, "  - %s\n", todo)
+		}
+	}
+
+	// Show data sources
+	if len(result.Sources) > 0 {
+		fmt.Fprintln(os.Stderr, "\nData sources used:")
+		for field, source := range result.Sources {
+			fmt.Fprintf(os.Stderr, "  %s: %s\n", field, source)
+		}
+	}
+}
+
+// removeTODO returns todos without any entries equal to target.
+func removeTODO(todos []string, target string) []string {
+	var out []string
+	for _, t := range todos {
+		if t != target {
+			out = append(out, t)
+		}
+	}
+	return out
+}
+
+// pipelineInputs carries everything the per-project bootstrap pipeline needs.
+// A multi-project organization runs the same pipeline once per project.
+type pipelineInputs struct {
+	projectName    string
+	org            string
+	repo           string
+	slug           string
+	token          string
+	client         *http.Client
+	skipLandscape  bool
+	skipCLO        bool
+	skipGH         bool
+	maintainersCSV string
+}
+
+// buildResult runs the full discovery pipeline for one project.
+func buildResult(in pipelineInputs) (*projects.BootstrapResult, []projects.MaintainerSuggestion) {
+	projectName, org, repo, slug := in.projectName, in.org, in.repo, in.slug
+	token, client := in.token, in.client
+	skipLandscape, skipCLO, skipGH := &in.skipLandscape, &in.skipCLO, &in.skipGH
+	maintainersCSV := &in.maintainersCSV
 
 	fmt.Fprintf(os.Stderr, "Bootstrapping project: %s (slug: %s)\n", projectName, slug)
 
@@ -349,100 +499,152 @@ func main() {
 		result.GitHubRepo = repo
 	}
 
-	// Phase 5: Generate output
-	if *dryRun {
-		fmt.Fprintln(os.Stderr, "\n--- project.yaml ---")
-		projectYAML, err := projects.GenerateProjectYAML(result)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error generating project.yaml: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println(string(projectYAML))
-
-		fmt.Fprintln(os.Stderr, "--- maintainers.yaml ---")
-		maintainersYAML, err := projects.GenerateMaintainersYAML(result)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error generating maintainers.yaml: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println(string(maintainersYAML))
-	} else {
-		fmt.Fprintf(os.Stderr, "  Writing scaffold to %s...\n", *outputDir)
-		var opts []projects.WriteScaffoldOption
-		if *force {
-			opts = append(opts, projects.WithForce())
-		}
-		if err := projects.WriteScaffold(*outputDir, result, opts...); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Fprintf(os.Stderr, "\nScaffold written to %s:\n", *outputDir)
-		fmt.Fprintf(os.Stderr, "  - project.yaml\n")
-		fmt.Fprintf(os.Stderr, "  - maintainers.yaml\n")
-		fmt.Fprintf(os.Stderr, "  - README.md\n")
-		if result.SecurityPolicyURL == "" {
-			fmt.Fprintf(os.Stderr, "  - SECURITY.md\n")
-		} else {
-			fmt.Fprintf(os.Stderr, "  - SECURITY.md (skipped: using %s)\n", result.SecurityPolicyURL)
-		}
-		fmt.Fprintf(os.Stderr, "  - CODEOWNERS\n")
-		fmt.Fprintf(os.Stderr, "  - .gitignore\n")
-		fmt.Fprintf(os.Stderr, "  - .github/workflows/validate.yaml\n")
-		fmt.Fprintf(os.Stderr, "  - .github/workflows/update-landscape.yml\n")
-
-		// Report discovered file URLs
-		if result.SecurityPolicyURL != "" || result.ContributingURL != "" || result.CodeOfConductURL != "" || result.LicenseURL != "" {
-			fmt.Fprintln(os.Stderr, "\nDiscovered existing files:")
-			if result.SecurityPolicyURL != "" {
-				fmt.Fprintf(os.Stderr, "  SECURITY.md: %s\n", result.SecurityPolicyURL)
-			}
-			if result.ContributingURL != "" {
-				fmt.Fprintf(os.Stderr, "  CONTRIBUTING.md: %s\n", result.ContributingURL)
-			}
-			if result.CodeOfConductURL != "" {
-				fmt.Fprintf(os.Stderr, "  CODE_OF_CONDUCT: %s\n", result.CodeOfConductURL)
-			}
-			if result.LicenseURL != "" {
-				fmt.Fprintf(os.Stderr, "  LICENSE: %s\n", result.LicenseURL)
-			}
-		}
-	}
-
-	if section := projects.BuildSuggestionsSection(suggestions); section != "" {
-		fmt.Fprintf(os.Stderr, "\nMaintainer suggestions (from org governance files, not yet in the CSV):\n\n%s\n", section)
-		if !*dryRun {
-			if path, err := projects.WriteSuggestionsFile(*outputDir, suggestions); err != nil {
-				fmt.Fprintf(os.Stderr, "Warning: could not write suggestions file: %v\n", err)
-			} else if path != "" {
-				fmt.Fprintf(os.Stderr, "  Wrote maintainer suggestions to %s\n", path)
-			}
-		}
-	}
-
-	// Show TODOs
-	if len(result.TODOs) > 0 {
-		fmt.Fprintln(os.Stderr, "\nRemaining TODOs:")
-		for _, todo := range result.TODOs {
-			fmt.Fprintf(os.Stderr, "  - %s\n", todo)
-		}
-	}
-
-	// Show data sources
-	if len(result.Sources) > 0 {
-		fmt.Fprintln(os.Stderr, "\nData sources used:")
-		for field, source := range result.Sources {
-			fmt.Fprintf(os.Stderr, "  %s: %s\n", field, source)
-		}
-	}
+	return result, suggestions
 }
 
-// removeTODO returns todos without any entries equal to target.
-func removeTODO(todos []string, target string) []string {
-	var out []string
-	for _, t := range todos {
-		if t != target {
-			out = append(out, t)
+// detectOrgProjects asks the landscape whether org hosts more than one CNCF
+// project. The landscape is the only authority we have: project maintainers
+// know their own structure, but CNCF tooling cannot infer it from a repository.
+//
+// A project the community has split but CNCF has not yet ratified has no
+// landscape entry of its own, so it correctly stays part of the existing
+// project until that entry exists.
+// detectOrgProjects decides whether the repository should hold several CNCF
+// projects. The CNCF landscape is the only reliable source for this: nothing in
+// a GitHub organization itself says "these two repositories are separately
+// accepted projects". The returned bool reports whether the multi-project
+// layout should be generated, which is not simply len(entries) > 1 because
+// -layout multi is the escape hatch for a project whose split the CNCF has not
+// recorded in the landscape yet.
+func detectOrgProjects(layout, org, projectName, slug, repo string, client *http.Client) ([]projects.OrgProject, bool) {
+	if layout == "single" {
+		return nil, false
+	}
+
+	var entries []projects.OrgProject
+	if org != "" {
+		fmt.Fprintf(os.Stderr, "  Checking whether %s hosts multiple CNCF projects...\n", org)
+		found, err := projects.FindOrgProjects(org, client, "")
+		if err != nil {
+			log.Printf("  Warning: could not scan the landscape for %s: %v", org, err)
+			if layout != "multi" {
+				return nil, false
+			}
+		}
+		entries = found
+		for _, e := range entries {
+			fmt.Fprintf(os.Stderr, "    - %s (%s, %s)\n", e.Name, e.Slug, e.Maturity)
 		}
 	}
-	return out
+
+	if layout == "multi" {
+		// The landscape may not list the split yet, so fall back to the
+		// project given on the command line and let the maintainers add the
+		// remaining directories by hand.
+		if len(entries) == 0 {
+			log.Printf("  Warning: -layout multi was requested but the landscape lists no CNCF project for %q;", org)
+			log.Printf("           scaffolding %q only — add the remaining projects to %s by hand", slug, projects.OrgFileName)
+			entries = []projects.OrgProject{{Name: projectName, Slug: slug, Repo: repo}}
+		}
+		return entries, true
+	}
+
+	if len(entries) < 2 {
+		return nil, false
+	}
+	fmt.Fprintf(os.Stderr, "  %s hosts %d CNCF projects; generating the multi-project layout\n", org, len(entries))
+	return entries, true
+}
+
+// runMultiProject bootstraps every CNCF project in the organization into its
+// own directory, alongside a single org.yaml index and one shared set of
+// repository-level files.
+func runMultiProject(entries []projects.OrgProject, org, outputDir string, dryRun, force bool, base pipelineInputs) error {
+	results := make([]*projects.BootstrapResult, 0, len(entries))
+	allSuggestions := make(map[string][]projects.MaintainerSuggestion)
+
+	for _, entry := range entries {
+		in := base
+		in.projectName = entry.Name
+		in.org = org
+		in.repo = entry.Repo
+		in.slug = entry.Slug
+		if in.repo == "" {
+			in.repo = entry.Slug
+		}
+
+		fmt.Fprintln(os.Stderr)
+		result, suggestions := buildResult(in)
+
+		// The directory name is the routing key every tool uses, so it has to
+		// agree with the slug inside project.yaml.
+		result.Slug = entry.Slug
+
+		results = append(results, result)
+		if len(suggestions) > 0 {
+			allSuggestions[entry.Slug] = suggestions
+		}
+	}
+
+	if dryRun {
+		orgYAML, err := projects.GenerateOrgYAML(org, entries)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(os.Stderr, "\n--- %s ---\n", projects.OrgFileName)
+		fmt.Println(string(orgYAML))
+
+		for i, entry := range entries {
+			projectYAML, err := projects.GenerateProjectYAML(results[i])
+			if err != nil {
+				return fmt.Errorf("generating %s/%s: %w", entry.Slug, projects.ProjectFileName, err)
+			}
+			fmt.Fprintf(os.Stderr, "--- %s/%s ---\n", entry.Slug, projects.ProjectFileName)
+			fmt.Println(string(projectYAML))
+
+			maintainersYAML, err := projects.GenerateMaintainersYAML(results[i])
+			if err != nil {
+				return fmt.Errorf("generating %s/%s: %w", entry.Slug, projects.MaintainersFileName, err)
+			}
+			fmt.Fprintf(os.Stderr, "--- %s/%s ---\n", entry.Slug, projects.MaintainersFileName)
+			fmt.Println(string(maintainersYAML))
+		}
+		return nil
+	}
+
+	fmt.Fprintf(os.Stderr, "\n  Writing multi-project scaffold to %s...\n", outputDir)
+	var opts []projects.WriteScaffoldOption
+	if force {
+		opts = append(opts, projects.WithForce())
+	}
+	if err := projects.WriteMultiScaffold(outputDir, org, entries, results, opts...); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stderr, "\nScaffold written to %s:\n", outputDir)
+	fmt.Fprintf(os.Stderr, "  - %s\n", projects.OrgFileName)
+	for _, entry := range entries {
+		fmt.Fprintf(os.Stderr, "  - %s/%s\n", entry.Slug, projects.ProjectFileName)
+		fmt.Fprintf(os.Stderr, "  - %s/%s\n", entry.Slug, projects.MaintainersFileName)
+	}
+	fmt.Fprintf(os.Stderr, "  - README.md\n")
+	fmt.Fprintf(os.Stderr, "  - SECURITY.md\n")
+	fmt.Fprintf(os.Stderr, "  - CODEOWNERS\n")
+	fmt.Fprintf(os.Stderr, "  - .gitignore\n")
+	fmt.Fprintf(os.Stderr, "  - .github/workflows/validate.yaml\n")
+	fmt.Fprintf(os.Stderr, "  - .github/workflows/update-landscape.yml\n")
+
+	for slug, suggestions := range allSuggestions {
+		if section := projects.BuildSuggestionsSection(suggestions); section != "" {
+			fmt.Fprintf(os.Stderr, "\nMaintainer suggestions for %s (from org governance files, not yet in the CSV):\n\n%s\n", slug, section)
+		}
+	}
+
+	fmt.Fprintf(os.Stderr, "\nNext steps:\n")
+	fmt.Fprintf(os.Stderr, "  - Review each project's maintainers.yaml: the same organization often has\n")
+	fmt.Fprintf(os.Stderr, "    shared governance (a steering committee) and project-specific teams.\n")
+	fmt.Fprintf(os.Stderr, "  - A team name may appear in several projects. GitHub teams are org-scoped,\n")
+	fmt.Fprintf(os.Stderr, "    so its members are the union of those definitions.\n")
+
+	return nil
 }

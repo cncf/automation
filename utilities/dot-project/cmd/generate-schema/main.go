@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 )
@@ -34,6 +35,19 @@ type JSONSchemaProperty struct {
 }
 
 func main() {
+	target := flag.String("target", "project", "Schema to generate: project or org")
+	flag.Parse()
+
+	switch *target {
+	case "project":
+	case "org":
+		emit(orgSchema())
+		return
+	default:
+		fmt.Fprintf(os.Stderr, "Error: -target must be project or org (got %q)\n", *target)
+		os.Exit(1)
+	}
+
 	falseVal := false
 
 	schema := JSONSchema{
@@ -219,10 +233,49 @@ func main() {
 		},
 	}
 
+	emit(schema)
+}
+
+func emit(schema JSONSchema) {
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(schema); err != nil {
 		fmt.Fprintf(os.Stderr, "Error encoding schema: %v\n", err)
 		os.Exit(1)
+	}
+}
+
+// orgSchema describes org.yaml, the index used by the few GitHub organizations
+// that host more than one distinct CNCF project. It is deliberately an index
+// only: project metadata always lives in each project's own project.yaml.
+func orgSchema() JSONSchema {
+	falseVal := false
+	const slugPattern = "^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$"
+
+	return JSONSchema{
+		Schema:               "https://json-schema.org/draft/2020-12/schema",
+		ID:                   "https://github.com/cncf/automation/utilities/dot-project/schema/v1.0.0/org.json",
+		Title:                "CNCF Project Organization Index",
+		Description:          "Schema for CNCF .project repository org.yaml files, which index the CNCF projects hosted in one GitHub organization",
+		Type:                 "object",
+		AdditionalProperties: &falseVal,
+		Required:             []string{"schema_version", "org", "projects"},
+		Properties: map[string]JSONSchemaProperty{
+			"schema_version": {Type: "string", Description: "org.yaml schema version", Enum: []string{"1.0.0"}},
+			"org":            {Type: "string", Description: "GitHub organization that owns this repository"},
+			"projects": {
+				Type:        "array",
+				Description: "The CNCF projects hosted in this organization. Each owns a directory containing its own project.yaml and maintainers.yaml.",
+				Items: &JSONSchemaProperty{
+					Type:                 "object",
+					Required:             []string{"id"},
+					AdditionalProperties: false,
+					Properties: map[string]JSONSchemaProperty{
+						"id":   {Type: "string", Description: "Project identifier, and by default the directory name. Must match the project's slug and its maintainers' project_id.", Pattern: slugPattern},
+						"path": {Type: "string", Description: "Directory holding the project, when it differs from id. Relative, exactly one level deep.", Pattern: "^[^./][^/]*$"},
+					},
+				},
+			},
+		},
 	}
 }

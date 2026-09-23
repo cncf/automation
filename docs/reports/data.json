@@ -1,26 +1,30 @@
 {
-  "generated": "2026-07-30T00:35:59.355977Z",
-  "report_date": "2026-07-30",
+  "generated": "2026-09-23T00:32:08.057589Z",
+  "report_date": "2026-09-23",
   "metrics": {
     "maturity": {
-      "Sandbox": 151,
-      "Applying to sandbox": 5,
+      "Sandbox": 150,
+      "Applying to sandbox": 16,
       "Incubating": 38,
-      "Applying to incubating": 10,
-      "Graduated": 38,
-      "Applying to graduation": 5,
+      "Applying to incubating": 12,
+      "Graduated": 39,
+      "Applying to graduation": 4,
       "Archived": 28
     },
     "graduation_backlog": {
-      "total": 5,
+      "total": 4,
       "stages": [
         {
           "status": "New",
-          "count": 2
+          "count": 1
+        },
+        {
+          "status": "TOC DD Evaluation",
+          "count": 1
         },
         {
           "status": "Adopter Interviews & Project Discussion",
-          "count": 2
+          "count": 1
         },
         {
           "status": "In Progress",
@@ -29,24 +33,24 @@
       ]
     },
     "graduation_velocity": {
-      "avg_days_to_complete": 271,
-      "avg_age_open": 241,
-      "total_closed": 58
+      "avg_days_to_complete": 275,
+      "avg_age_open": 234,
+      "total_closed": 59
     },
     "incubation_backlog": {
-      "total": 10,
+      "total": 12,
       "stages": [
         {
           "status": "New",
-          "count": 3
+          "count": 4
         },
         {
           "status": "TOC DD Evaluation",
-          "count": 1
+          "count": 3
         },
         {
           "status": "Adopter Interviews & Project Discussion",
-          "count": 5
+          "count": 4
         },
         {
           "status": "In Progress",
@@ -55,27 +59,31 @@
       ]
     },
     "incubation_velocity": {
-      "avg_days_to_complete": 293,
-      "avg_age_open": 293,
-      "total_closed": 104
+      "avg_days_to_complete": 298,
+      "avg_age_open": 289,
+      "total_closed": 105
     },
     "sandbox_backlog": {
-      "total": 5,
+      "total": 16,
       "stages": [
         {
-          "status": "Upcoming",
-          "count": 1
+          "status": "Waiting",
+          "count": 3
         },
         {
-          "status": "New",
-          "count": 4
+          "status": "Upcoming",
+          "count": 3
+        },
+        {
+          "status": "In voting",
+          "count": 10
         }
       ]
     },
     "sandbox_velocity": {
-      "avg_days_to_complete": 134,
-      "avg_age_open": 44,
-      "total_closed": 138
+      "avg_days_to_complete": 135,
+      "avg_age_open": 43,
+      "total_closed": 137
     },
     "sandbox_completed_by_year": [
       {
@@ -122,7 +130,7 @@
       },
       {
         "year": 2026,
-        "count": 25
+        "count": 26
       }
     ]
   },
@@ -299,8 +307,18 @@
     },
     {
       "date": "2026-07-01",
-      "created": 104,
-      "resolved": 115
+      "created": 113,
+      "resolved": 136
+    },
+    {
+      "date": "2026-08-01",
+      "created": 59,
+      "resolved": 62
+    },
+    {
+      "date": "2026-09-01",
+      "created": 53,
+      "resolved": 52
     }
   ],
   "service_desk_satisfaction": [
@@ -321,7 +339,7 @@
     },
     {
       "year": "2026",
-      "ratings": 72,
+      "ratings": 87,
       "average": 5.0
     }
   ],
@@ -425,15 +443,30 @@
   ],
   "onboarding": {
     "summary": {
-      "total": 14,
-      "one_task_left": 3,
-      "nearly_complete_only": 9,
-      "more_than_halfway": 0,
-      "low_progress": 2,
-      "nearly_complete": 3,
+      "total": 13,
+      "one_task_left": 4,
+      "nearly_complete_only": 7,
+      "more_than_halfway": 2,
+      "low_progress": 0,
+      "nearly_complete": 4,
       "in_progress": 9
     },
     "issues": [
+      {
+        "name": "Agones",
+        "url": "https://github.com/cncf/sandbox/issues/469",
+        "progress": 97.2,
+        "status": "green",
+        "ca": "green",
+        "dco": "green",
+        "license_scanning": "green",
+        "ghe": "green",
+        "footer": "green",
+        "domain": "red",
+        "landscape": "green",
+        "days_open": 194,
+        "age": "orange"
+      },
       {
         "name": "Kuasar",
         "url": "https://github.com/cncf/sandbox/issues/146",
@@ -446,7 +479,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 953,
+        "days_open": 1008,
         "age": "red"
       },
       {
@@ -461,7 +494,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 650,
+        "days_open": 705,
         "age": "red"
       },
       {
@@ -476,23 +509,8 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 1464,
+        "days_open": 1519,
         "age": "red"
-      },
-      {
-        "name": "Agones",
-        "url": "https://github.com/cncf/sandbox/issues/469",
-        "progress": 94.4,
-        "status": "green",
-        "ca": "green",
-        "dco": "green",
-        "license_scanning": "green",
-        "ghe": "green",
-        "footer": "green",
-        "domain": "red",
-        "landscape": "green",
-        "days_open": 139,
-        "age": "yellow"
       },
       {
         "name": "Sermant",
@@ -506,7 +524,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 650,
+        "days_open": 705,
         "age": "red"
       },
       {
@@ -521,7 +539,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 1415,
+        "days_open": 1470,
         "age": "red"
       },
       {
@@ -536,7 +554,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 1169,
+        "days_open": 1224,
         "age": "red"
       },
       {
@@ -551,7 +569,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 751,
+        "days_open": 806,
         "age": "red"
       },
       {
@@ -566,7 +584,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 953,
+        "days_open": 1008,
         "age": "red"
       },
       {
@@ -581,44 +599,44 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 1169,
+        "days_open": 1224,
         "age": "red"
-      },
-      {
-        "name": "Oxia",
-        "url": "https://github.com/cncf/sandbox/issues/408",
-        "progress": 86.1,
-        "status": "green",
-        "ca": "green",
-        "dco": "green",
-        "license_scanning": "red",
-        "ghe": "green",
-        "footer": "green",
-        "domain": "green",
-        "landscape": "green",
-        "days_open": 296,
-        "age": "orange"
       },
       {
         "name": "stacker",
         "url": "https://github.com/cncf/sandbox/issues/140",
         "progress": 82.8,
         "status": "green",
-        "ca": "red",
+        "ca": "green",
         "dco": "green",
         "license_scanning": "green",
         "ghe": "green",
-        "footer": "green",
+        "footer": "red",
         "domain": "red",
         "landscape": "green",
-        "days_open": 751,
+        "days_open": 806,
         "age": "red"
+      },
+      {
+        "name": "SDC - Schema Driven Configuration",
+        "url": "https://github.com/cncf/sandbox/issues/524",
+        "progress": 71.4,
+        "status": "yellow",
+        "ca": "green",
+        "dco": "red",
+        "license_scanning": "green",
+        "ghe": "green",
+        "footer": "green",
+        "domain": "green",
+        "landscape": "red",
+        "days_open": 13,
+        "age": "green"
       },
       {
         "name": "Curvine",
         "url": "https://github.com/cncf/sandbox/issues/505",
-        "progress": 45.7,
-        "status": "red",
+        "progress": 71.4,
+        "status": "yellow",
         "ca": "green",
         "dco": "red",
         "license_scanning": "red",
@@ -626,27 +644,26 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 14,
-        "age": "green"
-      },
-      {
-        "name": "SDC project onboarding",
-        "url": "https://github.com/cncf/sandbox/issues/509",
-        "progress": 34.3,
-        "status": "red",
-        "ca": "red",
-        "dco": "red",
-        "license_scanning": "red",
-        "ghe": "red",
-        "footer": "red",
-        "domain": "green",
-        "landscape": "red",
-        "days_open": 0,
-        "age": "green"
+        "days_open": 69,
+        "age": "yellow"
       }
     ]
   },
   "level_changes": [
+    {
+      "name": "Meshery",
+      "type": "Incubation",
+      "month": "September 2026",
+      "closed_at": "2026-09-14T00:00:00Z",
+      "url": "https://github.com/cncf/toc"
+    },
+    {
+      "name": "Karmada",
+      "type": "Graduation",
+      "month": "September 2026",
+      "closed_at": "2026-09-03T00:00:00Z",
+      "url": "https://github.com/cncf/toc"
+    },
     {
       "name": "Kubeflow",
       "type": "Graduation",

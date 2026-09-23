@@ -1,0 +1,177 @@
+name: 'Run kind with ARC'
+description: 'Start a kind cluster with ARC, deploy an OCI VM runner scale set for CI testing, and wait for the matching test-runner job to complete. Requires kind, kubectl, helm and docker on the runner (all preinstalled on ubuntu-latest).'
+inputs:
+  arch:
+    description: 'Runner architecture to test (x86 or arm)'
+    required: true
+  manifest-file:
+    description: 'Path to the runner scale set manifest to deploy'
+    required: true
+  runner-image:
+    description: 'Override the gha-cloudrunner image reference in the manifest with a full reference, e.g. ghcr.io/cncf/gha-cloudrunner-pr@sha256:... (defaults to the pinned image)'
+    required: false
+    default: ''
+  running-environment:
+    description: 'Value passed as --running-environment to the cloudrunner (ci selects rc-ubuntu images, production selects the released ones)'
+    required: false
+    default: 'production'
+  oci-user:
+    description: 'OCI user OCID'
+    required: true
+  oci-tenancy:
+    description: 'OCI tenancy OCID'
+    required: true
+  oci-fingerprint:
+    description: 'API key fingerprint'
+    required: true
+  oci-region:
+    description: 'Default region'
+    required: true
+  oci-key-content:
+    description: 'PEM-encoded OCI API private key'
+    required: true
+  arc-github-token:
+    description: 'GitHub PAT used by ARC to register runners'
+    required: true
+  github-token:
+    description: 'Token used to poll job status and cancel the run (needs actions: write)'
+    required: true
+  pickup-timeout:
+    description: 'Seconds to wait for the test-runner job to be picked up before cancelling the run'
+    required: false
+    default: '900'
+runs:
+  using: 'composite'
+  steps:
+    - name: Start kind cluster
+      shell: bash
+      env:
+        ARCH: ${{ inputs.arch }}
+        MANIFEST_FILE: ${{ inputs.manifest-file }}
+        RUNNER_IMAGE: ${{ inputs.runner-image }}
+        RUNNING_ENVIRONMENT: ${{ inputs.running-environment }}
+        OCI_USER: ${{ inputs.oci-user }}
+        OCI_TENANCY: ${{ inputs.oci-tenancy }}
+        OCI_FINGERPRINT: ${{ inputs.oci-fingerprint }}
+        OCI_REGION: ${{ inputs.oci-region }}
+        OCI_KEY_CONTENT: ${{ inputs.oci-key-content }}
+        ARC_GITHUB_TOKEN: ${{ inputs.arc-github-token }}
+      run: |
+        cat <<EOF > kind-config.yaml
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha4
+        nodes:
+        - role: control-plane
+          image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+        - role: worker
+          image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+        EOF
+
+        kind create cluster --config kind-config.yaml
+
+        kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+        helm install cncf-gha-controller \
+          --namespace arc-systems \
+          --create-namespace \
+          --version 0.14.1 \
+          oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=controller-manager --timeout=600s -n arc-systems
+
+        kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem="${OCI_KEY_CONTENT}" -n arc-systems
+
+        kubectl create secret generic github-arc-secret --from-literal=github_token="${ARC_GITHUB_TOKEN}" -n arc-systems
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: oci-config
+          namespace: arc-systems
+        type: Opaque
+        stringData:
+          config: |
+            [DEFAULT]
+            user=${OCI_USER}
+            fingerprint=${OCI_FINGERPRINT}
+            tenancy=${OCI_TENANCY}
+            region=${OCI_REGION}
+            key_file=/oci/oci_api_key.pem
+        EOF
+
+        # the manifest pins the prod image by digest; swap in the full reference when one is given
+        if [ -n "$RUNNER_IMAGE" ]; then
+          sed -i -E "s|image: ghcr.io/cncf/gha-cloudrunner[@:][^[:space:]]+|image: ${RUNNER_IMAGE}|" "$MANIFEST_FILE"
+        fi
+
+        sed 's/cncf-ubuntu-2-8/oci-ci-test-${{ github.run_id }}/g' "$MANIFEST_FILE" \
+          | sed "/--subnet-id/a \\        - --running-environment=${RUNNING_ENVIRONMENT}" \
+          | sed 's/E5.Flex/E4.Flex/g' \
+          | sed '/nodeSelector/,+1d' \
+          | sed '/runnerScaleSetLabels/,+2d' | kubectl apply -f -
+
+        # new service account is needed.
+        kubectl apply -f ci/cluster/oci/hacks/preemption-rerun-cj.yaml
+
+    - name: Wait for test-runner to complete
+      shell: bash
+      env:
+        ARCH: ${{ inputs.arch }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        PICKUP_TIMEOUT: ${{ inputs.pickup-timeout }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+      run: |
+        TARGET_JOB="test-runner (${ARCH})"
+        START_TIME=$(date +%s)
+        echo "Waiting for job: ${TARGET_JOB}"
+
+        while true; do
+          if ! RESULT=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs); then
+            echo "WARNING: gh api call failed, retrying..."
+            sleep 30
+            continue
+          fi
+
+          JOB_STATUS=$(echo "$RESULT" | jq -r --arg job "$TARGET_JOB" '.jobs[] | select(.name == $job) | .status')
+          JOB_CONCLUSION=$(echo "$RESULT" | jq -r --arg job "$TARGET_JOB" '.jobs[] | select(.name == $job) | .conclusion')
+
+          # GitHub's timeout-minutes only starts once a runner picks the job up,
+          # so guard the queued phase separately.
+          if [ "$JOB_STATUS" != "in_progress" ] && [ "$JOB_STATUS" != "completed" ]; then
+            ELAPSED=$(( $(date +%s) - START_TIME ))
+            if [ "$ELAPSED" -ge "$PICKUP_TIMEOUT" ]; then
+              echo "ERROR: ${TARGET_JOB} was not picked up by a runner within $(( PICKUP_TIMEOUT / 60 )) minutes"
+              # A queued job's timeout-minutes never starts, so cancel the run
+              # to avoid the test-runner job sitting queued for 24h.
+              gh api -X POST repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel || true
+              exit 1
+            fi
+          fi
+
+          if [ -z "$JOB_STATUS" ]; then
+            echo "Job '${TARGET_JOB}' not found yet, waiting..."
+            sleep 30
+            continue
+          fi
+
+          if [ "$JOB_STATUS" = "completed" ]; then
+            if [ "$JOB_CONCLUSION" != "success" ]; then
+              echo "ERROR: ${TARGET_JOB} failed"
+              exit 1
+            fi
+            echo "${TARGET_JOB} completed successfully"
+            break
+          fi
+
+          echo "${TARGET_JOB} status: ${JOB_STATUS}, waiting..."
+          sleep 30
+        done
+
+    - name: Delete kind cluster
+      if: ${{ always() }}
+      shell: bash
+      run: |
+        kubectl delete autoscalingrunnerset -n arc-systems --all --timeout=120s || true
+        kind delete cluster || true

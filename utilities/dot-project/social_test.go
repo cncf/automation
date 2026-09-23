@@ -16,7 +16,7 @@ func TestSocialValidation(t *testing.T) {
 				Issue: "https://github.com/cncf/toc/issues/123",
 			},
 		},
-		Repositories: []string{"https://github.com/test/repo"},
+		Repositories: []RepositoryEntry{{URL: "https://github.com/test/repo"}},
 		Social: map[string]string{
 			"twitter": "invalid-url",
 			"slack":   "https://slack.com", // Valid

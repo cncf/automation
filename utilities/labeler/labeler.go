@@ -7,10 +7,10 @@ import (
 	"log"
 	"net/http"
 	"path"
-	"path/filepath"
 	"slices"
 	"strings"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/google/go-github/v55/github"
 	"golang.org/x/oauth2"
 	yaml "gopkg.in/yaml.v3"
@@ -150,7 +150,7 @@ func (l *Labeler) processFilePathRule(ctx context.Context, req *LabelRequest, ru
 	}
 
 	for _, file := range req.ChangedFiles {
-		matched, err := filepath.Match(rule.Spec.MatchPath, file)
+		matched, err := doublestar.Match(rule.Spec.MatchPath, file)
 		if err != nil {
 			return fmt.Errorf("error matching file path: %v", err)
 		}

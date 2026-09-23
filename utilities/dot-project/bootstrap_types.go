@@ -30,6 +30,7 @@ type BootstrapResult struct {
 	// URLs
 	Website      string            `json:"website,omitempty" yaml:"website,omitempty"`
 	Repositories []string          `json:"repositories,omitempty" yaml:"repositories,omitempty"`
+	PrimaryRepo  string            `json:"primary_repo,omitempty" yaml:"primary_repo,omitempty"` // Auto-detected primary repository URL
 	Artwork      string            `json:"artwork,omitempty" yaml:"artwork,omitempty"`
 	Social       map[string]string `json:"social,omitempty" yaml:"social,omitempty"`
 

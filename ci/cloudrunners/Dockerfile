@@ -1,5 +1,5 @@
 ### Stage One
-FROM golang:1.26.5-alpine AS build
+FROM golang:1.27.1-alpine AS build
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ RUN go build -o bin/cloudrunner-oci ./oci && \
     go build -o bin/cloudrunner-kubevirt ./kubevirt
 
 ### Final Stage
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 
 COPY --from=build /app/bin/cloudrunner-oci /cloudrunner-oci
 COPY --from=build /app/bin/cloudrunner-kubevirt /cloudrunner-kubevirt

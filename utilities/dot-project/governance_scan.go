@@ -25,7 +25,7 @@ const suggestionsFileName = "maintainer-suggestions.md"
 //     COMMUNITY files.
 func DiscoverGovernanceSuggestions(org, primaryRepo, token string, client *http.Client, baseURL string, csvHandles map[string]bool) ([]MaintainerSuggestion, []string) {
 	if baseURL == "" {
-		baseURL = defaultGitHubAPIURL
+		baseURL = DefaultGitHubAPIURL
 	}
 	doGet := func(path string) (*http.Response, error) {
 		req, err := http.NewRequest("GET", baseURL+path, nil)
@@ -256,7 +256,7 @@ func scanOrgReposForSuggestions(c *orgScanCollector, org, primaryRepo string, do
 
 	page := 1
 	for {
-		path := fmt.Sprintf("/orgs/%s/repos?per_page=100&page=%d", org, page)
+		path := fmt.Sprintf("/orgs/%s/repos?type=public&per_page=100&page=%d", org, page)
 		resp, err := doGet(path)
 		if err != nil || resp.StatusCode != http.StatusOK {
 			hint := ""

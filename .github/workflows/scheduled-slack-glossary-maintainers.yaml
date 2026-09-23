@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   remind:
+    if: github.repository == 'cncf/automation'
     runs-on: ubuntu-latest
     steps:
       - name:  "Guard: only run on 4th Thursday"
