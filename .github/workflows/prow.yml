@@ -1,0 +1,59 @@
+name: Prow
+
+# Chat-ops via cncf/prow-github-actions; configuration in .github/prow.yaml.
+# https://github.com/cncf/prow-github-actions/blob/main/docs/installing.md
+#
+# pull_request mode (no pull_request_target): fork PRs get a read-only token on
+# pull_request events, so the 5-minute sweep job handles their needs-* labels,
+# OWNERS reviewers, approval and merge instead.
+
+on:
+  issues:
+    types: [opened, reopened, labeled, unlabeled]
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, labeled, unlabeled]
+  pull_request_review:
+    types: [submitted, dismissed]
+  check_suite:
+    types: [completed]
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/prow.yaml]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  statuses: write
+  actions: write
+
+# never cancel a run that may be merging
+concurrency:
+  group: prow-${{ github.event_name }}-${{ github.event.action }}-${{ github.event.comment.id || github.event.pull_request.number || github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  prow:
+    if: >-
+      github.repository == 'cncf/automation' &&
+      github.event_name != 'workflow_dispatch' && github.event_name != 'push' && github.event_name != 'schedule'
+    uses: cncf/prow-github-actions/.github/workflows/prow.yml@582d83b8c37fd9a48f67d65d24fb1f37ce2030eb # v3.0.0
+
+  sweep:
+    if: github.repository == 'cncf/automation' && github.event_name == 'schedule'
+    uses: cncf/prow-github-actions/.github/workflows/prow.yml@582d83b8c37fd9a48f67d65d24fb1f37ce2030eb # v3.0.0
+    with:
+      jobs: sweep lgtm
+
+  label-sync:
+    if: >-
+      github.repository == 'cncf/automation' &&
+      (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
+    uses: cncf/prow-github-actions/.github/workflows/prow.yml@582d83b8c37fd9a48f67d65d24fb1f37ce2030eb # v3.0.0
+    with:
+      jobs: label-sync
