@@ -29,7 +29,7 @@ Allowed values per family are listed in [`prow.yaml`](./prow.yaml).
 ## Automatic Behavior
 
 - `needs-kind`, `needs-area`, `needs-priority`, `needs-status` are applied until a matching label exists (`needs-triage` on issues only).
-- PRs touching a directory with an `OWNERS` `labels:` block get those labels (e.g. `ci/cloudrunners/` → `area/cloudrunners`).
+- PRs touching a directory with an `OWNERS` `labels:` block get those labels (`ci/` → `area/ci`, `utilities/` → `area/utilities`, `.github/` → `kind/github-actions`, ...).
 - Two reviewers from the relevant `OWNERS` files are requested when a PR opens (drafts wait for ready-for-review; Dependabot skipped).
 - A PR merges (squash) once it carries `lgtm` **and** `approved` and none of `do-not-merge/*`, `needs-rebase`, `hold`.
 - New commits drop `lgtm`.
