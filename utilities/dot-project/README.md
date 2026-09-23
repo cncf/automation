@@ -1,6 +1,6 @@
 # .project - CNCF Project Metadata
 
-Every CNCF project maintains a `.project` repository in their GitHub organization containing standardized metadata about the project. This enables maintainers to own their own data while CNCF automation can act on it for landscape updates, governance audits, and more.
+Every CNCF project maintains a `.project` repository in their GitHub organization containing standardized metadata about the project. This enables maintainers to own their own data while CNCF automation can act on it for landscape updates, and more.
 
 ## Quick Start
 
@@ -334,22 +334,6 @@ grpc|gRPC|grpc
 |--------|---------|
 | `LANDSCAPE_REPO_TOKEN` | Token for `update-landscape.yml` to open PRs against `cncf/landscape` |
 | `LFX_AUTH_TOKEN` | Token for `validate.yaml` to verify maintainer handles via LFX |
-
-### Audit Checker
-
-Verifies all URLs referenced in a project are accessible.
-
-```bash
-./bin/audit-checker -project project.yaml
-
-# Check every project in a .project repository (the default when -project is omitted)
-./bin/audit-checker -repo-root .
-```
-
-Both checkers default `-repo-root` to `.` when `-project` is omitted, so a bare
-invocation inside a `.project` repository does the right thing in either layout.
-Each project is reported separately and the command fails if any project fails,
-so one project's broken link never hides another's result.
 
 ## GitHub Actions
 

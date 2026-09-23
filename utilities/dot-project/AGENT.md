@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a Go-based utility for validating CNCF project metadata and maintainer rosters. It validates project YAML manifests against structured schema requirements, reconciles maintainer lists against canonical sources, surfaces changes via cached diffs, converts project metadata to CNCF landscape format, and audits URL accessibility in project references.
+This is a Go-based utility for validating CNCF project metadata and maintainer rosters. It validates project YAML manifests against structured schema requirements, reconciles maintainer lists against canonical sources, surfaces changes via cached diffs, and converts project metadata to CNCF landscape format.
 
 ### Repository layouts
 
@@ -38,7 +38,6 @@ utilities/dot-project/
 ├── cmd/
 │   ├── validator/              # Main CLI validator tool
 │   ├── landscape-updater/      # Tool to convert project.yaml to landscape format
-│   ├── audit-checker/          # Tool to verify referenced URLs are accessible
 │   └── bootstrap/              # Tool to auto-generate project scaffolds from external data
 ├── template/                   # Template files for new .project repositories
 │   ├── project.yaml
@@ -63,7 +62,6 @@ utilities/dot-project/
 ├── validator.go                # Project validation logic
 ├── maintainers.go              # Maintainer validation logic with LFX integration
 ├── landscape.go                # Landscape entry conversion and comparison
-├── audit.go                    # URL accessibility audit
 ├── validator_test.go           # Core validation tests
 ├── bootstrap_parsers_test.go   # CODEOWNERS/OWNERS/MAINTAINERS parser tests
 ├── bootstrap_sources_test.go   # Landscape/CLOMonitor/GitHub client, fuzzy match, merge tests
@@ -73,7 +71,6 @@ utilities/dot-project/
 ├── security_test.go            # Security contact email validation tests
 ├── social_test.go              # Social links URL validation tests
 ├── landscape_test.go           # Landscape conversion and diff tests
-├── audit_test.go               # URL audit tests
 ├── integration_test.go         # YAML fixture integration tests
 ├── test_helpers_test.go        # Shared test helpers (validBaseProject, etc.)
 ├── Dockerfile                  # Multi-stage Docker build
@@ -126,12 +123,7 @@ docker build -t dot-project-validator .
 make clean
 ```
 
-Note: The Makefile `build` target builds the `validator`, `landscape-updater`, and `bootstrap` binaries. The other CLI tool (`audit-checker`) must be built manually:
-
-```bash
-go build -o bin/landscape-updater ./cmd/landscape-updater
-go build -o bin/audit-checker ./cmd/audit-checker
-```
+Note: The Makefile `build` target builds the `validator`, `landscape-updater`, and `bootstrap` binaries.
 
 ### Running the Validator
 
@@ -230,26 +222,6 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 - `-skip-github` - Skip GitHub API lookup (default: false)
 - `-dry-run` - Print generated YAML without writing files (default: false)
 
-### Running the Audit Checker
-
-Verifies that all URLs referenced in a project (website, artwork, repositories, audit reports, security/governance/documentation paths) are accessible via HTTP HEAD requests.
-
-```bash
-./bin/audit-checker --project path/to/project.yaml
-
-# Custom HTTP timeout (default: 10 seconds)
-./bin/audit-checker --project project.yaml --timeout 30
-
-# Output formats: text (default), json, yaml
-./bin/audit-checker --project project.yaml --output json
-```
-
-Exit code 1 if any URL check fails.
-
-`--repo-root` behaves as it does for the staleness checker: it defaults to `.`
-when `--project` is omitted, reports each project separately, and fails if any
-project fails, so one project's broken link never hides another's result.
-
 ## Testing
 
 ### Test Commands
@@ -272,7 +244,6 @@ go tool cover -html=coverage.out -o coverage.html
 - `security_test.go` - Security contact email validation tests
 - `social_test.go` - Social links URL validation tests
 - `landscape_test.go` - Landscape entry conversion and diff comparison tests
-- `audit_test.go` - URL accessibility audit tests
 - `integration_test.go` - YAML fixture integration tests (loads files from `testdata/` and `example/`)
 - `test_helpers_test.go` - Shared test helpers (`validBaseProject()` factory function)
 
@@ -336,7 +307,6 @@ All core types are defined in `types.go`:
 Additional types in domain-specific files:
 - `LandscapeEntry`, `LandscapeDiff`, `LandscapeChange` - in `landscape.go`
 - `StalenessResult` - in `staleness.go`
-- `AuditResult`, `AuditCheck` - in `audit.go`
 - `BootstrapConfig`, `BootstrapResult`, `CLOMonitorProject`, `CLOMonitorRepo`, `CLOMonitorReport`, `CLOMonitorScore` - in `bootstrap_types.go`
 - `GitHubRepoData`, `GitHubOrgData`, `GitHubCommunityProfile`, `GitHubContentEntry` - in `bootstrap_types.go`
 - `GitHubData`, `LandscapeData` - in `bootstrap_sources.go`
@@ -349,7 +319,6 @@ Additional types in domain-specific files:
 - `org.go` contains `LoadOrgFromFile` and `ValidateOrgStruct` for the `org.yaml` index
 - `discovery.go` contains `Discover`, which returns the layout and the projects in the repository. It reports the layout, not correctness — it succeeds on repositories `ValidateRepo` rejects
 - `repo_validate.go` contains `ValidateRepo`, which enforces every cross-file rule (no root metadata in multi mode, declared vs. present directories, slug/`project_id` matching the directory, unique slugs) and returns errors *and* warnings. Shared team names across projects are a warning, never an error
-- `audit.go` contains `AuditProject` and `FormatAuditResult`
 - Handle normalization strips whitespace and leading `@` symbols
 - All URLs are validated for proper format
 - Email addresses use `net/mail.ParseAddress` for validation
@@ -381,12 +350,6 @@ Additional types in domain-specific files:
 - `--output` - Output format: text, json, yaml (default: `text`)
 - `--dry-run` - Show changes without applying (default: true)
 
-**audit-checker** (`cmd/audit-checker/main.go`):
-- `--project` - Path to project.yaml file
-- `--repo-root` - Path to a `.project` repository; defaults to `.` when `--project` is omitted
-- `--output` - Output format: text, json, yaml (default: `text`)
-- `--timeout` - HTTP request timeout in seconds (default: 10)
-
 ## Docker
 
 ### Build
@@ -406,7 +369,7 @@ The Dockerfile uses a multi-stage build:
 1. `golang:1.24-alpine` builder stage (builds only the `validator` binary)
 2. `alpine:3.20` runtime with `git` and `ca-certificates`
 
-Note: The Docker image includes `validator` and `landscape-updater` binaries. The other CLI tools (bootstrap, audit-checker, etc.) are not built in the Dockerfile.
+Note: The Docker image includes `validator` and `landscape-updater` binaries. The other CLI tools (bootstrap, etc.) are not built in the Dockerfile.
 
 ## Configuration Files
 
