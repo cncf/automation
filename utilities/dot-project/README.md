@@ -1,6 +1,6 @@
 # .project - CNCF Project Metadata
 
-Every CNCF project maintains a `.project` repository in their GitHub organization containing standardized metadata about the project. This enables maintainers to own their own data while CNCF automation can act on it for landscape updates, governance audits, staleness checks, and more.
+Every CNCF project maintains a `.project` repository in their GitHub organization containing standardized metadata about the project. This enables maintainers to own their own data while CNCF automation can act on it for landscape updates, governance audits, and more.
 
 ## Quick Start
 
@@ -334,17 +334,6 @@ grpc|gRPC|grpc
 |--------|---------|
 | `LANDSCAPE_REPO_TOKEN` | Token for `update-landscape.yml` to open PRs against `cncf/landscape` |
 | `LFX_AUTH_TOKEN` | Token for `validate.yaml` to verify maintainer handles via LFX |
-
-### Staleness Checker
-
-Checks if maintainer data hasn't been updated within a threshold.
-
-```bash
-./bin/staleness-checker -project project.yaml -threshold 180
-
-# Check every project in a .project repository (the default when -project is omitted)
-./bin/staleness-checker -repo-root .
-```
 
 ### Audit Checker
 
