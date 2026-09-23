@@ -374,8 +374,8 @@
       "properties": {
         "advisory_url": {
           "type": "string",
-          "description": "GitHub Security Advisory URL",
-          "pattern": "^https://github\\.com/.+/.+/security/advisories/new$",
+          "description": "GitHub URL for reporting security issues (e.g., Security Advisory form or SECURITY.md)",
+          "pattern": "^https://github\\.com/[^/]+/[^/]+(/.*)?$",
           "format": "uri"
         },
         "email": {

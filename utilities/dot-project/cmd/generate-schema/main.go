@@ -157,7 +157,7 @@ func main() {
 				Description: "Security contact information. At least one of email or advisory_url must be provided.",
 				Properties: map[string]JSONSchemaProperty{
 					"email":        {Type: "string", Format: "email", Description: "Security contact email address"},
-					"advisory_url": {Type: "string", Format: "uri", Pattern: `^https://github\.com/.+/.+/security/advisories/new$`, Description: "GitHub Security Advisory URL"},
+					"advisory_url": {Type: "string", Format: "uri", Pattern: `^https://github\.com/[^/]+/[^/]+(/.*)?$`, Description: "GitHub URL for reporting security issues (e.g., Security Advisory form or SECURITY.md)"},
 				},
 				AnyOf: []JSONSchema{
 					{Required: []string{"email"}},
