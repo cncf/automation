@@ -116,8 +116,8 @@ No central manifest. Install per-folder:
 ## CI / GitHub Actions
 
 - **`ci-test.yaml`** is `workflow_dispatch`-only and requires OCI secrets + self-hosted runners. It cannot be run locally.
-- **GitHub Actions are expected to be SHA-pinned** (Kusari Inspector via `kusari.yaml` flags unpinned ones); most are, though some reusable workflows are tag-pinned (e.g. `slsa-github-generator@v2.1.0`). When editing `.github/actions/labeler-action`, manually bump its pinned SHA in `slash-commands.yml` and any other workflow that references it by SHA.
-- PR labels are applied via slash commands: `/kind`, `/area`, `/priority`, `/status` — see `.github/CONTRIBUTING.md` and `.github/README_LABELING.md`.
+- **GitHub Actions are expected to be SHA-pinned** (Kusari Inspector via `kusari.yaml` flags unpinned ones); most are, though some reusable workflows are tag-pinned (e.g. `slsa-github-generator@v2.1.0`). `.github/actions/labeler-action` and `utilities/labeler` are consumed by `cncf/toc` (SHA-pinned) — not used by this repo's own workflows.
+- Labels and slash commands (`/kind`, `/area`, `/priority`, `/status`, `/lgtm`, `/approve`, `/hold`) are handled by `cncf/prow-github-actions` via `.github/workflows/prow.yml`; config in `.github/prow.yaml`, reviewers/approvers in `OWNERS` files — see `.github/README_LABELING.md`.
 
 ---
 
