@@ -398,7 +398,28 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 		"openssl genpkey -algorithm ed25519 -out signing-key.pem && chmod 600 signing-key.pem",
 		"sudo -E HOME=$HOME PATH=$PATH witness run --experimental --step ca-bootstrap -a network-trace --signer-file-key-path ./signing-key.pem -o /dev/null -- /bin/true",
 		"sudo cp ./witness_nettrace_proxy/ca_cert.pem /usr/local/share/ca-certificates/witness-nettrace.crt && sudo update-ca-certificates",
-		"sudo -E PATH=$PATH:/home/ubuntu/.local/bin:/home/ubuntu/.cargo/bin:/home/ubuntu/.rustup/bin HOME=/home/ubuntu NVM_DIR=/home/ubuntu/.nvm witness run --experimental --step build -a network-trace --trace --attestor-command-run-trace-backend ebpf --signer-file-key-path ./signing-key.pem -o attestation.json -- bash -x /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
+		"sudo -E" +
+			" HOME=/home/ubuntu" +
+			" PATH=\"$PATH:/home/ubuntu/.local/bin:/home/ubuntu/.cargo/bin:/home/ubuntu/.rustup/bin\"" +
+			" NVM_DIR=/home/ubuntu/.nvm" +
+			" witness run" +
+			" --experimental" +
+			" --step build" +
+			" -a network-trace" +
+			" --trace" +
+			" --attestor-command-run-trace-backend ebpf" +
+			" --signer-file-key-path ./signing-key.pem" +
+			" -o attestation.json" +
+			" --" +
+			" setpriv --reuid=ubuntu --regid=ubuntu --init-groups" +
+			" env -u SUDO_UID -u SUDO_GID -u SUDO_USER" +
+			" HOME=/home/ubuntu" +
+			" USER=ubuntu" +
+			" LOGNAME=ubuntu" +
+			" NVM_DIR=/home/ubuntu/.nvm" +
+			" RUNNER_MANUALLY_TRAP_SIG=1" +
+			" PATH=\"$PATH:/home/ubuntu/.local/bin:/home/ubuntu/.cargo/bin:/home/ubuntu/.rustup/bin\"" +
+			" bash /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
 		"sbomit generate attestation.json --format spdx23 --name my-sbom --output sbom.spdx.json",
 	}
 
