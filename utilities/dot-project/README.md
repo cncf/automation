@@ -351,15 +351,6 @@ invocation inside a `.project` repository does the right thing in either layout.
 Each project is reported separately and the command fails if any project fails,
 so one project's broken link never hides another's result.
 
-### Migrate
-
-Scaffolds a minimal `project.yaml` from CLI flags (no network access, unlike `bootstrap`).
-
-```bash
-./bin/migrate -slug my-project -name "My Project" -description "..." \
-  -repos https://github.com/org/repo -maturity sandbox -output project.yaml
-```
-
 ### Generate Schema
 
 Regenerates the JSON Schemas from the Go types. Run after changing `types.go`

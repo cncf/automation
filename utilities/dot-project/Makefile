@@ -2,7 +2,7 @@
 
 REPO_ROOT := $(abspath ../..)
 
-CMDs := validator landscape-updater bootstrap audit-checker generate-schema migrate
+CMDs := validator landscape-updater bootstrap audit-checker generate-schema
 BINS := $(addprefix bin/,$(CMDs))
 
 .PHONY: all build test clean install run help provision $(CMDs)
@@ -18,7 +18,6 @@ build:
 	go build -o bin/bootstrap ./cmd/bootstrap & \
 	go build -o bin/audit-checker ./cmd/audit-checker & \
 	go build -o bin/generate-schema ./cmd/generate-schema & \
-	go build -o bin/migrate ./cmd/migrate & \
 	wait
 	@echo "All binaries built."
 
