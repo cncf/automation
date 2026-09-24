@@ -535,7 +535,7 @@ func init() {
 	flags.StringVar(
 		&args.artifactBucket,
 		"artifact-bucket",
-		"",
+		"sbomit-test-bucket",
 		"OCI Object Storage bucket to upload attestation.json and sbom.spdx.json to after the job. Empty disables upload.",
 	)
 	flags.StringVar(
