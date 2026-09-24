@@ -47,7 +47,7 @@ Exceptions:
 ### Per-module quirks
 
 **`utilities/dot-project/`** — Read `utilities/dot-project/AGENT.md` (482 lines) and `SCHEMA.md` before editing. Key facts:
-- `make build` builds all 4 `cmd/` binaries into `bin/`. The Docker image ships only `validator` and `landscape-updater`; CI runs `validator`. The rest (`bootstrap`, `audit-checker`) are manual-use tools.
+- `make build` builds all 3 `cmd/` binaries into `bin/`. The Docker image ships only `validator` and `landscape-updater`; CI runs `validator`. The rest (`bootstrap`) is a manual-use tool.
 - Requires `REPO_ROOT` env var for `file://` config path resolution.
 - Lint: `golangci-lint run`; security: `gosec ./...` (both must be installed separately).
 - Docker image entrypoint is `validator`; override with `--entrypoint landscape-updater`.
