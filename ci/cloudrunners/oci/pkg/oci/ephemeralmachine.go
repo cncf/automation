@@ -122,29 +122,12 @@ func (m *EphemeralMachine) Close() error {
 }
 
 func (m *EphemeralMachine) Delete(ctx context.Context) error {
-	log := klog.FromContext(ctx)
 	terminateInstanceRequest := core.TerminateInstanceRequest{
 		InstanceId: &m.instanceID,
 	}
 	_, err := m.computeClient.TerminateInstance(ctx, terminateInstanceRequest)
 	if err != nil {
 		return fmt.Errorf("deleting instance: %w", err)
-	}
-
-	// Wait for the instance to be terminated
-	for {
-		getInstanceRequest := core.GetInstanceRequest{
-			InstanceId: &m.instanceID,
-		}
-		getInstanceResponse, err := m.computeClient.GetInstance(ctx, getInstanceRequest)
-		if err != nil {
-			return fmt.Errorf("waiting for instance deletion: %w", err)
-		}
-		log.Info("waiting for instance to be terminated", "instanceID", m.instanceID, "instance.lifecycleState", getInstanceResponse.Instance.LifecycleState)
-		if getInstanceResponse.Instance.LifecycleState == core.InstanceLifecycleStateTerminated {
-			break
-		}
-		time.Sleep(2 * time.Second)
 	}
 
 	return nil
