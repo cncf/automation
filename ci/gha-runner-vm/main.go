@@ -155,6 +155,8 @@ func run(cmd *cobra.Command, argv []string) error {
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-FastlaneVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "bz2", "gz")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-google-chrome.sh", "invoke_tests \"Browsers\" \"Chromium\"", "apt-get install -y libxtst6\ninvoke_tests \"Browsers\" \"Chromium\"")
+	// Upstream sed only rewrites the Azure mirror; cloud-init off-Azure writes archive.ubuntu.com or *.clouds.archive.ubuntu.com, leaving Apt.Tests.ps1's mirror-list check failing
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `http://azure\\\.archive\\\.ubuntu\\\.com/ubuntu/`, `http://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu/`)
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 

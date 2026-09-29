@@ -49,7 +49,7 @@ jobs:
           - ubuntu-version: 26.04
             ubuntu-codename: resolute
     env:
-      PACKER_VERSION: 1.14.3
+      PACKER_VERSION: 1.16.1
     outputs:
       image_exists: ${{ steps.check_latest.outputs.image_exists }}
     timeout-minutes: 180
@@ -167,7 +167,7 @@ jobs:
           - ubuntu-version: 26.04
             ubuntu-codename: resolute
     env:
-      PACKER_VERSION: 1.14.3
+      PACKER_VERSION: 1.16.1
     outputs:
       image_id: ${{ steps.build_image.outputs.image_id }}
       image_exists: ${{ steps.check_latest.outputs.image_exists }}
