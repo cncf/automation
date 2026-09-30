@@ -278,6 +278,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86, arm]
+        os-version: [24.04, 26.04]
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -298,12 +299,14 @@ jobs:
           oci-key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           arc-github-token: ${{ secrets.GHA_PAT }}
           github-token: ${{ github.token }}
+          os-version: ${{ matrix.os-version }}
 
   test-runner:
     strategy:
       matrix:
         arch: [x86, arm]
-    runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.arch }}
+        os-version: [24.04, 26.04]
+    runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.os-version }}-${{ matrix.arch }}
     needs: [build-x86, build-arm64]
     if: needs.build-x86.outputs.image_exists == 'false' || needs.build-arm64.outputs.image_exists == 'false'
     timeout-minutes: 15
