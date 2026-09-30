@@ -4,6 +4,10 @@ inputs:
   arch:
     description: 'Runner architecture to test (x86 or arm)'
     required: true
+  os-version:
+    description: 'Operating System version for the OCI image (e.g., 24.04)'
+    default: '24.04'
+    required: true
   manifest-file:
     description: 'Path to the runner scale set manifest to deploy'
     required: true
@@ -47,6 +51,7 @@ runs:
       shell: bash
       env:
         ARCH: ${{ inputs.arch }}
+        OS_VERSION: ${{ inputs.os-version }}
         MANIFEST_FILE: ${{ inputs.manifest-file }}
         RUNNER_IMAGE: ${{ inputs.runner-image }}
         RUNNING_ENVIRONMENT: ${{ inputs.running-environment }}
@@ -105,8 +110,10 @@ runs:
           sed -i -E "s|image: ghcr.io/cncf/gha-cloudrunner[@:][^[:space:]]+|image: ${RUNNER_IMAGE}|" "$MANIFEST_FILE"
         fi
 
-        sed 's/cncf-ubuntu-2-8/oci-ci-test-${{ github.run_id }}/g' "$MANIFEST_FILE" \
+        # scale-set name must be unique per (run, os-version); arch suffix comes from the manifest
+        sed "s/cncf-ubuntu-2-8/oci-ci-test-${{ github.run_id }}-${OS_VERSION}/g" "$MANIFEST_FILE" \
           | sed "/--subnet-id/a \\        - --running-environment=${RUNNING_ENVIRONMENT}" \
+          | sed "/--subnet-id/a \\        - --os-version=${OS_VERSION}" \
           | sed 's/E5.Flex/E4.Flex/g' \
           | sed '/nodeSelector/,+1d' \
           | sed '/runnerScaleSetLabels/,+2d' | kubectl apply -f -
@@ -118,12 +125,14 @@ runs:
       shell: bash
       env:
         ARCH: ${{ inputs.arch }}
+        OS_VERSION: ${{ inputs.os-version }}
         GH_TOKEN: ${{ inputs.github-token }}
         PICKUP_TIMEOUT: ${{ inputs.pickup-timeout }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_RUN_ID: ${{ github.run_id }}
       run: |
-        TARGET_JOB="test-runner (${ARCH})"
+        # matches the matrix job name: keys are listed in matrix order (arch, os-version)
+        TARGET_JOB="test-runner (${ARCH}, ${OS_VERSION})"
         START_TIME=$(date +%s)
         echo "Waiting for job: ${TARGET_JOB}"
 
