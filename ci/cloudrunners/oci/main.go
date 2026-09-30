@@ -47,6 +47,7 @@ var args struct {
 	runEnv             string
 	preemptible        bool
 	preemptionQueue    string
+	osVersion          string
 
 	fallbackRegions             []string
 	fallbackAvailabilityDomains []string
@@ -115,10 +116,10 @@ func vcpusPerOcpu(shape string) float32 {
 }
 
 // findImage returns the latest GHA runner image available in the current region of the given compute client.
-func findImage(ctx context.Context, computeClient core.ComputeClient, compartmentId, arch, runEnv string) (*core.Image, error) {
-	osname := fmt.Sprintf("ubuntu-24.04-%s-gha-image", arch)
+func findImage(ctx context.Context, computeClient core.ComputeClient, compartmentId, osVersion, arch, runEnv string) (*core.Image, error) {
+	osname := fmt.Sprintf("ubuntu-%s-%s-gha-image", osVersion, arch)
 	if runEnv != "production" {
-		osname = fmt.Sprintf("rc-ubuntu-24.04-%s-gha-image", arch)
+		osname = fmt.Sprintf("rc-ubuntu-%s-%s-gha-image", osVersion, arch)
 	}
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
 		CompartmentId:   common.String(compartmentId),
@@ -263,7 +264,7 @@ func tryLaunch(ctx context.Context, region regionConfig, shape string, sshKeyPai
 	computeClient.SetRegion(region.Region)
 	networkClient.SetRegion(region.Region)
 
-	latestImage, err := findImage(ctx, computeClient, args.compartmentId, args.arch, args.runEnv)
+	latestImage, err := findImage(ctx, computeClient, args.compartmentId, args.osVersion, args.arch, args.runEnv)
 	if err != nil {
 		return nil, err
 	}
@@ -448,6 +449,12 @@ func init() {
 		"subnet-id",
 		"ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq",
 		"Subnet ID",
+	)
+	flags.StringVar(
+		&args.osVersion,
+		"os-version",
+		"24.04",
+		"Operating System Version",
 	)
 	flags.StringVar(
 		&args.shape,

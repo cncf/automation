@@ -187,6 +187,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86, arm]
+        os-version: [24.04, 26.04]
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -200,6 +201,7 @@ jobs:
         uses: ./.github/actions/run-kind-with-arc
         with:
           arch: ${{ matrix.arch }}
+          os-version: ${{ matrix.os-version }}
           manifest-file: ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-${{ matrix.arch }}.yaml
           runner-image: ${{ needs.build-cloudrunner-images.outputs.image }}@${{ needs.build-cloudrunner-images.outputs.digest }}
           oci-user: ${{ secrets.OCI_CLI_USER }}
@@ -214,7 +216,8 @@ jobs:
     strategy:
       matrix:
         arch: [x86, arm]
-    runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.arch }}
+        os-version: [24.04, 26.04]
+    runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.os-version }}-${{ matrix.arch }}
     needs: build-cloudrunner-images
     timeout-minutes: 15
     steps:
