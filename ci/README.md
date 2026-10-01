@@ -37,8 +37,9 @@ virtualisation and privileged workloads. They are defined in
 [`ci/cluster/oci/vm-runners`](./cluster/oci/vm-runners) and in the
 `manifests/vm-runners` directory of each cluster.
 
-For an amd64/x86_64 runner you can choose from:
+#### amd64/x86_64 runners
 
+##### ubuntu 24.04
 - `runs-on: cncf-ubuntu-2-8-x86`
 - `runs-on: cncf-ubuntu-4-16-x86`
 - `runs-on: cncf-ubuntu-8-32-x86`
@@ -46,14 +47,31 @@ For an amd64/x86_64 runner you can choose from:
 - `runs-on: cncf-ubuntu-24-96-x86`
 - `runs-on: cncf-ubuntu-32-128-x86`
 
-For an arm64 runner choose one of:
+##### ubuntu 26.04
+- `runs-on: cncf-ubuntu-26.04-2-8-x86`
+- `runs-on: cncf-ubuntu-26.04-4-16-x86`
+- `runs-on: cncf-ubuntu-26.04-8-32-x86`
+- `runs-on: cncf-ubuntu-26.04-16-64-x86`
+- `runs-on: cncf-ubuntu-26.04-24-96-x86`
+- `runs-on: cncf-ubuntu-26.04-32-128-x86`
 
+#### arm64 runners
+
+##### ubuntu 24.04
 - `runs-on: cncf-ubuntu-2-8-arm`
 - `runs-on: cncf-ubuntu-4-16-arm`
 - `runs-on: cncf-ubuntu-8-32-arm`
 - `runs-on: cncf-ubuntu-16-64-arm`
 - `runs-on: cncf-ubuntu-24-96-arm`
 - `runs-on: cncf-ubuntu-32-128-arm`
+
+##### ubuntu 26.04
+- `runs-on: cncf-ubuntu-26.04-2-8-arm`
+- `runs-on: cncf-ubuntu-26.04-4-16-arm`
+- `runs-on: cncf-ubuntu-26.04-8-32-arm`
+- `runs-on: cncf-ubuntu-26.04-16-64-arm`
+- `runs-on: cncf-ubuntu-26.04-24-96-arm`
+- `runs-on: cncf-ubuntu-26.04-32-128-arm`
 
 For a bare-metal arm64 runner:
 

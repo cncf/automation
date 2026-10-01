@@ -297,10 +297,11 @@ spec:
     spec:
       containers:
       - name: runner
-        image: ghcr.io/cncf/gha-cloudrunner@sha256:586c732dfd2459d0b59ef0559a73b590910c5319ae8929c8d69e0765322d7a83
+        image: ghcr.io/cncf/gha-cloudrunner@sha256:be0841323d168de8da8e613c4d3cbcf89e73f217ebe6b60dc4b472f1b99dbdae
         args:
         - --arch=amd64
         - --shape=VM.GPU.A10.1
+        - --os-version=24.04
         - --compartment-id=ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
         - --region=us-sanjose-1
         - --availability-domain=bzBe:US-SANJOSE-1-AD-1
