@@ -40,8 +40,16 @@ jobs:
     if: github.repository == 'cncf/automation'
     name: Build new Actions x86-64 VM
     runs-on: cncf-ubuntu-16-64-x86
+    strategy:
+      matrix:
+        ubuntu-version: [24.04, 26.04]
+        include:
+          - ubuntu-version: 24.04
+            ubuntu-codename: noble
+          - ubuntu-version: 26.04
+            ubuntu-codename: resolute
     env:
-      PACKER_VERSION: 1.14.3
+      PACKER_VERSION: 1.16.1
     outputs:
       image_exists: ${{ steps.check_latest.outputs.image_exists }}
     timeout-minutes: 180
@@ -77,8 +85,8 @@ jobs:
             echo "image_exists=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu 24.04")) | .tag_name' | head -1)
-          IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-24.04-amd64-gha-image" --operating-system-version ${LATEST_RELEASE})
+          LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu ${{ matrix.ubuntu-version }}")) | .tag_name' | head -1)
+          IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-${{ matrix.ubuntu-version }}-amd64-gha-image" --operating-system-version ${LATEST_RELEASE})
           if [ -z "$IMAGE_EXISTS" ]; then
             echo "image_exists=false" >> "$GITHUB_OUTPUT"
           else
@@ -123,33 +131,43 @@ jobs:
           export PACKER_PLUGIN_PATH=~/.config/packer/plugins && \
           cd ci/gha-runner-vm && \
           PACKER_LOG=1 GITHUB_PERIODIC=${SKIP_IF_IMAGE_EXISTS} go run main.go \
-            --isoURL https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
+            --isoURL https://cloud-images.ubuntu.com/releases/${{ matrix.ubuntu-codename }}/release/ubuntu-${{ matrix.ubuntu-version }}-server-cloudimg-amd64.img \
+            --isoChecksum file:https://cloud-images.ubuntu.com/releases/${{ matrix.ubuntu-codename }}/release/SHA256SUMS \
+            --os-version ${{ matrix.ubuntu-version }} \
             --arch amd64
 
       - name: Upload image OCID
         if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: image-ocid-x86
+          name: image-ocid-x86-${{ matrix.ubuntu-codename }}
           path: /tmp/image_ocid
 
       - name: Upload object name
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: object-name-x86
+          name: object-name-x86-${{ matrix.ubuntu-codename }}
           path: /tmp/object_name
 
       - name: Upload image tag
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: image-tag-x86
+          name: image-tag-x86-${{ matrix.ubuntu-codename }}
           path: /tmp/image_tag
 
   build-arm64:
     name: Build new Actions ARM64 VM
     runs-on: oracle-2cpu-8gb-x86-64
+    strategy:
+      matrix:
+        ubuntu-version: [24.04, 26.04]
+        include:
+          - ubuntu-version: 24.04
+            ubuntu-codename: noble
+          - ubuntu-version: 26.04
+            ubuntu-codename: resolute
     env:
-      PACKER_VERSION: 1.14.3
+      PACKER_VERSION: 1.16.1
     outputs:
       image_id: ${{ steps.build_image.outputs.image_id }}
       image_exists: ${{ steps.check_latest.outputs.image_exists }}
@@ -191,8 +209,8 @@ jobs:
             echo "image_exists=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu 24.04")) | .tag_name' | head -1)
-          IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-24.04-arm64-gha-image" --operating-system-version ${LATEST_RELEASE})
+          LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu ${{ matrix.ubuntu-version }}")) | .tag_name' | head -1)
+          IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-${{ matrix.ubuntu-version }}-arm64-gha-image" --operating-system-version ${LATEST_RELEASE})
           if [ -z "$IMAGE_EXISTS" ]; then
             echo "image_exists=false" >> "$GITHUB_OUTPUT"
           else
@@ -224,27 +242,28 @@ jobs:
           BASE_IMAGE_OCID=$(oci compute image list \
             --compartment-id ${{ env.COMPARTMENT_ID }} --all \
             --operating-system "Canonical Ubuntu" \
-            --operating-system-version "24.04" | jq -r '.data[] | select(."display-name" | contains("Canonical-Ubuntu-24.04-aarch64")) | .id' | head -1)
+            --operating-system-version "${{ matrix.ubuntu-version }}" | jq -r '.data[] | select(."display-name" | contains("Canonical-Ubuntu-${{ matrix.ubuntu-version }}-aarch64")) | .id' | head -1)
 
           export PATH="$PATH:$HOME/.local/bin:$HOME/bin" && \
           export PACKER_PLUGIN_PATH=~/.config/packer/plugins && \
           cd ci/gha-runner-vm-oci && \
           PACKER_LOG=1 GITHUB_PERIODIC=${SKIP_IF_IMAGE_EXISTS} go run main.go \
             --base-image-ocid ${BASE_IMAGE_OCID} \
+            --os-version ${{ matrix.ubuntu-version }} \
             --arch arm64
 
       - name: Upload image OCID
         if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: image-ocid-arm64
+          name: image-ocid-arm64-${{ matrix.ubuntu-codename }}
           path: /tmp/image_ocid
 
       - name: Upload image tag
         if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: image-tag-arm64
+          name: image-tag-arm64-${{ matrix.ubuntu-codename }}
           path: /tmp/image_tag
 
   run-kind-with-arc:
@@ -259,6 +278,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86, arm]
+        os-version: [24.04, 26.04]
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -279,12 +299,14 @@ jobs:
           oci-key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           arc-github-token: ${{ secrets.GHA_PAT }}
           github-token: ${{ github.token }}
+          os-version: ${{ matrix.os-version }}
 
   test-runner:
     strategy:
       matrix:
         arch: [x86, arm]
-    runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.arch }}
+        os-version: [24.04, 26.04]
+    runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.os-version }}-${{ matrix.arch }}
     needs: [build-x86, build-arm64]
     if: needs.build-x86.outputs.image_exists == 'false' || needs.build-arm64.outputs.image_exists == 'false'
     timeout-minutes: 15
@@ -311,8 +333,16 @@ jobs:
   release-arm-image:
     runs-on: ubuntu-latest
     needs: [run-kind-with-arc, test-runner]
+    strategy:
+      matrix:
+        ubuntu-version: [24.04, 26.04]
+        include:
+          - ubuntu-version: 24.04
+            ubuntu-codename: noble
+          - ubuntu-version: 26.04
+            ubuntu-codename: resolute
     env:
-      OS_NAME: ubuntu-24.04-arm64-gha-image
+      OS_NAME: ubuntu-${{ matrix.ubuntu-version }}-arm64-gha-image
     steps:
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -326,7 +356,7 @@ jobs:
       - name: Download image OCID
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: image-ocid-arm64
+          name: image-ocid-arm64-${{ matrix.ubuntu-codename }}
 
       - name: Export Image to bucket for cross-region copy
         run: |
@@ -364,7 +394,7 @@ jobs:
       - name: Upload object name
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: object-name-arm64
+          name: object-name-arm64-${{ matrix.ubuntu-codename }}
           path: /tmp/object_name
 
       - name: Release
@@ -378,6 +408,7 @@ jobs:
     strategy:
       matrix:
         region: [us-phoenix-1, us-chicago-1]
+        ubuntu-codename: [noble, resolute]
     steps:
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -391,7 +422,7 @@ jobs:
       - name: Download Object Name
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: object-name-arm64
+          name: object-name-arm64-${{ matrix.ubuntu-codename }}
 
       - name: Sync image to other regions
         run: |
@@ -411,8 +442,14 @@ jobs:
     strategy:
       matrix:
         region: [us-ashburn-1, us-phoenix-1, us-chicago-1]
+        ubuntu-version: [24.04, 26.04]
+        include:
+          - ubuntu-version: 24.04
+            ubuntu-codename: noble
+          - ubuntu-version: 26.04
+            ubuntu-codename: resolute
     env:
-      OS_NAME: ubuntu-24.04-arm64-gha-image
+      OS_NAME: ubuntu-${{ matrix.ubuntu-version }}-arm64-gha-image
     steps:
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -426,12 +463,12 @@ jobs:
       - name: Download Object Name
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: object-name-arm64
+          name: object-name-arm64-${{ matrix.ubuntu-codename }}
 
       - name: Download image tag
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: image-tag-arm64
+          name: image-tag-arm64-${{ matrix.ubuntu-codename }}
 
       - name: Import Custom Image
         run: |
@@ -468,6 +505,7 @@ jobs:
     strategy:
       matrix:
         region: [us-phoenix-1, us-chicago-1]
+        ubuntu-codename: [noble, resolute]
     steps:
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -481,7 +519,7 @@ jobs:
       - name: Download Object Name
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: object-name-x86
+          name: object-name-x86-${{ matrix.ubuntu-codename }}
 
       - name: Sync image to other regions
         run: |
@@ -498,8 +536,16 @@ jobs:
   release-x86-image:
     runs-on: ubuntu-latest
     needs: copy-x86-image-to-regions
+    strategy:
+      matrix:
+        ubuntu-version: [24.04, 26.04]
+        include:
+          - ubuntu-version: 24.04
+            ubuntu-codename: noble
+          - ubuntu-version: 26.04
+            ubuntu-codename: resolute
     env:
-      OS_NAME: ubuntu-24.04-amd64-gha-image
+      OS_NAME: ubuntu-${{ matrix.ubuntu-version }}-amd64-gha-image
     steps:
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -513,7 +559,7 @@ jobs:
       - name: Download image OCID
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: image-ocid-x86
+          name: image-ocid-x86-${{ matrix.ubuntu-codename }}
 
       - name: Release
         run: |
@@ -526,8 +572,14 @@ jobs:
     strategy:
       matrix:
         region: [us-ashburn-1, us-phoenix-1, us-chicago-1]
+        ubuntu-version: [24.04, 26.04]
+        include:
+          - ubuntu-version: 24.04
+            ubuntu-codename: noble
+          - ubuntu-version: 26.04
+            ubuntu-codename: resolute
     env:
-      OS_NAME: ubuntu-24.04-amd64-gha-image
+      OS_NAME: ubuntu-${{ matrix.ubuntu-version }}-amd64-gha-image
     steps:
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -548,12 +600,12 @@ jobs:
       - name: Download Object Name
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: object-name-x86
+          name: object-name-x86-${{ matrix.ubuntu-codename }}
 
       - name: Download image tag
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: image-tag-x86
+          name: image-tag-x86-${{ matrix.ubuntu-codename }}
 
       - name: Import Custom Image
         run: |

@@ -2,16 +2,16 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: cncf-ubuntu-8-32-arm-gha-rs-no-permission
+  name: cncf-ubuntu-26.04-32-128-x86-gha-rs-no-permission
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.14.1
-    app.kubernetes.io/name: cncf-ubuntu-8-32-arm
-    app.kubernetes.io/instance: cncf-ubuntu-8-32-arm
+    app.kubernetes.io/name: cncf-ubuntu-26.04-32-128-x86
+    app.kubernetes.io/instance: cncf-ubuntu-26.04-32-128-x86
     app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: cncf-ubuntu-8-32-arm
+    actions.github.com/scale-set-name: cncf-ubuntu-26.04-32-128-x86
     actions.github.com/scale-set-namespace: arc-systems
   finalizers:
     - actions.github.com/cleanup-protection
@@ -19,16 +19,16 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: cncf-ubuntu-8-32-arm-gha-rs-manager
+  name: cncf-ubuntu-26.04-32-128-x86-gha-rs-manager
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.14.1
-    app.kubernetes.io/name: cncf-ubuntu-8-32-arm
-    app.kubernetes.io/instance: cncf-ubuntu-8-32-arm
+    app.kubernetes.io/name: cncf-ubuntu-26.04-32-128-x86
+    app.kubernetes.io/instance: cncf-ubuntu-26.04-32-128-x86
     app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: cncf-ubuntu-8-32-arm
+    actions.github.com/scale-set-name: cncf-ubuntu-26.04-32-128-x86
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role
   finalizers:
@@ -94,16 +94,16 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: cncf-ubuntu-8-32-arm-gha-rs-manager
+  name: cncf-ubuntu-26.04-32-128-x86-gha-rs-manager
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.14.1
-    app.kubernetes.io/name: cncf-ubuntu-8-32-arm
-    app.kubernetes.io/instance: cncf-ubuntu-8-32-arm
+    app.kubernetes.io/name: cncf-ubuntu-26.04-32-128-x86
+    app.kubernetes.io/instance: cncf-ubuntu-26.04-32-128-x86
     app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: cncf-ubuntu-8-32-arm
+    actions.github.com/scale-set-name: cncf-ubuntu-26.04-32-128-x86
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role-binding
   finalizers:
@@ -111,42 +111,41 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: cncf-ubuntu-8-32-arm-gha-rs-manager
+  name: cncf-ubuntu-26.04-32-128-x86-gha-rs-manager
 subjects:
 - kind: ServiceAccount
   name: 
-    cncf-gha-controller-gha-rs-controller
+    cncf-gha-rs-controller
   namespace: 
     arc-systems
 ---
 apiVersion: actions.github.com/v1alpha1
 kind: AutoscalingRunnerSet
 metadata:
-  name: cncf-ubuntu-8-32-arm
+  name: cncf-ubuntu-26.04-32-128-x86
   namespace: arc-systems
   labels:
     app.kubernetes.io/component: "autoscaling-runner-set"
     helm.sh/chart: gha-rs-0.14.1
-    app.kubernetes.io/name: cncf-ubuntu-8-32-arm
-    app.kubernetes.io/instance: cncf-ubuntu-8-32-arm
+    app.kubernetes.io/name: cncf-ubuntu-26.04-32-128-x86
+    app.kubernetes.io/instance: cncf-ubuntu-26.04-32-128-x86
     app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: cncf-ubuntu-8-32-arm
+    actions.github.com/scale-set-name: cncf-ubuntu-26.04-32-128-x86
     actions.github.com/scale-set-namespace: arc-systems
   annotations:
     actions.github.com/values-hash: 5a160ea308cd51d6f4c27515e5040d9dc34be0acda7289ea0d7ad9cffff39e1
-    actions.github.com/cleanup-manager-role-binding: cncf-ubuntu-8-32-arm-gha-rs-manager
-    actions.github.com/cleanup-manager-role-name: cncf-ubuntu-8-32-arm-gha-rs-manager
-    actions.github.com/cleanup-no-permission-service-account-name: cncf-ubuntu-8-32-arm-gha-rs-no-permission
+    actions.github.com/cleanup-manager-role-binding: cncf-ubuntu-26.04-32-128-x86-gha-rs-manager
+    actions.github.com/cleanup-manager-role-name: cncf-ubuntu-26.04-32-128-x86-gha-rs-manager
+    actions.github.com/cleanup-no-permission-service-account-name: cncf-ubuntu-26.04-32-128-x86-gha-rs-no-permission
 spec:
   githubConfigUrl: https://github.com/enterprises/cncf
   githubConfigSecret: github-arc-secret
   maxRunners: 100
   minRunners: 0
   runnerScaleSetLabels:
-  - oracle-vm-8cpu-32gb-arm64
-  - cncf-ubuntu-24.04-8-32-arm
+  - cncf-ubuntu-resolute-32-128-x86
   listenerMetrics:
     counters:
       gha_started_jobs_total:
@@ -301,18 +300,18 @@ spec:
       - name: runner
         image: ghcr.io/cncf/gha-cloudrunner@sha256:be0841323d168de8da8e613c4d3cbcf89e73f217ebe6b60dc4b472f1b99dbdae
         args:
-        - --arch=arm64
-        - --shape=VM.Standard.A1.Flex
-        - --os-version=24.04
-        - --shape-ocpus=8.0
-        - --shape-memory-in-gbs=32.0
+        - --arch=amd64
+        - --shape=VM.Standard.E5.Flex,VM.Standard.E4.Flex
+        - --os-version=26.04
+        - --shape-ocpus=32.0
+        - --shape-memory-in-gbs=128.0
         - --compartment-id=ocid1.compartment.oc1..aaaaaaaa22icap66vxktktubjlhf6oxvfhev6n7udgje2chahyrtq65ga63a
-        - --region=us-sanjose-1
-        - --availability-domain=bzBe:US-SANJOSE-1-AD-1
-        - --subnet-id=ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq
-        - --fallback-region=us-phoenix-1
-        - --fallback-availability-domain=bzBe:PHX-AD-3,bzBe:PHX-AD-1,bzBe:PHX-AD-2
-        - --fallback-subnet-id=ocid1.subnet.oc1.phx.aaaaaaaabmyvcputzxzy5hrkezavo6m7efa7ap54ztyrj5nvupayqyuw4kja
+        - --region=us-chicago-1
+        - --availability-domain=bzBe:US-CHICAGO-1-AD-3,bzBe:US-CHICAGO-1-AD-1,bzBe:US-CHICAGO-1-AD-2
+        - --subnet-id=ocid1.subnet.oc1.us-chicago-1.aaaaaaaas4g2hefjefsztbnmeorimlvceikt4mxel26f4yihuvuixn3hw5uq
+        - --fallback-region=us-ashburn-1
+        - --fallback-availability-domain=bzBe:US-ASHBURN-AD-3,bzBe:US-ASHBURN-AD-1,bzBe:US-ASHBURN-AD-2
+        - --fallback-subnet-id=ocid1.subnet.oc1.iad.aaaaaaaagygdzd4xgbz4xhqhvnbxnoemhjd5ick7vodx4ghk4kg6a6c4xh5q
         env:
         - name: OCI_CONFIG_FILE
           value: /etc/oci/config
@@ -329,7 +328,7 @@ spec:
         fsGroup: 1001
         supplementalGroups:
         - 999
-      serviceAccountName: cloudrunner-launcher
+      serviceAccountName: cncf-ubuntu-26.04-32-128-x86-gha-rs-no-permission
       volumes:
       - name: oci-config
         secret:
@@ -337,9 +336,3 @@ spec:
       - name: oci-api-key
         secret:
           secretName: oci-api-key
-      tolerations:
-      - key: "cncf.io/gha-runner"
-        operator: "Exists"
-        effect: "NoSchedule"
-      nodeSelector:
-        nodepool: karpenter

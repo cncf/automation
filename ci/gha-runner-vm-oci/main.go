@@ -206,6 +206,14 @@ packer {
 		log.Fatalf("Failed to patch Install-PowerShellModules.ps1: %v", err)
 	}
 
+	// Upstream sed only rewrites the Azure mirror; cloud-init on OCI writes *.clouds.archive.ubuntu.com, leaving Apt.Tests.ps1's mirror-list check failing
+	aptSourcesScript := baseDir + "/images/ubuntu/scripts/build/configure-apt-sources.sh"
+	if err := replaceInFileRegex(aptSourcesScript, map[*regexp.Regexp]string{
+		regexp.MustCompile(`http://azure\\\.archive\\\.ubuntu\\\.com/ubuntu/`): `http://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu/*`,
+	}); err != nil {
+		log.Fatalf("Failed to patch configure-apt-sources.sh: %v", err)
+	}
+
 	command := exec.Command("packer", "build", "-var", "architecture=arm64", newFile)
 
 	command.Stdout = os.Stdout
