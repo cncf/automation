@@ -465,6 +465,39 @@ generates. GitHub teams are org-scoped, so in an organization that hosts (or one
 day may host) more than one CNCF project, an unprefixed `maintainers` team would
 collide.
 
+#### Service desk team
+
+CNCF Jira Service Desk seats are limited. By default **every** maintainer of a qualifying project gets a seat, so a project with more maintainers than it needs seats for can narrow access by adding a `servicedesk` team that lists the subset of maintainers who should have it:
+
+```yaml
+maintainers:
+  - project_id: "your-project"
+    org: "your-org"
+    teams:
+      - name: "your-project-maintainers"
+        members:
+          - githubuser1
+          - githubuser2
+          - githubuser3
+      - name: "servicedesk"
+        members:
+          - githubuser1
+          - githubuser3
+```
+
+How [cncf/maintainer-manager](https://github.com/cncf/maintainer-manager) resolves this:
+
+| In `maintainers.yaml` | Result |
+|------------------------|--------|
+| No `servicedesk` team | Every maintainer gets service desk access (`service_desk_source: all_maintainers`) |
+| `servicedesk` team with members | Only those members get access (`service_desk_source: servicedesk_team`) |
+| `servicedesk` team that is empty, or lists nobody who is a maintainer | Warning only; existing access is left unchanged so a data error never revokes seats |
+
+Notes:
+
+- A handle must appear in **both** the maintainers team and the `servicedesk` team. Handles listed only under `servicedesk` are warned about and ignored. Duplicate handles are only rejected within a single team, so the same handle can safely appear in both.
+- `servicedesk`, `service-desk`, and `service_desk` are all recognized as the team name.
+
 3. **Add GitHub Actions** to automatically validate changes (see GitHub Actions section above).
 
 ### Benefits for Projects
