@@ -751,14 +751,16 @@ build {
 				inline = ["touch /etc/waagent.conf"]
 		}`
 
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+	// The unversioned linux-oracle meta rolls to the next release's HWE kernel (noble now gets 7.0,
+	// which ships no linux-modules-extra), so pin the release's own LTS kernel when the meta exists.
+	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = fmt.Sprintf(`[
 				"sleep 30",
 				"export HISTSIZE=0 && sync",
 				"usermod -aG docker ubuntu",
-				"apt install -y libelf-dev linux-oracle",
+				"apt install -y libelf-dev linux-oracle-lts-%s || apt install -y libelf-dev linux-oracle",
 				"apt-get clean",
 				"rm -rf /var/lib/apt/lists/*"
-			]`
+			]`, args.osVersion)
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
 	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
