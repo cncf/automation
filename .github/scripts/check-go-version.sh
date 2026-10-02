@@ -31,11 +31,11 @@ done < <(find "$ROOT" -name "go.mod" -not -path "*/vendor/*")
 echo "Checking Dockerfiles..."
 while IFS= read -r file; do
   while IFS= read -r line; do
-    version=$(echo "$line" | sed -n 's/.*golang:\([0-9]*\.[0-9]*\(\.[0-9]*\)\?\).*/\1/p')
+    version=$(echo "$line" | sed -nE 's/.*golang:([0-9]*\.[0-9]*(\.[0-9]*)?).*/\1/p')
     check "$file" "$version" || FAIL=1
   done < <(grep -E '^FROM golang:' "$file" || true)
   while IFS= read -r line; do
-    version=$(echo "$line" | sed -n 's#.*go\.dev/dl/go\([0-9]*\.[0-9]*\(\.[0-9]*\)\?\)\..*#\1#p')
+    version=$(echo "$line" | sed -nE 's#.*go\.dev/dl/go([0-9]*\.[0-9]*(\.[0-9]*)?)\..*#\1#p')
     check "$file (go.dev/dl tarball)" "$version" || FAIL=1
   done < <(grep -E 'go\.dev/dl/go[0-9]' "$file" || true)
 done < <(find "$ROOT" -name "Dockerfile" -not -path "*/vendor/*")
@@ -43,7 +43,7 @@ done < <(find "$ROOT" -name "Dockerfile" -not -path "*/vendor/*")
 echo "Checking hardcoded go-version in workflows and actions..."
 while IFS= read -r file; do
   while IFS= read -r line; do
-    version=$(echo "$line" | sed -n "s/.*go-version:[[:space:]]*['\"]\?\([0-9][0-9.]*\)['\"]\?.*/\1/p")
+    version=$(echo "$line" | sed -nE "s/.*go-version:[[:space:]]*['\"]?([0-9][0-9.]*)['\"]?.*/\1/p")
     check "$file" "$version" || FAIL=1
   done < <(grep -E "^[[:space:]]*go-version:[[:space:]]*['\"]?[0-9]" "$file" || true)
 done < <(find "$ROOT/.github" \( -name "*.yml" -o -name "*.yaml" \) -not -path "*/node_modules/*")
