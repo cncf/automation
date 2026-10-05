@@ -157,6 +157,9 @@ func run(cmd *cobra.Command, argv []string) error {
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-google-chrome.sh", "invoke_tests \"Browsers\" \"Chromium\"", "apt-get install -y libxtst6\ninvoke_tests \"Browsers\" \"Chromium\"")
 	// Upstream sed only rewrites the Azure mirror; cloud-init off-Azure writes archive.ubuntu.com or *.clouds.archive.ubuntu.com, leaving Apt.Tests.ps1's mirror-list check failing
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `http://azure\\\.archive\\\.ubuntu\\\.com/ubuntu/`, `http://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu/*`)
+	// pipx 1.17.11 needs packaging>=26.3 but resolute's Debian-owned packaging 26.0 can't be replaced by pip;
+	// mirrors upstream main (actions/runner-images#14839) until a 26.04 release tarball carries the pin
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-python.sh", `(?m)python3 -m pip install pipx$`, `python3 -m pip install "pipx==1.17.10"`)
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
@@ -751,16 +754,20 @@ build {
 				inline = ["touch /etc/waagent.conf"]
 		}`
 
-	// The unversioned linux-oracle meta rolls to the next release's HWE kernel (noble now gets 7.0,
-	// which ships no linux-modules-extra), so pin the release's own LTS kernel when the meta exists.
+	// The unversioned linux-oracle meta rolls noble to the 7.0 kernel, which ships no
+	// linux-modules-extra; pin noble to the 6.17 HWE line (has modules-extra) instead.
+	kernelPkg := "linux-oracle"
+	if args.osVersion == "24.04" {
+		kernelPkg = "linux-oracle-6.17"
+	}
 	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = fmt.Sprintf(`[
 				"sleep 30",
 				"export HISTSIZE=0 && sync",
 				"usermod -aG docker ubuntu",
-				"apt install -y libelf-dev linux-oracle-lts-%s || apt install -y libelf-dev linux-oracle",
+				"apt install -y libelf-dev %s",
 				"apt-get clean",
 				"rm -rf /var/lib/apt/lists/*"
-			]`, args.osVersion)
+			]`, kernelPkg)
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
 	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]

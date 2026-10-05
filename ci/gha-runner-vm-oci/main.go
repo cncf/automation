@@ -214,6 +214,15 @@ packer {
 		log.Fatalf("Failed to patch configure-apt-sources.sh: %v", err)
 	}
 
+	// pipx 1.17.11 needs packaging>=26.3 but resolute's Debian-owned packaging 26.0 can't be replaced by pip;
+	// mirrors upstream main (actions/runner-images#14839) until a 26.04 release tarball carries the pin
+	pythonScript := baseDir + "/images/ubuntu/scripts/build/install-python.sh"
+	if err := replaceInFileRegex(pythonScript, map[*regexp.Regexp]string{
+		regexp.MustCompile(`(?m)python3 -m pip install pipx$`): `python3 -m pip install "pipx==1.17.10"`,
+	}); err != nil {
+		log.Fatalf("Failed to patch install-python.sh: %v", err)
+	}
+
 	command := exec.Command("packer", "build", "-var", "architecture=arm64", newFile)
 
 	command.Stdout = os.Stdout
