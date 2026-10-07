@@ -561,3 +561,31 @@ func TestFormatRepoValidationResult(t *testing.T) {
 		}
 	})
 }
+
+func TestValidateRepoEmptyMaintainers(t *testing.T) {
+	cases := map[string]string{
+		"empty list":          "maintainers: []\n",
+		"empty file":          "",
+		"misspelled top key":  "maintainer:\n  - project_id: \"solo\"\n    teams:\n      - name: \"maintainers\"\n        members:\n          - alice\n",
+		"misspelled team key": "maintainers:\n  - project_id: \"solo\"\n    teams:\n      - name: \"maintainers\"\n        member:\n          - alice\n",
+	}
+
+	for name, content := range cases {
+		t.Run(name, func(t *testing.T) {
+			dir := t.TempDir()
+			writeRepoFile(t, dir, "project.yaml", projectYAML("solo", "Solo"))
+			writeRepoFile(t, dir, "maintainers.yaml", content)
+
+			result, err := ValidateRepo(dir)
+			if err != nil {
+				t.Fatalf("ValidateRepo failed: %v", err)
+			}
+			if result.Valid {
+				t.Fatalf("expected %s to be invalid, got no errors", name)
+			}
+			if !hasErrorContaining(result.Errors, "does not contain any entries") && !hasErrorContaining(result.Errors, "not found in type") {
+				t.Errorf("expected an empty-roster or unknown-field error, got %v", result.Errors)
+			}
+		})
+	}
+}

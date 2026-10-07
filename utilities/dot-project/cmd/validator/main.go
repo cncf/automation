@@ -121,15 +121,20 @@ func main() {
 	if discovery != nil && !skipMaintainers {
 		for _, path := range discovery.MaintainersPaths() {
 			results, err := validator.ValidateMaintainersFileWithExclusion(path, *verifyMaintainers, excludedHandles)
+			maintainersEnabled = true
 			if err != nil {
-				// ValidateRepo already reported this file as unreadable and
-				// cleared repoValid. Aborting here would hide the sibling
-				// projects that are fine, which is the opposite of what a
-				// multi-project report is for.
+				// Record the failure as an invalid result instead of aborting,
+				// so sibling projects that are fine still get reported. It
+				// must not be dropped either: an unreadable or empty roster
+				// has to show up in the maintainers report and fail the run.
+				maintainerResults = append(maintainerResults, projects.MaintainerValidationResult{
+					ProjectID: filepath.ToSlash(path),
+					Valid:     false,
+					Errors:    []string{err.Error()},
+				})
 				continue
 			}
 			maintainerResults = append(maintainerResults, results...)
-			maintainersEnabled = true
 		}
 	}
 
