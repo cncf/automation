@@ -1,6 +1,6 @@
 ARG BASE_IMAGE
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:8.0-${BASE_IMAGE} AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:10.0-${BASE_IMAGE} AS build
 
 ARG RUNNER_VERSION=2.336.0
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.8.1
@@ -38,7 +38,7 @@ RUN export RUNNER_ARCH=${TARGETARCH} \
         "https://github.com/docker/buildx/releases/download/v${BUILDX_VERSION}/buildx-v${BUILDX_VERSION}.linux-${TARGETARCH}" \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-${BASE_IMAGE}
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-${BASE_IMAGE}
 
 ARG TARGETOS
 ARG TARGETARCH
