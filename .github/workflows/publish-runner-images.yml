@@ -25,10 +25,15 @@ jobs:
     if: github.repository == 'cncf/automation'
     strategy:
       matrix:
-        base-image: [jammy, noble]
+        base-image: [resolute, noble]
+    # Job outputs are shared across matrix legs (last writer wins), so each leg
+    # must write to its own key. Legs leave the other keys empty, and empty
+    # values do not overwrite values set by another leg.
     outputs:
-      images: ${{ steps.image.outputs.images }}
-      digest: ${{ steps.build-and-push.outputs.digest }}
+      image-resolute: ${{ steps.image.outputs.image-resolute }}
+      digest-resolute: ${{ steps.image.outputs.digest-resolute }}
+      image-noble: ${{ steps.image.outputs.image-noble }}
+      digest-noble: ${{ steps.image.outputs.digest-noble }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -98,12 +103,16 @@ jobs:
 
       - name: Output image
         id: image
+        env:
+          BASE_IMAGE: ${{ matrix.base-image }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: |
           # NOTE: We need to use the image and digest in order to make sure
           # that the image we attest has not been modified.
           # NOTE: The digest output from docker/build-push-action is of the
           # form "sha256:<digest>"
-          echo "images=[\"${REGISTRY}/${IMAGE_NAME}:jammy\", \"${REGISTRY}/${IMAGE_NAME}:noble\"]" >> "$GITHUB_OUTPUT"
+          echo "image-${BASE_IMAGE}=${REGISTRY}/${IMAGE_NAME}:${BASE_IMAGE}" >> "$GITHUB_OUTPUT"
+          echo "digest-${BASE_IMAGE}=${DIGEST}" >> "$GITHUB_OUTPUT"
 
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io
@@ -112,7 +121,11 @@ jobs:
     needs: [build-runner-images]
     strategy:
       matrix:
-        image: ${{ fromJSON(needs.build-runner-images.outputs.images) }}
+        include:
+          - image: ${{ needs.build-runner-images.outputs.image-resolute }}
+            digest: ${{ needs.build-runner-images.outputs.digest-resolute }}
+          - image: ${{ needs.build-runner-images.outputs.image-noble }}
+            digest: ${{ needs.build-runner-images.outputs.digest-noble }}
     permissions:
       id-token: write  # For signing.
       actions: read    # For reading workflow info.
@@ -120,7 +133,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
     with:
       image: ${{ matrix.image }}
-      digest: ${{ needs.build-runner-images.outputs.digest }}
+      digest: ${{ matrix.digest }}
       registry-username: ${{ github.actor }}
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
@@ -134,7 +147,11 @@ jobs:
     needs: [build-runner-images, provenance]
     strategy:
       matrix:
-        image: ${{ fromJSON(needs.build-runner-images.outputs.images) }}
+        include:
+          - image: ${{ needs.build-runner-images.outputs.image-resolute }}
+            digest: ${{ needs.build-runner-images.outputs.digest-resolute }}
+          - image: ${{ needs.build-runner-images.outputs.image-noble }}
+            digest: ${{ needs.build-runner-images.outputs.digest-noble }}
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
@@ -147,12 +164,12 @@ jobs:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ matrix.image }}
-          IMAGE_DIGEST: ${{ needs.build-runner-images.outputs.digest }}
+          IMAGE_DIGEST: ${{ matrix.digest }}
         run: |
           cosign version
           cosign verify-attestation \
             --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
             --certificate-identity-regexp="^https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v[0-9]+.*$" \
-            --type slsaprovenance "${{ env.IMAGE_NAME }}@${{env.IMAGE_DIGEST}}"
+            --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}"
       # TODO (github.com/slsa-framework/slsa-verifier/issues/92):
       #       Add step to verify using slsa-verifier
