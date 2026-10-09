@@ -12,6 +12,20 @@ inputs:
     description: 'Output format: text, json, yaml'
     required: false
     default: 'text'
+  check_links:
+    description: >-
+      Check that every link in project.yaml resolves. A link that returns
+      404/410 fails the run; placeholders (XXX, TODO) and links that cannot be
+      confirmed (rate limits, bot blocking) are reported as warnings. On
+      pull_request and push events only links that are new relative to the
+      base branch (or the previous push) are checked, which requires a
+      checkout with fetch-depth: 0.
+    required: false
+    default: 'false'
+  token:
+    description: 'GitHub token used for link checking (raises the API rate limit)'
+    required: false
+    default: ${{ github.token }}
 runs:
   using: 'composite'
   steps:
@@ -45,6 +59,9 @@ runs:
         WORKSPACE: ${{ github.workspace }}
         PROJECT_FILE: ${{ inputs.project_file }}
         OUTPUT_FORMAT: ${{ inputs.output_format }}
+        CHECK_LINKS: ${{ inputs.check_links }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+        BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       run: |
         set -euo pipefail
 
@@ -61,25 +78,37 @@ runs:
         if [ -z "${PROJECT_FILE}" ]; then
           # Discovery resolves the layout from disk and validates the
           # repository structure as well as each project.
-          exec "${WORKSPACE}/_cncf-validator" \
-            -repo-root . \
-            -maintainers= \
-            -output "${OUTPUT_FORMAT}"
-        fi
-
-        cat > _project-list.yaml << PROJEOF
+          ARGS=(-repo-root . -maintainers=)
+        else
+          cat > _project-list.yaml << PROJEOF
         projects:
           - url: "file://${WORKSPACE}/${PROJECT_FILE}"
             id: "project"
         PROJEOF
+          ARGS=(-config _project-list.yaml -maintainers "")
+        fi
 
-        "${WORKSPACE}/_cncf-validator" \
-          -config _project-list.yaml \
-          -maintainers "" \
-          -output "${OUTPUT_FORMAT}"
+        if [ "${CHECK_LINKS}" = "true" ]; then
+          ARGS+=(-check-links)
+          # On a pull request or push, links that already existed before it
+          # are the scheduled scan's job; the change only answers for its own.
+          # A push that creates a branch has an all-zero "before" SHA.
+          if [ -n "${BASE_SHA}" ] && [ -n "${BASE_SHA//0/}" ]; then
+            if git worktree add --detach "${RUNNER_TEMP}/_cncf-base" "${BASE_SHA}" > /dev/null 2>&1; then
+              ARGS+=(-links-base "${RUNNER_TEMP}/_cncf-base")
+            else
+              echo "::notice::Base commit ${BASE_SHA} is not available (checkout with fetch-depth: 0); checking every link."
+            fi
+          fi
+        fi
+
+        "${WORKSPACE}/_cncf-validator" "${ARGS[@]}" -output "${OUTPUT_FORMAT}"
 
     - name: Cleanup
       shell: bash
       if: always()
+      env:
+        BASE_DIR: ${{ runner.temp }}/_cncf-base
       run: |
+        if [ -d "${BASE_DIR}" ]; then git worktree remove --force "${BASE_DIR}" || true; fi
         rm -rf _cncf-automation _cncf-validator _project-list.yaml

@@ -314,6 +314,8 @@ func TestWriteScaffold(t *testing.T) {
 			".gitignore",
 			filepath.Join(".github", "workflows", "validate.yaml"),
 			filepath.Join(".github", "workflows", "update-landscape.yml"),
+
+			filepath.Join(".github", "workflows", "check-links.yml"),
 		}
 		for _, f := range expectedFiles {
 			if _, err := os.Stat(filepath.Join(dir, f)); os.IsNotExist(err) {

@@ -332,6 +332,20 @@ PathRef values should be **full GitHub URLs** (e.g., `https://github.com/org/rep
 7. **Required managed team** -- every maintainer entry must include at least one team with `managed: true` (or `managed` omitted) that has at least one member
 8. **`name` is the landscape key** -- the landscape updater matches a landscape item by `name` *and* repository URL. If `name` does not match the item's name in `cncf/landscape`, the updater finds nothing to update and emits a warning rather than silently succeeding. This matters most in a multi-project repository, where two sibling projects have similar names and it is easy to give one of them the other's landscape name.
 
+### Link resolution (opt-in)
+
+Schema validation checks URL *format* only, and PathRef values only for being
+non-empty. With `-check-links` (or `check_links: 'true'` in the actions) the
+validator also checks that each URL, PathRef and maintainer handle resolves:
+
+- **Broken (error):** HTTP 404/410, a GitHub handle that is not a user or
+  organization, or a value that is not an `http(s)` URL (for example a PathRef
+  of `htps://…`). Relative PathRefs are resolved against the primary repository.
+- **Warning:** `XXX`/`TODO` placeholders, plain `http://` URLs, and any other
+  failure (403, 429, 5xx, timeouts), since those are often transient.
+
+On pull requests and pushes only the links that change adds are checked.
+
 ### Multi-project repositories
 
 These rules apply additionally when `org.yaml` is present; see

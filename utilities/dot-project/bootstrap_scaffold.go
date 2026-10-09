@@ -122,7 +122,9 @@ maintainers:
         members:{{ if .Maintainers }}{{ range .Maintainers }}
           - {{ . }}{{ end }}{{ else }}
           # TODO: Add maintainer handles
-          - github-handle{{ end }}
+          - github-handle{{ end }}{{ if .UnknownMaintainers }}
+          # TODO: these handles from the foundation CSV have no GitHub account; correct or remove them:{{ range .UnknownMaintainers }}
+          # - {{ . }}{{ end }}{{ end }}
       # Unmanaged teams: teams with "managed: false" are tracked in this
       # file for documentation but are excluded from CNCF resource
       # provisioning (mailing lists, service desk, Copilot seats, etc).
@@ -157,6 +159,7 @@ const readmeTemplate = `# {{ if .Projects }}{{ .GitHubOrg }}{{ else }}{{ .Name }
 {{ end }}| ` + "`CODEOWNERS`" + ` | Ensures PRs to this repo require maintainer approval |
 | ` + "`.github/workflows/validate.yaml`" + ` | CI — validates ` + "`project.yaml`" + ` and ` + "`maintainers.yaml`" + ` on every PR |
 | ` + "`.github/workflows/update-landscape.yml`" + ` | Automatically proposes landscape updates when ` + "`project.yaml`" + ` changes |
+| ` + "`.github/workflows/check-links.yml`" + ` | Every other week, checks that all links and maintainer handles still resolve and opens an issue if not |
 {{ if .Projects }}
 ## Projects in this repository
 
@@ -198,9 +201,9 @@ The {{ .Name }} maintainers take security seriously. We appreciate your efforts 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
 Instead, please report them through our [private vulnerability reporting]({{ githubAdvisoryURL .GitHubOrg (or .GitHubRepo .Slug) }}) form.
-
-For more details, see the [{{ .Name }} security policy]({{ githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "SECURITY.md" }}).
-`
+{{ $policy := githubFileURL .GitHubOrg (or .GitHubRepo .Slug) .DefaultBranch "SECURITY.md" }}{{ if not (index .BrokenLinks $policy) }}
+For more details, see the [{{ .Name }} security policy]({{ $policy }}).
+{{ end }}`
 
 // codeownersTemplate generates the CODEOWNERS file.
 const codeownersTemplate = `# CODEOWNERS for .project metadata repository
@@ -253,6 +256,9 @@ jobs:
       - uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         # No project_file input: the action discovers the repository layout,
         # so this step is identical for single- and multi-project repositories.
+        with:
+          # Fail on links this pull request adds that return 404.
+          check_links: 'true'
 
   validate-maintainers:
     runs-on: ubuntu-latest
@@ -267,8 +273,53 @@ jobs:
           # file in the repository.
           # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
           verify_maintainers: 'false'
+          # Fail on handles this pull request adds that are not GitHub accounts.
+          check_links: 'true'
         env:
           LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
+`
+
+// checkLinksWorkflowContent is the SHA-pinned check-links.yml workflow. It
+// catches links that die after onboarding, which the pull-request gate cannot
+// see because nothing in the repository changed.
+const checkLinksWorkflowContent = `name: Check Links
+
+on:
+  schedule:
+    # Saturday 11:23 UTC is still Saturday from UTC-11 to UTC+12, so the scan
+    # lands on a weekend almost everywhere. The job skips every other week.
+    - cron: '23 11 * * 6'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run every other week
+        id: biweekly
+        if: github.event_name == 'schedule'
+        run: |
+          # Cron cannot express "every other week", so skip odd-numbered
+          # weeks since the Unix epoch.
+          if [ $(( $(date -u +%s) / 604800 % 2 )) -ne 0 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.biweekly.outputs.skip != 'true'
+        with:
+          persist-credentials: false
+
+      - uses: cncf/automation/.github/actions/check-links@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
+        if: steps.biweekly.outputs.skip != 'true'
+        with:
+          # Opens one issue with this label when links are broken, keeps it
+          # updated, and closes it once everything resolves again.
+          label: 'broken-links'
 `
 
 // updateLandscapeWorkflowContent is the SHA-pinned update-landscape.yml workflow.
@@ -390,6 +441,10 @@ func GenerateProjectYAML(result *BootstrapResult) ([]byte, error) {
 	// Clean up excessive blank lines (more than 2 consecutive)
 	output := cleanBlankLines(buf.String())
 
+	if len(result.BrokenLinks) > 0 {
+		output = PruneBrokenLinks(output, result.BrokenLinks)
+	}
+
 	return []byte(output), nil
 }
 
@@ -421,7 +476,6 @@ func GenerateMaintainersYAML(result *BootstrapResult) ([]byte, error) {
 
 	return []byte(output), nil
 }
-
 
 // scaffoldFile is one generated file and the rule for overwriting it.
 type scaffoldFile struct {
@@ -505,6 +559,7 @@ func repoScaffoldFiles(dir string, result *BootstrapResult, entries []OrgProject
 		{path: ".gitignore", generate: staticGen(gitignoreContent)},
 		{path: ".github/workflows/validate.yaml", generate: staticGen(validateWorkflowContent)},
 		{path: ".github/workflows/update-landscape.yml", generate: staticGen(updateLandscapeWorkflowContent)},
+		{path: ".github/workflows/check-links.yml", generate: staticGen(checkLinksWorkflowContent)},
 	}
 
 	// Skip SECURITY.md if an existing security policy was discovered.

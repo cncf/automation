@@ -144,11 +144,31 @@ make build
 | `-cache` | `.cache` | Cache directory |
 | `-output` | `text` | Output format: `text`, `json`, `yaml` |
 | `-verify-maintainers` | `false` | Verify handles via LFX API |
+| `-check-links` | `false` | Check that every URL and maintainer handle resolves (see [Link Checking](#link-checking)) |
+| `-links-base` | | Base checkout of the repository; only links not already present there are checked |
+| `-links-report` | | Write a Markdown report of broken links to this file (empty when none are broken) |
 
 `-repo-root` is what the GitHub Actions use. It reports the detected layout,
 checks the repository structure (see [SCHEMA.md](SCHEMA.md#validation)), then
 validates each project found. Pass `-config=/dev/null` alongside it to validate
 maintainers only, or `-maintainers=` to validate projects only.
+
+#### Link Checking
+
+`-check-links` resolves every URL in the project files and every maintainer
+handle. Relative paths are resolved against the primary repository. GitHub
+links go through the GitHub API (set `GITHUB_TOKEN` to avoid rate limits);
+everything else gets a `HEAD` request, falling back to `GET`. A 404 is retried
+once before it counts.
+
+| Result | Examples | Effect |
+|--------|----------|--------|
+| Broken | 404/410, not an `http(s)` URL (`htps://…`), unknown GitHub handle | Exit code 1 |
+| Warning | `XXX`/`TODO` placeholders, plain `http://`, 403/429/5xx, timeouts | Reported only |
+
+```bash
+GITHUB_TOKEN=ghp_xxx ./bin/validator -repo-root ../my-org/.project -check-links
+```
 
 ### Landscape Updater
 
@@ -196,6 +216,7 @@ The `bootstrap` tool auto-generates a complete `.project` scaffold by fetching d
 | `.gitignore` | Build/OS artifact exclusions |
 | `.github/workflows/validate.yaml` | CI validation workflow |
 | `.github/workflows/update-landscape.yml` | Landscape sync workflow |
+| `.github/workflows/check-links.yml` | Scheduled link check, every other Saturday |
 
 All generated files use:
 - **Full GitHub URLs** for all path references (not relative paths)
@@ -262,7 +283,16 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 | `-skip-clomonitor` | `false` | Skip CLOMonitor API lookup |
 | `-skip-github` | `false` | Skip GitHub API lookup |
 | `-maintainers-csv` | | Optional path to a local `project-maintainers.csv` (default: fetch fresh from `cncf/foundation`) |
+| `-skip-link-check` | `false` | Skip checking generated links and handles before writing files |
 | `-dry-run` | `false` | Print generated YAML without writing files |
+
+Before writing anything, bootstrap checks every link it generated and every
+maintainer handle it found. Links that return 404 are commented out under a
+`# TODO` instead of failing the run (a broken repository URL is kept, flagged
+with a `# TODO`, because `repositories` is required), handles that are not GitHub accounts are
+moved to commented `# TODO` lines in `maintainers.yaml`, and the
+`SECURITY.md` template drops its link to a policy file that does not exist.
+Search the output for `TODO` before opening the pull request.
 
 #### Data Sources and Priority
 
@@ -350,6 +380,8 @@ input is set in a repository that has an `org.yaml`.
 
 ```yaml
 - uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
+  with:
+    check_links: 'true'
 ```
 
 ### Using the Validate Maintainers Action
@@ -359,9 +391,35 @@ input is set in a repository that has an `org.yaml`.
   with:
     # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
     verify_maintainers: 'false'
+    check_links: 'true'
   env:
     LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
 ```
+
+Both actions accept `check_links` (default `'false'`) and `token` (default
+`github.token`). On a pull request or push, only links and handles that change
+adds are checked, so an unrelated dead link never blocks a contributor or turns
+`main` red (the scheduled scan reports those); the checkout needs
+`fetch-depth: 0` for the base commit to be available.
+
+### Check Links Action
+
+```yaml
+- uses: cncf/automation/.github/actions/check-links@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
+  with:
+    label: 'broken-links'
+```
+
+Checks every link in the repository and keeps a single issue labeled `label`
+up to date: it opens one when links are broken (or reopens the most recent
+closed one, so the history stays in one place), rewrites its body with the
+latest results on each run, and closes it once everything resolves. Set
+`fail_on_broken: 'true'` to also fail the job; a failed issue update always
+fails it. The job needs `issues: write`. The scaffolded `check-links.yml`
+runs it on Saturdays at 11:23 UTC (still Saturday from UTC-11 to UTC+12, and
+off the top of the hour) and skips every other week, since cron cannot express
+a two-week interval. GitHub disables scheduled workflows in repositories with
+no activity for 60 days; re-enable it from the Actions tab if that happens.
 
 ### Landscape Update Action
 
