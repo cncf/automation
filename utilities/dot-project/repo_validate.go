@@ -172,6 +172,14 @@ func validateProjectIdentities(d *Discovery, result *RepoValidationResult) {
 			continue
 		}
 
+		// An empty roster parses fine but routes nothing anywhere. The
+		// -maintainers path rejects it; repo-root mode must too, or an empty
+		// or misspelled file passes CI.
+		if len(config.Maintainers) == 0 {
+			result.Errors = append(result.Errors, fmt.Sprintf("%s: does not contain any entries", fileLabel(p, p.MaintainersPath)))
+			continue
+		}
+
 		validateMaintainerIdentity(d, p, project, config, result, teamsByName)
 	}
 

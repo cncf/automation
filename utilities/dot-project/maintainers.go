@@ -1,8 +1,10 @@
 package projects
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -24,8 +26,13 @@ func LoadMaintainersFromFile(path string) (MaintainersConfig, error) {
 		return MaintainersConfig{}, fmt.Errorf("failed to read maintainers file: %w", err)
 	}
 
+	// Reject unknown fields, as the project.yaml and org.yaml loaders do.
+	// A typo such as "manged:" or "member:" would otherwise be dropped
+	// silently and change what gets provisioned.
 	var config MaintainersConfig
-	if err := yaml.Unmarshal(data, &config); err != nil {
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+	decoder.KnownFields(true)
+	if err := decoder.Decode(&config); err != nil && err != io.EOF {
 		return MaintainersConfig{}, fmt.Errorf("failed to parse maintainers YAML: %w", err)
 	}
 

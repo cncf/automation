@@ -822,3 +822,27 @@ func TestPackageManagersValidation(t *testing.T) {
 		}
 	})
 }
+
+func TestLoadMaintainersFromFile_RejectsUnknownFields(t *testing.T) {
+	tempDir := t.TempDir()
+	maintainersPath := filepath.Join(tempDir, "maintainers.yaml")
+	content := `maintainers:
+- project_id: "test-project"
+  teams:
+    - name: "emeritus"
+      manged: false
+      members:
+        - carol
+`
+	if err := os.WriteFile(maintainersPath, []byte(content), 0644); err != nil {
+		t.Fatalf("failed to write maintainers file: %v", err)
+	}
+
+	_, err := LoadMaintainersFromFile(maintainersPath)
+	if err == nil {
+		t.Fatal("expected an unknown-field error for \"manged\", got nil")
+	}
+	if !strings.Contains(err.Error(), "manged") {
+		t.Fatalf("expected the error to name the unknown field, got: %v", err)
+	}
+}
