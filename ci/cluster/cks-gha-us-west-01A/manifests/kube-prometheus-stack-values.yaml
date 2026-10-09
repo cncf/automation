@@ -64,6 +64,10 @@ coreDns:
 kubeDns:
   enabled: false
 
+# CoreWeave deploys node-exporter automatically
+nodeExporter:
+  enabled: false
+
 grafana:
   admin:
     existingSecret: "grafana-credentials"
