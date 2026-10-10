@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -26,6 +27,7 @@ func main() {
 		dryRun         = flag.Bool("dry-run", false, "Print generated YAML to stdout without writing files")
 		force          = flag.Bool("force", false, "Overwrite auxiliary files (never overwrites project.yaml or maintainers.yaml)")
 		envFile        = flag.String("env-file", ".env", "Path to a .env file to load (e.g. GITHUB_TOKEN=...); real env vars take precedence")
+		skipLinkCheck  = flag.Bool("skip-link-check", false, "Do not check generated links and maintainer handles (by default, links that 404 are commented out with a TODO)")
 	)
 	flag.Parse()
 
@@ -114,7 +116,6 @@ func main() {
 
 	client := &http.Client{Timeout: projects.DefaultHTTPTimeout}
 
-
 	entries, multi := detectOrgProjects(*layout, org, projectName, slug, repo, client)
 
 	// A repository that holds several CNCF projects needs one metadata
@@ -127,6 +128,7 @@ func main() {
 			skipCLO:        *skipCLO,
 			skipGH:         *skipGH,
 			maintainersCSV: *maintainersCSV,
+			skipLinkCheck:  *skipLinkCheck,
 		}); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
@@ -145,6 +147,7 @@ func main() {
 		skipCLO:        *skipCLO,
 		skipGH:         *skipGH,
 		maintainersCSV: *maintainersCSV,
+		skipLinkCheck:  *skipLinkCheck,
 	})
 
 	// Phase 5: Generate output
@@ -187,6 +190,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  - .gitignore\n")
 		fmt.Fprintf(os.Stderr, "  - .github/workflows/validate.yaml\n")
 		fmt.Fprintf(os.Stderr, "  - .github/workflows/update-landscape.yml\n")
+		fmt.Fprintf(os.Stderr, "  - .github/workflows/check-links.yml\n")
 
 		// Report discovered file URLs
 		if result.SecurityPolicyURL != "" || result.ContributingURL != "" || result.CodeOfConductURL != "" || result.LicenseURL != "" {
@@ -258,6 +262,7 @@ type pipelineInputs struct {
 	skipCLO        bool
 	skipGH         bool
 	maintainersCSV string
+	skipLinkCheck  bool
 }
 
 // buildResult runs the full discovery pipeline for one project.
@@ -499,7 +504,37 @@ func buildResult(in pipelineInputs) (*projects.BootstrapResult, []projects.Maint
 		result.GitHubRepo = repo
 	}
 
+	if !in.skipLinkCheck {
+		checkLinks(result, token)
+	}
+
 	return result, suggestions
+}
+
+// checkLinks verifies the links and handles the scaffold is about to write.
+// Broken ones are commented out with a TODO rather than failing provisioning:
+// a missing SECURITY.md should not block onboarding, but it should not be
+// published as a working link either.
+func checkLinks(result *projects.BootstrapResult, token string) {
+	fmt.Fprintf(os.Stderr, "  Checking generated links and maintainer handles...\n")
+	results, err := projects.CheckBootstrapLinks(context.Background(), result, projects.NewLinkChecker(token))
+	if err != nil {
+		log.Printf("  Warning: link check failed: %v", err)
+		return
+	}
+
+	broken, warnings := projects.LinkSummary(results)
+	fmt.Fprintf(os.Stderr, "  Checked %d link(s): %d broken, %d warning(s)\n", len(results), broken, warnings)
+	for _, r := range results {
+		switch {
+		case r.Status == projects.LinkBroken && r.Source == projects.MaintainersFileName:
+			fmt.Fprintf(os.Stderr, "    ✗ maintainer %s: %s — left out of the roster and CODEOWNERS\n", r.URL, r.Detail)
+		case r.Status == projects.LinkBroken:
+			fmt.Fprintf(os.Stderr, "    ✗ %s: %s (%s) — commented out with a TODO\n", r.Field, r.URL, r.Detail)
+		case r.Status == projects.LinkWarning:
+			fmt.Fprintf(os.Stderr, "    ! %s: %s (%s)\n", r.Field, r.URL, r.Detail)
+		}
+	}
 }
 
 // detectOrgProjects asks the landscape whether org hosts more than one CNCF
@@ -633,6 +668,7 @@ func runMultiProject(entries []projects.OrgProject, org, outputDir string, dryRu
 	fmt.Fprintf(os.Stderr, "  - .gitignore\n")
 	fmt.Fprintf(os.Stderr, "  - .github/workflows/validate.yaml\n")
 	fmt.Fprintf(os.Stderr, "  - .github/workflows/update-landscape.yml\n")
+	fmt.Fprintf(os.Stderr, "  - .github/workflows/check-links.yml\n")
 
 	for slug, suggestions := range allSuggestions {
 		if section := projects.BuildSuggestionsSection(suggestions); section != "" {

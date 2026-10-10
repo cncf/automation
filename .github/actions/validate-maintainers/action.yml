@@ -20,6 +20,18 @@ inputs:
     description: 'Verify maintainer handles against LFX (requires LFX_AUTH_TOKEN secret)'
     required: false
     default: 'false'
+  check_links:
+    description: >-
+      Check that every maintainer handle is an existing GitHub account. An
+      unknown handle fails the run. On pull_request and push events only
+      handles that are new relative to the base branch (or the previous push)
+      are checked, which requires a checkout with fetch-depth: 0.
+    required: false
+    default: 'false'
+  token:
+    description: 'GitHub token used for handle checking (raises the API rate limit)'
+    required: false
+    default: ${{ github.token }}
 runs:
   using: 'composite'
   steps:
@@ -54,6 +66,9 @@ runs:
         MAINTAINERS_FILE: ${{ inputs.maintainers_file }}
         BASE_MAINTAINERS_FILE: ${{ inputs.base_maintainers_file }}
         VERIFY_MAINTAINERS: ${{ inputs.verify_maintainers }}
+        CHECK_LINKS: ${{ inputs.check_links }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+        BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       run: |
         set -euo pipefail
 
@@ -77,11 +92,26 @@ runs:
         if [ "${VERIFY_MAINTAINERS}" = "true" ]; then
           ARGS+=(-verify-maintainers)
         fi
+        if [ "${CHECK_LINKS}" = "true" ]; then
+          ARGS+=(-check-links)
+          # See validate-project: a pull request or push only answers for
+          # the handles it adds.
+          if [ -n "${BASE_SHA}" ] && [ -n "${BASE_SHA//0/}" ]; then
+            if git worktree add --detach "${RUNNER_TEMP}/_cncf-base-maintainers" "${BASE_SHA}" > /dev/null 2>&1; then
+              ARGS+=(-links-base "${RUNNER_TEMP}/_cncf-base-maintainers")
+            else
+              echo "::notice::Base commit ${BASE_SHA} is not available (checkout with fetch-depth: 0); checking every handle."
+            fi
+          fi
+        fi
 
         "${WORKSPACE}/_cncf-validator" "${ARGS[@]}"
 
     - name: Cleanup
       shell: bash
       if: always()
+      env:
+        BASE_DIR: ${{ runner.temp }}/_cncf-base-maintainers
       run: |
+        if [ -d "${BASE_DIR}" ]; then git worktree remove --force "${BASE_DIR}" || true; fi
         rm -rf _cncf-automation _cncf-validator

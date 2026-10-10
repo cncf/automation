@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -20,6 +21,9 @@ func main() {
 		baseMaintainersFile = flag.String("base-maintainers", "", "Path to base maintainers file, or to a base repository root, for diff validation")
 		verifyMaintainers   = flag.Bool("verify-maintainers", false, "Verify maintainer handles via external service (stubbed)")
 		outputFormat        = flag.String("output", "text", "Output format: text, json, yaml")
+		checkLinks          = flag.Bool("check-links", false, "Check that every link and maintainer handle resolves; 404/410 fails the run (uses GITHUB_TOKEN when set)")
+		linksBase           = flag.String("links-base", "", "Base repository root; links already present there are not checked, so a pull request only answers for the links it adds")
+		linksReport         = flag.String("links-report", "", "Write a markdown report of broken links here (an empty file means none were found)")
 	)
 	flag.Parse()
 
@@ -169,9 +173,84 @@ func main() {
 		}
 	}
 
+	if *checkLinks {
+		var maintainerFiles []string
+		if discovery != nil {
+			if !skipMaintainers {
+				maintainerFiles = discovery.MaintainersPaths()
+			}
+		} else if *maintainersFile != "" {
+			maintainerFiles = []string{*maintainersFile}
+		}
+		broken, err := runLinkCheck(*repoRoot, *configFile, maintainerFiles, *linksBase, *linksReport, *outputFormat)
+		if err != nil {
+			log.Fatalf("link check failed: %v", err)
+		}
+		if broken {
+			hasErrors = true
+		}
+	}
+
 	if hasErrors {
 		os.Exit(1)
 	}
+}
+
+// runLinkCheck checks the links of the files being validated and reports
+// whether any are broken. Placeholders and unconfirmable links are printed as
+// warnings but never fail the run.
+func runLinkCheck(root, projectList string, maintainerFiles []string, base, report, format string) (bool, error) {
+	projectFiles, err := projects.LocalProjectFiles(projectList)
+	if err != nil {
+		return false, err
+	}
+	var present []string
+	for _, f := range projectFiles {
+		if _, err := os.Stat(f); err == nil {
+			present = append(present, f)
+		}
+	}
+	links := projects.CollectLinksFromFiles(root, present, maintainerFiles)
+
+	if base != "" {
+		baseLinks, err := projects.CollectRepoLinks(base)
+		if err != nil {
+			// A base that cannot be read (for example, the pull request
+			// creates the repository's first project.yaml) has no links to
+			// subtract, so everything is new.
+			fmt.Fprintf(os.Stderr, "link check: base %s unreadable (%v); checking all links\n", base, err)
+		} else {
+			links = projects.ExcludeKnownLinks(links, baseLinks)
+		}
+	}
+
+	results := projects.NewLinkChecker(os.Getenv("GITHUB_TOKEN")).Check(context.Background(), links)
+
+	// Structured output formats must stay parseable, so the human-readable
+	// link summary goes to stderr for them.
+	out := os.Stdout
+	if format != "text" {
+		out = os.Stderr
+	}
+	fmt.Fprintln(out)
+	fmt.Fprint(out, projects.FormatLinkResultsText(results))
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		fmt.Print(projects.FormatLinkAnnotations(results))
+	}
+
+	broken, _ := projects.LinkSummary(results)
+	if report != "" {
+		// The report is written even when it is empty, so a caller can tell
+		// "no broken links" (empty file) from "the check never ran" (no file).
+		var body []byte
+		if broken > 0 {
+			body = []byte(projects.FormatLinkReportMarkdown(results))
+		}
+		if err := os.WriteFile(report, body, 0o644); err != nil {
+			return broken > 0, err
+		}
+	}
+	return broken > 0, nil
 }
 
 // writeProjectList materializes a discovery result as a temporary project list
