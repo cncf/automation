@@ -79,22 +79,70 @@ jobs:
           tags: |
             type=raw,value=${{ matrix.base-image }}
 
-      # Build and push Docker image with Buildx (don't push on PR)
+      # Build and push Docker image with Buildx (don't push on PR). On PRs we
+      # build a single-platform image and load it into the local Docker
+      # daemon instead, so it can be smoke-tested below. buildx cannot `load`
+      # a multi-platform image, so the platform list is narrowed for PRs.
       # https://github.com/docker/build-push-action
       - name: Build and push ${{ matrix.base-image }} Docker image
         id: build-and-push
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: ./ci/gha-runner-image/
-          platforms: |
-            linux/amd64
-            linux/arm64
+          platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
           push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./ci/gha-runner-image/Dockerfile
           build-args: |
             BASE_IMAGE=${{ matrix.base-image }}
+
+      # PR-only smoke test of the locally loaded image. This is a fast,
+      # lightweight sanity check (container starts, runner scripts and tools
+      # are present, base image codename matches the matrix leg) - it does
+      # NOT register an ephemeral runner against GitHub.
+      - name: Smoke test ${{ matrix.base-image }} image
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tags }}
+          EXPECTED_CODENAME: ${{ matrix.base-image }}
+        run: |
+          set -euo pipefail
+
+          CONTAINER_NAME="smoke-${EXPECTED_CODENAME}"
+          cleanup() { docker rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+
+          echo "::group::Starting container from ${IMAGE_TAG}"
+          docker run -d --name "${CONTAINER_NAME}" "${IMAGE_TAG}" sleep 300
+          echo "::endgroup::"
+
+          echo "::group::Checking runner scripts"
+          for script in run.sh config.sh; do
+            docker exec "${CONTAINER_NAME}" test -f "/home/runner/${script}" \
+              || { echo "::error::${script} is missing from /home/runner"; exit 1; }
+            docker exec "${CONTAINER_NAME}" test -x "/home/runner/${script}" \
+              || { echo "::error::${script} is not executable"; exit 1; }
+          done
+          echo "::endgroup::"
+
+          echo "::group::Checking required tools"
+          for tool in git docker; do
+            docker exec "${CONTAINER_NAME}" which "${tool}" >/dev/null \
+              || { echo "::error::required tool '${tool}' is missing"; exit 1; }
+          done
+          echo "::endgroup::"
+
+          echo "::group::Checking base image codename"
+          ACTUAL_CODENAME=$(docker exec "${CONTAINER_NAME}" sh -c '. /etc/os-release && echo "$VERSION_CODENAME"')
+          if [ "${ACTUAL_CODENAME}" != "${EXPECTED_CODENAME}" ]; then
+            echo "::error::expected codename '${EXPECTED_CODENAME}' but /etc/os-release reports '${ACTUAL_CODENAME}'"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+          echo "Smoke test passed for ${EXPECTED_CODENAME}"
 
       # Uses the identity token to provision an ephemeral certificate
       # against the sigstore community Fulcio instance.
