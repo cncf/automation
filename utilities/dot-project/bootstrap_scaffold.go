@@ -112,7 +112,7 @@ const maintainersYAMLTemplate = `# Maintainer roster for {{ .Name }}
 {{ if not .Maintainers }}
 # TODO: Add maintainer GitHub handles{{ end }}
 
-#  Maintainers: Please connect your GitHub handle to your LFID on openprofile.dev to enable automatic access to CNCF resources. The system will use your primary email address for setup.
+# Maintainers: This file lists GitHub handles and teams only. Link your GitHub handle to your LFID and keep your name, primary email, and current affiliation accurate at https://openprofile.dev. Keep current affiliations visible in your project's public maintainer or governance documentation too; updating one record does not update the others.
 maintainers:
   - project_id: "{{ .Slug }}"
     {{ if .GitHubOrg }}org: "{{ .GitHubOrg }}"{{ else }}# TODO: Set GitHub organization
@@ -173,6 +173,10 @@ Add or remove a project by editing ` + "`org.yaml`" + ` and its directory togeth
 validation fails if the two disagree. See the
 [repository layouts reference](https://github.com/cncf/automation/tree/main/utilities/dot-project#repository-layouts).
 {{ end }}
+## Maintainer records
+
+` + "`maintainers.yaml`" + ` lists GitHub handles and teams only; it does not store names, email addresses, or company affiliations. Keep each maintainer's name, primary email, and current affiliation accurate in their LFID profile at [openprofile.dev](https://openprofile.dev), and keep current affiliations visible in this project's public maintainer or governance documentation. Updating one record does not update the others.
+
 ## Keeping metadata up to date
 
 Open a pull request against this repository to update any metadata field.

@@ -9,6 +9,7 @@ For CNCF projects adopting `.project`:
 1. Copy the `example/` directory contents into your `.project` repo
 2. Replace the example values in `project.yaml` and `maintainers.yaml` with your project's details
 3. The included GitHub Actions workflows (`.github/workflows/`) will validate on every PR and sync changes to the CNCF Landscape
+4. Keep maintainer information current in both places: `maintainers.yaml` lists GitHub handles and teams, while each maintainer's name, primary email, and affiliation come from their LFID profile at [openprofile.dev](https://openprofile.dev). Also ensure current affiliations are shown in your project's public maintainer or governance documentation; updating one record does not update the others.
 
 ## Repository Layouts
 
