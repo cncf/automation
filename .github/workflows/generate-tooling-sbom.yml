@@ -48,7 +48,7 @@ jobs:
           .github/scripts/generate-tooling-sbom.sh --output-dir tooling-sbom-out
 
       - name: Publish tooling SBOM into repository
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.repository == 'cncf/automation' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
           mkdir -p tooling-sbom/components
           cp tooling-sbom-out/*.json tooling-sbom/
