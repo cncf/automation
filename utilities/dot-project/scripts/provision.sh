@@ -519,7 +519,8 @@ create_onboarding_issue() {
         checklist+="- [ ] ${todo}"$'\n'
     done
     checklist+="- [ ] Ensure all project maintainers have a LFID at https://openprofile.dev/"$'\n'
-    checklist+="- [ ] Update LFID so their GitHub ID is linked to the LFID, and correct their email address and company affiliation if needed."$'\n'
+    checklist+="- [ ] Link each maintainer's GitHub ID to their LFID and ensure their name, primary email, and current company affiliation are accurate at https://openprofile.dev/."$'\n'
+    checklist+="- [ ] Ensure each maintainer's current affiliation is shown in the project's public maintainer or governance documentation; this is separate from the LFID profile and maintainers.yaml roster."$'\n'
 
     # Maintainer suggestions from org governance files. bootstrap writes these to
     # a gitignored .cache file (so they are never committed to the repo); we read

@@ -321,6 +321,12 @@ PathRef values should be **full GitHub URLs** (e.g., `https://github.com/org/rep
 | `members` | string[] | Yes | GitHub handles | At least one managed team must have members; normalized (trimmed, `@` stripped) |
 | `managed` | bool | No | Whether team is provisioned to CNCF resources | Defaults to `true` if omitted. Teams with `managed: false` are excluded from handle verification, mailing lists, service desk, and Copilot seat provisioning |
 
+This schema records GitHub handles and team membership only; it has no field
+for a maintainer's name, email, or company affiliation. Keep current affiliation
+visible in the project's public maintainer or governance documentation, and
+keep each maintainer's LFID profile at [openprofile.dev](https://openprofile.dev)
+accurate. Changes to one do not update the others.
+
 ## Validation Rules
 
 1. **Unknown fields are rejected** -- any field not in this schema causes a validation error
