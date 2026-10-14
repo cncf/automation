@@ -89,6 +89,25 @@ runs:
         START_TIME=$(date +%s)
         echo "Waiting for job: ${TARGET_JOB}"
 
+        dump_arc_diagnostics() {
+          echo "::group::pods"
+          kubectl get pods -n arc-systems -o wide || true
+          echo "::endgroup::"
+          echo "::group::autoscalingrunnersets"
+          kubectl get autoscalingrunnersets,ephemeralrunnersets,ephemeralrunners -n arc-systems -o wide || true
+          echo "::endgroup::"
+          echo "::group::controller-manager logs"
+          kubectl logs -n arc-systems -l app.kubernetes.io/component=controller-manager --tail=300 || true
+          echo "::endgroup::"
+          echo "::group::listener logs"
+          for pod in $(kubectl get pods -n arc-systems -l actions.github.com/scale-set-name --no-headers -o custom-columns=:metadata.name 2>/dev/null); do
+            echo "--- $pod ---"
+            kubectl logs -n arc-systems "$pod" --all-containers --tail=300 || true
+            kubectl describe pod -n arc-systems "$pod" || true
+          done
+          echo "::endgroup::"
+        }
+
         while true; do
           if ! RESULT=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs); then
             echo "WARNING: gh api call failed, retrying..."
@@ -105,6 +124,7 @@ runs:
             ELAPSED=$(( $(date +%s) - START_TIME ))
             if [ "$ELAPSED" -ge "$PICKUP_TIMEOUT" ]; then
               echo "ERROR: ${TARGET_JOB} was not picked up by a runner within $(( PICKUP_TIMEOUT / 60 )) minutes"
+              dump_arc_diagnostics
               # A queued job's timeout-minutes never starts, so cancel the run
               # to avoid the test-runner job sitting queued for 24h.
               gh api -X POST repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel || true
@@ -121,6 +141,7 @@ runs:
           if [ "$JOB_STATUS" = "completed" ]; then
             if [ "$JOB_CONCLUSION" != "success" ]; then
               echo "ERROR: ${TARGET_JOB} failed"
+              dump_arc_diagnostics
               exit 1
             fi
             echo "${TARGET_JOB} completed successfully"
@@ -131,8 +152,11 @@ runs:
           sleep 30
         done
 
-    - name: Dump ARC diagnostics on failure
-      if: ${{ failure() }}
+    - name: Dump ARC diagnostics (externally cancelled run)
+      # Covers cancellation sources other than our own pickup-timeout branch
+      # (e.g. a human cancelling the run), where diagnostics are captured
+      # inline before we self-cancel via the GitHub API.
+      if: ${{ cancelled() }}
       shell: bash
       run: |
         echo "::group::pods"
