@@ -1,9 +1,14 @@
+# Deploys the AutoscalingRunnerSet via `helm install` of the official
+# gha-runner-scale-set chart (not a hand-written manifest): this is the most
+# reliable way to get the chart-version-matched labels the controller
+# requires, matching how production manifests are generated.
 name: 'Run kind with container runner'
 description: >
   Start a kind cluster, install ARC, deploy an external-gha-runner
-  container-mode AutoscalingRunnerSet scoped to this repo, and wait for the
-  matching test-runner job to complete. Requires kind, kubectl, helm and
-  docker on the runner (all preinstalled on ubuntu-latest).
+  container-mode AutoscalingRunnerSet scoped to this repo via the official
+  gha-runner-scale-set Helm chart, and wait for the matching test-runner job
+  to complete. Requires kind, kubectl, helm and docker on the runner (all
+  preinstalled on ubuntu-latest).
 inputs:
   base-image:
     description: 'Matrix leg being tested (resolute or noble); used for the scale-set name and job matching'
@@ -52,10 +57,23 @@ runs:
 
         kubectl create secret generic github-arc-secret --from-literal=github_token="${ARC_GITHUB_TOKEN}" -n arc-systems
 
-        sed -e "s|PLACEHOLDER_SCALE_SET|${SCALE_SET}|g" \
-            -e "s|PLACEHOLDER_IMAGE|${RUNNER_IMAGE}|g" \
-            -e "s|PLACEHOLDER_GITHUB_CONFIG_URL|${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}|g" \
-            ci/cluster/test/container-runner-manifest.yaml | kubectl apply -f -
+        # Install (not kubectl apply a static manifest) so the
+        # AutoscalingRunnerSet gets the chart-version-matched labels the
+        # controller requires; see the top-of-file note on why.
+        helm install "${SCALE_SET}" \
+          oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set \
+          --namespace arc-systems \
+          --version 0.14.1 \
+          --set githubConfigUrl="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+          --set githubConfigSecret=github-arc-secret \
+          --set minRunners=0 \
+          --set maxRunners=1 \
+          --set containerMode.type=dind \
+          --set controllerServiceAccount.name=cncf-gha-controller-gha-rs-controller \
+          --set controllerServiceAccount.namespace=arc-systems \
+          --set-string template.spec.containers[0].name=runner \
+          --set-string template.spec.containers[0].image="${RUNNER_IMAGE}" \
+          --set-string template.spec.containers[0].command[0]=/home/runner/run.sh
 
     - name: Wait for test-runner to complete
       shell: bash
@@ -116,6 +134,9 @@ runs:
     - name: Delete kind cluster
       if: ${{ always() }}
       shell: bash
+      env:
+        BASE_IMAGE: ${{ inputs.base-image }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
       run: |
-        kubectl delete autoscalingrunnerset -n arc-systems --all --timeout=120s || true
+        helm uninstall "runner-img-test-${GITHUB_RUN_ID}-${BASE_IMAGE}" -n arc-systems --timeout 120s || true
         kind delete cluster || true
