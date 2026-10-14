@@ -1,0 +1,121 @@
+name: 'Run kind with container runner'
+description: >
+  Start a kind cluster, install ARC, deploy an external-gha-runner
+  container-mode AutoscalingRunnerSet scoped to this repo, and wait for the
+  matching test-runner job to complete. Requires kind, kubectl, helm and
+  docker on the runner (all preinstalled on ubuntu-latest).
+inputs:
+  base-image:
+    description: 'Matrix leg being tested (resolute or noble); used for the scale-set name and job matching'
+    required: true
+  runner-image:
+    description: 'Full image reference to deploy, e.g. ghcr.io/cncf/external-gha-runner-pr@sha256:...'
+    required: true
+  arc-github-token:
+    description: 'GitHub PAT used by ARC to register runners against this repo'
+    required: true
+  github-token:
+    description: 'Token used to poll job status and cancel the run (needs actions: write)'
+    required: true
+  pickup-timeout:
+    description: 'Seconds to wait for the test-runner job to be picked up before cancelling the run'
+    required: false
+    default: '600'
+runs:
+  using: 'composite'
+  steps:
+    - name: Start kind cluster and deploy runner scale set
+      shell: bash
+      env:
+        BASE_IMAGE: ${{ inputs.base-image }}
+        RUNNER_IMAGE: ${{ inputs.runner-image }}
+        ARC_GITHUB_TOKEN: ${{ inputs.arc-github-token }}
+        GITHUB_SERVER_URL: ${{ github.server_url }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+      run: |
+        set -euo pipefail
+
+        SCALE_SET="runner-img-test-${GITHUB_RUN_ID}-${BASE_IMAGE}"
+
+        kind create cluster
+
+        kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+        helm install cncf-gha-controller \
+          --namespace arc-systems \
+          --create-namespace \
+          --version 0.14.1 \
+          oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=controller-manager --timeout=600s -n arc-systems
+
+        kubectl create secret generic github-arc-secret --from-literal=github_token="${ARC_GITHUB_TOKEN}" -n arc-systems
+
+        sed -e "s|PLACEHOLDER_SCALE_SET|${SCALE_SET}|g" \
+            -e "s|PLACEHOLDER_IMAGE|${RUNNER_IMAGE}|g" \
+            -e "s|PLACEHOLDER_GITHUB_CONFIG_URL|${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}|g" \
+            ci/cluster/test/container-runner-manifest.yaml | kubectl apply -f -
+
+    - name: Wait for test-runner to complete
+      shell: bash
+      env:
+        BASE_IMAGE: ${{ inputs.base-image }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        PICKUP_TIMEOUT: ${{ inputs.pickup-timeout }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+      run: |
+        # matches the matrix job name (single dimension: base-image)
+        TARGET_JOB="test-runner (${BASE_IMAGE})"
+        START_TIME=$(date +%s)
+        echo "Waiting for job: ${TARGET_JOB}"
+
+        while true; do
+          if ! RESULT=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs); then
+            echo "WARNING: gh api call failed, retrying..."
+            sleep 30
+            continue
+          fi
+
+          JOB_STATUS=$(echo "$RESULT" | jq -r --arg job "$TARGET_JOB" '.jobs[] | select(.name == $job) | .status')
+          JOB_CONCLUSION=$(echo "$RESULT" | jq -r --arg job "$TARGET_JOB" '.jobs[] | select(.name == $job) | .conclusion')
+
+          # GitHub's timeout-minutes only starts once a runner picks the job up,
+          # so guard the queued phase separately.
+          if [ "$JOB_STATUS" != "in_progress" ] && [ "$JOB_STATUS" != "completed" ]; then
+            ELAPSED=$(( $(date +%s) - START_TIME ))
+            if [ "$ELAPSED" -ge "$PICKUP_TIMEOUT" ]; then
+              echo "ERROR: ${TARGET_JOB} was not picked up by a runner within $(( PICKUP_TIMEOUT / 60 )) minutes"
+              # A queued job's timeout-minutes never starts, so cancel the run
+              # to avoid the test-runner job sitting queued for 24h.
+              gh api -X POST repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel || true
+              exit 1
+            fi
+          fi
+
+          if [ -z "$JOB_STATUS" ]; then
+            echo "Job '${TARGET_JOB}' not found yet, waiting..."
+            sleep 30
+            continue
+          fi
+
+          if [ "$JOB_STATUS" = "completed" ]; then
+            if [ "$JOB_CONCLUSION" != "success" ]; then
+              echo "ERROR: ${TARGET_JOB} failed"
+              exit 1
+            fi
+            echo "${TARGET_JOB} completed successfully"
+            break
+          fi
+
+          echo "${TARGET_JOB} status: ${JOB_STATUS}, waiting..."
+          sleep 30
+        done
+
+    - name: Delete kind cluster
+      if: ${{ always() }}
+      shell: bash
+      run: |
+        kubectl delete autoscalingrunnerset -n arc-systems --all --timeout=120s || true
+        kind delete cluster || true

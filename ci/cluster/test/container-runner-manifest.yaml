@@ -1,0 +1,132 @@
+# Trimmed AutoscalingRunnerSet manifest used ONLY by the
+# run-kind-with-container-runner composite action (CI smoke testing of
+# ci/gha-runner-image/Dockerfile builds on a throwaway kind cluster).
+#
+# Derived from the production container-runner manifests under
+# ci/cluster/*/runners/**/install.yaml, with OCI-specific bits removed and
+# resource requests shrunk to fit a GitHub-hosted runner's kind cluster.
+#
+# PLACEHOLDER_SCALE_SET and PLACEHOLDER_IMAGE are substituted by the composite
+# action before `kubectl apply`.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: PLACEHOLDER_SCALE_SET-no-permission
+  namespace: arc-systems
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: PLACEHOLDER_SCALE_SET-manager
+  namespace: arc-systems
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["create", "delete", "get"]
+  - apiGroups: [""]
+    resources: ["pods/status"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "delete", "get", "list", "patch", "update"]
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["create", "delete", "get", "list", "patch", "update"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["rolebindings"]
+    verbs: ["create", "delete", "get", "patch", "update"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles"]
+    verbs: ["create", "delete", "get", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: PLACEHOLDER_SCALE_SET-manager
+  namespace: arc-systems
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: PLACEHOLDER_SCALE_SET-manager
+subjects:
+  - kind: ServiceAccount
+    name: cncf-gha-controller-gha-rs-controller
+    namespace: arc-systems
+---
+apiVersion: actions.github.com/v1alpha1
+kind: AutoscalingRunnerSet
+metadata:
+  name: PLACEHOLDER_SCALE_SET
+  namespace: arc-systems
+spec:
+  githubConfigUrl: PLACEHOLDER_GITHUB_CONFIG_URL
+  githubConfigSecret: github-arc-secret
+  maxRunners: 1
+  minRunners: 0
+  template:
+    spec:
+      containers:
+        - name: runner
+          image: PLACEHOLDER_IMAGE
+          command: ["/home/runner/run.sh"]
+          env:
+            - name: DOCKER_HOST
+              value: unix:///var/run/docker.sock
+            - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
+              value: "120"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          volumeMounts:
+            - mountPath: /home/runner/_work
+              name: work
+              subPath: _work
+            - mountPath: /var/run
+              name: dind-sock
+        - name: dind
+          image: docker.io/library/docker:dind
+          args:
+            - dockerd
+            - --host=unix:///var/run/docker.sock
+            - --group=$(DOCKER_GROUP_GID)
+            - --data-root=/docker/
+          env:
+            - name: DOCKER_GROUP_GID
+              value: "123"
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /home/runner/_work
+              name: work
+              subPath: _work
+            - mountPath: /var/run
+              name: dind-sock
+            - mountPath: /home/runner/externals
+              name: dind-externals
+            - mountPath: /docker
+              name: work
+              subPath: docker
+      initContainers:
+        - name: init-dind-externals
+          image: PLACEHOLDER_IMAGE
+          command: ["cp", "-r", "-v", "/home/runner/externals/.", "/home/runner/tmpDir/"]
+          volumeMounts:
+            - mountPath: /home/runner/tmpDir
+              name: dind-externals
+      restartPolicy: Never
+      securityContext:
+        fsGroup: 1001
+      serviceAccountName: PLACEHOLDER_SCALE_SET-no-permission
+      volumes:
+        - name: dind-sock
+          emptyDir: {}
+        - name: dind-externals
+          emptyDir: {}
+        - name: work
+          emptyDir:
+            sizeLimit: 10Gi

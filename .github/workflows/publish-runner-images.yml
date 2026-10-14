@@ -10,20 +10,38 @@ on:
   push:
     branches: [main]
     paths: ['ci/gha-runner-image/Dockerfile*']
-  pull_request:
+  # pull_request_target (not pull_request) so fork PRs get the secrets needed
+  # to deploy a real ARC runner for testing; the authorize job below gates
+  # fork PRs behind a manual environment approval before any of their code
+  # runs with those secrets.
+  pull_request_target:
     branches: [main]
     paths: ['ci/gha-runner-image/Dockerfile*']
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # IMAGE_NAME maps to the Docker image name
-  IMAGE_NAME: cncf/external-gha-runner
+  # PR builds (approved fork code) go to a separate package so their mutable
+  # scratch tags never land in the production image.
+  IMAGE_NAME: ${{ github.event_name == 'pull_request_target' && 'cncf/external-gha-runner-pr' || 'cncf/external-gha-runner' }}
 
 jobs:
-  build-runner-images:
+  # Fork PRs run with secrets under pull_request_target, so require a manual
+  # review via the protected environment before anything else runs. Same-repo
+  # PRs, pushes and dispatches pass through the unprotected environment.
+  authorize:
     if: github.repository == 'cncf/automation'
+    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'runner-images-tests-fork' || 'runner-images-tests' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "authorized"
+
+  build-runner-images:
+    needs: authorize
     strategy:
       matrix:
         base-image: [resolute, noble]
@@ -48,21 +66,26 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # pull_request_target defaults to the base branch; test the PR code.
+          # Safe to opt in: fork runs are gated by the runner-images-tests-fork
+          # environment approval in the authorize job.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          allow-unsafe-pr-checkout: true
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request_target'
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
       - name: Set up QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
-      # Login against a Docker registry except on PR
+      # Login against a Docker registry (PR builds push to the scratch
+      # package too, so the image can be deployed to a real ARC runner below)
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.REGISTRY }}
@@ -74,36 +97,41 @@ jobs:
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        env:
+          # under pull_request_target github.sha is the BASE branch; tag with the PR head SHA instead
+          DOCKER_METADATA_PR_HEAD_SHA: true
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ matrix.base-image }}
+            type=raw,value=${{ github.event_name == 'pull_request_target' && format('pr-{0}-{1}', github.event.pull_request.number, matrix.base-image) || matrix.base-image }}
 
-      # Build and push Docker image with Buildx (don't push on PR). On PRs we
-      # build a single-platform image and load it into the local Docker
-      # daemon instead, so it can be smoke-tested below. buildx cannot `load`
-      # a multi-platform image, so the platform list is narrowed for PRs.
+      # Build and push Docker image with Buildx. On PRs we also build a
+      # single-platform image and load it into the local Docker daemon, so it
+      # can be smoke-tested below. buildx cannot `load` a multi-platform
+      # image, so the platform list is narrowed for PRs.
       # https://github.com/docker/build-push-action
       - name: Build and push ${{ matrix.base-image }} Docker image
         id: build-and-push
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: ./ci/gha-runner-image/
-          platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
-          push: ${{ github.event_name != 'pull_request' }}
-          load: ${{ github.event_name == 'pull_request' }}
+          platforms: ${{ github.event_name == 'pull_request_target' && 'linux/amd64' || 'linux/amd64,linux/arm64' }}
+          push: true
+          load: ${{ github.event_name == 'pull_request_target' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: ./ci/gha-runner-image/Dockerfile
           build-args: |
             BASE_IMAGE=${{ matrix.base-image }}
 
-      # PR-only smoke test of the locally loaded image. This is a fast,
-      # lightweight sanity check (container starts, runner scripts and tools
-      # are present, base image codename matches the matrix leg) - it does
-      # NOT register an ephemeral runner against GitHub.
+      # PR-only fast sanity check of the locally loaded image: container
+      # starts, runner scripts and tools are present, base image codename
+      # matches the matrix leg. This is a cheap first gate that fails in
+      # under a minute; it does NOT register an ephemeral runner against
+      # GitHub (see the run-kind-with-container-runner/test-runner jobs
+      # below for the real end-to-end check).
       - name: Smoke test ${{ matrix.base-image }} image
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request_target' }}
         env:
           IMAGE_TAG: ${{ steps.meta.outputs.tags }}
           EXPECTED_CODENAME: ${{ matrix.base-image }}
@@ -147,7 +175,7 @@ jobs:
       # Uses the identity token to provision an ephemeral certificate
       # against the sigstore community Fulcio instance.
       - name: Sign the published ${{ matrix.base-image }} Docker image
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request_target' }}
         run: cosign sign -y ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
 
       - name: Output image
@@ -156,17 +184,124 @@ jobs:
           BASE_IMAGE: ${{ matrix.base-image }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: |
-          # NOTE: We need to use the image and digest in order to make sure
-          # that the image we attest has not been modified.
-          # NOTE: The digest output from docker/build-push-action is of the
-          # form "sha256:<digest>"
-          echo "image-${BASE_IMAGE}=${REGISTRY}/${IMAGE_NAME}:${BASE_IMAGE}" >> "$GITHUB_OUTPUT"
+          # NOTE: We need to use the image and digest (not a tag) in order to
+          # make sure that the image we attest/deploy has not been modified.
+          echo "image-${BASE_IMAGE}=${REGISTRY}/${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
           echo "digest-${BASE_IMAGE}=${DIGEST}" >> "$GITHUB_OUTPUT"
+
+      # Generates a copy/paste-ready reference doc for end users: how to
+      # pick up this runner image in a workflow, plus its key specs. Runs for
+      # every trigger so the summary is always current, including on PRs
+      # where it previews what main will publish.
+      - name: Generate ${{ matrix.base-image }} image documentation
+        env:
+          BASE_IMAGE: ${{ matrix.base-image }}
+        run: |
+          {
+            echo "## external-gha-runner: ${BASE_IMAGE}"
+            echo
+            echo "Ubuntu base: \`${BASE_IMAGE}\` (see matrix base-image for the codename)"
+            echo
+            echo "### Using this runner in a workflow"
+            echo '```yaml'
+            echo "jobs:"
+            echo "  build:"
+            echo "    runs-on: <arc-scale-set-name>  # ask a maintainer for the scale set backed by ${BASE_IMAGE}"
+            echo '```'
+            echo
+            echo "### Key specs"
+            echo "| Tool | Version/source |"
+            echo "|------|------|"
+            grep -E '^ARG (RUNNER_VERSION|RUNNER_CONTAINER_HOOKS_VERSION|DOCKER_VERSION|BUILDX_VERSION)=' ci/gha-runner-image/Dockerfile \
+              | sed -E 's/^ARG ([A-Z_]+)=(.*)$/| \1 | \2 |/'
+            grep -E '^ENV KIND_VERSION=' ci/gha-runner-image/Dockerfile \
+              | sed -E 's/^ENV ([A-Z_]+)=(.*)$/| \1 | \2 |/'
+            echo "| go | 1.27.1 (pinned in Dockerfile) |"
+            echo
+            echo "Also preinstalled: git (git-core PPA), make, maven, jq, zip/unzip, python3-pip, kind, docker CLI + buildx (dockerd runs in a sidecar container)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Test the published image end-to-end: ARC in kind spawns a real
+  # container-mode runner from the image just built/pushed above, which then
+  # picks up the test-runner job below. PR-only: pushes/dispatches aren't
+  # gated on this (they still go through provenance/verify).
+  run-kind-with-container-runner:
+    if: ${{ github.event_name == 'pull_request_target' }}
+    needs: [authorize, build-runner-images]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    # must cover the pickup-timeout wait plus the test-runner timeout
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        include:
+          - base-image: resolute
+            image: ${{ needs.build-runner-images.outputs.image-resolute }}
+            digest: ${{ needs.build-runner-images.outputs.digest-resolute }}
+          - base-image: noble
+            image: ${{ needs.build-runner-images.outputs.image-noble }}
+            digest: ${{ needs.build-runner-images.outputs.digest-noble }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # fork runs are gated by the runner-images-tests-fork environment approval
+          allow-unsafe-pr-checkout: true
+
+      - name: Run kind with container runner and wait for test-runner
+        uses: ./.github/actions/run-kind-with-container-runner
+        with:
+          base-image: ${{ matrix.base-image }}
+          runner-image: ${{ matrix.image }}@${{ matrix.digest }}
+          arc-github-token: ${{ secrets.GHA_PAT }}
+          github-token: ${{ github.token }}
+
+  test-runner:
+    if: ${{ github.event_name == 'pull_request_target' }}
+    needs: build-runner-images
+    strategy:
+      matrix:
+        base-image: [resolute, noble]
+    runs-on: runner-img-test-${{ github.run_id }}-${{ matrix.base-image }}
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # fork runs are gated by the runner-images-tests-fork environment approval
+          allow-unsafe-pr-checkout: true
+
+      - name: Verify base image and tools
+        env:
+          EXPECTED_CODENAME: ${{ matrix.base-image }}
+        run: |
+          set -euo pipefail
+
+          uname -a
+          . /etc/os-release
+          echo "Detected codename: ${VERSION_CODENAME}"
+          if [ "${VERSION_CODENAME}" != "${EXPECTED_CODENAME}" ]; then
+            echo "::error::expected codename '${EXPECTED_CODENAME}' but /etc/os-release reports '${VERSION_CODENAME}'"
+            exit 1
+          fi
+
+          which git
+          which docker
+          docker version
+
+      - name: Run a real job via the docker-in-docker sidecar
+        run: docker run --rm hello-world
 
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io
   provenance:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name != 'pull_request_target' }}
     needs: [build-runner-images]
     strategy:
       matrix:
@@ -204,7 +339,7 @@ jobs:
     permissions:
       packages: read  # For reading attestations.
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name != 'pull_request_target' }}
     steps:
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
         with:
