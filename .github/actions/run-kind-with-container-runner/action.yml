@@ -131,6 +131,27 @@ runs:
           sleep 30
         done
 
+    - name: Dump ARC diagnostics on failure
+      if: ${{ failure() }}
+      shell: bash
+      run: |
+        echo "::group::pods"
+        kubectl get pods -n arc-systems -o wide || true
+        echo "::endgroup::"
+        echo "::group::autoscalingrunnersets"
+        kubectl get autoscalingrunnersets,ephemeralrunnersets,ephemeralrunners -n arc-systems -o wide || true
+        echo "::endgroup::"
+        echo "::group::controller-manager logs"
+        kubectl logs -n arc-systems -l app.kubernetes.io/component=controller-manager --tail=300 || true
+        echo "::endgroup::"
+        echo "::group::listener logs"
+        for pod in $(kubectl get pods -n arc-systems -l actions.github.com/scale-set-name --no-headers -o custom-columns=:metadata.name 2>/dev/null); do
+          echo "--- $pod ---"
+          kubectl logs -n arc-systems "$pod" --all-containers --tail=300 || true
+          kubectl describe pod -n arc-systems "$pod" || true
+        done
+        echo "::endgroup::"
+
     - name: Delete kind cluster
       if: ${{ always() }}
       shell: bash
