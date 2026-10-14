@@ -170,19 +170,20 @@ jobs:
             --arch amd64
 
       - name: Upload image OCID
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: steps.check_latest.outputs.image_exists == 'false'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: image-ocid-x86-${{ matrix.ubuntu-codename }}
           path: /tmp/image_ocid
 
       - name: Upload object name
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: object-name-x86-${{ matrix.ubuntu-codename }}
           path: /tmp/object_name
 
       - name: Upload image tag
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: image-tag-x86-${{ matrix.ubuntu-codename }}
           path: /tmp/image_tag
@@ -260,13 +261,15 @@ jobs:
             --arch arm64
 
       - name: Upload image OCID
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: steps.check_latest.outputs.image_exists == 'false'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: image-ocid-arm64-${{ matrix.ubuntu-codename }}
           path: /tmp/image_ocid
 
       - name: Upload image tag
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: steps.check_latest.outputs.image_exists == 'false'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: image-tag-arm64-${{ matrix.ubuntu-codename }}
           path: /tmp/image_tag
@@ -352,7 +355,7 @@ jobs:
         uses: ./.github/actions/setup-oci-cli
 
       - name: Download image OCID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: image-ocid-arm64-${{ matrix.ubuntu-codename }}
 
@@ -390,7 +393,7 @@ jobs:
       # Passed as an artifact: a job output containing a secret substring
       # would be silently dropped by GitHub.
       - name: Upload object name
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: object-name-arm64-${{ matrix.ubuntu-codename }}
           path: /tmp/object_name
@@ -418,7 +421,7 @@ jobs:
         uses: ./.github/actions/setup-oci-cli
 
       - name: Download Object Name
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: object-name-arm64-${{ matrix.ubuntu-codename }}
 
@@ -455,12 +458,12 @@ jobs:
         uses: ./.github/actions/setup-oci-cli
 
       - name: Download Object Name
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: object-name-arm64-${{ matrix.ubuntu-codename }}
 
       - name: Download image tag
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: image-tag-arm64-${{ matrix.ubuntu-codename }}
 
@@ -511,7 +514,7 @@ jobs:
         uses: ./.github/actions/setup-oci-cli
 
       - name: Download Object Name
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: object-name-x86-${{ matrix.ubuntu-codename }}
 
@@ -546,7 +549,7 @@ jobs:
         uses: ./.github/actions/setup-oci-cli
 
       - name: Download image OCID
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: image-ocid-x86-${{ matrix.ubuntu-codename }}
 
@@ -583,12 +586,12 @@ jobs:
           key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
 
       - name: Download Object Name
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: object-name-x86-${{ matrix.ubuntu-codename }}
 
       - name: Download image tag
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: image-tag-x86-${{ matrix.ubuntu-codename }}
 
