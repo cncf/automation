@@ -36,22 +36,76 @@ env:
   SKIP_IF_IMAGE_EXISTS: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.force_rebuild) }}
 
 jobs:
-  build-x86:
+  # Job outputs from matrix jobs are overwritten by whichever leg finishes last,
+  # so the "which versions need a build" decision is made once here and every
+  # downstream matrix is derived from it.
+  check-images:
     if: github.repository == 'cncf/automation'
+    name: Check for existing images
+    runs-on: ubuntu-latest
+    outputs:
+      has_work: ${{ steps.check.outputs.has_work }}
+      include: ${{ steps.check.outputs.include }}
+      versions: ${{ steps.check.outputs.versions }}
+      codenames: ${{ steps.check.outputs.codenames }}
+    steps:
+      - name: Checkout setup-oci-cli action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/actions/setup-oci-cli
+
+      - name: Install OCI CLI and write ~/.oci/config
+        uses: ./.github/actions/setup-oci-cli
+        with:
+          user: ${{ secrets.OCI_CLI_USER }}
+          tenancy: ${{ secrets.OCI_CLI_TENANCY }}
+          fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          region: ${{ secrets.OCI_CLI_REGION }}
+          key-content: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+
+      - name: Determine Ubuntu versions to build
+        id: check
+        run: |
+          set -euo pipefail
+          INCLUDE='[]'
+          for ENTRY in 24.04:noble 26.04:resolute; do
+            VERSION=${ENTRY%%:*}
+            CODENAME=${ENTRY##*:}
+            # push to main and workflow_dispatch with force_rebuild always build everything
+            BUILD=true
+            if [ "${SKIP_IF_IMAGE_EXISTS}" == "true" ]; then
+              LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r --arg v "$VERSION" '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu \($v)")) | .tag_name' | head -1)
+              BUILD=false
+              for ARCH in amd64 arm64; do
+                IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-${VERSION}-${ARCH}-gha-image" --operating-system-version "${LATEST_RELEASE}")
+                if [ -z "$IMAGE_EXISTS" ]; then
+                  BUILD=true
+                fi
+              done
+            fi
+            echo "ubuntu ${VERSION}: build=${BUILD}"
+            if [ "$BUILD" == "true" ]; then
+              INCLUDE=$(jq -c --arg v "$VERSION" --arg c "$CODENAME" '. + [{"ubuntu-version": $v, "ubuntu-codename": $c}]' <<<"$INCLUDE")
+            fi
+          done
+          {
+            echo "include=${INCLUDE}"
+            echo "versions=$(jq -c 'map(."ubuntu-version")' <<<"$INCLUDE")"
+            echo "codenames=$(jq -c 'map(."ubuntu-codename")' <<<"$INCLUDE")"
+            echo "has_work=$(jq -r 'length > 0' <<<"$INCLUDE")"
+          } >> "$GITHUB_OUTPUT"
+
+  build-x86:
     name: Build new Actions x86-64 VM
+    needs: check-images
+    if: needs.check-images.outputs.has_work == 'true'
     runs-on: cncf-ubuntu-16-64-x86
     strategy:
       matrix:
-        ubuntu-version: [24.04, 26.04]
-        include:
-          - ubuntu-version: 24.04
-            ubuntu-codename: noble
-          - ubuntu-version: 26.04
-            ubuntu-codename: resolute
+        include: ${{ fromJSON(needs.check-images.outputs.include) }}
     env:
       PACKER_VERSION: 1.16.1
-    outputs:
-      image_exists: ${{ steps.check_latest.outputs.image_exists }}
     timeout-minutes: 180
 
     steps:
@@ -77,30 +131,12 @@ jobs:
       - name: Verify OCI CLI
         run: oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system runner-images --operating-system-version 123456
 
-      - name: Check latest release
-        id: check_latest
-        run: |
-          set -euo pipefail
-          if [ "${SKIP_IF_IMAGE_EXISTS}" != "true" ]; then
-            echo "image_exists=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu ${{ matrix.ubuntu-version }}")) | .tag_name' | head -1)
-          IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-${{ matrix.ubuntu-version }}-amd64-gha-image" --operating-system-version ${LATEST_RELEASE})
-          if [ -z "$IMAGE_EXISTS" ]; then
-            echo "image_exists=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "image_exists=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Change Ubuntu mirrors
-        if: steps.check_latest.outputs.image_exists == 'false'
         uses: vegardit/fast-apt-mirror.sh@806c59276adfff2df420124ad5e4587f018c358a # v1.4.5
         with:
           exclude-current: true
 
       - name: Set up QEMU
-        if: steps.check_latest.outputs.image_exists == 'false'
         run : |
           sudo apt install qemu-system-x86 xorriso
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -108,11 +144,9 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Install dependencies
-        if: steps.check_latest.outputs.image_exists == 'false'
         run: cd ci/gha-runner-vm && go get .
 
       - name: Install Packer
-        if: steps.check_latest.outputs.image_exists == 'false'
         run: |
           curl -LO https://releases.hashicorp.com/packer/${{ env.PACKER_VERSION }}/packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
           unzip packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
@@ -123,7 +157,6 @@ jobs:
           packer plugins install github.com/hashicorp/qemu
 
       - name: Build VM Images
-        if: steps.check_latest.outputs.image_exists == 'false'
         id: build_image
         run: |
           set -euo pipefail
@@ -157,20 +190,14 @@ jobs:
 
   build-arm64:
     name: Build new Actions ARM64 VM
+    needs: check-images
+    if: needs.check-images.outputs.has_work == 'true'
     runs-on: oracle-2cpu-8gb-x86-64
     strategy:
       matrix:
-        ubuntu-version: [24.04, 26.04]
-        include:
-          - ubuntu-version: 24.04
-            ubuntu-codename: noble
-          - ubuntu-version: 26.04
-            ubuntu-codename: resolute
+        include: ${{ fromJSON(needs.check-images.outputs.include) }}
     env:
       PACKER_VERSION: 1.16.1
-    outputs:
-      image_id: ${{ steps.build_image.outputs.image_id }}
-      image_exists: ${{ steps.check_latest.outputs.image_exists }}
     timeout-minutes: 180
 
     steps:
@@ -201,28 +228,10 @@ jobs:
       - name: Verify OCI CLI
         run: oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system runner-images --operating-system-version 123456
 
-      - name: Check latest release
-        id: check_latest
-        run: |
-          set -euo pipefail
-          if [ "${SKIP_IF_IMAGE_EXISTS}" != "true" ]; then
-            echo "image_exists=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          LATEST_RELEASE=$(curl -fsSL "https://api.github.com/repos/actions/runner-images/releases?per_page=100" | jq -r '.[] | select(.prerelease == false) | select(.name | startswith("Ubuntu ${{ matrix.ubuntu-version }}")) | .tag_name' | head -1)
-          IMAGE_EXISTS=$(oci compute image list --compartment-id ${{ env.COMPARTMENT_ID }} --operating-system "ubuntu-${{ matrix.ubuntu-version }}-arm64-gha-image" --operating-system-version ${LATEST_RELEASE})
-          if [ -z "$IMAGE_EXISTS" ]; then
-            echo "image_exists=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "image_exists=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Install dependencies
-        if: steps.check_latest.outputs.image_exists == 'false'
         run: cd ci/gha-runner-vm-oci && go get .
 
       - name: Install Packer
-        if: steps.check_latest.outputs.image_exists == 'false'
         run: |
           curl -LO https://releases.hashicorp.com/packer/${{ env.PACKER_VERSION }}/packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
           unzip packer_${{ env.PACKER_VERSION }}_linux_amd64.zip
@@ -235,7 +244,6 @@ jobs:
 
       - name: Build VM Images
         id: build_image
-        if: steps.check_latest.outputs.image_exists == 'false'
         run: |
           set -euo pipefail
           test -f "${{ steps.oci.outputs.config-file }}"
@@ -268,17 +276,16 @@ jobs:
 
   run-kind-with-arc:
     runs-on: ubuntu-latest
-    needs: [build-x86, build-arm64]
+    needs: [check-images, build-x86, build-arm64]
     permissions:
       actions: write
       contents: read
-    if: needs.build-x86.outputs.image_exists == 'false' || needs.build-arm64.outputs.image_exists == 'false'
     # must cover the 10 min queue wait plus the 15 min test-runner timeout
     timeout-minutes: 30
     strategy:
       matrix:
         arch: [x86, arm]
-        os-version: [24.04, 26.04]
+        os-version: ${{ fromJSON(needs.check-images.outputs.versions) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -305,10 +312,9 @@ jobs:
     strategy:
       matrix:
         arch: [x86, arm]
-        os-version: [24.04, 26.04]
+        os-version: ${{ fromJSON(needs.check-images.outputs.versions) }}
     runs-on: oci-ci-test-${{ github.run_id }}-${{ matrix.os-version }}-${{ matrix.arch }}
-    needs: [build-x86, build-arm64]
-    if: needs.build-x86.outputs.image_exists == 'false' || needs.build-arm64.outputs.image_exists == 'false'
+    needs: [check-images, build-x86, build-arm64]
     timeout-minutes: 15
     steps:
       - name: Checkout code
@@ -332,15 +338,10 @@ jobs:
 
   release-arm-image:
     runs-on: ubuntu-latest
-    needs: [run-kind-with-arc, test-runner]
+    needs: [check-images, run-kind-with-arc, test-runner]
     strategy:
       matrix:
-        ubuntu-version: [24.04, 26.04]
-        include:
-          - ubuntu-version: 24.04
-            ubuntu-codename: noble
-          - ubuntu-version: 26.04
-            ubuntu-codename: resolute
+        include: ${{ fromJSON(needs.check-images.outputs.include) }}
     env:
       OS_NAME: ubuntu-${{ matrix.ubuntu-version }}-arm64-gha-image
     steps:
@@ -404,11 +405,11 @@ jobs:
 
   copy-arm-image-to-regions:
     runs-on: ubuntu-latest
-    needs: release-arm-image
+    needs: [check-images, release-arm-image]
     strategy:
       matrix:
         region: [us-phoenix-1, us-chicago-1]
-        ubuntu-codename: [noble, resolute]
+        ubuntu-codename: ${{ fromJSON(needs.check-images.outputs.codenames) }}
     steps:
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -438,16 +439,12 @@ jobs:
 
   import-arm-image-on-regions:
     runs-on: ubuntu-latest
-    needs: [release-arm-image, copy-arm-image-to-regions]
+    needs: [check-images, release-arm-image, copy-arm-image-to-regions]
     strategy:
       matrix:
         region: [us-ashburn-1, us-phoenix-1, us-chicago-1]
-        ubuntu-version: [24.04, 26.04]
-        include:
-          - ubuntu-version: 24.04
-            ubuntu-codename: noble
-          - ubuntu-version: 26.04
-            ubuntu-codename: resolute
+        ubuntu-version: ${{ fromJSON(needs.check-images.outputs.versions) }}
+        include: ${{ fromJSON(needs.check-images.outputs.include) }}
     env:
       OS_NAME: ubuntu-${{ matrix.ubuntu-version }}-arm64-gha-image
     steps:
@@ -501,11 +498,11 @@ jobs:
 
   copy-x86-image-to-regions:
     runs-on: ubuntu-latest
-    needs: [run-kind-with-arc, test-runner]
+    needs: [check-images, run-kind-with-arc, test-runner]
     strategy:
       matrix:
         region: [us-phoenix-1, us-chicago-1]
-        ubuntu-codename: [noble, resolute]
+        ubuntu-codename: ${{ fromJSON(needs.check-images.outputs.codenames) }}
     steps:
       - name: Checkout setup-oci-cli action
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -535,15 +532,10 @@ jobs:
 
   release-x86-image:
     runs-on: ubuntu-latest
-    needs: copy-x86-image-to-regions
+    needs: [check-images, copy-x86-image-to-regions]
     strategy:
       matrix:
-        ubuntu-version: [24.04, 26.04]
-        include:
-          - ubuntu-version: 24.04
-            ubuntu-codename: noble
-          - ubuntu-version: 26.04
-            ubuntu-codename: resolute
+        include: ${{ fromJSON(needs.check-images.outputs.include) }}
     env:
       OS_NAME: ubuntu-${{ matrix.ubuntu-version }}-amd64-gha-image
     steps:
@@ -568,16 +560,12 @@ jobs:
 
   import-x86-image-on-regions:
     runs-on: ubuntu-latest
-    needs: release-x86-image
+    needs: [check-images, release-x86-image]
     strategy:
       matrix:
         region: [us-ashburn-1, us-phoenix-1, us-chicago-1]
-        ubuntu-version: [24.04, 26.04]
-        include:
-          - ubuntu-version: 24.04
-            ubuntu-codename: noble
-          - ubuntu-version: 26.04
-            ubuntu-codename: resolute
+        ubuntu-version: ${{ fromJSON(needs.check-images.outputs.versions) }}
+        include: ${{ fromJSON(needs.check-images.outputs.include) }}
     env:
       OS_NAME: ubuntu-${{ matrix.ubuntu-version }}-amd64-gha-image
     steps:
