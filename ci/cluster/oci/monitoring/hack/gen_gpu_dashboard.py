@@ -1,16 +1,28 @@
 #!/usr/bin/env python3
 """Generate the GitHub GPU Runners Grafana dashboard ConfigMap.
 
-Usage: python3 gen_gpu_dashboard.py > ../ci/cluster/oci/monitoring/dashboards/github-gpu-runners.yaml
+Covers every scale set in the "GPUs" runner group. runnerGroup is not a metric label, so GPU_SETS
+below must be kept in sync with the AutoscalingRunnerSets that set runnerGroup: "GPUs".
+
+Usage: python3 gen_gpu_dashboard.py > dashboards/github-gpu-runners.yaml
+       (also copy to ci/cluster/cks-gha-us-west-01A/manifests/dashboards/)
 """
 import json
+import re
 
 DS = {"type": "prometheus", "uid": "prometheus"}
-GPU = r'.*gpu.*'
-# scale set -> provider: first dash-separated token of the scale set name (oracle-..., coreweave-...)
-PROVIDER_RE = r'^([a-z0-9]+)-.*'
+GPU_SETS = [
+    "oracle-vm-gpu-a10-1",
+    "oracle-vm-gpu-a10-2",
+    "cncf-c-ubuntu-24.04-16-64-x86-1xrtxpro6000",
+    "cncf-c-ubuntu-24.04-16-64-x86-2xrtxpro6000",
+]
+# scale set name prefix -> provider
+PROVIDERS = {"oracle-": "Oracle (OCI)", "cncf-c-": "CoreWeave"}
+GPU_SET_RE = "(" + "|".join(re.escape(s) for s in GPU_SETS) + ")"
+GPU = GPU_SET_RE + ".*"
 # listener pods are named <scaleset>-<hash>-listener; strip to scale set
-POD_TO_SET = r'(.*gpu.*?)-[a-z0-9]+-listener$'
+POD_TO_SET = GPU_SET_RE + r"-[a-z0-9]+-listener$"
 
 ids = iter(range(1, 1000))
 
@@ -79,7 +91,11 @@ green_red = [{"color": "green"}, {"color": "red", "value": 1}]
 util_steps = [{"color": "green"}, {"color": "orange", "value": 70}, {"color": "red", "value": 90}]
 
 by_set = lambda m: f'sum by (runner) (label_replace({m}{{pod=~"{GPU}"}}, "runner", "$1", "pod", "{POD_TO_SET}"))'
-by_prov = lambda m: f'sum by (provider) (label_replace({m}{{pod=~"{GPU}"}}, "provider", "$1", "pod", "{PROVIDER_RE}"))'
+def by_prov(m):
+    expr = f'{m}{{pod=~"{GPU}"}}'
+    for prefix, name in PROVIDERS.items():
+        expr = f'label_replace({expr}, "provider", "{name}", "pod", "^{prefix}.*")'
+    return f'sum by (provider) ({expr})'
 tot = lambda m: f'sum({m}{{pod=~"{GPU}"}})'
 sel = lambda m: f'{m}{{pod=~"{GPU}", pod=~"$Scaleset.*"}}'
 
@@ -97,7 +113,7 @@ panels += [
     stat("Fleet Capacity Used", f'{tot("gha_desired_runners")} / {tot("gha_max_runners")} * 100', 16, y,
          unit="percent", thresholds=util_steps, desc="Desired runners / max runners across all GPU scale sets."),
     stat("GPU Scale Sets", f'count(count by (pod) (gha_max_runners{{pod=~"{GPU}"}}))', 20, y,
-         desc="Number of GPU scale sets with a running listener."),
+         desc=f"GPU scale sets with a running listener (expected: {len(GPU_SETS)} across all clusters)."),
 ]
 y += 4
 panels += [
@@ -157,7 +173,7 @@ panels += [
     table("Runner Hours by Repository",
           f'sort_desc(sum by (repository) (increase(gha_job_execution_duration_seconds_sum{{pod=~"{GPU}", pod=~"$Scaleset.*"}}[$__range])) / 3600 > 0)',
           16, y, 8, 10, value_name="Hours",
-          desc="Wall-clock runner hours, a proxy for GPU spend. Multiply by GPUs-per-runner for GPU-hours (A10.2 = 2)."),
+          desc="Wall-clock runner hours, a proxy for GPU spend. Multiply by GPUs-per-runner for GPU-hours (A10.2 and 2xrtxpro6000 = 2)."),
 ]
 y += 10
 panels += [
@@ -188,11 +204,11 @@ panels += [
 y += 6
 
 # ---------------- GPU telemetry (DCGM) ----------------
-panels.append(row("GPU Telemetry (DCGM exporter, in-cluster GPU nodes only)", y, collapsed=True))
+panels.append(row("GPU Telemetry (DCGM exporter; CoreWeave nodes)", y, collapsed=True))
 dcgm = panels[-1]["panels"]
 dy = y + 1
 dcgm.append(ts("GPU Utilization", [target('avg by (Hostname, gpu) (DCGM_FI_DEV_GPU_UTIL)', "{{Hostname}} gpu{{gpu}}")], 0, dy, 12, 8, unit="percent",
-               desc="Requires a DCGM exporter on GPU nodes. OCI VM runners run outside the cluster and will show no data here."))
+               desc="Requires a DCGM exporter on GPU nodes (CoreWeave runners are in-cluster pods). OCI VM runners run outside the cluster and show no data here."))
 dcgm.append(ts("GPU Memory Used", [target('avg by (Hostname, gpu) (DCGM_FI_DEV_FB_USED)', "{{Hostname}} gpu{{gpu}}")], 12, dy, 12, 8, unit="decmbytes"))
 dy += 8
 dcgm.append(ts("GPU Temperature", [target('avg by (Hostname, gpu) (DCGM_FI_DEV_GPU_TEMP)', "{{Hostname}} gpu{{gpu}}")], 0, dy, 12, 7, unit="celsius"))
@@ -203,8 +219,8 @@ for p in dcgm:
 dashboard = {
     "title": "GitHub GPU Runners",
     "uid": "github-gpu-runners",
-    "description": "GPU runner scale sets across all providers (selected by scale set name containing 'gpu'). "
-                   "Built from ARC listener/controller metrics; DCGM row populates when a GPU exporter is present.",
+    "description": "Every scale set in the GPUs runner group: Oracle VM (oracle-vm-gpu-*) and CoreWeave container runners "
+                   "(cncf-c-ubuntu-*rtxpro6000). Built from ARC metrics; the DCGM row needs a GPU exporter on the nodes.",
     "tags": ["github", "arc", "gpu", "runners"],
     "editable": True, "graphTooltip": 1, "liveNow": False, "schemaVersion": 41, "version": 1,
     "time": {"from": "now-24h", "to": "now"},
@@ -214,10 +230,10 @@ dashboard = {
     "annotations": {"list": []},
     "templating": {"list": [{
         "name": "Scaleset", "label": "GPU Scale Set", "type": "query", "datasource": DS,
-        "description": "GPU runner scale sets from any provider (name contains 'gpu')",
+        "description": "Scale sets in the GPUs runner group (Oracle VM and CoreWeave)",
         "definition": "label_values(gha_max_runners, name)",
         "query": {"qryType": 1, "query": "label_values(gha_max_runners, name)", "refId": "PrometheusVariableQueryEditor-VariableQuery"},
-        "regex": "/(.*gpu.*)/", "includeAll": True, "multi": True, "refresh": 2,
+        "regex": "/^" + GPU_SET_RE + "$/", "includeAll": True, "multi": True, "refresh": 2,
         "current": {"text": "All", "value": "$__all"}, "options": [],
     }]},
     "panels": panels,
