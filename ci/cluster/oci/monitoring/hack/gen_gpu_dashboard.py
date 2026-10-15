@@ -8,7 +8,6 @@ Usage: python3 gen_gpu_dashboard.py > dashboards/github-gpu-runners.yaml
        (also copy to ci/cluster/cks-gha-us-west-01A/manifests/dashboards/)
 """
 import json
-import re
 
 DS = {"type": "prometheus", "uid": "prometheus"}
 GPU_SETS = [
@@ -19,7 +18,8 @@ GPU_SETS = [
 ]
 # scale set name prefix -> provider
 PROVIDERS = {"oracle-": "Oracle (OCI)", "cncf-c-": "CoreWeave"}
-GPU_SET_RE = "(" + "|".join(re.escape(s) for s in GPU_SETS) + ")"
+# literal dots as [.]: PromQL strings are Go-escaped, so a backslash would need doubling
+GPU_SET_RE = "(" + "|".join(s.replace(".", "[.]") for s in GPU_SETS) + ")"
 GPU = GPU_SET_RE + ".*"
 # listener pods are named <scaleset>-<hash>-listener; strip to scale set
 POD_TO_SET = GPU_SET_RE + r"-[a-z0-9]+-listener$"
