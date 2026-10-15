@@ -7,6 +7,10 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
+      envoyService:
+        annotations:
+          service.beta.kubernetes.io/coreweave-load-balancer-type: public
+        externalTrafficPolicy: Local
       envoyDeployment:
         pod:
           affinity:
