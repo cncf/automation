@@ -206,8 +206,27 @@ jobs:
             echo '```yaml'
             echo "jobs:"
             echo "  build:"
-            echo "    runs-on: <arc-scale-set-name>  # ask a maintainer for the scale set backed by ${BASE_IMAGE}"
+            echo "    runs-on: <arc-scale-set-name>  # see below for scale sets backed by ${BASE_IMAGE}"
             echo '```'
+            echo
+            # Scale-set-name <-> base-image codename is an infra deploy-time
+            # decision (ci/cluster manifests), not something this build job
+            # controls, and it isn't 1:1: several scale sets across
+            # providers/sizes can share one codename. Rather than hardcode a
+            # name that can drift, discover the live mapping from the repo
+            # itself so this stays accurate without upkeep.
+            echo "### Scale sets currently backed by this image"
+            echo
+            echo 'Found by: `grep -rl "external-gha-runner:'"${BASE_IMAGE}"'" ci/cluster/ | xargs grep "scale-set-name:"`'
+            echo
+            MATCHES=$(grep -rl "external-gha-runner:${BASE_IMAGE}" ci/cluster/ 2>/dev/null | xargs -r grep -h "scale-set-name:" | awk '{print $2}' | sort -u)
+            if [ -n "${MATCHES}" ]; then
+              echo '```'
+              echo "${MATCHES}"
+              echo '```'
+            else
+              echo "_No scale set currently references \`${BASE_IMAGE}\` — ask a maintainer to roll one out, or check \`ci/cluster/\` for the latest._"
+            fi
             echo
             echo "### Key specs"
             echo "| Tool | Version/source |"
