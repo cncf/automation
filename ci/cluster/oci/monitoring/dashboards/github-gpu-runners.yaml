@@ -11,7 +11,7 @@ data:
     {
       "title": "GitHub GPU Runners",
       "uid": "github-gpu-runners",
-      "description": "GPU runner scale sets across all providers (selected by scale set name containing 'gpu'). Built from ARC listener/controller metrics; DCGM row populates when a GPU exporter is present.",
+      "description": "Every scale set in the GPUs runner group: Oracle VM (oracle-vm-gpu-*) and CoreWeave container runners (cncf-c-ubuntu-*rtxpro6000). Built from ARC metrics; the DCGM row needs a GPU exporter on the nodes.",
       "tags": [
         "github",
         "arc",
@@ -60,14 +60,14 @@ data:
               "type": "prometheus",
               "uid": "prometheus"
             },
-            "description": "GPU runner scale sets from any provider (name contains 'gpu')",
+            "description": "Scale sets in the GPUs runner group (Oracle VM and CoreWeave)",
             "definition": "label_values(gha_max_runners, name)",
             "query": {
               "qryType": 1,
               "query": "label_values(gha_max_runners, name)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
-            "regex": "/(.*gpu.*)/",
+            "regex": "/^(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000)$/",
             "includeAll": true,
             "multi": true,
             "refresh": 2,
@@ -115,7 +115,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_running_jobs{pod=~\".*gpu.*\"})",
+              "expr": "sum(gha_running_jobs{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"})",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -167,7 +167,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "clamp_min(sum(gha_assigned_jobs{pod=~\".*gpu.*\"}) - sum(gha_running_jobs{pod=~\".*gpu.*\"}), 0)",
+              "expr": "clamp_min(sum(gha_assigned_jobs{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}) - sum(gha_running_jobs{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}), 0)",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -231,7 +231,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_busy_runners{pod=~\".*gpu.*\"})",
+              "expr": "sum(gha_busy_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"})",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -283,7 +283,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_idle_runners{pod=~\".*gpu.*\"})",
+              "expr": "sum(gha_idle_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"})",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -335,7 +335,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_desired_runners{pod=~\".*gpu.*\"}) / sum(gha_max_runners{pod=~\".*gpu.*\"}) * 100",
+              "expr": "sum(gha_desired_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}) / sum(gha_max_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}) * 100",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -386,7 +386,7 @@ data:
           "id": 7,
           "type": "stat",
           "title": "GPU Scale Sets",
-          "description": "Number of GPU scale sets with a running listener.",
+          "description": "GPU scale sets with a running listener (expected: 4 across all clusters).",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -404,7 +404,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "count(count by (pod) (gha_max_runners{pod=~\".*gpu.*\"}))",
+              "expr": "count(count by (pod) (gha_max_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}))",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -456,7 +456,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (runner) (label_replace(gha_desired_runners{pod=~\".*gpu.*\"}, \"runner\", \"$1\", \"pod\", \"(.*gpu.*?)-[a-z0-9]+-listener$\"))",
+              "expr": "sum by (runner) (label_replace(gha_desired_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
               "legendFormat": "{{runner}} desired",
               "range": true,
               "instant": false,
@@ -468,7 +468,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (runner) (label_replace(gha_max_runners{pod=~\".*gpu.*\"}, \"runner\", \"$1\", \"pod\", \"(.*gpu.*?)-[a-z0-9]+-listener$\"))",
+              "expr": "sum by (runner) (label_replace(gha_max_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
               "legendFormat": "{{runner}} max",
               "range": true,
               "instant": false,
@@ -529,7 +529,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (provider) (label_replace(gha_running_jobs{pod=~\".*gpu.*\"}, \"provider\", \"$1\", \"pod\", \"^([a-z0-9]+)-.*\"))",
+              "expr": "sum by (provider) (label_replace(label_replace(gha_running_jobs{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}, \"provider\", \"Oracle (OCI)\", \"pod\", \"^oracle-.*\"), \"provider\", \"CoreWeave\", \"pod\", \"^cncf-c-.*\"))",
               "legendFormat": "{{provider}}",
               "range": true,
               "instant": false,
@@ -603,7 +603,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_desired_runners{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"})",
+              "expr": "sum(gha_desired_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -655,7 +655,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_max_runners{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"})",
+              "expr": "sum(gha_max_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -707,7 +707,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_registered_runners{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"})",
+              "expr": "sum(gha_registered_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -759,7 +759,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_busy_runners{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"})",
+              "expr": "sum(gha_busy_runners{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -811,7 +811,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_assigned_jobs{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"})",
+              "expr": "sum(gha_assigned_jobs{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
               "legendFormat": "__auto",
               "range": true,
               "instant": false,
@@ -1047,7 +1047,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (le) (increase(gha_job_startup_duration_seconds_bucket{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
+              "expr": "sum by (le) (increase(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
               "legendFormat": "{{le}}",
               "range": true,
               "instant": false,
@@ -1103,7 +1103,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (le) (increase(gha_job_execution_duration_seconds_bucket{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
+              "expr": "sum by (le) (increase(gha_job_execution_duration_seconds_bucket{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
               "legendFormat": "{{le}}",
               "range": true,
               "instant": false,
@@ -1159,7 +1159,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.50, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
+              "expr": "histogram_quantile(0.50, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
               "legendFormat": "p50",
               "range": true,
               "instant": false,
@@ -1171,7 +1171,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.95, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
               "legendFormat": "p95",
               "range": true,
               "instant": false,
@@ -1183,7 +1183,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.99, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
+              "expr": "histogram_quantile(0.99, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
               "legendFormat": "p99",
               "range": true,
               "instant": false,
@@ -1245,7 +1245,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(rate(gha_started_jobs_total{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval])) * 3600",
+              "expr": "sum(rate(gha_started_jobs_total{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])) * 3600",
               "legendFormat": "started / h",
               "range": true,
               "instant": false,
@@ -1257,7 +1257,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (job_result) (rate(gha_completed_jobs_total{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval])) * 3600",
+              "expr": "sum by (job_result) (rate(gha_completed_jobs_total{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])) * 3600",
               "legendFormat": "completed: {{job_result}}",
               "range": true,
               "instant": false,
@@ -1332,7 +1332,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sort_desc(sum by (repository) (increase(gha_completed_jobs_total{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__range])) > 0)",
+              "expr": "sort_desc(sum by (repository) (increase(gha_completed_jobs_total{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__range])) > 0)",
               "legendFormat": "__auto",
               "range": false,
               "instant": true,
@@ -1394,7 +1394,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sort_desc(sum by (repository, job_name) (increase(gha_completed_jobs_total{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__range])) > 0)",
+              "expr": "sort_desc(sum by (repository, job_name) (increase(gha_completed_jobs_total{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__range])) > 0)",
               "legendFormat": "__auto",
               "range": false,
               "instant": true,
@@ -1438,7 +1438,7 @@ data:
           "id": 26,
           "type": "table",
           "title": "Runner Hours by Repository",
-          "description": "Wall-clock runner hours, a proxy for GPU spend. Multiply by GPUs-per-runner for GPU-hours (A10.2 = 2).",
+          "description": "Wall-clock runner hours, a proxy for GPU spend. Multiply by GPUs-per-runner for GPU-hours (A10.2 and 2xrtxpro6000 = 2).",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -1456,7 +1456,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sort_desc(sum by (repository) (increase(gha_job_execution_duration_seconds_sum{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__range])) / 3600 > 0)",
+              "expr": "sort_desc(sum by (repository) (increase(gha_job_execution_duration_seconds_sum{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__range])) / 3600 > 0)",
               "legendFormat": "__auto",
               "range": false,
               "instant": true,
@@ -1518,7 +1518,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (job_result) (increase(gha_completed_jobs_total{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
+              "expr": "sum by (job_result) (increase(gha_completed_jobs_total{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
               "legendFormat": "{{job_result}}",
               "range": true,
               "instant": false,
@@ -1579,7 +1579,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (event_name) (increase(gha_started_jobs_total{pod=~\".*gpu.*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
+              "expr": "sum by (event_name) (increase(gha_started_jobs_total{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
               "legendFormat": "{{event_name}}",
               "range": true,
               "instant": false,
@@ -1653,7 +1653,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (reason) (increase(kube_pod_container_status_terminated_reason{namespace=\"arc-systems\", pod=~\".*gpu.*\", reason!=\"Completed\"}[$__rate_interval]))",
+              "expr": "sum by (reason) (increase(kube_pod_container_status_terminated_reason{namespace=\"arc-systems\", pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\", reason!=\"Completed\"}[$__rate_interval]))",
               "legendFormat": "{{reason}}",
               "range": true,
               "instant": false,
@@ -1714,7 +1714,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\"arc-systems\", pod=~\".*gpu.*\"}[$__rate_interval])) > 0",
+              "expr": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\"arc-systems\", pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}[$__rate_interval])) > 0",
               "legendFormat": "{{pod}}",
               "range": true,
               "instant": false,
@@ -1775,7 +1775,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "up{pod=~\".*gpu.*\"}",
+              "expr": "up{pod=~\"(oracle\\-vm\\-gpu\\-a10\\-1|oracle\\-vm\\-gpu\\-a10\\-2|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-1xrtxpro6000|cncf\\-c\\-ubuntu\\-24\\.04\\-16\\-64\\-x86\\-2xrtxpro6000).*\"}",
               "legendFormat": "{{pod}}",
               "range": true,
               "instant": false,
@@ -1878,7 +1878,7 @@ data:
         {
           "id": 34,
           "type": "row",
-          "title": "GPU Telemetry (DCGM exporter, in-cluster GPU nodes only)",
+          "title": "GPU Telemetry (DCGM exporter; CoreWeave nodes)",
           "collapsed": true,
           "gridPos": {
             "x": 0,
@@ -1891,7 +1891,7 @@ data:
               "id": 35,
               "type": "timeseries",
               "title": "GPU Utilization",
-              "description": "Requires a DCGM exporter on GPU nodes. OCI VM runners run outside the cluster and will show no data here.",
+              "description": "Requires a DCGM exporter on GPU nodes (CoreWeave runners are in-cluster pods). OCI VM runners run outside the cluster and show no data here.",
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
