@@ -79,12 +79,20 @@ def heatmap(title, expr, x, y, w=12, h=8, desc=""):
                                     "cellGap": 1, "legend": {"show": True}}})
 
 
-def table(title, expr, x, y, w=12, h=8, desc="", value_name="Jobs"):
-    return panel("table", title, [target(expr, instant=True, fmt="table")], x, y, w, h, desc,
+def table(title, expr, x, y, w=12, h=8, desc="", value_name="Jobs", extra_targets=()):
+    targets = [target(expr, instant=True, fmt="table")]
+    rename = {"Value": value_name, "Value #A": value_name}
+    for i, (e, name) in enumerate(extra_targets):
+        targets.append(target(e, instant=True, fmt="table"))
+        rename[f"Value #{chr(ord('B') + i)}"] = name
+    transformations = []
+    if extra_targets:
+        transformations.append({"id": "joinByField", "options": {"byField": "runner", "mode": "outer"}})
+    exclude = {"Time": True, **{f"Time #{chr(ord('A') + i)}": True for i in range(len(targets))}}
+    transformations.append({"id": "organize", "options": {"excludeByName": exclude, "renameByName": rename}})
+    return panel("table", title, targets, x, y, w, h, desc,
                  extra={"options": {"sortBy": [{"displayName": value_name, "desc": True}]},
-                        "transformations": [
-                            {"id": "organize", "options": {"excludeByName": {"Time": True},
-                                                            "renameByName": {"Value": value_name}}}]})
+                        "transformations": transformations})
 
 
 green_red = [{"color": "green"}, {"color": "red", "value": 1}]
@@ -97,7 +105,11 @@ def by_prov(m):
         expr = f'label_replace({expr}, "provider", "{name}", "pod", "^{prefix}.*")'
     return f'sum by (provider) ({expr})'
 tot = lambda m: f'sum({m}{{pod=~"{GPU}"}})'
-sel = lambda m: f'{m}{{pod=~"{GPU}", pod=~"$Scaleset.*"}}'
+sel = lambda m: f'{m}{{pod=~"{GPU}"}}'
+# controller metrics carry the scale set in `name`, not `pod`
+ctl = lambda m: f'{m}{{name=~"{GPU_SET_RE}"}}'
+# strip the listener pod suffix so series are keyed by scale set
+set_of = lambda m: f'label_replace({m}, "runner", "$1", "pod", "{POD_TO_SET}")'
 
 panels = []
 y = 0
@@ -126,20 +138,29 @@ panels += [
 y += 8
 
 # ---------------- Per-scale-set ----------------
-panels.append(row("Scale Set: $Scaleset", y)); y += 1
+panels.append(row("Per Scale Set", y)); y += 1
 panels += [
-    stat("Desired", f'sum({sel("gha_desired_runners")})', 0, y, 3),
-    stat("Max", f'sum({sel("gha_max_runners")})', 3, y, 3),
-    stat("Registered", f'sum({sel("gha_registered_runners")})', 6, y, 3),
-    stat("Busy", f'sum({sel("gha_busy_runners")})', 9, y, 3),
-    stat("Assigned Jobs", f'sum({sel("gha_assigned_jobs")})', 12, y, 3),
-    stat("Pending Runners", f'sum(gha_controller_pending_ephemeral_runners{{name=~"$Scaleset"}})', 15, y, 3,
-         thresholds=[{"color": "green"}, {"color": "orange", "value": 1}, {"color": "red", "value": 3}],
-         desc="EphemeralRunners the controller has created but which have not registered yet (VM still booting, or capacity unavailable)."),
-    stat("Failed Runners", f'sum(gha_controller_failed_ephemeral_runners{{name=~"$Scaleset"}})', 18, y, 3, thresholds=green_red),
-    stat("Running Runners", f'max(gha_controller_running_ephemeral_runners{{name=~"$Scaleset"}})', 21, y, 3),
+    table("Scale Set Status",
+          f'sum by (runner) ({set_of(sel("gha_desired_runners"))})', 0, y, 24, 7, value_name="Desired",
+          extra_targets=[
+              (f'sum by (runner) ({set_of(sel("gha_max_runners"))})', "Max"),
+              (f'sum by (runner) ({set_of(sel("gha_registered_runners"))})', "Registered"),
+              (f'sum by (runner) ({set_of(sel("gha_busy_runners"))})', "Busy"),
+              (f'sum by (runner) ({set_of(sel("gha_idle_runners"))})', "Idle"),
+              (f'sum by (runner) ({set_of(sel("gha_assigned_jobs"))})', "Assigned Jobs"),
+              (f'sum by (runner) ({set_of(sel("gha_running_jobs"))})', "Running Jobs"),
+              (f'sum by (runner) (label_replace({ctl("gha_controller_pending_ephemeral_runners")}, "runner", "$1", "name", "(.*)"))', "Pending"),
+              (f'sum by (runner) (label_replace({ctl("gha_controller_failed_ephemeral_runners")}, "runner", "$1", "name", "(.*)"))', "Failed"),
+          ],
+          desc="Current state of every GPU scale set. Pending = EphemeralRunners created but not yet registered (pod/VM still starting, or no GPU capacity). Assigned > Running means jobs are waiting."),
 ]
-y += 4
+y += 7
+panels += [
+    ts("Pending Runners by Scale Set", [target(f'sum by (name) ({ctl("gha_controller_pending_ephemeral_runners")})', "{{name}}")], 0, y, 12, 6,
+       desc="Sustained pending runners mean the provider cannot deliver GPU capacity fast enough."),
+    ts("Failed Runners by Scale Set", [target(f'sum by (name) ({ctl("gha_controller_failed_ephemeral_runners")})', "{{name}}")], 12, y, 12, 6),
+]
+y += 6
 panels += [
     heatmap("Startup Duration (queue -> runner picks up job)",
             f'sum by (le) (increase({sel("gha_job_startup_duration_seconds_bucket")}[$__rate_interval]))', 0, y,
@@ -149,31 +170,49 @@ panels += [
 ]
 y += 8
 panels += [
-    ts("Startup Duration Percentiles",
-       [target(f'histogram_quantile(0.50, sum by (le) (rate({sel("gha_job_startup_duration_seconds_bucket")}[$__rate_interval])))', "p50"),
-        target(f'histogram_quantile(0.95, sum by (le) (rate({sel("gha_job_startup_duration_seconds_bucket")}[$__rate_interval])))', "p95"),
-        target(f'histogram_quantile(0.99, sum by (le) (rate({sel("gha_job_startup_duration_seconds_bucket")}[$__rate_interval])))', "p99")],
+    ts("Startup Duration p95 by Scale Set",
+       [target(f'histogram_quantile(0.95, sum by (le, runner) ({set_of(f'rate({sel("gha_job_startup_duration_seconds_bucket")}[$__rate_interval])')}))', "{{runner}}")],
        0, y, 12, 8, unit="s"),
-    ts("Job Throughput",
-       [target(f'sum(rate({sel("gha_started_jobs_total")}[$__rate_interval])) * 3600', "started / h"),
-        target(f'sum by (job_result) (rate({sel("gha_completed_jobs_total")}[$__rate_interval])) * 3600', "completed: {{job_result}}")],
-       12, y, 12, 8, unit="short"),
+    ts("Jobs Started per Hour by Scale Set",
+       [target(f'sum by (runner) ({set_of(f'rate({sel("gha_started_jobs_total")}[$__rate_interval])')}) * 3600', "{{runner}}")],
+       12, y, 12, 8, unit="short", stack=True),
 ]
 y += 8
 
 # ---------------- Consumers ----------------
-panels.append(row("Who Is Using GPUs ($__range)", y)); y += 1
+panels.append(row("Usage by GitHub Organization (selected time range)", y)); y += 1
+panels += [
+    table("Runner Hours by Organization",
+          f'sort_desc(sum by (organization) (increase({sel("gha_job_execution_duration_seconds_sum")}[$__range])) / 3600 > 0)',
+          0, y, 8, 9, value_name="Hours",
+          desc="Wall-clock runner hours per GitHub org, a proxy for GPU spend. Multiply by GPUs-per-runner for GPU-hours (A10.2 and 2xrtxpro6000 = 2)."),
+    table("Jobs by Organization",
+          f'sort_desc(sum by (organization) (increase({sel("gha_completed_jobs_total")}[$__range])) > 0)',
+          8, y, 8, 9),
+    table("Jobs by Organization and Scale Set",
+          f'sort_desc(sum by (organization, runner) ({set_of(f'increase({sel("gha_completed_jobs_total")}[$__range])')}) > 0)',
+          16, y, 8, 9),
+]
+y += 9
+panels += [
+    ts("Running Jobs by Organization", [target(f'sum by (organization) ({sel("gha_running_jobs")})', "{{organization}}")], 0, y, 12, 8, stack=True,
+       desc="Concurrent GPU jobs per org. When the fleet is at max, this shows who is holding the capacity."),
+    ts("Runner Hours per Day by Organization",
+       [target(f'sum by (organization) (increase({sel("gha_job_execution_duration_seconds_sum")}[1d])) / 3600', "{{organization}}")], 12, y, 12, 8, unit="h", stack=True),
+]
+y += 8
+
+panels.append(row("Usage by Repository (selected time range)", y)); y += 1
 panels += [
     table("Jobs by Repository",
-          f'sort_desc(sum by (repository) (increase(gha_completed_jobs_total{{pod=~"{GPU}", pod=~"$Scaleset.*"}}[$__range])) > 0)',
+          f'sort_desc(sum by (organization, repository) (increase({sel("gha_completed_jobs_total")}[$__range])) > 0)',
           0, y, 8, 10),
     table("Jobs by Workflow Job Name",
-          f'sort_desc(sum by (repository, job_name) (increase(gha_completed_jobs_total{{pod=~"{GPU}", pod=~"$Scaleset.*"}}[$__range])) > 0)',
+          f'sort_desc(sum by (repository, job_name) (increase({sel("gha_completed_jobs_total")}[$__range])) > 0)',
           8, y, 8, 10),
     table("Runner Hours by Repository",
-          f'sort_desc(sum by (repository) (increase(gha_job_execution_duration_seconds_sum{{pod=~"{GPU}", pod=~"$Scaleset.*"}}[$__range])) / 3600 > 0)',
-          16, y, 8, 10, value_name="Hours",
-          desc="Wall-clock runner hours, a proxy for GPU spend. Multiply by GPUs-per-runner for GPU-hours (A10.2 and 2xrtxpro6000 = 2)."),
+          f'sort_desc(sum by (organization, repository) (increase({sel("gha_job_execution_duration_seconds_sum")}[$__range])) / 3600 > 0)',
+          16, y, 8, 10, value_name="Hours"),
 ]
 y += 10
 panels += [
@@ -204,8 +243,8 @@ panels += [
 y += 6
 
 # ---------------- GPU telemetry (DCGM) ----------------
-panels.append(row("GPU Telemetry (DCGM exporter; CoreWeave nodes)", y, collapsed=True))
-dcgm = panels[-1]["panels"]
+panels.append(row("GPU Telemetry (DCGM exporter; CoreWeave nodes)", y))
+dcgm = panels
 dy = y + 1
 dcgm.append(ts("GPU Utilization", [target('avg by (Hostname, gpu) (DCGM_FI_DEV_GPU_UTIL)', "{{Hostname}} gpu{{gpu}}")], 0, dy, 12, 8, unit="percent",
                desc="Requires a DCGM exporter on GPU nodes (CoreWeave runners are in-cluster pods). OCI VM runners run outside the cluster and show no data here."))
@@ -213,7 +252,7 @@ dcgm.append(ts("GPU Memory Used", [target('avg by (Hostname, gpu) (DCGM_FI_DEV_F
 dy += 8
 dcgm.append(ts("GPU Temperature", [target('avg by (Hostname, gpu) (DCGM_FI_DEV_GPU_TEMP)', "{{Hostname}} gpu{{gpu}}")], 0, dy, 12, 7, unit="celsius"))
 dcgm.append(ts("GPU Power Draw", [target('avg by (Hostname, gpu) (DCGM_FI_DEV_POWER_USAGE)', "{{Hostname}} gpu{{gpu}}")], 12, dy, 12, 7, unit="watt"))
-for p in dcgm:
+for p in dcgm[-4:]:
     p["fieldConfig"]["defaults"]["noValue"] = "no DCGM exporter"
 
 dashboard = {
@@ -228,14 +267,8 @@ dashboard = {
     "refresh": "1m", "timezone": "", "links": [
         {"title": "GitHub ARC Monitoring", "type": "link", "url": "/d/af21e938-2151-4bf2-b798-8cf9232f947a", "icon": "dashboard"}],
     "annotations": {"list": []},
-    "templating": {"list": [{
-        "name": "Scaleset", "label": "GPU Scale Set", "type": "query", "datasource": DS,
-        "description": "Scale sets in the GPUs runner group (Oracle VM and CoreWeave)",
-        "definition": "label_values(gha_max_runners, name)",
-        "query": {"qryType": 1, "query": "label_values(gha_max_runners, name)", "refId": "PrometheusVariableQueryEditor-VariableQuery"},
-        "regex": "/^" + GPU_SET_RE + "$/", "includeAll": True, "multi": True, "refresh": 2,
-        "current": {"text": "All", "value": "$__all"}, "options": [],
-    }]},
+    # no template variables: public dashboards do not expand them, so every panel would be empty
+    "templating": {"list": []},
     "panels": panels,
 }
 

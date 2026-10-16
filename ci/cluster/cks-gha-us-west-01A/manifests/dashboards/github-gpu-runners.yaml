@@ -51,33 +51,7 @@ data:
         "list": []
       },
       "templating": {
-        "list": [
-          {
-            "name": "Scaleset",
-            "label": "GPU Scale Set",
-            "type": "query",
-            "datasource": {
-              "type": "prometheus",
-              "uid": "prometheus"
-            },
-            "description": "Scale sets in the GPUs runner group (Oracle VM and CoreWeave)",
-            "definition": "label_values(gha_max_runners, name)",
-            "query": {
-              "qryType": 1,
-              "query": "label_values(gha_max_runners, name)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "regex": "/^(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)$/",
-            "includeAll": true,
-            "multi": true,
-            "refresh": 2,
-            "current": {
-              "text": "All",
-              "value": "$__all"
-            },
-            "options": []
-          }
-        ]
+        "list": []
       },
       "panels": [
         {
@@ -571,7 +545,7 @@ data:
         {
           "id": 10,
           "type": "row",
-          "title": "Scale Set: $Scaleset",
+          "title": "Per Scale Set",
           "collapsed": false,
           "gridPos": {
             "x": 0,
@@ -583,9 +557,9 @@ data:
         },
         {
           "id": 11,
-          "type": "stat",
-          "title": "Desired",
-          "description": "",
+          "type": "table",
+          "title": "Scale Set Status",
+          "description": "Current state of every GPU scale set. Pending = EphemeralRunners created but not yet registered (pod/VM still starting, or no GPU capacity). Assigned > Running means jobs are waiting.",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -593,8 +567,8 @@ data:
           "gridPos": {
             "x": 0,
             "y": 14,
-            "w": 3,
-            "h": 4
+            "w": 24,
+            "h": 7
           },
           "targets": [
             {
@@ -603,11 +577,116 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_desired_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
+              "expr": "sum by (runner) (label_replace(gha_desired_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
               "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "refId": "A"
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "format": "table"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (runner) (label_replace(gha_max_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "B",
+              "format": "table"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (runner) (label_replace(gha_registered_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "C",
+              "format": "table"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (runner) (label_replace(gha_busy_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "D",
+              "format": "table"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (runner) (label_replace(gha_idle_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "E",
+              "format": "table"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (runner) (label_replace(gha_assigned_jobs{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "F",
+              "format": "table"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (runner) (label_replace(gha_running_jobs{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}, \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\"))",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "G",
+              "format": "table"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (runner) (label_replace(gha_controller_pending_ephemeral_runners{name=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)\"}, \"runner\", \"$1\", \"name\", \"(.*)\"))",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "H",
+              "format": "table"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (runner) (label_replace(gha_controller_failed_ephemeral_runners{name=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)\"}, \"runner\", \"$1\", \"name\", \"(.*)\"))",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "I",
+              "format": "table"
             }
           ],
           "fieldConfig": {
@@ -621,32 +700,66 @@ data:
             "overrides": []
           },
           "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
+            "sortBy": [
+              {
+                "displayName": "Desired",
+                "desc": true
+              }
+            ]
+          },
+          "transformations": [
+            {
+              "id": "joinByField",
+              "options": {
+                "byField": "runner",
+                "mode": "outer"
+              }
             },
-            "colorMode": "value",
-            "graphMode": "area",
-            "textMode": "auto"
-          }
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Time #A": true,
+                  "Time #B": true,
+                  "Time #C": true,
+                  "Time #D": true,
+                  "Time #E": true,
+                  "Time #F": true,
+                  "Time #G": true,
+                  "Time #H": true,
+                  "Time #I": true
+                },
+                "renameByName": {
+                  "Value": "Desired",
+                  "Value #A": "Desired",
+                  "Value #B": "Max",
+                  "Value #C": "Registered",
+                  "Value #D": "Busy",
+                  "Value #E": "Idle",
+                  "Value #F": "Assigned Jobs",
+                  "Value #G": "Running Jobs",
+                  "Value #H": "Pending",
+                  "Value #I": "Failed"
+                }
+              }
+            }
+          ]
         },
         {
           "id": 12,
-          "type": "stat",
-          "title": "Max",
-          "description": "",
+          "type": "timeseries",
+          "title": "Pending Runners by Scale Set",
+          "description": "Sustained pending runners mean the provider cannot deliver GPU capacity fast enough.",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "gridPos": {
-            "x": 3,
-            "y": 14,
-            "w": 3,
-            "h": 4
+            "x": 0,
+            "y": 21,
+            "w": 12,
+            "h": 6
           },
           "targets": [
             {
@@ -655,8 +768,8 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_max_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
-              "legendFormat": "__auto",
+              "expr": "sum by (name) (gha_controller_pending_ephemeral_runners{name=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)\"})",
+              "legendFormat": "{{name}}",
               "range": true,
               "instant": false,
               "refId": "A"
@@ -668,131 +781,36 @@ data:
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "noValue": "0"
+              "noValue": "0",
+              "custom": {
+                "fillOpacity": 15,
+                "lineWidth": 1,
+                "stacking": {
+                  "mode": "none"
+                }
+              }
             },
             "overrides": []
           },
           "options": {
-            "reduceOptions": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
               "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
+                "lastNotNull",
+                "max"
+              ]
             },
-            "colorMode": "value",
-            "graphMode": "area",
-            "textMode": "auto"
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
           }
         },
         {
           "id": 13,
-          "type": "stat",
-          "title": "Registered",
-          "description": "",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "x": 6,
-            "y": 14,
-            "w": 3,
-            "h": 4
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum(gha_registered_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
-              "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "mappings": [],
-              "noValue": "0"
-            },
-            "overrides": []
-          },
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "colorMode": "value",
-            "graphMode": "area",
-            "textMode": "auto"
-          }
-        },
-        {
-          "id": 14,
-          "type": "stat",
-          "title": "Busy",
-          "description": "",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "x": 9,
-            "y": 14,
-            "w": 3,
-            "h": 4
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum(gha_busy_runners{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
-              "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "mappings": [],
-              "noValue": "0"
-            },
-            "overrides": []
-          },
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "colorMode": "value",
-            "graphMode": "area",
-            "textMode": "auto"
-          }
-        },
-        {
-          "id": 15,
-          "type": "stat",
-          "title": "Assigned Jobs",
+          "type": "timeseries",
+          "title": "Failed Runners by Scale Set",
           "description": "",
           "datasource": {
             "type": "prometheus",
@@ -800,9 +818,9 @@ data:
           },
           "gridPos": {
             "x": 12,
-            "y": 14,
-            "w": 3,
-            "h": 4
+            "y": 21,
+            "w": 12,
+            "h": 6
           },
           "targets": [
             {
@@ -811,8 +829,8 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(gha_assigned_jobs{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"})",
-              "legendFormat": "__auto",
+              "expr": "sum by (name) (gha_controller_failed_ephemeral_runners{name=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)\"})",
+              "legendFormat": "{{name}}",
               "range": true,
               "instant": false,
               "refId": "A"
@@ -824,209 +842,34 @@ data:
                 "mode": "palette-classic"
               },
               "mappings": [],
-              "noValue": "0"
-            },
-            "overrides": []
-          },
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "colorMode": "value",
-            "graphMode": "area",
-            "textMode": "auto"
-          }
-        },
-        {
-          "id": 16,
-          "type": "stat",
-          "title": "Pending Runners",
-          "description": "EphemeralRunners the controller has created but which have not registered yet (VM still booting, or capacity unavailable).",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "x": 15,
-            "y": 14,
-            "w": 3,
-            "h": 4
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum(gha_controller_pending_ephemeral_runners{name=~\"$Scaleset\"})",
-              "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
               "noValue": "0",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "orange",
-                    "value": 1
-                  },
-                  {
-                    "color": "red",
-                    "value": 3
-                  }
-                ]
+              "custom": {
+                "fillOpacity": 15,
+                "lineWidth": 1,
+                "stacking": {
+                  "mode": "none"
+                }
               }
             },
             "overrides": []
           },
           "options": {
-            "reduceOptions": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
               "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
+                "lastNotNull",
+                "max"
+              ]
             },
-            "colorMode": "value",
-            "graphMode": "area",
-            "textMode": "auto"
-          }
-        },
-        {
-          "id": 17,
-          "type": "stat",
-          "title": "Failed Runners",
-          "description": "",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "x": 18,
-            "y": 14,
-            "w": 3,
-            "h": 4
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum(gha_controller_failed_ephemeral_runners{name=~\"$Scaleset\"})",
-              "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "refId": "A"
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
             }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "noValue": "0",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "colorMode": "value",
-            "graphMode": "area",
-            "textMode": "auto"
           }
         },
         {
-          "id": 18,
-          "type": "stat",
-          "title": "Running Runners",
-          "description": "",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "x": 21,
-            "y": 14,
-            "w": 3,
-            "h": 4
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "max(gha_controller_running_ephemeral_runners{name=~\"$Scaleset\"})",
-              "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "mappings": [],
-              "noValue": "0"
-            },
-            "overrides": []
-          },
-          "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "colorMode": "value",
-            "graphMode": "area",
-            "textMode": "auto"
-          }
-        },
-        {
-          "id": 19,
+          "id": 14,
           "type": "heatmap",
           "title": "Startup Duration (queue -> runner picks up job)",
           "description": "Time from job assignment to a GPU runner starting it. Dominated by VM boot and GPU capacity availability.",
@@ -1036,7 +879,7 @@ data:
           },
           "gridPos": {
             "x": 0,
-            "y": 18,
+            "y": 27,
             "w": 12,
             "h": 8
           },
@@ -1047,7 +890,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (le) (increase(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
+              "expr": "sum by (le) (increase(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__rate_interval]))",
               "legendFormat": "{{le}}",
               "range": true,
               "instant": false,
@@ -1082,7 +925,7 @@ data:
           }
         },
         {
-          "id": 20,
+          "id": 15,
           "type": "heatmap",
           "title": "Job Execution Duration",
           "description": "",
@@ -1092,7 +935,7 @@ data:
           },
           "gridPos": {
             "x": 12,
-            "y": 18,
+            "y": 27,
             "w": 12,
             "h": 8
           },
@@ -1103,7 +946,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (le) (increase(gha_job_execution_duration_seconds_bucket{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
+              "expr": "sum by (le) (increase(gha_job_execution_duration_seconds_bucket{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__rate_interval]))",
               "legendFormat": "{{le}}",
               "range": true,
               "instant": false,
@@ -1138,9 +981,9 @@ data:
           }
         },
         {
-          "id": 21,
+          "id": 16,
           "type": "timeseries",
-          "title": "Startup Duration Percentiles",
+          "title": "Startup Duration p95 by Scale Set",
           "description": "",
           "datasource": {
             "type": "prometheus",
@@ -1148,7 +991,7 @@ data:
           },
           "gridPos": {
             "x": 0,
-            "y": 26,
+            "y": 35,
             "w": 12,
             "h": 8
           },
@@ -1159,35 +1002,11 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(0.50, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
-              "legendFormat": "p50",
+              "expr": "histogram_quantile(0.95, sum by (le, runner) (label_replace(rate(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__rate_interval]), \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\")))",
+              "legendFormat": "{{runner}}",
               "range": true,
               "instant": false,
               "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "histogram_quantile(0.95, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
-              "legendFormat": "p95",
-              "range": true,
-              "instant": false,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "histogram_quantile(0.99, sum by (le) (rate(gha_job_startup_duration_seconds_bucket{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])))",
-              "legendFormat": "p99",
-              "range": true,
-              "instant": false,
-              "refId": "C"
             }
           ],
           "fieldConfig": {
@@ -1224,9 +1043,9 @@ data:
           }
         },
         {
-          "id": 22,
+          "id": 17,
           "type": "timeseries",
-          "title": "Job Throughput",
+          "title": "Jobs Started per Hour by Scale Set",
           "description": "",
           "datasource": {
             "type": "prometheus",
@@ -1234,7 +1053,7 @@ data:
           },
           "gridPos": {
             "x": 12,
-            "y": 26,
+            "y": 35,
             "w": 12,
             "h": 8
           },
@@ -1245,23 +1064,11 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(rate(gha_started_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])) * 3600",
-              "legendFormat": "started / h",
+              "expr": "sum by (runner) (label_replace(rate(gha_started_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__rate_interval]), \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\")) * 3600",
+              "legendFormat": "{{runner}}",
               "range": true,
               "instant": false,
               "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum by (job_result) (rate(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval])) * 3600",
-              "legendFormat": "completed: {{job_result}}",
-              "range": true,
-              "instant": false,
-              "refId": "B"
             }
           ],
           "fieldConfig": {
@@ -1276,7 +1083,7 @@ data:
                 "fillOpacity": 15,
                 "lineWidth": 1,
                 "stacking": {
-                  "mode": "none"
+                  "mode": "normal"
                 }
               }
             },
@@ -1298,32 +1105,32 @@ data:
           }
         },
         {
-          "id": 23,
+          "id": 18,
           "type": "row",
-          "title": "Who Is Using GPUs ($__range)",
+          "title": "Usage by GitHub Organization (selected time range)",
           "collapsed": false,
           "gridPos": {
             "x": 0,
-            "y": 34,
+            "y": 43,
             "w": 24,
             "h": 1
           },
           "panels": []
         },
         {
-          "id": 24,
+          "id": 19,
           "type": "table",
-          "title": "Jobs by Repository",
-          "description": "",
+          "title": "Runner Hours by Organization",
+          "description": "Wall-clock runner hours per GitHub org, a proxy for GPU spend. Multiply by GPUs-per-runner for GPU-hours (A10.2 and 2xrtxpro6000 = 2).",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "gridPos": {
             "x": 0,
-            "y": 35,
+            "y": 44,
             "w": 8,
-            "h": 10
+            "h": 9
           },
           "targets": [
             {
@@ -1332,131 +1139,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sort_desc(sum by (repository) (increase(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__range])) > 0)",
-              "legendFormat": "__auto",
-              "range": false,
-              "instant": true,
-              "refId": "A",
-              "format": "table"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "mappings": [],
-              "noValue": "0"
-            },
-            "overrides": []
-          },
-          "options": {
-            "sortBy": [
-              {
-                "displayName": "Jobs",
-                "desc": true
-              }
-            ]
-          },
-          "transformations": [
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Time": true
-                },
-                "renameByName": {
-                  "Value": "Jobs"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": 25,
-          "type": "table",
-          "title": "Jobs by Workflow Job Name",
-          "description": "",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "x": 8,
-            "y": 35,
-            "w": 8,
-            "h": 10
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sort_desc(sum by (repository, job_name) (increase(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__range])) > 0)",
-              "legendFormat": "__auto",
-              "range": false,
-              "instant": true,
-              "refId": "A",
-              "format": "table"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "mappings": [],
-              "noValue": "0"
-            },
-            "overrides": []
-          },
-          "options": {
-            "sortBy": [
-              {
-                "displayName": "Jobs",
-                "desc": true
-              }
-            ]
-          },
-          "transformations": [
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Time": true
-                },
-                "renameByName": {
-                  "Value": "Jobs"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": 26,
-          "type": "table",
-          "title": "Runner Hours by Repository",
-          "description": "Wall-clock runner hours, a proxy for GPU spend. Multiply by GPUs-per-runner for GPU-hours (A10.2 and 2xrtxpro6000 = 2).",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "gridPos": {
-            "x": 16,
-            "y": 35,
-            "w": 8,
-            "h": 10
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sort_desc(sum by (repository) (increase(gha_job_execution_duration_seconds_sum{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__range])) / 3600 > 0)",
+              "expr": "sort_desc(sum by (organization) (increase(gha_job_execution_duration_seconds_sum{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__range])) / 3600 > 0)",
               "legendFormat": "__auto",
               "range": false,
               "instant": true,
@@ -1487,10 +1170,404 @@ data:
               "id": "organize",
               "options": {
                 "excludeByName": {
-                  "Time": true
+                  "Time": true,
+                  "Time #A": true
                 },
                 "renameByName": {
-                  "Value": "Hours"
+                  "Value": "Hours",
+                  "Value #A": "Hours"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "type": "table",
+          "title": "Jobs by Organization",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 44,
+            "w": 8,
+            "h": 9
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sort_desc(sum by (organization) (increase(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__range])) > 0)",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "format": "table"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "0"
+            },
+            "overrides": []
+          },
+          "options": {
+            "sortBy": [
+              {
+                "displayName": "Jobs",
+                "desc": true
+              }
+            ]
+          },
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Time #A": true
+                },
+                "renameByName": {
+                  "Value": "Jobs",
+                  "Value #A": "Jobs"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "type": "table",
+          "title": "Jobs by Organization and Scale Set",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 44,
+            "w": 8,
+            "h": 9
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sort_desc(sum by (organization, runner) (label_replace(increase(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__range]), \"runner\", \"$1\", \"pod\", \"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000)-[a-z0-9]+-listener$\")) > 0)",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "format": "table"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "0"
+            },
+            "overrides": []
+          },
+          "options": {
+            "sortBy": [
+              {
+                "displayName": "Jobs",
+                "desc": true
+              }
+            ]
+          },
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Time #A": true
+                },
+                "renameByName": {
+                  "Value": "Jobs",
+                  "Value #A": "Jobs"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "type": "timeseries",
+          "title": "Running Jobs by Organization",
+          "description": "Concurrent GPU jobs per org. When the fleet is at max, this shows who is holding the capacity.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 53,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (organization) (gha_running_jobs{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"})",
+              "legendFormat": "{{organization}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "0",
+              "custom": {
+                "fillOpacity": 15,
+                "lineWidth": 1,
+                "stacking": {
+                  "mode": "normal"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "id": 23,
+          "type": "timeseries",
+          "title": "Runner Hours per Day by Organization",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 53,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (organization) (increase(gha_job_execution_duration_seconds_sum{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[1d])) / 3600",
+              "legendFormat": "{{organization}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "0",
+              "unit": "h",
+              "custom": {
+                "fillOpacity": 15,
+                "lineWidth": 1,
+                "stacking": {
+                  "mode": "normal"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "id": 24,
+          "type": "row",
+          "title": "Usage by Repository (selected time range)",
+          "collapsed": false,
+          "gridPos": {
+            "x": 0,
+            "y": 61,
+            "w": 24,
+            "h": 1
+          },
+          "panels": []
+        },
+        {
+          "id": 25,
+          "type": "table",
+          "title": "Jobs by Repository",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 62,
+            "w": 8,
+            "h": 10
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sort_desc(sum by (organization, repository) (increase(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__range])) > 0)",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "format": "table"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "0"
+            },
+            "overrides": []
+          },
+          "options": {
+            "sortBy": [
+              {
+                "displayName": "Jobs",
+                "desc": true
+              }
+            ]
+          },
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Time #A": true
+                },
+                "renameByName": {
+                  "Value": "Jobs",
+                  "Value #A": "Jobs"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "type": "table",
+          "title": "Jobs by Workflow Job Name",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 62,
+            "w": 8,
+            "h": 10
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sort_desc(sum by (repository, job_name) (increase(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__range])) > 0)",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "format": "table"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "0"
+            },
+            "overrides": []
+          },
+          "options": {
+            "sortBy": [
+              {
+                "displayName": "Jobs",
+                "desc": true
+              }
+            ]
+          },
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Time #A": true
+                },
+                "renameByName": {
+                  "Value": "Jobs",
+                  "Value #A": "Jobs"
                 }
               }
             }
@@ -1498,6 +1575,70 @@ data:
         },
         {
           "id": 27,
+          "type": "table",
+          "title": "Runner Hours by Repository",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 62,
+            "w": 8,
+            "h": 10
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sort_desc(sum by (organization, repository) (increase(gha_job_execution_duration_seconds_sum{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__range])) / 3600 > 0)",
+              "legendFormat": "__auto",
+              "range": false,
+              "instant": true,
+              "refId": "A",
+              "format": "table"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "0"
+            },
+            "overrides": []
+          },
+          "options": {
+            "sortBy": [
+              {
+                "displayName": "Hours",
+                "desc": true
+              }
+            ]
+          },
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Time #A": true
+                },
+                "renameByName": {
+                  "Value": "Hours",
+                  "Value #A": "Hours"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 28,
           "type": "timeseries",
           "title": "Completed Jobs by Result",
           "description": "",
@@ -1507,7 +1648,7 @@ data:
           },
           "gridPos": {
             "x": 0,
-            "y": 45,
+            "y": 72,
             "w": 12,
             "h": 7
           },
@@ -1518,7 +1659,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (job_result) (increase(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
+              "expr": "sum by (job_result) (increase(gha_completed_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__rate_interval]))",
               "legendFormat": "{{job_result}}",
               "range": true,
               "instant": false,
@@ -1558,7 +1699,7 @@ data:
           }
         },
         {
-          "id": 28,
+          "id": 29,
           "type": "timeseries",
           "title": "Jobs by Trigger Event",
           "description": "",
@@ -1568,7 +1709,7 @@ data:
           },
           "gridPos": {
             "x": 12,
-            "y": 45,
+            "y": 72,
             "w": 12,
             "h": 7
           },
@@ -1579,7 +1720,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (event_name) (increase(gha_started_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\", pod=~\"$Scaleset.*\"}[$__rate_interval]))",
+              "expr": "sum by (event_name) (increase(gha_started_jobs_total{pod=~\"(oracle-vm-gpu-a10-1|oracle-vm-gpu-a10-2|cncf-c-ubuntu-24[.]04-16-64-x86-1xrtxpro6000|cncf-c-ubuntu-24[.]04-16-64-x86-2xrtxpro6000).*\"}[$__rate_interval]))",
               "legendFormat": "{{event_name}}",
               "range": true,
               "instant": false,
@@ -1619,20 +1760,20 @@ data:
           }
         },
         {
-          "id": 29,
+          "id": 30,
           "type": "row",
           "title": "Launcher & Controller Health",
           "collapsed": false,
           "gridPos": {
             "x": 0,
-            "y": 52,
+            "y": 79,
             "w": 24,
             "h": 1
           },
           "panels": []
         },
         {
-          "id": 30,
+          "id": 31,
           "type": "timeseries",
           "title": "Launcher Pod Terminations (arc-systems)",
           "description": "Non-Completed exits of GPU launcher pods (the cloudrunner container that creates the VM). Error here usually means the provider could not allocate a GPU shape.",
@@ -1642,7 +1783,7 @@ data:
           },
           "gridPos": {
             "x": 0,
-            "y": 53,
+            "y": 80,
             "w": 12,
             "h": 7
           },
@@ -1693,7 +1834,7 @@ data:
           }
         },
         {
-          "id": 31,
+          "id": 32,
           "type": "timeseries",
           "title": "Launcher Pod Restarts",
           "description": "",
@@ -1703,7 +1844,7 @@ data:
           },
           "gridPos": {
             "x": 12,
-            "y": 53,
+            "y": 80,
             "w": 12,
             "h": 7
           },
@@ -1754,7 +1895,7 @@ data:
           }
         },
         {
-          "id": 32,
+          "id": 33,
           "type": "timeseries",
           "title": "Listener Scrape Health",
           "description": "1 = listener metrics endpoint scraped successfully.",
@@ -1764,7 +1905,7 @@ data:
           },
           "gridPos": {
             "x": 0,
-            "y": 60,
+            "y": 87,
             "w": 12,
             "h": 6
           },
@@ -1815,7 +1956,7 @@ data:
           }
         },
         {
-          "id": 33,
+          "id": 34,
           "type": "timeseries",
           "title": "Controller Reconcile Errors",
           "description": "",
@@ -1825,7 +1966,7 @@ data:
           },
           "gridPos": {
             "x": 12,
-            "y": 60,
+            "y": 87,
             "w": 12,
             "h": 6
           },
@@ -1876,266 +2017,265 @@ data:
           }
         },
         {
-          "id": 34,
+          "id": 35,
           "type": "row",
           "title": "GPU Telemetry (DCGM exporter; CoreWeave nodes)",
-          "collapsed": true,
+          "collapsed": false,
           "gridPos": {
             "x": 0,
-            "y": 66,
+            "y": 93,
             "w": 24,
             "h": 1
           },
-          "panels": [
+          "panels": []
+        },
+        {
+          "id": 36,
+          "type": "timeseries",
+          "title": "GPU Utilization",
+          "description": "Requires a DCGM exporter on GPU nodes (CoreWeave runners are in-cluster pods). OCI VM runners run outside the cluster and show no data here.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 94,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
             {
-              "id": 35,
-              "type": "timeseries",
-              "title": "GPU Utilization",
-              "description": "Requires a DCGM exporter on GPU nodes (CoreWeave runners are in-cluster pods). OCI VM runners run outside the cluster and show no data here.",
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "gridPos": {
-                "x": 0,
-                "y": 67,
-                "w": 12,
-                "h": 8
-              },
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "avg by (Hostname, gpu) (DCGM_FI_DEV_GPU_UTIL)",
-                  "legendFormat": "{{Hostname}} gpu{{gpu}}",
-                  "range": true,
-                  "instant": false,
-                  "refId": "A"
-                }
-              ],
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "mappings": [],
-                  "noValue": "no DCGM exporter",
-                  "unit": "percent",
-                  "custom": {
-                    "fillOpacity": 15,
-                    "lineWidth": 1,
-                    "stacking": {
-                      "mode": "none"
-                    }
-                  }
-                },
-                "overrides": []
-              },
-              "options": {
-                "legend": {
-                  "displayMode": "table",
-                  "placement": "right",
-                  "calcs": [
-                    "lastNotNull",
-                    "max"
-                  ]
-                },
-                "tooltip": {
-                  "mode": "multi",
-                  "sort": "desc"
-                }
-              }
-            },
-            {
-              "id": 36,
-              "type": "timeseries",
-              "title": "GPU Memory Used",
-              "description": "",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "gridPos": {
-                "x": 12,
-                "y": 67,
-                "w": 12,
-                "h": 8
-              },
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "avg by (Hostname, gpu) (DCGM_FI_DEV_FB_USED)",
-                  "legendFormat": "{{Hostname}} gpu{{gpu}}",
-                  "range": true,
-                  "instant": false,
-                  "refId": "A"
-                }
-              ],
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "mappings": [],
-                  "noValue": "no DCGM exporter",
-                  "unit": "decmbytes",
-                  "custom": {
-                    "fillOpacity": 15,
-                    "lineWidth": 1,
-                    "stacking": {
-                      "mode": "none"
-                    }
-                  }
-                },
-                "overrides": []
-              },
-              "options": {
-                "legend": {
-                  "displayMode": "table",
-                  "placement": "right",
-                  "calcs": [
-                    "lastNotNull",
-                    "max"
-                  ]
-                },
-                "tooltip": {
-                  "mode": "multi",
-                  "sort": "desc"
-                }
-              }
-            },
-            {
-              "id": 37,
-              "type": "timeseries",
-              "title": "GPU Temperature",
-              "description": "",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "gridPos": {
-                "x": 0,
-                "y": 75,
-                "w": 12,
-                "h": 7
-              },
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "avg by (Hostname, gpu) (DCGM_FI_DEV_GPU_TEMP)",
-                  "legendFormat": "{{Hostname}} gpu{{gpu}}",
-                  "range": true,
-                  "instant": false,
-                  "refId": "A"
-                }
-              ],
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "mappings": [],
-                  "noValue": "no DCGM exporter",
-                  "unit": "celsius",
-                  "custom": {
-                    "fillOpacity": 15,
-                    "lineWidth": 1,
-                    "stacking": {
-                      "mode": "none"
-                    }
-                  }
-                },
-                "overrides": []
-              },
-              "options": {
-                "legend": {
-                  "displayMode": "table",
-                  "placement": "right",
-                  "calcs": [
-                    "lastNotNull",
-                    "max"
-                  ]
-                },
-                "tooltip": {
-                  "mode": "multi",
-                  "sort": "desc"
-                }
-              }
-            },
-            {
-              "id": 38,
-              "type": "timeseries",
-              "title": "GPU Power Draw",
-              "description": "",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "gridPos": {
-                "x": 12,
-                "y": 75,
-                "w": 12,
-                "h": 7
-              },
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "avg by (Hostname, gpu) (DCGM_FI_DEV_POWER_USAGE)",
-                  "legendFormat": "{{Hostname}} gpu{{gpu}}",
-                  "range": true,
-                  "instant": false,
-                  "refId": "A"
-                }
-              ],
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "mappings": [],
-                  "noValue": "no DCGM exporter",
-                  "unit": "watt",
-                  "custom": {
-                    "fillOpacity": 15,
-                    "lineWidth": 1,
-                    "stacking": {
-                      "mode": "none"
-                    }
-                  }
-                },
-                "overrides": []
-              },
-              "options": {
-                "legend": {
-                  "displayMode": "table",
-                  "placement": "right",
-                  "calcs": [
-                    "lastNotNull",
-                    "max"
-                  ]
-                },
-                "tooltip": {
-                  "mode": "multi",
-                  "sort": "desc"
-                }
-              }
+              "editorMode": "code",
+              "expr": "avg by (Hostname, gpu) (DCGM_FI_DEV_GPU_UTIL)",
+              "legendFormat": "{{Hostname}} gpu{{gpu}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
             }
-          ]
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "no DCGM exporter",
+              "unit": "percent",
+              "custom": {
+                "fillOpacity": 15,
+                "lineWidth": 1,
+                "stacking": {
+                  "mode": "none"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "id": 37,
+          "type": "timeseries",
+          "title": "GPU Memory Used",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 94,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "avg by (Hostname, gpu) (DCGM_FI_DEV_FB_USED)",
+              "legendFormat": "{{Hostname}} gpu{{gpu}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "no DCGM exporter",
+              "unit": "decmbytes",
+              "custom": {
+                "fillOpacity": 15,
+                "lineWidth": 1,
+                "stacking": {
+                  "mode": "none"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "id": 38,
+          "type": "timeseries",
+          "title": "GPU Temperature",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 102,
+            "w": 12,
+            "h": 7
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "avg by (Hostname, gpu) (DCGM_FI_DEV_GPU_TEMP)",
+              "legendFormat": "{{Hostname}} gpu{{gpu}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "no DCGM exporter",
+              "unit": "celsius",
+              "custom": {
+                "fillOpacity": 15,
+                "lineWidth": 1,
+                "stacking": {
+                  "mode": "none"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "id": 39,
+          "type": "timeseries",
+          "title": "GPU Power Draw",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 102,
+            "w": 12,
+            "h": 7
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "avg by (Hostname, gpu) (DCGM_FI_DEV_POWER_USAGE)",
+              "legendFormat": "{{Hostname}} gpu{{gpu}}",
+              "range": true,
+              "instant": false,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "noValue": "no DCGM exporter",
+              "unit": "watt",
+              "custom": {
+                "fillOpacity": 15,
+                "lineWidth": 1,
+                "stacking": {
+                  "mode": "none"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
         }
       ]
     }
