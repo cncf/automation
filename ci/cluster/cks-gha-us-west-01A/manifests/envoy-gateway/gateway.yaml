@@ -1,0 +1,32 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: shared-gateway
+  namespace: envoy-gateway
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  gatewayClassName: envoy
+  listeners:
+  - name: https-api-cw-dashboard
+    protocol: HTTPS
+    port: 443
+    hostname: cw.dashboard.cncf.io
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: cw-dashboard-tls-gw
+        kind: Secret
+        group: ""
+    allowedRoutes:
+      namespaces:
+        from: All
+
+  - name: http-cw-dashboard
+    protocol: HTTP
+    port: 80
+    hostname: cw.dashboard.cncf.io
+    allowedRoutes:
+      namespaces:
+        from: All

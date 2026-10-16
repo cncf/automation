@@ -13,13 +13,68 @@ spec:
   sources:
     - repoURL: ghcr.io/seebom-labs/bomhort/charts
       chart: bomhort
-      targetRevision: 0.7.1
+      targetRevision: 0.8.0-rc.2
       helm:
-        valueFiles:
-          - $values/ci/cluster/services/helm-values/bomhort-values.yaml
+        values: |
+          cleanBatchJobs: false
+          clickhouse:
+            database: bomhort
+            host: chi-bomhort-clickhouse-bomhort-cluster-0-0
+            installation:
+              podTemplate:
+                resources:
+                  limits:
+                    cpu: "4"
+                    memory: 16Gi
+                  requests:
+                    cpu: "2"
+                    memory: 8Gi
+              volumeClaimTemplate:
+                dataStorage: 500Gi
+                logStorage: 10Gi
+            port: 9000
+            user: default
+            userPasswordSecret:
+              enabled: true
+              key: password
+              secretName: clickhouse-password
+          gitSync:
+            enabled: false
+          sbomSource:
+            mountPath: /data/sboms
+            pvcName: bomhort-sbom-data
+            storageSize: 20Gi
+          originalStore:
+            # Explicit: `auto` would resolve to s3 and write originals into the
+            # first bucket below, which these credentials cannot write to.
+            backend: none
+          s3:
+            buckets:
+              - name: cncf-project-sboms
+                endpoint: https://us-iad-18.linodeobjects.com
+                region: us-iad-18
+                usePathStyle: true
+                tags: ["projects"]
+                pathLayout: "project"
+              - name: cncf-subproject-sboms
+                endpoint: https://us-iad-18.linodeobjects.com
+                region: us-iad-18
+                usePathStyle: true
+                tags: ["subprojects"]
+                pathLayout: "namespace/project"
+              - name: sandbox-reviews
+                endpoint: https://us-iad-18.linodeobjects.com
+                region: us-iad-18
+                usePathStyle: true
+                tags: ["sandbox-applications"]
+                pathLayout: "_/_/project"
+          licenseExceptions:
+            enabled: true
+            existingConfigMap: cncf-license-exceptions
+            existingConfigMapKey: license-exceptions.json
     - repoURL: https://github.com/cncf/automation.git
       targetRevision: HEAD
-      ref: values
+      path: ci/cluster/services/manifests/bomhort
   destination:
     server: https://kubernetes.default.svc
     namespace: bomhort
