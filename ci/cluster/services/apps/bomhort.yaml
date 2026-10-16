@@ -72,6 +72,14 @@ spec:
             enabled: true
             existingConfigMap: cncf-license-exceptions
             existingConfigMapKey: license-exceptions.json
+          mcp:
+            enabled: true
+            transport: http
+            allowedOrigins: ["https://bomhort.cncf.io"]
+            existingSecret:
+              enabled: true
+              secretName: bomhort-mcp
+              httpTokenKey: MCP_HTTP_TOKEN
     - repoURL: https://github.com/cncf/automation.git
       targetRevision: HEAD
       path: ci/cluster/services/manifests/bomhort
