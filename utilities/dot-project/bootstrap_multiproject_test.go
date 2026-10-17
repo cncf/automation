@@ -231,6 +231,8 @@ func TestWriteMultiScaffold(t *testing.T) {
 			".gitignore",
 			filepath.Join(".github", "workflows", "validate.yaml"),
 			filepath.Join(".github", "workflows", "update-landscape.yml"),
+
+			filepath.Join(".github", "workflows", "check-links.yml"),
 		} {
 			if _, err := os.Stat(filepath.Join(dir, rel)); err != nil {
 				t.Errorf("expected %s to exist: %v", rel, err)
