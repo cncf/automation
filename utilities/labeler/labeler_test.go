@@ -19,17 +19,61 @@ type MockGitHubClient struct {
 	AppliedLabels map[int][]string
 	RemovedLabels map[int][]string
 	GetLabelError error
+	// Assignees tracks the current assignees per issue number.
+	Assignees map[int][]string
+	// AddedAssignees / RemovedAssignees record every assignee mutation request.
+	AddedAssignees   map[int][]string
+	RemovedAssignees map[int][]string
+	// Assignable lists users that IsAssignee reports as assignable. When nil,
+	// every user is treated as assignable.
+	Assignable      []string
+	IsAssigneeError error
 }
 
 func NewMockGitHubClient() *MockGitHubClient {
 	return &MockGitHubClient{
-		Issues:        make(map[int]*github.Issue),
-		IssueLabels:   make(map[int][]*github.Label),
-		CreatedLabels: make(map[string]*github.Label),
-		DeletedLabels: []string{},
-		AppliedLabels: make(map[int][]string),
-		RemovedLabels: make(map[int][]string),
+		Issues:           make(map[int]*github.Issue),
+		IssueLabels:      make(map[int][]*github.Label),
+		CreatedLabels:    make(map[string]*github.Label),
+		DeletedLabels:    []string{},
+		AppliedLabels:    make(map[int][]string),
+		RemovedLabels:    make(map[int][]string),
+		Assignees:        make(map[int][]string),
+		AddedAssignees:   make(map[int][]string),
+		RemovedAssignees: make(map[int][]string),
 	}
+}
+
+func (m *MockGitHubClient) AddAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error) {
+	m.AddedAssignees[number] = append(m.AddedAssignees[number], assignees...)
+	for _, a := range assignees {
+		if !sliceContains(m.Assignees[number], a) {
+			m.Assignees[number] = append(m.Assignees[number], a)
+		}
+	}
+	return nil, nil, nil
+}
+
+func (m *MockGitHubClient) RemoveAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error) {
+	m.RemovedAssignees[number] = append(m.RemovedAssignees[number], assignees...)
+	remaining := []string{}
+	for _, a := range m.Assignees[number] {
+		if !sliceContains(assignees, a) {
+			remaining = append(remaining, a)
+		}
+	}
+	m.Assignees[number] = remaining
+	return nil, nil, nil
+}
+
+func (m *MockGitHubClient) IsAssignee(ctx context.Context, owner, repo, user string) (bool, *github.Response, error) {
+	if m.IsAssigneeError != nil {
+		return false, nil, m.IsAssigneeError
+	}
+	if m.Assignable == nil {
+		return true, nil, nil
+	}
+	return sliceContains(m.Assignable, user), nil, nil
 }
 
 func (m *MockGitHubClient) GetIssue(ctx context.Context, owner, repo string, number int) (*github.Issue, *github.Response, error) {
@@ -37,7 +81,11 @@ func (m *MockGitHubClient) GetIssue(ctx context.Context, owner, repo string, num
 		return issue, nil, nil
 	}
 	title := "Test Issue"
-	return &github.Issue{Number: &number, Title: &title}, nil, nil
+	issue := &github.Issue{Number: &number, Title: &title}
+	for _, login := range m.Assignees[number] {
+		issue.Assignees = append(issue.Assignees, &github.User{Login: stringPtr(login)})
+	}
+	return issue, nil, nil
 }
 
 func (m *MockGitHubClient) ListLabelsByIssue(ctx context.Context, owner, repo string, number int, opts *github.ListOptions) ([]*github.Label, *github.Response, error) {

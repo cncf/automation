@@ -64,6 +64,38 @@ Apply labels based on changed file paths:
     match: "label-pattern"  # Supports wildcards like "triage/*"
 ```
 
+### Assign / Unassign
+Add or remove issue/PR assignees from a slash command. The command arguments are
+treated as GitHub logins (a leading `@` is optional). With no arguments, the comment
+author is used, so a bare `/assign` self-assigns — this requires the `comment_author`
+input (CLI: the optional trailing `comment_author` argument) to be set.
+```yaml
+- name: assign
+  kind: match
+  spec:
+    command: "/assign"
+  actions:
+  - kind: assign
+
+- name: unassign
+  kind: match
+  spec:
+    command: "/unassign"
+  actions:
+  - kind: unassign
+```
+
+Example comments:
+```
+/assign                 # assigns the comment author
+/assign @alice bob      # assigns alice and bob
+/unassign @alice        # removes alice
+```
+
+Users who are already assigned (or, for `/unassign`, not assigned) are skipped. Users
+who cannot be assigned in the repository are skipped with a log message instead of
+failing the run.
+
 ## Testing
 
 Run tests:
@@ -75,8 +107,11 @@ go test -v
 
 ### CLI
 ```bash
-./labeler <labels_url> <owner> <repo> <issue_number> <comment_body> <changed_files>
+./labeler <labels_url> <owner> <repo> <issue_number> <comment_body> <changed_files> [comment_author]
 ```
+
+`comment_author` is optional and only needed for bare `/assign` / `/unassign`. In a
+workflow, pass `${{ github.event.comment.user.login }}`.
 
 ### GitHub Actions Workflow
 The included workflow automatically runs the labeler on issue comments.

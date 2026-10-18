@@ -20,6 +20,9 @@ inputs:
   changed_files:
     description: "comma separated list of files"
     required: false
+  comment_author:
+    description: "GitHub login of the comment author; used as the implicit target of bare /assign and /unassign."
+    required: false
 
 runs:
   using: "docker"
@@ -31,3 +34,4 @@ runs:
     - "${{ inputs.issue_number }}"
     - "${{ inputs.comment_body }}"
     - "${{ inputs.changed_files }}"
+    - "${{ inputs.comment_author }}"

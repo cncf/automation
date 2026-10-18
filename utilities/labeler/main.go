@@ -13,7 +13,7 @@ func main() {
 	flag.Parse()
 
 	if len(flag.Args()) < 5 {
-		fmt.Println("Usage: labeler [flags] <labels_url> <owner> <repo> <issue_number> <comment_body> <changed_files>")
+		fmt.Println("Usage: labeler [flags] <labels_url> <owner> <repo> <issue_number> <comment_body> <changed_files> [comment_author]")
 		os.Exit(1)
 	}
 	labelsURL := flag.Arg(0)
@@ -22,6 +22,9 @@ func main() {
 	issueNum := flag.Arg(3)
 	commentBody := flag.Arg(4)
 	changedFiles := flag.Arg(5)
+	// Optional: login of the comment author, used as the implicit target of
+	// bare `/assign` and `/unassign` commands.
+	commentAuthor := flag.Arg(6)
 
 	if labelsURL == "" {
 		log.Fatal("labels URL not set")
@@ -51,11 +54,12 @@ func main() {
 	}
 
 	req := &LabelRequest{
-		Owner:        owner,
-		Repo:         repo,
-		IssueNumber:  issueNumber,
-		CommentBody:  commentBody,
-		ChangedFiles: files,
+		Owner:         owner,
+		Repo:          repo,
+		IssueNumber:   issueNumber,
+		CommentBody:   commentBody,
+		ChangedFiles:  files,
+		CommentAuthor: commentAuthor,
 	}
 
 	ctx := context.Background()

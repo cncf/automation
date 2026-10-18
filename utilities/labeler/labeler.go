@@ -27,6 +27,9 @@ type GitHubClient interface {
 	EditLabel(ctx context.Context, owner, repo, name string, label *github.Label) (*github.Label, *github.Response, error)
 	DeleteLabel(ctx context.Context, owner, repo, name string) (*github.Response, error)
 	GetLabel(ctx context.Context, owner, repo, name string) (*github.Label, *github.Response, error)
+	AddAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error)
+	RemoveAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error)
+	IsAssignee(ctx context.Context, owner, repo, user string) (bool, *github.Response, error)
 }
 
 // GitHubClientWrapper wraps the actual GitHub client
@@ -68,6 +71,18 @@ func (g *GitHubClientWrapper) DeleteLabel(ctx context.Context, owner, repo, name
 
 func (g *GitHubClientWrapper) GetLabel(ctx context.Context, owner, repo, name string) (*github.Label, *github.Response, error) {
 	return g.client.Issues.GetLabel(ctx, owner, repo, name)
+}
+
+func (g *GitHubClientWrapper) AddAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error) {
+	return g.client.Issues.AddAssignees(ctx, owner, repo, number, assignees)
+}
+
+func (g *GitHubClientWrapper) RemoveAssignees(ctx context.Context, owner, repo string, number int, assignees []string) (*github.Issue, *github.Response, error) {
+	return g.client.Issues.RemoveAssignees(ctx, owner, repo, number, assignees)
+}
+
+func (g *GitHubClientWrapper) IsAssignee(ctx context.Context, owner, repo, user string) (bool, *github.Response, error) {
+	return g.client.Issues.IsAssignee(ctx, owner, repo, user)
 }
 
 // Labeler handles the core labeling logic
@@ -117,6 +132,10 @@ type LabelRequest struct {
 	IssueNumber  int
 	CommentBody  string
 	ChangedFiles []string
+	// CommentAuthor is the GitHub login of the comment author. It is optional
+	// and only used as the implicit target of bare `/assign` and `/unassign`
+	// commands (i.e. without explicit user arguments).
+	CommentAuthor string
 }
 
 func (l *Labeler) processRules(ctx context.Context, req *LabelRequest, issue *github.Issue) error {
@@ -185,13 +204,11 @@ func (l *Labeler) processMatchRule(ctx context.Context, req *LabelRequest, rule 
 
 	lines := strings.Split(req.CommentBody, "\n")
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, rule.Spec.Command) {
-			parts := strings.Fields(line)
-			argv := []string{}
-			if len(parts) > 1 {
-				argv = parts[1:]
-			}
+		parts := strings.Fields(line)
+		// The command must be the first whitespace-delimited token of the
+		// line, so that e.g. "/assign" does not also match "/assignee".
+		if len(parts) > 0 && parts[0] == rule.Spec.Command {
+			argv := parts[1:]
 
 			if len(rule.Spec.MatchList) > 0 && len(argv) > 0 {
 				if !slices.Contains(rule.Spec.MatchList, argv[0]) {
@@ -289,8 +306,156 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 		if label != "" {
 			return l.removeLabel(ctx, req.Owner, req.Repo, req.IssueNumber, label)
 		}
+	case "assign":
+		return l.assign(ctx, req, l.resolveAssignees(req, argv))
+	case "unassign":
+		return l.unassign(ctx, req, l.resolveAssignees(req, argv))
 	}
 	return nil
+}
+
+// resolveAssignees turns the command arguments of an assign/unassign action
+// into a list of GitHub logins. Explicit arguments win; with no arguments the
+// comment author (when known) is the implicit target, mirroring Prow's
+// `/assign` semantics.
+func (l *Labeler) resolveAssignees(req *LabelRequest, argv []string) []string {
+	logins := normalizeLogins(argv)
+	if len(logins) == 0 && req.CommentAuthor != "" {
+		logins = normalizeLogins([]string{req.CommentAuthor})
+	}
+	return logins
+}
+
+// normalizeLogins strips a leading "@" from each entry, drops empties and
+// de-duplicates case-insensitively (GitHub logins are case-insensitive),
+// preserving the first spelling and order seen.
+func normalizeLogins(args []string) []string {
+	seen := map[string]bool{}
+	out := make([]string, 0, len(args))
+	for _, a := range args {
+		login := strings.TrimPrefix(strings.TrimSpace(a), "@")
+		if login == "" {
+			continue
+		}
+		key := strings.ToLower(login)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		out = append(out, login)
+	}
+	return out
+}
+
+// assign adds the given users as assignees of the issue/PR. Users that are
+// already assigned are skipped, and users that cannot be assigned in the
+// repository (not a collaborator, etc.) are skipped with a log line rather
+// than failing the whole request, so one bad login does not block the rest.
+func (l *Labeler) assign(ctx context.Context, req *LabelRequest, logins []string) error {
+	if len(logins) == 0 {
+		if l.config.Debug {
+			log.Printf("assign: no users to assign (no arguments and no comment author)")
+		}
+		return nil
+	}
+
+	current, err := l.currentAssignees(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	toAdd := []string{}
+	for _, login := range logins {
+		if containsFold(current, login) {
+			if l.config.Debug {
+				log.Printf("assign: %s is already assigned, skipping", login)
+			}
+			continue
+		}
+		ok, _, err := l.client.IsAssignee(ctx, req.Owner, req.Repo, login)
+		if err != nil {
+			return fmt.Errorf("failed to check whether %s can be assigned: %v", login, err)
+		}
+		if !ok {
+			log.Printf("assign: %s cannot be assigned in %s/%s, skipping", login, req.Owner, req.Repo)
+			continue
+		}
+		toAdd = append(toAdd, login)
+	}
+
+	if len(toAdd) == 0 {
+		return nil
+	}
+	if l.config.Debug {
+		log.Printf("Assigning: %v", toAdd)
+	}
+	if _, _, err := l.client.AddAssignees(ctx, req.Owner, req.Repo, req.IssueNumber, toAdd); err != nil {
+		return fmt.Errorf("failed to assign %v: %v", toAdd, err)
+	}
+	return nil
+}
+
+// unassign removes the given users from the issue/PR assignees. Users that
+// are not currently assigned are skipped.
+func (l *Labeler) unassign(ctx context.Context, req *LabelRequest, logins []string) error {
+	if len(logins) == 0 {
+		if l.config.Debug {
+			log.Printf("unassign: no users to unassign (no arguments and no comment author)")
+		}
+		return nil
+	}
+
+	current, err := l.currentAssignees(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	toRemove := []string{}
+	for _, login := range logins {
+		if !containsFold(current, login) {
+			if l.config.Debug {
+				log.Printf("unassign: %s is not assigned, skipping", login)
+			}
+			continue
+		}
+		toRemove = append(toRemove, login)
+	}
+
+	if len(toRemove) == 0 {
+		return nil
+	}
+	if l.config.Debug {
+		log.Printf("Unassigning: %v", toRemove)
+	}
+	if _, _, err := l.client.RemoveAssignees(ctx, req.Owner, req.Repo, req.IssueNumber, toRemove); err != nil {
+		return fmt.Errorf("failed to unassign %v: %v", toRemove, err)
+	}
+	return nil
+}
+
+// currentAssignees returns the logins currently assigned to the issue/PR.
+func (l *Labeler) currentAssignees(ctx context.Context, req *LabelRequest) ([]string, error) {
+	issue, _, err := l.client.GetIssue(ctx, req.Owner, req.Repo, req.IssueNumber)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch issue: %v", err)
+	}
+	logins := make([]string, 0, len(issue.Assignees))
+	for _, u := range issue.Assignees {
+		if u.GetLogin() != "" {
+			logins = append(logins, u.GetLogin())
+		}
+	}
+	return logins, nil
+}
+
+// containsFold reports whether list contains s, comparing case-insensitively.
+func containsFold(list []string, s string) bool {
+	for _, item := range list {
+		if strings.EqualFold(item, s) {
+			return true
+		}
+	}
+	return false
 }
 
 // compilePatterns expands and validates a rule's match pattern, returning
