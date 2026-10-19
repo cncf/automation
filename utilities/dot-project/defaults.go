@@ -32,6 +32,15 @@ const (
 	// DefaultGitHubGraphQLURL is the GitHub GraphQL API endpoint.
 	DefaultGitHubGraphQLURL = "https://api.github.com/graphql"
 
+	// DefaultLinkCheckConcurrency is how many links are checked in parallel.
+	// It stays well below GitHub's secondary rate limit on concurrent requests.
+	DefaultLinkCheckConcurrency = 8
+
+	// DefaultLinkCheckRecheckDelay is how long the checker waits before
+	// re-fetching a link that returned 404/410, so a momentary outage is not
+	// reported as a broken link.
+	DefaultLinkCheckRecheckDelay = 10 * time.Second
+
 	// OrgFileName is the org.yaml index found at the root of a .project
 	// repository whose GitHub organization hosts multiple CNCF projects.
 	OrgFileName = "org.yaml"
