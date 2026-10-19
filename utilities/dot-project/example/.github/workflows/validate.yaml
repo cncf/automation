@@ -38,6 +38,9 @@ jobs:
       - uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         # No project_file input: the action discovers the repository layout,
         # so this step is identical for single- and multi-project repositories.
+        with:
+          # Fail on links this pull request adds that return 404.
+          check_links: 'true'
 
   validate-maintainers:
     runs-on: ubuntu-latest
@@ -53,5 +56,7 @@ jobs:
           # file in the repository.
           # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
           verify_maintainers: 'false'
+          # Fail on handles this pull request adds that are not GitHub accounts.
+          check_links: 'true'
         env:
           LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}

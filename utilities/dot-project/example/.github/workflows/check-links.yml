@@ -1,0 +1,43 @@
+# Example scheduled link check for .project metadata
+# Copy this to your project's .github/workflows/ directory
+#
+# Documentation: https://github.com/cncf/automation/tree/main/utilities/dot-project
+
+name: Check Links
+
+on:
+  schedule:
+    # Saturday 11:23 UTC is still Saturday from UTC-11 to UTC+12, so the scan
+    # lands on a weekend almost everywhere. The job skips every other week.
+    - cron: '23 11 * * 6'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run every other week
+        id: biweekly
+        if: github.event_name == 'schedule'
+        run: |
+          # Cron cannot express "every other week", so skip odd-numbered
+          # weeks since the Unix epoch.
+          if [ $(( $(date -u +%s) / 604800 % 2 )) -ne 0 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.biweekly.outputs.skip != 'true'
+        with:
+          persist-credentials: false
+
+      - uses: cncf/automation/.github/actions/check-links@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
+        if: steps.biweekly.outputs.skip != 'true'
+        with:
+          # Opens one issue with this label when links are broken, keeps it
+          # updated, and closes it once everything resolves again.
+          label: 'broken-links'

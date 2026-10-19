@@ -84,6 +84,7 @@ utilities/dot-project/
 ```
 .github/
 ├── actions/
+│   ├── check-links/            # Scheduled link check; opens/reopens/updates/closes an issue
 │   ├── validate-maintainers/   # Reusable action for maintainer validation
 │   └── validate-project/       # Reusable action for project validation
 └── workflows/
@@ -220,6 +221,7 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 - `-skip-landscape` - Skip CNCF landscape YAML lookup (default: false)
 - `-skip-clomonitor` - Skip CLOMonitor API lookup (default: false)
 - `-skip-github` - Skip GitHub API lookup (default: false)
+- `-skip-link-check` - Skip checking generated links/handles; by default 404 links are commented out under a `# TODO` and unknown handles are moved to TODO comments (default: false)
 - `-dry-run` - Print generated YAML without writing files (default: false)
 
 ## Testing
@@ -318,6 +320,8 @@ Additional types in domain-specific files:
 - `landscape.go` contains `ProjectToLandscapeEntry`, `CompareLandscapeEntries`, `LoadProjectFromFile`
 - `org.go` contains `LoadOrgFromFile` and `ValidateOrgStruct` for the `org.yaml` index
 - `discovery.go` contains `Discover`, which returns the layout and the projects in the repository. It reports the layout, not correctness — it succeeds on repositories `ValidateRepo` rejects
+- `linkcheck.go` contains link collection (`CollectRepoLinks`, `CollectLinksFromFiles`), `LinkChecker` (GitHub API mapping, HEAD→GET fallback, one 404 recheck) and the text/annotation/Markdown formatters
+- `bootstrap_linkcheck.go` contains `CheckBootstrapLinks` and `PruneBrokenLinks`, which comment broken links out of generated YAML under a `# TODO`
 - `repo_validate.go` contains `ValidateRepo`, which enforces every cross-file rule (no root metadata in multi mode, declared vs. present directories, slug/`project_id` matching the directory, unique slugs) and returns errors *and* warnings. Shared team names across projects are a warning, never an error
 - Handle normalization strips whitespace and leading `@` symbols
 - All URLs are validated for proper format
@@ -341,6 +345,9 @@ Additional types in domain-specific files:
 - `--maintainers` - Path to maintainers file, set empty to skip (default: `testdata/maintainers.yaml`)
 - `--base-maintainers` - Path to a base maintainers file *or directory* for diff validation
 - `--verify-maintainers` - Verify maintainer handles via external service (default: false)
+- `--check-links` - Resolve every URL and maintainer handle; 404s and non-http(s) values fail, placeholders/`http://`/other errors warn (default: false). Uses `GITHUB_TOKEN`
+- `--links-base` - Base checkout; only links not present there are checked (used on pull requests)
+- `--links-report` - Write a Markdown report of broken links (empty file when none)
 - `--output` - Output format: text, json, yaml (default: `text`)
 
 **landscape-updater** (`cmd/landscape-updater/main.go`):
@@ -472,6 +479,7 @@ The `example/` directory contains starter files for new `.project` repositories
 - `projectlist.yaml` - Example project list entry (used by validator tests)
 - `.github/workflows/validate.yaml` - CI workflow to validate project files
 - `.github/workflows/update-landscape.yml` - CI workflow to sync changes to the CNCF Landscape
+- `.github/workflows/check-links.yml` - Biweekly scheduled link check (generated from `checkLinksWorkflowContent`)
 
 ## Common Tasks
 

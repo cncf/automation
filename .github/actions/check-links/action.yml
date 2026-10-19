@@ -1,0 +1,107 @@
+name: 'Check Links'
+description: >-
+  Check every link and maintainer handle in a .project repository, and keep a
+  single issue up to date with the results: opened (or the last one reopened)
+  and rewritten while links are broken, closed when they are fixed. Intended
+  for a scheduled workflow.
+inputs:
+  token:
+    description: 'GitHub token with issues: write on the repository'
+    required: false
+    default: ${{ github.token }}
+  label:
+    description: 'Label that identifies the link-check issue'
+    required: false
+    default: 'broken-links'
+  fail_on_broken:
+    description: 'Fail the step when broken links are found (the issue is managed either way)'
+    required: false
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout automation tools
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      env:
+        ACTION_REF: ${{ github.action_ref }}
+      with:
+        persist-credentials: false
+        repository: cncf/automation
+        ref: ${{ env.ACTION_REF }}
+        path: _cncf-automation
+        sparse-checkout: utilities/dot-project
+
+    - name: Set up Go
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      with:
+        go-version-file: _cncf-automation/utilities/dot-project/go.mod
+
+    - name: Build validator
+      shell: bash
+      env:
+        WORKSPACE: ${{ github.workspace }}
+      run: |
+        cd _cncf-automation/utilities/dot-project
+        go build -o "${WORKSPACE}/_cncf-validator" ./cmd/validator
+
+    - name: Check links and update issue
+      shell: bash
+      env:
+        WORKSPACE: ${{ github.workspace }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+        GH_TOKEN: ${{ inputs.token }}
+        GH_REPO: ${{ github.repository }}
+        LABEL: ${{ inputs.label }}
+        FAIL_ON_BROKEN: ${{ inputs.fail_on_broken }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        set -euo pipefail
+
+        REPORT="${RUNNER_TEMP}/link-report.md"
+        rm -f "${REPORT}"
+
+        # The validator also runs schema validation, whose failures are the
+        # validate workflow's concern. The report decides the issue state: it
+        # is empty when every link resolves, and missing only if the check
+        # itself could not run, in which case the issue is left untouched.
+        "${WORKSPACE}/_cncf-validator" -repo-root . -check-links -links-report "${REPORT}" || true
+        if [ ! -f "${REPORT}" ]; then
+          echo "::error::The link check did not run; see the output above."
+          exit 1
+        fi
+
+        TITLE="Broken links in .project metadata"
+        gh label create "${LABEL}" --color d93f0b \
+          --description "Links in .project metadata that no longer resolve" > /dev/null 2>&1 || true
+        OPEN="$(gh issue list --label "${LABEL}" --state open --json number --jq '.[0].number // empty')"
+
+        if [ -s "${REPORT}" ]; then
+          printf '\n_Last checked by %s_\n' "${RUN_URL}" >> "${REPORT}"
+          if [ -n "${OPEN}" ]; then
+            gh issue edit "${OPEN}" --body-file "${REPORT}"
+            echo "Updated issue #${OPEN}"
+          else
+            # Reopen the most recent issue rather than starting a new one, so
+            # the history of a repository's link problems stays in one place.
+            CLOSED="$(gh issue list --label "${LABEL}" --state closed --limit 1 --json number --jq '.[0].number // empty')"
+            if [ -n "${CLOSED}" ]; then
+              gh issue reopen "${CLOSED}"
+              gh issue edit "${CLOSED}" --body-file "${REPORT}"
+              echo "Reopened issue #${CLOSED}"
+            else
+              gh issue create --title "${TITLE}" --label "${LABEL}" --body-file "${REPORT}"
+            fi
+          fi
+          if [ "${FAIL_ON_BROKEN}" = "true" ]; then
+            exit 1
+          fi
+        elif [ -n "${OPEN}" ]; then
+          gh issue close "${OPEN}" --comment "All links resolve as of ${RUN_URL}."
+          echo "Closed issue #${OPEN}"
+        fi
+
+    - name: Cleanup
+      shell: bash
+      if: always()
+      run: |
+        rm -rf _cncf-automation _cncf-validator
