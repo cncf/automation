@@ -110,7 +110,14 @@ func TestLinkCheckerGitHubMapping(t *testing.T) {
 			"/api/repos/acme/core/contents/docs/SECURITY.md?ref=main",
 			"/api/repos/acme/core/issues/12",
 			"/api/users/alice",
-			"/web/acme/core/blob/master/README.md":
+			"/web/acme/core/blob/master/README.md",
+			// github.com pages that are not a user, organization or
+			// repository: the REST API 404s on them, the website does not.
+			"/web/sponsors/alice",
+			"/web/apps/acme-bot",
+			"/web/topics/kubernetes",
+			"/web/marketplace/actions/acme-action",
+			"/web/enterprises/acme":
 			w.WriteHeader(http.StatusOK)
 		default:
 			w.WriteHeader(http.StatusNotFound)
@@ -128,6 +135,12 @@ func TestLinkCheckerGitHubMapping(t *testing.T) {
 		"https://github.com/acme/core/blob/master/README.md":      LinkOK, // renamed branch: web fallback
 		"https://github.com/acme/core/blob/main/MISSING.md":       LinkBroken,
 		"https://github.com/acme/gone":                            LinkBroken,
+		"https://github.com/sponsors/alice":                       LinkOK, // not a repo: web fallback
+		"https://github.com/apps/acme-bot":                        LinkOK,
+		"https://github.com/topics/kubernetes":                    LinkOK,
+		"https://github.com/marketplace/actions/acme-action":      LinkOK,
+		"https://github.com/enterprises/acme":                     LinkOK,
+		"https://github.com/sponsors/nobody":                      LinkBroken, // gone on the web too
 		"http://github.com/acme/core":                             LinkWarning,
 	}
 	var links []Link
