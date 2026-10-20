@@ -239,11 +239,7 @@ ssh_authorized_keys:
 	for _, cmd := range commands {
 		log.Println("running ssh command", "command", cmd)
 
-		sensitive := strings.Contains(cmd, "ACTIONS_RUNNER_INPUT_JITCONFIG")
-		expanded := cmd
-		if !sensitive {
-			expanded = strings.ReplaceAll(cmd, "${ACTIONS_RUNNER_INPUT_JITCONFIG}", os.Getenv("ACTIONS_RUNNER_INPUT_JITCONFIG"))
-		}
+		expanded, sensitive := expandCommand(cmd)
 
 		output, err := sshClient.RunCommand(ctx, expanded)
 		if err != nil {
@@ -268,6 +264,16 @@ ssh_authorized_keys:
 //  1. An explicit --kubeconfig path.
 //  2. The in-cluster service-account config (when running inside a pod).
 //  3. The default kubeconfig file / KUBECONFIG env var.
+const jitConfigPlaceholder = "${ACTIONS_RUNNER_INPUT_JITCONFIG}"
+
+// expandCommand substitutes the JIT config placeholder in cmd with the real value
+// and reports whether cmd carries the secret, so callers can keep the expanded
+// command and its output out of the logs. The unexpanded cmd is always safe to log.
+func expandCommand(cmd string) (expanded string, sensitive bool) {
+	sensitive = strings.Contains(cmd, jitConfigPlaceholder)
+	return strings.ReplaceAll(cmd, jitConfigPlaceholder, os.Getenv("ACTIONS_RUNNER_INPUT_JITCONFIG")), sensitive
+}
+
 func buildRestConfig(kubeconfigPath string) (*rest.Config, error) {
 	if kubeconfigPath != "" {
 		return clientcmd.BuildConfigFromFlags("", kubeconfigPath)
