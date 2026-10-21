@@ -282,13 +282,16 @@ jobs:
             image: ${{ needs.build-runner-images.outputs.image-noble }}
             digest: ${{ needs.build-runner-images.outputs.digest-noble }}
     steps:
-      - name: Checkout repository
+      # Deliberately checks out the trusted BASE ref, not the PR head: this
+      # job passes secrets.GHA_PAT to the local composite action below, so
+      # the action code (and the manifest file it sed-patches) must come
+      # from trusted content, never from PR-controlled code. Under
+      # pull_request_target the default (no ref override) already resolves
+      # to the base branch, so no `ref:`/`allow-unsafe-pr-checkout` here.
+      - name: Checkout trusted base repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          # fork runs are gated by the runner-images-tests-fork environment approval
-          allow-unsafe-pr-checkout: true
 
       - name: Run kind with ARC and wait for test-runner
         uses: ./.github/actions/run-kind-with-arc
@@ -310,14 +313,10 @@ jobs:
     runs-on: runner-img-test-${{ github.run_id }}-${{ matrix.base-image }}
     timeout-minutes: 10
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          # fork runs are gated by the runner-images-tests-fork environment approval
-          allow-unsafe-pr-checkout: true
-
+      # No checkout: this job only verifies tools/codename baked into the
+      # image and runs a hello-world container, so it needs no repo files.
+      # Checking out PR-controlled code onto a self-hosted ARC runner would
+      # add risk (untrusted code execution) without any benefit.
       - name: Verify base image and tools
         env:
           EXPECTED_CODENAME: ${{ matrix.base-image }}
