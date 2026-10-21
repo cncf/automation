@@ -436,7 +436,6 @@ func (c *LinkChecker) checkOne(ctx context.Context, raw string) (LinkStatus, str
 func (c *LinkChecker) checkGitHub(ctx context.Context, u *url.URL) (LinkStatus, string) {
 	seg := strings.FieldsFunc(u.Path, func(r rune) bool { return r == '/' })
 	var api string
-	contents := false
 	switch {
 	case len(seg) == 0:
 		return LinkOK, ""
@@ -453,7 +452,6 @@ func (c *LinkChecker) checkGitHub(ctx context.Context, u *url.URL) (LinkStatus, 
 			// points at a single-segment branch or HEAD; anything the API
 			// cannot resolve is confirmed against github.com below.
 			api += "/contents/" + escapePath(seg[4:]) + "?ref=" + url.QueryEscape(seg[3])
-			contents = true
 		case len(seg) >= 4 && (seg[2] == "issues" || seg[2] == "pull"):
 			// Pull requests are issues in the REST API.
 			api += "/issues/" + url.PathEscape(seg[3])
@@ -466,9 +464,13 @@ func (c *LinkChecker) checkGitHub(ctx context.Context, u *url.URL) (LinkStatus, 
 	if err != nil {
 		return LinkWarning, "could not be checked: " + err.Error()
 	}
-	if (code == http.StatusNotFound) && contents {
-		// The API does not follow branch renames (master -> main), but
-		// github.com does, and a renamed-branch link still works for readers.
+	if code == http.StatusNotFound {
+		// The API only knows users, organizations and repositories. A 404
+		// is not proof that the page is gone: it does not follow branch
+		// renames (master -> main), and it has no endpoint at all for pages
+		// such as github.com/sponsors/<user>, /apps/<app>, /topics/<topic>,
+		// /marketplace/... or /enterprises/<name>. github.com does serve
+		// them, so it has the final say.
 		web := strings.TrimRight(c.WebBase, "/") + u.EscapedPath()
 		if wc, err := c.get(ctx, web, false); err == nil {
 			code = wc

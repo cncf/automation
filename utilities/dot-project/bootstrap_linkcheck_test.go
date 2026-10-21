@@ -100,7 +100,9 @@ func TestCheckBootstrapLinksPrunesAndDropsUnknownHandles(t *testing.T) {
 		p := r.URL.Path
 		switch {
 		case strings.Contains(p, "SECURITY.md"),
-			strings.HasSuffix(p, "/users/ghost"):
+			// ghost does not exist on the API or on github.com, which the
+			// link checker consults before reporting a 404.
+			p == "/api/users/ghost", p == "/web/ghost":
 			w.WriteHeader(http.StatusNotFound)
 		default:
 			w.WriteHeader(http.StatusOK)
