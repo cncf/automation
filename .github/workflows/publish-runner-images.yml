@@ -9,14 +9,14 @@ name: Build GitHub Runner Images
 on:
   push:
     branches: [main]
-    paths: ['ci/gha-runner-image/Dockerfile*']
+    paths: ['ci/gha-runner-image/Dockerfile*', '.github/actions/run-kind-with-arc/**']
   # pull_request_target (not pull_request) so fork PRs get the secrets needed
   # to deploy a real ARC runner for testing; the authorize job below gates
   # fork PRs behind a manual environment approval before any of their code
   # runs with those secrets.
   pull_request_target:
     branches: [main]
-    paths: ['ci/gha-runner-image/Dockerfile*']
+    paths: ['ci/gha-runner-image/Dockerfile*', '.github/actions/run-kind-with-arc/**']
   workflow_dispatch:
 
 permissions:
