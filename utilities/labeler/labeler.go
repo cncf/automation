@@ -315,26 +315,37 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 }
 
 // resolveAssignees turns the command arguments of an assign/unassign action
-// into a list of GitHub logins. Explicit arguments win; with no arguments the
-// comment author (when known) is the implicit target, mirroring Prow's
-// `/assign` semantics.
+// into a list of GitHub logins. Explicit arguments win; only when no
+// arguments at all were supplied is the comment author (when known) the
+// implicit target, mirroring Prow's `/assign` semantics. A command whose
+// arguments are all malformed (e.g. a bare "@") therefore targets nobody
+// rather than silently falling back to the author.
 func (l *Labeler) resolveAssignees(req *LabelRequest, argv []string) []string {
-	logins := normalizeLogins(argv)
-	if len(logins) == 0 && req.CommentAuthor != "" {
-		logins = normalizeLogins([]string{req.CommentAuthor})
+	if len(argv) == 0 {
+		if req.CommentAuthor == "" {
+			return nil
+		}
+		return normalizeLogins([]string{req.CommentAuthor})
 	}
-	return logins
+	return normalizeLogins(argv)
 }
 
-// normalizeLogins strips a leading "@" from each entry, drops empties and
-// de-duplicates case-insensitively (GitHub logins are case-insensitive),
-// preserving the first spelling and order seen.
+// normalizeLogins strips a leading "@" from each entry, drops entries that
+// are not syntactically valid GitHub logins (logging them) and de-duplicates
+// case-insensitively (GitHub logins are case-insensitive), preserving the
+// first spelling and order seen. Validating here keeps malformed input out
+// of the GitHub API request URL, where it would otherwise fail the whole
+// command instead of just the bad entry.
 func normalizeLogins(args []string) []string {
 	seen := map[string]bool{}
 	out := make([]string, 0, len(args))
 	for _, a := range args {
 		login := strings.TrimPrefix(strings.TrimSpace(a), "@")
 		if login == "" {
+			continue
+		}
+		if !isValidLogin(login) {
+			log.Printf("ignoring malformed GitHub login %q", login)
 			continue
 		}
 		key := strings.ToLower(login)
@@ -345,6 +356,26 @@ func normalizeLogins(args []string) []string {
 		out = append(out, login)
 	}
 	return out
+}
+
+// isValidLogin reports whether s has the shape of a GitHub username: 1-39
+// alphanumeric characters or single hyphens, not starting or ending with a
+// hyphen and with no consecutive hyphens.
+func isValidLogin(s string) bool {
+	if len(s) == 0 || len(s) > 39 {
+		return false
+	}
+	if s[0] == '-' || s[len(s)-1] == '-' || strings.Contains(s, "--") {
+		return false
+	}
+	for _, c := range s {
+		switch {
+		case c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z', c >= '0' && c <= '9', c == '-':
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 // assign adds the given users as assignees of the issue/PR. Users that are
@@ -364,6 +395,10 @@ func (l *Labeler) assign(ctx context.Context, req *LabelRequest, logins []string
 		return err
 	}
 
+	// A failure checking one login must not discard the others, so errors
+	// are collected and the assignable users are still added before the
+	// errors are returned.
+	var errs []error
 	toAdd := []string{}
 	for _, login := range logins {
 		if containsFold(current, login) {
@@ -374,7 +409,8 @@ func (l *Labeler) assign(ctx context.Context, req *LabelRequest, logins []string
 		}
 		ok, _, err := l.client.IsAssignee(ctx, req.Owner, req.Repo, login)
 		if err != nil {
-			return fmt.Errorf("failed to check whether %s can be assigned: %v", login, err)
+			errs = append(errs, fmt.Errorf("failed to check whether %s can be assigned: %v", login, err))
+			continue
 		}
 		if !ok {
 			log.Printf("assign: %s cannot be assigned in %s/%s, skipping", login, req.Owner, req.Repo)
@@ -383,16 +419,15 @@ func (l *Labeler) assign(ctx context.Context, req *LabelRequest, logins []string
 		toAdd = append(toAdd, login)
 	}
 
-	if len(toAdd) == 0 {
-		return nil
+	if len(toAdd) > 0 {
+		if l.config.Debug {
+			log.Printf("Assigning: %v", toAdd)
+		}
+		if _, _, err := l.client.AddAssignees(ctx, req.Owner, req.Repo, req.IssueNumber, toAdd); err != nil {
+			errs = append(errs, fmt.Errorf("failed to assign %v: %v", toAdd, err))
+		}
 	}
-	if l.config.Debug {
-		log.Printf("Assigning: %v", toAdd)
-	}
-	if _, _, err := l.client.AddAssignees(ctx, req.Owner, req.Repo, req.IssueNumber, toAdd); err != nil {
-		return fmt.Errorf("failed to assign %v: %v", toAdd, err)
-	}
-	return nil
+	return errors.Join(errs...)
 }
 
 // unassign removes the given users from the issue/PR assignees. Users that

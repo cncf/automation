@@ -188,9 +188,84 @@ func TestLabeler_Assign_CommandMustBeOwnToken(t *testing.T) {
 }
 
 func TestNormalizeLogins(t *testing.T) {
-	got := normalizeLogins([]string{"@Alice", "bob", "", "@", "@alice", "Bob"})
+	got := normalizeLogins([]string{"@Alice", "bob", "", "@", "@alice", "Bob", "bad%"})
 	want := []string{"Alice", "bob"}
 	if !slicesEqual(got, want) {
 		t.Errorf("normalizeLogins = %v, want %v", got, want)
+	}
+}
+
+func TestLabeler_Assign_MalformedOnlyArgDoesNotFallBackToAuthor(t *testing.T) {
+	client := NewMockGitHubClient()
+	labeler := NewLabeler(client, createTestConfigWithAssignRules())
+
+	// "/assign @" has an argument, so it must not be treated as a bare /assign.
+	if err := labeler.ProcessRequest(context.Background(), newAssignRequest("/assign @", "carol")); err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+	if len(client.AddedAssignees[1]) != 0 {
+		t.Errorf("expected nobody to be assigned for '/assign @', got %v", client.AddedAssignees[1])
+	}
+}
+
+func TestLabeler_Unassign_MalformedOnlyArgDoesNotFallBackToAuthor(t *testing.T) {
+	client := NewMockGitHubClient()
+	client.Assignees[1] = []string{"carol"}
+	labeler := NewLabeler(client, createTestConfigWithAssignRules())
+
+	if err := labeler.ProcessRequest(context.Background(), newAssignRequest("/unassign @", "carol")); err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+	if len(client.RemovedAssignees[1]) != 0 {
+		t.Errorf("expected nobody to be unassigned for '/unassign @', got %v", client.RemovedAssignees[1])
+	}
+}
+
+func TestLabeler_Assign_MalformedLoginDoesNotBlockValidOnes(t *testing.T) {
+	client := NewMockGitHubClient()
+	labeler := NewLabeler(client, createTestConfigWithAssignRules())
+
+	if err := labeler.ProcessRequest(context.Background(), newAssignRequest("/assign @alice @bad% -dash dash- @bob", "carol")); err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+	if !slicesEqual(client.AddedAssignees[1], []string{"alice", "bob"}) {
+		t.Errorf("expected only valid logins alice and bob to be added, got %v", client.AddedAssignees[1])
+	}
+}
+
+func TestLabeler_Assign_IsAssigneeErrorDoesNotBlockOtherUsers(t *testing.T) {
+	client := NewMockGitHubClient()
+	client.IsAssigneeErrorFor = "flaky"
+	labeler := NewLabeler(client, createTestConfigWithAssignRules())
+
+	// The API error for "flaky" is still reported, but alice is assigned.
+	err := labeler.assign(context.Background(), newAssignRequest("", "carol"), []string{"alice", "flaky"})
+	if err == nil {
+		t.Fatalf("expected an error for the IsAssignee failure")
+	}
+	if !slicesEqual(client.AddedAssignees[1], []string{"alice"}) {
+		t.Errorf("expected alice to be assigned despite the error for flaky, got %v", client.AddedAssignees[1])
+	}
+}
+
+func TestIsValidLogin(t *testing.T) {
+	cases := map[string]bool{
+		"alice":    true,
+		"a":        true,
+		"a-b-c1":   true,
+		"Alice-99": true,
+		"":         false,
+		"bad%":     false,
+		"-lead":    false,
+		"trail-":   false,
+		"a--b":     false,
+		"with/sl":  false,
+		"with.dot": false,
+		"a234567890123456789012345678901234567890": false, // 40 chars
+	}
+	for login, want := range cases {
+		if got := isValidLogin(login); got != want {
+			t.Errorf("isValidLogin(%q) = %v, want %v", login, got, want)
+		}
 	}
 }

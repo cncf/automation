@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 	"testing"
@@ -28,6 +29,8 @@ type MockGitHubClient struct {
 	// every user is treated as assignable.
 	Assignable      []string
 	IsAssigneeError error
+	// IsAssigneeErrorFor makes IsAssignee fail for this one login only.
+	IsAssigneeErrorFor string
 }
 
 func NewMockGitHubClient() *MockGitHubClient {
@@ -69,6 +72,9 @@ func (m *MockGitHubClient) RemoveAssignees(ctx context.Context, owner, repo stri
 func (m *MockGitHubClient) IsAssignee(ctx context.Context, owner, repo, user string) (bool, *github.Response, error) {
 	if m.IsAssigneeError != nil {
 		return false, nil, m.IsAssigneeError
+	}
+	if m.IsAssigneeErrorFor != "" && m.IsAssigneeErrorFor == user {
+		return false, nil, errors.New("simulated IsAssignee failure for " + user)
 	}
 	if m.Assignable == nil {
 		return true, nil, nil

@@ -93,8 +93,10 @@ Example comments:
 ```
 
 Users who are already assigned (or, for `/unassign`, not assigned) are skipped. Users
-who cannot be assigned in the repository are skipped with a log message instead of
-failing the run.
+who cannot be assigned in the repository, and arguments that are not syntactically valid
+GitHub logins, are skipped with a log message instead of failing the run. The comment
+author fallback applies only when the command has no arguments at all, so `/assign @`
+targets nobody.
 
 ## Testing
 
