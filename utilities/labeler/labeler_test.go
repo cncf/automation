@@ -2,7 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -918,4 +923,120 @@ func sliceContains(slice []string, item string) bool {
 		}
 	}
 	return false
+}
+
+func TestLabeler_ProcessMatchRule_CommandRequiresExactToken(t *testing.T) {
+	tests := []struct {
+		name    string
+		comment string
+	}{
+		{"command is only a prefix of a longer word", "/triage-bot valid"},
+		{"command glued to its argument", "/triagevalid"},
+		{"command is a prefix of a longer command", "/tagging infrastructure"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client := NewMockGitHubClient()
+			labeler := NewLabeler(client, createTestConfig())
+
+			req := &LabelRequest{Owner: "o", Repo: "r", IssueNumber: 1, CommentBody: tt.comment}
+			if err := labeler.ProcessRequest(context.Background(), req); err != nil {
+				t.Fatalf("ProcessRequest failed: %v", err)
+			}
+
+			for _, label := range client.AppliedLabels[1] {
+				if strings.HasPrefix(label, "triage/") || strings.HasPrefix(label, "tag/") {
+					t.Errorf("comment %q must not trigger a command, but applied %q", tt.comment, label)
+				}
+			}
+		})
+	}
+}
+
+func TestLabeler_ProcessMatchRule_CommandWithoutArgumentAppliesNoTemplateLabel(t *testing.T) {
+	client := NewMockGitHubClient()
+	config := createTestConfig()
+	// A repo that does not require label definitions would otherwise create
+	// whatever name the action renders to.
+	config.DefinitionRequired = false
+	labeler := NewLabeler(client, config)
+
+	req := &LabelRequest{Owner: "o", Repo: "r", IssueNumber: 1, CommentBody: "/tag"}
+	if err := labeler.ProcessRequest(context.Background(), req); err != nil {
+		t.Fatalf("ProcessRequest failed: %v", err)
+	}
+
+	for _, label := range client.AppliedLabels[1] {
+		if strings.Contains(label, "{{") {
+			t.Errorf("applied label with unrendered template: %q", label)
+		}
+	}
+	for name := range client.CreatedLabels {
+		if strings.Contains(name, "{{") {
+			t.Errorf("created label with unrendered template: %q", name)
+		}
+	}
+}
+
+func TestGitHubClientWrapper_ListLabelsFollowsPagination(t *testing.T) {
+	const total = 250
+	var requests int
+
+	mux := http.NewServeMux()
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		requests++
+		page := 1
+		if p := r.URL.Query().Get("page"); p != "" {
+			page, _ = strconv.Atoi(p)
+		}
+		perPage := 100 // the server caps pages regardless of what is asked for
+		start := (page - 1) * perPage
+		end := min(start+perPage, total)
+
+		items := make([]map[string]string, 0, perPage)
+		for i := start; i < end; i++ {
+			items = append(items, map[string]string{"name": fmt.Sprintf("label-%d", i)})
+		}
+		if end < total {
+			next := fmt.Sprintf("<http://%s%s?page=%d>; rel=\"next\"", r.Host, r.URL.Path, page+1)
+			w.Header().Set("Link", next)
+		}
+		_ = json.NewEncoder(w).Encode(items)
+	}
+	mux.HandleFunc("/repos/o/r/labels", handler)
+	mux.HandleFunc("/repos/o/r/issues/1/labels", handler)
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	gh := github.NewClient(nil)
+	baseURL, _ := url.Parse(srv.URL + "/")
+	gh.BaseURL = baseURL
+	wrapper := &GitHubClientWrapper{client: gh}
+
+	tests := map[string]func() ([]*github.Label, error){
+		"ListLabels": func() ([]*github.Label, error) {
+			l, _, err := wrapper.ListLabels(context.Background(), "o", "r", nil)
+			return l, err
+		},
+		"ListLabelsByIssue": func() ([]*github.Label, error) {
+			l, _, err := wrapper.ListLabelsByIssue(context.Background(), "o", "r", 1, nil)
+			return l, err
+		},
+	}
+	for name, call := range tests {
+		t.Run(name, func(t *testing.T) {
+			requests = 0
+			labels, err := call()
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if len(labels) != total {
+				t.Errorf("got %d labels, want %d (stopped after the first page)", len(labels), total)
+			}
+			if requests != 3 {
+				t.Errorf("made %d requests, want 3", requests)
+			}
+		})
+	}
 }

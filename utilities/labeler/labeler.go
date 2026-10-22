@@ -38,8 +38,13 @@ func (g *GitHubClientWrapper) GetIssue(ctx context.Context, owner, repo string, 
 	return g.client.Issues.Get(ctx, owner, repo, number)
 }
 
+// ListLabelsByIssue returns every label on the issue, following pagination.
+// GitHub returns only 30 items per page by default, so a single call silently
+// truncates the result. Callers use it to decide whether a label is present.
 func (g *GitHubClientWrapper) ListLabelsByIssue(ctx context.Context, owner, repo string, number int, opts *github.ListOptions) ([]*github.Label, *github.Response, error) {
-	return g.client.Issues.ListLabelsByIssue(ctx, owner, repo, number, opts)
+	return listAllLabels(opts, func(o *github.ListOptions) ([]*github.Label, *github.Response, error) {
+		return g.client.Issues.ListLabelsByIssue(ctx, owner, repo, number, o)
+	})
 }
 
 func (g *GitHubClientWrapper) AddLabelsToIssue(ctx context.Context, owner, repo string, number int, labels []string) ([]*github.Label, *github.Response, error) {
@@ -50,8 +55,37 @@ func (g *GitHubClientWrapper) RemoveLabelForIssue(ctx context.Context, owner, re
 	return g.client.Issues.RemoveLabelForIssue(ctx, owner, repo, number, label)
 }
 
+// ListLabels returns every label defined on the repository, following
+// pagination. auto-delete relies on seeing the complete set.
 func (g *GitHubClientWrapper) ListLabels(ctx context.Context, owner, repo string, opts *github.ListOptions) ([]*github.Label, *github.Response, error) {
-	return g.client.Issues.ListLabels(ctx, owner, repo, opts)
+	return listAllLabels(opts, func(o *github.ListOptions) ([]*github.Label, *github.Response, error) {
+		return g.client.Issues.ListLabels(ctx, owner, repo, o)
+	})
+}
+
+// listAllLabels calls fetch for each page and concatenates the results. The
+// returned Response is the one for the last page fetched.
+func listAllLabels(opts *github.ListOptions, fetch func(*github.ListOptions) ([]*github.Label, *github.Response, error)) ([]*github.Label, *github.Response, error) {
+	o := github.ListOptions{PerPage: 100}
+	if opts != nil {
+		o = *opts
+		if o.PerPage == 0 {
+			o.PerPage = 100
+		}
+	}
+
+	var all []*github.Label
+	for {
+		page, resp, err := fetch(&o)
+		if err != nil {
+			return nil, resp, err
+		}
+		all = append(all, page...)
+		if resp == nil || resp.NextPage == 0 {
+			return all, resp, nil
+		}
+		o.Page = resp.NextPage
+	}
 }
 
 func (g *GitHubClientWrapper) CreateLabel(ctx context.Context, owner, repo string, label *github.Label) (*github.Label, *github.Response, error) {
@@ -185,27 +219,32 @@ func (l *Labeler) processMatchRule(ctx context.Context, req *LabelRequest, rule 
 
 	lines := strings.Split(req.CommentBody, "\n")
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, rule.Spec.Command) {
-			parts := strings.Fields(line)
-			argv := []string{}
-			if len(parts) > 1 {
-				argv = parts[1:]
-			}
+		parts := strings.Fields(line)
+		// The command must be the whole first token; a bare prefix match would
+		// let "/triage-bot valid" or "/tagging x" trigger "/triage" and "/tag".
+		if len(parts) == 0 || parts[0] != rule.Spec.Command {
+			continue
+		}
+		argv := parts[1:]
 
-			if len(rule.Spec.MatchList) > 0 && len(argv) > 0 {
-				if !slices.Contains(rule.Spec.MatchList, argv[0]) {
-					if l.config.Debug {
-						log.Printf("Invalid argument `%s` for command %s", argv[0], rule.Spec.Command)
-					}
-					continue
+		if len(rule.Spec.MatchList) > 0 {
+			if len(argv) == 0 {
+				if l.config.Debug {
+					log.Printf("Command %s requires an argument, skipping", rule.Spec.Command)
 				}
+				continue
 			}
-
-			for _, action := range rule.Actions {
-				if err := l.executeAction(ctx, req, action, argv); err != nil {
-					log.Printf("error executing action: %v", err)
+			if !slices.Contains(rule.Spec.MatchList, argv[0]) {
+				if l.config.Debug {
+					log.Printf("Invalid argument `%s` for command %s", argv[0], rule.Spec.Command)
 				}
+				continue
+			}
+		}
+
+		for _, action := range rule.Actions {
+			if err := l.executeAction(ctx, req, action, argv); err != nil {
+				log.Printf("error executing action: %v", err)
 			}
 		}
 	}
@@ -274,6 +313,14 @@ func (l *Labeler) executeAction(ctx context.Context, req *LabelRequest, action A
 	}
 	if action.Spec.Match != "" {
 		label = l.renderLabel(action.Spec.Match, argv)
+	}
+	// A placeholder survives rendering when the command was given fewer
+	// arguments than the template references. Acting on it would apply, or
+	// auto-create, a label literally named "tag/{{ argv.0 }}".
+	if strings.Contains(label, "{{") {
+		return fmt.Errorf("label %q has an unfilled argument placeholder", label)
+	}
+	if action.Spec.Match != "" {
 		if !l.isValidLabel(label) && !strings.Contains(label, "/*") {
 			if l.config.Debug {
 				log.Printf("Label `%s` is not defined in labels.yaml", label)
