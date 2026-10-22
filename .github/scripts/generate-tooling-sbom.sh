@@ -23,6 +23,7 @@ GO_COMPONENTS=(
   ci/gha-runner-vm
   ci/gha-runner-vm-oci
   utilities/dot-project
+  utilities/labeler
   utilities/landscape-mcp-server
   utilities/landscape-sync
 )
