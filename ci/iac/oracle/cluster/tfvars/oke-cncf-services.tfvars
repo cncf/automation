@@ -14,6 +14,7 @@ vcn_cidr                  = "10.0.0.0/16"
 k8s_api_cidr              = "10.0.0.0/28"
 svc_cidr                  = "10.0.20.0/24"
 node_cidr                 = "10.0.10.0/23"
+max_pods_per_node         = 50
 deploy_ingress            = true
 
 control_plane_k8s_version   = "v1.37.0"

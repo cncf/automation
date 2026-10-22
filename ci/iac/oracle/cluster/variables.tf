@@ -120,6 +120,12 @@ variable "regional_service_cidr_label" {
   description = "The Service CIDR Labels follow a specific naming convention based on the regional key of the location"
 }
 
+variable "max_pods_per_node" {
+  type        = number
+  description = "Maximum number of pods per node"
+  default     = 110
+}
+
 variable "svc_lb_egress_rules" {
   description = "Egress security rules for the service LB security list"
   type = list(object({

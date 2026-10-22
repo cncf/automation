@@ -10,6 +10,6 @@ resource "oci_containerengine_addon" "cluster_autoscaler" {
 
   configurations {
     key   = "nodes"
-    value = "${var.cluster_autoscaler_min}:${var.cluster_autoscaler_max}:${oci_containerengine_node_pool.service_worker.id}"
+    value = "${var.cluster_autoscaler_min}:${var.cluster_autoscaler_max}:${oci_containerengine_node_pool.ol9_workers.id}"
   }
 }
