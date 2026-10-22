@@ -17,7 +17,7 @@ Polyglot automation monorepo. **There is no root build, no Go workspace, no shar
 
 ---
 
-## Go — 7 independent modules (no go.work)
+## Go — 6 independent modules (no go.work)
 
 Module roots (each has its own `go.mod`, build, and test):
 
@@ -26,7 +26,6 @@ ci/cloudrunners/
 ci/gha-runner-vm/
 ci/gha-runner-vm-oci/
 utilities/dot-project/
-utilities/labeler/
 utilities/landscape-mcp-server/
 utilities/landscape-sync/
 ```
@@ -40,7 +39,6 @@ utilities/landscape-sync/
 Most modules: `go test -v ./...`
 
 Exceptions:
-- `utilities/labeler/` — **no Makefile `test` target**; run `go test -v` directly (flat single package).
 - `utilities/landscape-mcp-server/` — also flat single package; `go test -v` or `go test ./...` both work.
 - `utilities/dot-project/` — Makefile uses `go test -v ./...`; **CI runs flat `go test -v -coverprofile=coverage.out`** (no `./...`). Note: `REPO_ROOT`, `MAINTAINER_API_ENDPOINT`, and `MAINTAINER_API_STUB=true` are set on the validator binary run step in CI, not the test step — unit tests do not require them.
 
@@ -53,8 +51,6 @@ Exceptions:
 - Docker image entrypoint is `validator`; override with `--entrypoint landscape-updater`.
 
 **`utilities/landscape-mcp-server/`** — stdlib-only, **no `go.sum`, no Makefile**. Build: `go build -o landscape2-mcp-server`. Note: binary is `landscape2-mcp-server`; published image is `ghcr.io/cncf/landscape-mcp-server` (different names).
-
-**`utilities/labeler/`** — Makefile has only `run` and `image` targets, no `build` or `test`. Local test image tags as `gha-labeler:latest`; published image is `ghcr.io/cncf/gha-labeler`.
 
 **`ci/cloudrunners/`** — Dockerfile builds only `oci` and `kubevirt` binaries. `gcp/` is a kept, manual-run provider with its own Dockerfile (`ci/cloudrunners/gcp/Dockerfile`) and is not shipped in the main image or run by any workflow. `CLOUDRUNNER_PROVIDER` env selects binary at runtime (`oci` default). OCI images are always created as `rc-<name>` (release candidates); a CI workflow promotes them to production names after tests pass.
 
@@ -118,7 +114,7 @@ Python version for workflows is pinned in `.python-version` (root); workflows us
 ## CI / GitHub Actions
 
 - **`ci-test.yaml`** is `workflow_dispatch`-only and requires OCI secrets + self-hosted runners. It cannot be run locally.
-- **GitHub Actions are expected to be SHA-pinned** (Kusari Inspector via `kusari.yaml` flags unpinned ones); most are, though some reusable workflows are tag-pinned (e.g. `slsa-github-generator@v2.1.0`). `.github/actions/labeler-action` and `utilities/labeler` are consumed by `cncf/toc` (SHA-pinned) — not used by this repo's own workflows.
+- **GitHub Actions are expected to be SHA-pinned** (Kusari Inspector via `kusari.yaml` flags unpinned ones); most are, though some reusable workflows are tag-pinned (e.g. `slsa-github-generator@v2.1.0`).
 - Labels and slash commands (`/kind`, `/area`, `/priority`, `/status`, `/lgtm`, `/approve`, `/hold`) are handled by `cncf/prow-github-actions` via `.github/workflows/prow.yml`; config in `.github/prow.yaml`, reviewers/approvers in `OWNERS` files — see `.github/README_LABELING.md`.
 
 ---
