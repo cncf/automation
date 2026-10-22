@@ -1,0 +1,87 @@
+name: 'Validate Committees'
+description: >-
+  Validate an org-level committees.yaml (governance bodies, role teams and
+  members) against the committees.yaml schema; usable by any GitHub
+  organization
+inputs:
+  committees_file:
+    description: 'Path to the committees file to validate'
+    required: false
+    default: 'committees.yaml'
+  check_links:
+    description: >-
+      Check that every member handle is an existing GitHub account and every
+      committee url resolves (on by default; set to 'false' to skip). On
+      pull_request and push events only entries that are new relative to the
+      base branch (or the previous push) are checked, which requires a
+      checkout with fetch-depth: 0.
+    required: false
+    default: 'true'
+  token:
+    description: 'GitHub token used for handle checking (raises the API rate limit)'
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout automation tools
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      env:
+        ACTION_REF: ${{ github.action_ref }}
+      with:
+        persist-credentials: false
+        repository: cncf/automation
+        ref: ${{ env.ACTION_REF }}
+        path: _cncf-automation
+        sparse-checkout: utilities/dot-project
+
+    - name: Set up Go
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      with:
+        go-version-file: _cncf-automation/utilities/dot-project/go.mod
+
+    - name: Build validator
+      shell: bash
+      env:
+        WORKSPACE: ${{ github.workspace }}
+      run: |
+        cd _cncf-automation/utilities/dot-project
+        go build -o "${WORKSPACE}/_cncf-validator" ./cmd/validator
+
+    - name: Validate committees
+      shell: bash
+      env:
+        WORKSPACE: ${{ github.workspace }}
+        COMMITTEES_FILE: ${{ inputs.committees_file }}
+        CHECK_LINKS: ${{ inputs.check_links }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+        BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      run: |
+        set -euo pipefail
+
+        ARGS=(-committees "${COMMITTEES_FILE}")
+        if [ "${CHECK_LINKS}" != "true" ]; then
+          # The validator checks links by default in -committees mode.
+          ARGS+=(-check-links=false)
+        else
+          ARGS+=(-check-links=true)
+          # A pull request or push only answers for the entries it adds.
+          if [ -n "${BASE_SHA}" ] && [ -n "${BASE_SHA//0/}" ]; then
+            if git worktree add --detach "${RUNNER_TEMP}/_cncf-base-committees" "${BASE_SHA}" > /dev/null 2>&1; then
+              ARGS+=(-links-base "${RUNNER_TEMP}/_cncf-base-committees/${COMMITTEES_FILE}")
+            else
+              echo "::notice::Base commit ${BASE_SHA} is not available (checkout with fetch-depth: 0); checking every entry."
+            fi
+          fi
+        fi
+
+        "${WORKSPACE}/_cncf-validator" "${ARGS[@]}"
+
+    - name: Cleanup
+      shell: bash
+      if: always()
+      env:
+        BASE_DIR: ${{ runner.temp }}/_cncf-base-committees
+      run: |
+        if [ -d "${BASE_DIR}" ]; then git worktree remove --force "${BASE_DIR}" || true; fi
+        rm -rf _cncf-automation _cncf-validator

@@ -345,9 +345,11 @@ Additional types in domain-specific files:
 - `--maintainers` - Path to maintainers file, set empty to skip (default: `testdata/maintainers.yaml`)
 - `--base-maintainers` - Path to a base maintainers file *or directory* for diff validation
 - `--verify-maintainers` - Verify maintainer handles via external service (default: false)
-- `--check-links` - Resolve every URL and maintainer handle; 404s and non-http(s) values fail, placeholders/`http://`/other errors warn (default: false). Uses `GITHUB_TOKEN`
+- `--check-links` - Resolve every URL and maintainer handle; 404s and non-http(s) values fail, placeholders/`http://`/other errors warn (default: false; true with `--committees`). Token: `GITHUB_TOKEN`/`GH_TOKEN`, then `--env-file`, then `gh auth token`
 - `--links-base` - Base checkout; only links not present there are checked (used on pull requests)
 - `--links-report` - Write a Markdown report of broken links (empty file when none)
+- `--env-file` - Env file read for `GITHUB_TOKEN` when checking links (default: `.env`; real env vars win)
+- `--committees` - Validate an org-level `committees.yaml` only and exit (see `COMMITTEES.md`)
 - `--output` - Output format: text, json, yaml (default: `text`)
 
 **landscape-updater** (`cmd/landscape-updater/main.go`):
