@@ -38,6 +38,14 @@ spec:
               enabled: true
               key: password
               secretName: clickhouse-password
+            apiGateway:
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
           gitSync:
             enabled: false
           sbomSource:
@@ -70,8 +78,7 @@ spec:
                 pathLayout: "_/_/project"
           licenseExceptions:
             enabled: true
-            existingConfigMap: cncf-license-exceptions
-            existingConfigMapKey: license-exceptions.json
+            source: https://exceptions.cncf.io/exceptions.json
           mcp:
             enabled: true
             transport: http
@@ -80,9 +87,6 @@ spec:
               enabled: true
               secretName: bomhort-mcp
               httpTokenKey: MCP_HTTP_TOKEN
-    - repoURL: https://github.com/cncf/automation.git
-      targetRevision: HEAD
-      path: ci/cluster/services/manifests/bomhort
   destination:
     server: https://kubernetes.default.svc
     namespace: bomhort

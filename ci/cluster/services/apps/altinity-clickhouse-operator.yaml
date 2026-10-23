@@ -34,6 +34,18 @@ spec:
             config.yaml:
               watch:
                 namespaces: ["clickhouse-altinity", "bomhort"]
+          configdFiles:
+            01-clickhouse-02-logger.xml: |
+              <yandex>
+                <logger>
+                  <level>information</level>
+                  <log>/var/log/clickhouse-server/clickhouse-server.log</log>
+                  <errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>
+                  <size>1000M</size>
+                  <count>10</count>
+                  <console>1</console>
+                </logger>
+              </yandex>
   destination:
     server: https://kubernetes.default.svc
     namespace: clickhouse-altinity
