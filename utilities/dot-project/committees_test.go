@@ -161,6 +161,102 @@ func TestCommitteesValidation(t *testing.T) {
 			wantErrors: []string{`members[bob]: role "Vice Chair" must be lowercase`},
 		},
 		{
+			name: "liaison lists other committees, even ones defined later",
+			yaml: validCommitteesHeader + `
+  - id: toc
+    name: TOC
+    teams:
+      - name: members
+        members:
+          - github: alice
+            role: chair
+            liaison: [tag-a, tag-b]
+            elected_by: TOC
+            start: 2025-03-04
+          - github: bob
+            liaison: ~
+            elected_by: TOC
+            start: 2025-03-04
+  - id: tag-a
+    name: TAG A
+    teams:
+      - name: chairs
+        members:
+          - github: carol
+            elected_by: TOC
+            start: 2025-03-04
+  - id: tag-b
+    name: TAG B
+    teams:
+      - name: chairs
+        members:
+          - github: dave
+            elected_by: TOC
+            start: 2025-03-04
+`,
+			wantValid: true,
+		},
+		{
+			name: "liaison entries must be distinct ids of other committees",
+			yaml: validCommitteesHeader + `
+  - id: toc
+    name: TOC
+    teams:
+      - name: members
+        members:
+          - github: alice
+            liaison: [tag-a, tag-a, tag-missing, toc]
+            elected_by: TOC
+            start: 2025-03-04
+  - id: tag-a
+    name: TAG A
+    teams:
+      - name: chairs
+        members:
+          - github: carol
+            elected_by: TOC
+            start: 2025-03-04
+`,
+			wantErrors: []string{
+				`members[alice]: liaison "tag-a" is listed more than once`,
+				`members[alice]: liaison "tag-missing" is not a committee id in this file`,
+				`members[alice]: liaison "toc" is the member's own committee`,
+			},
+		},
+		{
+			name: "liaison must be a non-empty list of single values",
+			yaml: validCommitteesHeader + `
+  - id: toc
+    name: TOC
+    teams:
+      - name: members
+        members:
+          - github: alice
+            liaison: tag-a
+            elected_by: TOC
+            start: 2025-03-04
+          - github: bob
+            liaison: []
+            elected_by: TOC
+            start: 2025-03-04
+          - github: carol
+            liaison: [[tag-a]]
+            elected_by: TOC
+            start: 2025-03-04
+          - github: dave
+            liaison: [tag-a]
+            liaison: [tag-a]
+            elected_by: TOC
+            start: 2025-03-04
+`,
+			wantErrors: []string{
+				`members[alice]: line 11: field "liaison" must be a list of committee ids`,
+				`members[bob]: line 15: field "liaison" cannot be an empty list`,
+				`members[carol]: line 19: liaison entries must be committee ids`,
+				`members[dave]: line 24: field "liaison" is set more than once`,
+			},
+		},
+		{
 			name: "unknown member field such as email is rejected",
 			yaml: validCommitteesHeader + `
   - id: toc
