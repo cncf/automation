@@ -109,7 +109,8 @@ See `example/project.yaml` for a complete filled-in example to copy and adapt.
 
 ### Validator
 
-Validates `project.yaml` and `maintainers.yaml` files.
+Validates `project.yaml` and `maintainers.yaml` files, or an organization's
+`committees.yaml` with `-committees` (see [COMMITTEES.md](COMMITTEES.md)).
 
 ```bash
 # Build
@@ -132,6 +133,9 @@ make build
 
 # Enable LFX handle verification
 ./bin/validator -verify-maintainers
+
+# Validate an organization's committees.yaml (see COMMITTEES.md)
+./bin/validator -committees committees.yaml
 ```
 
 #### Flags
@@ -139,15 +143,17 @@ make build
 | Flag | Default | Description |
 |------|---------|-------------|
 | `-repo-root` | | Path to a `.project` repository. Detects the layout and validates every project it contains, plus the repository structure itself. Mutually exclusive with `-config`/`-maintainers` |
+| `-committees` | | Validate an org-level `committees.yaml` instead of projects (see [COMMITTEES.md](COMMITTEES.md)). Checks every handle and URL by default (`-check-links=false` to skip); honours `-output`, `-links-base`, `-links-report` and `-env-file`; ignores the project flags |
 | `-config` | `testdata/projectlist.yaml` | Path to project list configuration |
 | `-maintainers` | `testdata/maintainers.yaml` | Path to maintainers file (empty to skip) |
 | `-base-maintainers` | | Base maintainers file or directory, for diff validation |
 | `-cache` | `.cache` | Cache directory |
 | `-output` | `text` | Output format: `text`, `json`, `yaml` |
 | `-verify-maintainers` | `false` | Verify handles via LFX API |
-| `-check-links` | `false` | Check that every URL and maintainer handle resolves (see [Link Checking](#link-checking)) |
+| `-check-links` | `false` (`true` with `-committees`) | Check that every URL and maintainer handle resolves (see [Link Checking](#link-checking)) |
 | `-links-base` | | Base checkout of the repository; only links not already present there are checked |
 | `-links-report` | | Write a Markdown report of broken links to this file (empty when none are broken) |
+| `-env-file` | `.env` | Env file read for `GITHUB_TOKEN` when checking links (real env vars win) |
 
 `-repo-root` is what the GitHub Actions use. It reports the detected layout,
 checks the repository structure (see [SCHEMA.md](SCHEMA.md#validation)), then
@@ -158,9 +164,13 @@ maintainers only, or `-maintainers=` to validate projects only.
 
 `-check-links` resolves every URL in the project files and every maintainer
 handle. Relative paths are resolved against the primary repository. GitHub
-links go through the GitHub API (set `GITHUB_TOKEN` to avoid rate limits);
-everything else gets a `HEAD` request, falling back to `GET`. A 404 is retried
-once before it counts.
+links go through the GitHub API; everything else gets a `HEAD` request,
+falling back to `GET`. A 404 is retried once before it counts.
+
+The GitHub token comes from `GITHUB_TOKEN` or `GH_TOKEN`, then the `-env-file`
+(default `.env`), then `gh auth token`. Without a token the validator prints a
+notice: unauthenticated requests are rate-limited, and rate-limited links are
+reported as warnings, so a local run without a token proves little.
 
 | Result | Examples | Effect |
 |--------|----------|--------|
@@ -403,6 +413,23 @@ adds are checked, so an unrelated dead link never blocks a contributor or turns
 `main` red (the scheduled scan reports those); the checkout needs
 `fetch-depth: 0` for the base commit to be available.
 
+### Using the Validate Committees Action
+
+For an organization's `.project` repository that keeps a
+[`committees.yaml`](COMMITTEES.md) at its root:
+
+```yaml
+- uses: cncf/automation/.github/actions/validate-committees@<sha> # pin to a commit
+  with:
+    committees_file: 'committees.yaml' # default
+```
+
+Unlike the project actions, `check_links` defaults to `'true'`: every new
+member handle must be an existing GitHub account. As above, a pull request or
+push only checks the entries it adds (with `fetch-depth: 0`). See
+[COMMITTEES.md](COMMITTEES.md#adopting-it-in-an-organizations-project-repository)
+for a complete workflow.
+
 ### Check Links Action
 
 ```yaml
@@ -579,6 +606,10 @@ Notes:
 In a [multi-project repository](#repository-layouts), `project.yaml` and
 `maintainers.yaml` live in each project's directory rather than at the root, and
 an `org.yaml` index at the root is required.
+
+An organization's `.project` repository may also keep an org-level
+`committees.yaml` at its root for its governance bodies; it is optional and
+validated separately (see [COMMITTEES.md](COMMITTEES.md)).
 
 ## Schema Versioning
 

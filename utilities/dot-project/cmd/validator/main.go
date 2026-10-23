@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"projects"
 )
@@ -21,11 +23,29 @@ func main() {
 		baseMaintainersFile = flag.String("base-maintainers", "", "Path to base maintainers file, or to a base repository root, for diff validation")
 		verifyMaintainers   = flag.Bool("verify-maintainers", false, "Verify maintainer handles via external service (stubbed)")
 		outputFormat        = flag.String("output", "text", "Output format: text, json, yaml")
-		checkLinks          = flag.Bool("check-links", false, "Check that every link and maintainer handle resolves; 404/410 fails the run (uses GITHUB_TOKEN when set)")
+		checkLinks          = flag.Bool("check-links", false, "Check that every link and maintainer handle resolves; 404/410 fails the run. On by default with -committees")
 		linksBase           = flag.String("links-base", "", "Base repository root; links already present there are not checked, so a pull request only answers for the links it adds")
 		linksReport         = flag.String("links-report", "", "Write a markdown report of broken links here (an empty file means none were found)")
+		envFile             = flag.String("env-file", ".env", "Env file read for GITHUB_TOKEN when checking links; real env vars take precedence, and 'gh auth token' is the fallback")
+		committeesFile      = flag.String("committees", "", "Path to a committees.yaml file; validates only that file and exits. Checks every handle and URL unless -check-links=false (-output, -links-base, -links-report and -env-file apply)")
 	)
 	flag.Parse()
+
+	if *committeesFile != "" {
+		// committees.yaml is small and every entry is a GitHub handle, so
+		// link checking is on unless explicitly disabled.
+		committeeLinks := true
+		flag.Visit(func(f *flag.Flag) {
+			if f.Name == "check-links" {
+				committeeLinks = *checkLinks
+			}
+		})
+		var links *linkOptions
+		if committeeLinks {
+			links = &linkOptions{base: *linksBase, report: *linksReport, token: githubToken(*envFile)}
+		}
+		os.Exit(runCommittees(*committeesFile, *outputFormat, links))
+	}
 
 	// The composite actions each cover one half of the repository, so
 	// repo-root mode has to honour the established "skip" idioms: an explicit
@@ -182,7 +202,11 @@ func main() {
 		} else if *maintainersFile != "" {
 			maintainerFiles = []string{*maintainersFile}
 		}
-		broken, err := runLinkCheck(*repoRoot, *configFile, maintainerFiles, *linksBase, *linksReport, *outputFormat)
+		broken, err := runLinkCheck(*repoRoot, *configFile, maintainerFiles, linkOptions{
+			base:   *linksBase,
+			report: *linksReport,
+			token:  githubToken(*envFile),
+		}, *outputFormat)
 		if err != nil {
 			log.Fatalf("link check failed: %v", err)
 		}
@@ -196,10 +220,60 @@ func main() {
 	}
 }
 
+// linkOptions configures a link check: base names a baseline whose links are
+// skipped, report a markdown file for broken links, and token the GitHub
+// token (empty for unauthenticated requests).
+type linkOptions struct {
+	base, report, token string
+}
+
+// newLinkChecker builds the link checker; tests replace it to avoid the
+// network.
+var newLinkChecker = projects.NewLinkChecker
+
+// ghAuthToken returns the token of the gh CLI's active login, or "" when gh
+// is not installed or not logged in. Tests replace it.
+var ghAuthToken = func() string {
+	ctx, cancel := context.WithTimeout(context.Background(), projects.DefaultHTTPTimeout)
+	defer cancel()
+	out, err := exec.CommandContext(ctx, "gh", "auth", "token").Output()
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
+}
+
+// githubToken resolves the token used for link checks: GITHUB_TOKEN, then
+// GH_TOKEN, from the environment or from envFile (real environment variables
+// win), then the gh CLI's login. Without one, GitHub's unauthenticated rate
+// limit turns most handle checks into warnings, so the run says so.
+func githubToken(envFile string) string {
+	if envFile != "" {
+		if _, err := projects.LoadDotEnv(envFile); err != nil {
+			fmt.Fprintf(os.Stderr, "link check: could not read %s: %v\n", envFile, err)
+		}
+	}
+	for _, key := range []string{"GITHUB_TOKEN", "GH_TOKEN"} {
+		if token := strings.TrimSpace(os.Getenv(key)); token != "" {
+			return token
+		}
+	}
+	if token := ghAuthToken(); token != "" {
+		return token
+	}
+	sources := "GITHUB_TOKEN, GH_TOKEN"
+	if envFile != "" {
+		sources += ", " + envFile
+	}
+	fmt.Fprintf(os.Stderr, "link check: no GitHub token found (%s or 'gh auth login'); unauthenticated requests "+
+		"are rate-limited and rate-limited links are only reported as warnings\n", sources)
+	return ""
+}
+
 // runLinkCheck checks the links of the files being validated and reports
 // whether any are broken. Placeholders and unconfirmable links are printed as
 // warnings but never fail the run.
-func runLinkCheck(root, projectList string, maintainerFiles []string, base, report, format string) (bool, error) {
+func runLinkCheck(root, projectList string, maintainerFiles []string, opts linkOptions, format string) (bool, error) {
 	projectFiles, err := projects.LocalProjectFiles(projectList)
 	if err != nil {
 		return false, err
@@ -212,19 +286,26 @@ func runLinkCheck(root, projectList string, maintainerFiles []string, base, repo
 	}
 	links := projects.CollectLinksFromFiles(root, present, maintainerFiles)
 
-	if base != "" {
-		baseLinks, err := projects.CollectRepoLinks(base)
+	if opts.base != "" {
+		baseLinks, err := projects.CollectRepoLinks(opts.base)
 		if err != nil {
 			// A base that cannot be read (for example, the pull request
 			// creates the repository's first project.yaml) has no links to
 			// subtract, so everything is new.
-			fmt.Fprintf(os.Stderr, "link check: base %s unreadable (%v); checking all links\n", base, err)
+			fmt.Fprintf(os.Stderr, "link check: base %s unreadable (%v); checking all links\n", opts.base, err)
 		} else {
 			links = projects.ExcludeKnownLinks(links, baseLinks)
 		}
 	}
 
-	results := projects.NewLinkChecker(os.Getenv("GITHUB_TOKEN")).Check(context.Background(), links)
+	return checkAndReportLinks(links, opts, format)
+}
+
+// checkAndReportLinks checks links, prints the summary (and GitHub Actions
+// annotations), optionally writes the markdown report, and reports whether
+// any link is broken.
+func checkAndReportLinks(links []projects.Link, opts linkOptions, format string) (bool, error) {
+	results := newLinkChecker(opts.token).Check(context.Background(), links)
 
 	// Structured output formats must stay parseable, so the human-readable
 	// link summary goes to stderr for them.
@@ -239,18 +320,68 @@ func runLinkCheck(root, projectList string, maintainerFiles []string, base, repo
 	}
 
 	broken, _ := projects.LinkSummary(results)
-	if report != "" {
+	if opts.report != "" {
 		// The report is written even when it is empty, so a caller can tell
 		// "no broken links" (empty file) from "the check never ran" (no file).
 		var body []byte
 		if broken > 0 {
 			body = []byte(projects.FormatLinkReportMarkdown(results))
 		}
-		if err := os.WriteFile(report, body, 0o644); err != nil {
+		if err := os.WriteFile(opts.report, body, 0o644); err != nil {
 			return broken > 0, err
 		}
 	}
 	return broken > 0, nil
+}
+
+// runCommittees validates a committees.yaml file and returns the process exit
+// code. Expired terms are warnings, so the result never depends on the date
+// alone; only schema errors and unknown handles or URLs fail. links is nil
+// when link checking is disabled.
+func runCommittees(path, format string, links *linkOptions) int {
+	cfg, err := projects.LoadCommitteesFromFile(path)
+	if err != nil {
+		log.Printf("committees validation failed: %v", err)
+		return 1
+	}
+	res := projects.ValidateCommittees(cfg, time.Now())
+	res.File = path
+	out, err := projects.FormatCommitteesResult(res, format)
+	if err != nil {
+		log.Printf("failed to format committees results: %v", err)
+		return 1
+	}
+	fmt.Print(out)
+
+	code := 0
+	if !res.Valid {
+		code = 1
+	}
+	if links == nil {
+		return code
+	}
+
+	toCheck := projects.CollectCommitteeLinks(cfg, filepath.ToSlash(path))
+	if links.base != "" {
+		basePath := links.base
+		if info, err := os.Stat(basePath); err == nil && info.IsDir() {
+			basePath = filepath.Join(basePath, projects.CommitteesFileName)
+		}
+		if baseCfg, err := projects.LoadCommitteesFromFile(basePath); err == nil {
+			toCheck = projects.ExcludeKnownLinks(toCheck, projects.CollectCommitteeLinks(baseCfg, basePath))
+		} else {
+			fmt.Fprintf(os.Stderr, "link check: base %s unreadable (%v); checking all links\n", basePath, err)
+		}
+	}
+	broken, err := checkAndReportLinks(toCheck, *links, format)
+	if err != nil {
+		log.Printf("link check failed: %v", err)
+		return 1
+	}
+	if broken {
+		code = 1
+	}
+	return code
 }
 
 // writeProjectList materializes a discovery result as a temporary project list
