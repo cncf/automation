@@ -42,12 +42,12 @@ type CommitteeTeam struct {
 	Members     []CommitteeMember `json:"members" yaml:"members"`
 }
 
-// CommitteeMember is one seat holder. End is optional: nil means the term has
-// no fixed end date (staff, board seats, open terms).
+// CommitteeMember is one seat holder. Role is an optional
+// position within the team (chair, vice-chair, ...). End is optional: nil
+// means the term has no fixed end date (staff, board seats, open terms).
 type CommitteeMember struct {
 	GitHub    string  `json:"github" yaml:"github"`
-	Name      string  `json:"name,omitempty" yaml:"name,omitempty"`
-	Company   string  `json:"company,omitempty" yaml:"company,omitempty"`
+	Role      string  `json:"role,omitempty" yaml:"role,omitempty"`
 	ElectedBy string  `json:"elected_by" yaml:"elected_by"`
 	Start     string  `json:"start" yaml:"start"`
 	End       *string `json:"end,omitempty" yaml:"end,omitempty"`
@@ -67,10 +67,8 @@ func (m *CommitteeMember) setter(field string) func(string) {
 	switch field {
 	case "github":
 		return func(v string) { m.GitHub = v }
-	case "name":
-		return func(v string) { m.Name = v }
-	case "company":
-		return func(v string) { m.Company = v }
+	case "role":
+		return func(v string) { m.Role = v }
 	case "elected_by":
 		return func(v string) { m.ElectedBy = v }
 	case "start":
@@ -338,6 +336,10 @@ func (v *committeesValidator) member(tpath string, k int, m CommitteeMember, eme
 		v.errorf("%s: github handle must not start with @", mpath)
 	case !githubHandleRe.MatchString(m.GitHub):
 		v.errorf("%s: github %q is not a valid GitHub handle", mpath, m.GitHub)
+	}
+
+	if m.Role != "" && !isValidSlug(m.Role) {
+		v.errorf("%s: role %q must be lowercase letters, digits and hyphens", mpath, m.Role)
 	}
 
 	if strings.TrimSpace(m.ElectedBy) == "" && !m.malformed["elected_by"] {
