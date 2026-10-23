@@ -43,14 +43,17 @@ type CommitteeTeam struct {
 }
 
 // CommitteeMember is one seat holder. Role is an optional
-// position within the team (chair, vice-chair, ...). End is optional: nil
-// means the term has no fixed end date (staff, board seats, open terms).
+// position within the team (chair, vice-chair, ...). Liaison lists the ids of
+// other committees in the file that the member is liaison to. End is
+// optional: nil means the term has no fixed end date (staff, board seats,
+// open terms).
 type CommitteeMember struct {
-	GitHub    string  `json:"github" yaml:"github"`
-	Role      string  `json:"role,omitempty" yaml:"role,omitempty"`
-	ElectedBy string  `json:"elected_by" yaml:"elected_by"`
-	Start     string  `json:"start" yaml:"start"`
-	End       *string `json:"end,omitempty" yaml:"end,omitempty"`
+	GitHub    string   `json:"github" yaml:"github"`
+	Role      string   `json:"role,omitempty" yaml:"role,omitempty"`
+	Liaison   []string `json:"liaison,omitempty" yaml:"liaison,omitempty"`
+	ElectedBy string   `json:"elected_by" yaml:"elected_by"`
+	Start     string   `json:"start" yaml:"start"`
+	End       *string  `json:"end,omitempty" yaml:"end,omitempty"`
 
 	// notMapping and problems carry decode-time findings to the validator,
 	// which reports them with the member's path. malformed names fields whose
@@ -60,9 +63,14 @@ type CommitteeMember struct {
 	malformed  map[string]bool
 }
 
-// setter returns the function that stores a decoded value in the named
-// field, or nil when the field is not part of the schema. This switch is the
-// single list of member fields accepted in committees.yaml.
+// liaisonField is the only member field that holds a list rather than a
+// single value; it is decoded by setLiaison instead of setter.
+const liaisonField = "liaison"
+
+// setter returns the function that stores a decoded single value in the
+// named field, or nil when the field is not one of them. Together with
+// liaisonField, this switch is the list of member fields accepted in
+// committees.yaml.
 func (m *CommitteeMember) setter(field string) func(string) {
 	switch field {
 	case "github":
@@ -87,6 +95,29 @@ func (m *CommitteeMember) problemf(format string, args ...any) {
 	m.problems = append(m.problems, fmt.Sprintf(format, args...))
 }
 
+// setLiaison decodes the liaison list. A null value is treated as omitted,
+// like end; anything other than a non-empty list of single values is
+// reported.
+func (m *CommitteeMember) setLiaison(v *yaml.Node) {
+	switch {
+	case v.ShortTag() == "!!null":
+		return
+	case v.Kind != yaml.SequenceNode:
+		m.problemf("line %d: field %q must be a list of committee ids", v.Line, liaisonField)
+		return
+	case len(v.Content) == 0:
+		m.problemf("line %d: field %q cannot be an empty list; omit it instead", v.Line, liaisonField)
+		return
+	}
+	for _, item := range v.Content {
+		if item.Kind != yaml.ScalarNode || item.ShortTag() == "!!null" {
+			m.problemf("line %d: %s entries must be committee ids", item.Line, liaisonField)
+			continue
+		}
+		m.Liaison = append(m.Liaison, item.Value)
+	}
+}
+
 // UnmarshalYAML decodes a member by hand so that the validator can report
 // every malformed member instead of stopping at the first.
 func (m *CommitteeMember) UnmarshalYAML(node *yaml.Node) error {
@@ -109,10 +140,13 @@ func (m *CommitteeMember) UnmarshalYAML(node *yaml.Node) error {
 		k, v := node.Content[i], node.Content[i+1]
 		set := m.setter(k.Value)
 		switch {
-		case set == nil:
+		case set == nil && k.Value != liaisonField:
 			m.problemf("line %d: unknown field %q", k.Line, k.Value)
 		case seen[k.Value]:
 			m.problemf("line %d: field %q is set more than once", k.Line, k.Value)
+		case k.Value == liaisonField:
+			seen[k.Value] = true
+			m.setLiaison(v)
 		case v.Kind != yaml.ScalarNode:
 			seen[k.Value] = true
 			if m.malformed == nil {
@@ -194,7 +228,10 @@ func ValidateCommitteesFile(path string, now time.Time) (CommitteesValidationRes
 // term that has already ended, so that CI does not start failing on a date.
 func ValidateCommittees(cfg CommitteesConfig, now time.Time) CommitteesValidationResult {
 	u := now.UTC()
-	v := &committeesValidator{today: time.Date(u.Year(), u.Month(), u.Day(), 0, 0, 0, 0, time.UTC)}
+	v := &committeesValidator{
+		today: time.Date(u.Year(), u.Month(), u.Day(), 0, 0, 0, 0, time.UTC),
+		ids:   make(map[string]bool),
+	}
 
 	switch cfg.SchemaVersion {
 	case "":
@@ -208,13 +245,13 @@ func ValidateCommittees(cfg CommitteesConfig, now time.Time) CommitteesValidatio
 		v.errorf("committees list cannot be empty")
 	}
 
-	ids := make(map[string]bool)
+	// Collected up front so a liaison may name a committee defined later.
 	for _, c := range cfg.Committees {
 		if c.ID != "" {
-			if ids[c.ID] {
+			if v.ids[c.ID] {
 				v.errorf("committees[%s]: duplicate id", c.ID)
 			}
-			ids[c.ID] = true
+			v.ids[c.ID] = true
 		}
 	}
 
@@ -230,6 +267,8 @@ func ValidateCommittees(cfg CommitteesConfig, now time.Time) CommitteesValidatio
 type committeesValidator struct {
 	res   CommitteesValidationResult
 	today time.Time
+	ids   map[string]bool // every committee id in the file
+	cid   string          // id of the committee being validated
 }
 
 func (v *committeesValidator) errorf(format string, args ...any) {
@@ -242,6 +281,7 @@ func (v *committeesValidator) warnf(format string, args ...any) {
 
 func (v *committeesValidator) committee(i int, c Committee) {
 	v.res.Committees++
+	v.cid = c.ID
 	cpath := fmt.Sprintf("committees[%s]", c.ID)
 	if c.ID == "" {
 		cpath = fmt.Sprintf("committees[%d]", i)
@@ -340,6 +380,19 @@ func (v *committeesValidator) member(tpath string, k int, m CommitteeMember, eme
 
 	if m.Role != "" && !isValidSlug(m.Role) {
 		v.errorf("%s: role %q must be lowercase letters, digits and hyphens", mpath, m.Role)
+	}
+
+	listed := make(map[string]bool)
+	for _, id := range m.Liaison {
+		switch {
+		case listed[id]:
+			v.errorf("%s: liaison %q is listed more than once", mpath, id)
+		case !v.ids[id]:
+			v.errorf("%s: liaison %q is not a committee id in this file", mpath, id)
+		case id == v.cid:
+			v.errorf("%s: liaison %q is the member's own committee", mpath, id)
+		}
+		listed[id] = true
 	}
 
 	if strings.TrimSpace(m.ElectedBy) == "" && !m.malformed["elected_by"] {

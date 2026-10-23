@@ -403,10 +403,11 @@ then `gh auth token`; without one, rate-limited lookups are only warnings.
 
 ### CommitteeTeam
 
-A team is a **role** (members, alternates, tech-leads, liaisons, ...). The
-same person may hold several roles, so may appear in several teams. A position
-held within a team, such as chair of the TOC members, is a member's `role`
-rather than a separate team.
+A team is a **role** (members, alternates, tech-leads, ...). The same person
+may hold several roles, so may appear in several teams. A position held within
+a team, such as chair of the TOC members, is a member's `role` rather than a
+separate team, and a member's liaison duties to other committees are its
+`liaison` list.
 
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
@@ -425,6 +426,7 @@ member's LFID profile, not from this file.
 |-------|------|----------|-------------|-------------|
 | `github` | string | Yes | GitHub handle | No leading `@`; valid GitHub login |
 | `role` | string | No | Position within the team, e.g. `chair`, `vice-chair` | Slug |
+| `liaison` | string[] | No | Committees the member is liaison to, e.g. `[tag-infrastructure, tag-workloads-foundation]` | Non-empty list; each entry is the `id` of another committee in the file, listed once |
 | `elected_by` | string | Yes | Body or constituency that elected/appointed the person (e.g. `Governing Board`, `End User TAB`, `TOC`) | Non-empty free text |
 | `start` | date | Yes | Term start | `YYYY-MM-DD` |
 | `end` | date | No | Term end; omit it when the term has no fixed end (staff, board seats) | `YYYY-MM-DD` after `start`; required in emeritus teams |
@@ -438,7 +440,7 @@ Errors fail validation:
 
 1. A file with more than one YAML document; unknown fields at any level, duplicate keys, and bare-string members
 2. Missing required fields, bad slugs, bad handles, bad dates, `end` not after `start`
-3. Duplicate committee `id`s, duplicate team names in a committee
+3. Duplicate committee `id`s, duplicate team names in a committee; a `liaison` entry that is repeated, is not a committee `id` in the file, or is the member's own committee
 4. A team with no members, or a committee whose teams are all emeritus
 5. Emeritus teams that grant GitHub teams, or emeritus members without an `end`
 6. A handle repeated within one team with **overlapping** terms (case-insensitive); a missing `end` counts as open. Repeats with disjoint terms record re-elections or separate stints
