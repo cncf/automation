@@ -403,8 +403,10 @@ then `gh auth token`; without one, rate-limited lookups are only warnings.
 
 ### CommitteeTeam
 
-A team is a **role** (members, alternates, chair, tech-leads, liaisons, ...).
-The same person may hold several roles, so may appear in several teams.
+A team is a **role** (members, alternates, tech-leads, liaisons, ...). The
+same person may hold several roles, so may appear in several teams. A position
+held within a team, such as chair of the TOC members, is a member's `role`
+rather than a separate team.
 
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
@@ -415,19 +417,20 @@ The same person may hold several roles, so may appear in several teams.
 
 ### CommitteeMember
 
-Members are always mappings; a bare handle string is an error.
+Members are always mappings; a bare handle string is an error. Members are
+identified by GitHub handle only: names and affiliations come from the
+member's LFID profile, not from this file.
 
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
 | `github` | string | Yes | GitHub handle | No leading `@`; valid GitHub login |
-| `name` | string | No | Display name | |
-| `company` | string | No | Current affiliation | |
+| `role` | string | No | Position within the team, e.g. `chair`, `vice-chair` | Slug |
 | `elected_by` | string | Yes | Body or constituency that elected/appointed the person (e.g. `Governing Board`, `End User TAB`, `TOC`) | Non-empty free text |
 | `start` | date | Yes | Term start | `YYYY-MM-DD` |
 | `end` | date | No | Term end; omit it when the term has no fixed end (staff, board seats) | `YYYY-MM-DD` after `start`; required in emeritus teams |
 
-No other member fields are accepted, so emails and other personal data cannot
-be added by accident.
+No other member fields are accepted (including `name` and `company`), so
+emails and other personal data cannot be added by accident.
 
 ### committees.yaml validation rules
 

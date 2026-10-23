@@ -35,7 +35,7 @@ explains why the file looks the way it does and how CNCF data maps onto it.
 | R4 | Support roles without a fixed term (staff, board seats) | Omit `end` |
 | R5 | Keep past members | `emeritus: true` teams, whose members must have an `end`; a handle may repeat in a team when terms do not overlap (re-elections, separate stints) |
 | R6 | Members are objects, never bare strings | Bare strings are a validation error |
-| R7 | No PII | Members accept only `github`, `name`, `company`, `elected_by`, `start`, `end`; anything else (for example `email`) is rejected |
+| R7 | No PII | Members accept only `github`, `role`, `elected_by`, `start`, `end`; anything else (for example `email`, `name` or `company`) is rejected. Names and affiliations come from LFID |
 | R8 | Describe GitHub access | `github_teams` per role; a GitHub team's intended members are the current members of every non-emeritus role that lists it |
 | R9 | Validation must not start failing because time passed | Expired terms and future emeritus end dates are warnings, not errors. Empty roles are errors: a role is added once it has a holder |
 | R10 | Usable outside CNCF | No CNCF-specific values in the schema; `org` names the GitHub org |
@@ -43,10 +43,13 @@ explains why the file looks the way it does and how CNCF data maps onto it.
 ## Design decisions
 
 - **Teams are roles.** A committee has teams such as `members`, `alternates`,
-  `chair`, `vice-chair`, `chairs`, `tech-leads`, `liaisons`, `leads`,
-  `emeritus`. A person who chairs the TOC appears in both `members` and
-  `chair`, each with its own dates and `elected_by`, because those really are
-  separate selections.
+  `chairs`, `tech-leads`, `liaisons`, `leads`, `emeritus`.
+- **Positions within a team are a member `role`.** The TOC, TAB and
+  Governing Board chairs are members of their body, so they are marked with
+  `role: chair` (or `vice-chair`, `apac-chair`) on their `members` entry
+  instead of being listed again in a separate team. The role shares the
+  entry's `elected_by` and term; a role change is recorded by editing the
+  entry. TAG `chairs` stay a team, because there the role is the whole team.
 - **`elected_by` rather than `source`.** "Source" was ambiguous (data source vs
   selecting body). `elected_by` names the selecting body or constituency, which
   is what the people pages show (e.g. "GB-appointed").
@@ -63,12 +66,12 @@ explains why the file looks the way it does and how CNCF data maps onto it.
 
 | Committee `id` | Body | Roles (teams) | `elected_by` values | GitHub teams |
 |---|---|---|---|---|
-| `toc` | Technical Oversight Committee: 11 voting members, 2-year staggered terms; plus non-voting alternates | `members`, `alternates`, `chair`, `vice-chair`, `emeritus` | `Governing Board`, `End User TAB`, `TOC`, `Non-sandbox project maintainers` (charter 6(b)(iii)); chair/vice-chair: `TOC` | `cncf-toc` (members + alternates), `cncf-toc-voters` (members) |
+| `toc` | Technical Oversight Committee: 11 voting members, 2-year staggered terms; plus non-voting alternates | `members` (roles `chair`, `vice-chair`), `alternates`, `emeritus` | `Governing Board`, `End User TAB`, `TOC`, `Non-sandbox project maintainers` (charter 6(b)(iii)) | `cncf-toc` (members + alternates), `cncf-toc-voters` (members) |
 | `tag-*` | Technical Advisory Groups, overseen by the TOC: chairs and tech leads serve 2-year terms | `chairs`, `tech-leads`, `liaisons` (TOC members assigned to the TAG) | `TOC` (tech leads are nominated by chairs and approved by the TOC) | `tag-<x>-chairs`, `tag-<x>-tech-leads`, `tag-<x>-leads`, `cncf-tag-leads` |
 | `tag-*-<sub>` | TAG subprojects: 1-year terms | `leads` | the parent TAG (super-majority of the parent body) | none |
-| `mentoring-subproject`, `project-reviews-subproject` | TOC subprojects: 1-year terms | `chairs`, `tech-leads` / `leads` | `TOC` | `toc-project-reviews-subproject` |
-| `end-user-tab` | End User Technical Advisory Board | `members`, `chair`, `vice-chair`, `apac-chair`, `emeritus` | seat: `End User Platinum/Gold/Silver members`, `End User community (at-large)`, `TOC` | `cncf-tab` |
-| `governing-board` | Governing Board | `members`, `chair`, `vice-chair` | seat: member tier, `Kubernetes project`, `Developer seat`, ex-officio TOC/TAB chair | `cncf-gb` |
+| `mentoring-subproject` | TOC subproject: 1-year terms | `chairs`, `tech-leads` | `TOC` | none |
+| `end-user-tab` | End User Technical Advisory Board | `members` (roles `chair`, `vice-chair`, `apac-chair`), `emeritus` | seat: `End User Platinum/Gold/Silver members`, `End User community (at-large)`, `TOC` | `cncf-tab` |
+| `governing-board` | Governing Board | `members` (roles `chair`, `vice-chair`) | seat: member tier, `Kubernetes project`, `Developer seat`, ex-officio TOC/TAB chair | `cncf-gb` |
 | `staff` | CNCF staff | `staff` | `CNCF` | `cncf-staff` |
 
 Board and staff seats have no fixed terms, so their members omit `end`.
@@ -82,7 +85,7 @@ The one-time bootstrap used, in order of precedence:
    `governance/tag-governance.md` (who elects whom, term lengths)
 2. `cncf/tab`: `gov.yaml`, `emeritus.md`
 3. `cncf/people`: `config.yaml` (GitHub team declarations)
-4. `cncf/people`: `people.json` (names, companies, `toc_role`/`gb_role`/`tab_role`)
+4. `cncf/people`: `people.json` (`toc_role`/`gb_role`/`tab_role`)
 5. Live GitHub team membership
 
 Conflicts were resolved in that order and listed in the bootstrap drift

@@ -118,9 +118,47 @@ func TestCommitteesValidation(t *testing.T) {
     teams:
       - name: members
         members:
-          - name: No Handle
+          - role: chair
 `,
 			wantErrors: []string{"github is required", "elected_by is required", "start is required"},
+		},
+		{
+			name: "name and company are rejected; they come from LFID",
+			yaml: validCommitteesHeader + `
+  - id: toc
+    name: TOC
+    teams:
+      - name: members
+        members:
+          - github: alice
+            name: Alice Example
+            company: Example Corp
+            elected_by: TOC
+            start: 2025-03-04
+`,
+			wantErrors: []string{`unknown field "name"`, `unknown field "company"`},
+		},
+		{
+			name: "role is optional and must be a slug",
+			yaml: validCommitteesHeader + `
+  - id: toc
+    name: TOC
+    teams:
+      - name: members
+        members:
+          - github: alice
+            role: chair
+            elected_by: TOC
+            start: 2025-03-04
+          - github: bob
+            role: Vice Chair
+            elected_by: TOC
+            start: 2025-03-04
+          - github: carol
+            elected_by: TOC
+            start: 2025-03-04
+`,
+			wantErrors: []string{`members[bob]: role "Vice Chair" must be lowercase`},
 		},
 		{
 			name: "unknown member field such as email is rejected",
@@ -278,7 +316,7 @@ func TestCommitteesValidation(t *testing.T) {
             elected_by: GB
             start: 2025-03-04
             end: 2027-03-04
-      - name: chair
+      - name: liaisons
         members:
           - github: alice
             elected_by: TOC
@@ -366,13 +404,13 @@ func TestCommitteesValidation(t *testing.T) {
           - github: alice
             elected_by: TOC
             start: 2025-03-04
-      - name: chair
+      - name: alternates
         members: []
-      - name: vice-chair
+      - name: liaisons
 `,
 			wantErrors: []string{
-				"teams[chair]: members list cannot be empty",
-				"teams[vice-chair]: members list cannot be empty",
+				"teams[alternates]: members list cannot be empty",
+				"teams[liaisons]: members list cannot be empty",
 			},
 		},
 		{

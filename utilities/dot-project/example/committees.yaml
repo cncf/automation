@@ -13,13 +13,11 @@ committees:
         github_teams: [example-toc, example-toc-voters]
         members:
           - github: alice
-            name: Alice Example
-            company: Example Corp
+            role: chair
             elected_by: Governing Board
             start: 2025-03-04
             end: 2027-03-04
           - github: bob
-            name: Bob Example
             elected_by: Maintainers
             start: 2026-05-12
             end: 2028-05-12
@@ -30,12 +28,6 @@ committees:
             elected_by: Governing Board
             start: 2026-05-12
             end: 2027-05-12
-      - name: chair
-        members:
-          - github: alice
-            elected_by: TOC
-            start: 2026-03-17
-            end: 2028-03-17
       - name: staff
         github_teams: [example-toc]
         members:
