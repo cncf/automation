@@ -38,14 +38,14 @@ spec:
               enabled: true
               key: password
               secretName: clickhouse-password
-            apiGateway:
-              resources:
-                requests:
-                  cpu: 100m
-                  memory: 256Mi
-                limits:
-                  cpu: 500m
-                  memory: 512Mi
+          apiGateway:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
           gitSync:
             enabled: false
           sbomSource:
