@@ -170,7 +170,6 @@ jobs:
             --arch amd64
 
       - name: Upload image OCID
-        if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: image-ocid-x86-${{ matrix.ubuntu-codename }}
@@ -261,14 +260,12 @@ jobs:
             --arch arm64
 
       - name: Upload image OCID
-        if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: image-ocid-arm64-${{ matrix.ubuntu-codename }}
           path: /tmp/image_ocid
 
       - name: Upload image tag
-        if: steps.check_latest.outputs.image_exists == 'false'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: image-tag-arm64-${{ matrix.ubuntu-codename }}
