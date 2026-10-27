@@ -314,10 +314,11 @@ jobs:
     runs-on: runner-img-test-${{ github.run_id }}-${{ matrix.base-image }}
     timeout-minutes: 10
     steps:
-      # No checkout: this job only verifies tools/codename baked into the
-      # image and runs a hello-world container, so it needs no repo files.
-      # Checking out PR-controlled code onto a self-hosted ARC runner would
-      # add risk (untrusted code execution) without any benefit.
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
       - name: Verify base image and tools
         env:
           EXPECTED_CODENAME: ${{ matrix.base-image }}

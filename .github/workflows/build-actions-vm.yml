@@ -293,7 +293,7 @@ jobs:
         uses: ./.github/actions/run-kind-with-arc
         with:
           arch: ${{ matrix.arch }}
-          manifest-file: ci/cluster/oke-gha-phx/manifests/vm-runners/cncf-ubuntu-8-32-${{ matrix.arch }}.yaml
+          manifest-file: ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-${{ matrix.arch }}.yaml
           # test the freshly built rc-ubuntu images
           running-environment: ci
           oci-user: ${{ secrets.OCI_CLI_USER }}

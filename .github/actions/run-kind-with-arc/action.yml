@@ -84,6 +84,12 @@ runs:
         ARC_GITHUB_TOKEN: ${{ inputs.arc-github-token }}
         GITHUB_RUN_ID: ${{ github.run_id }}
       run: |
+        if [ "$RUNNER_TYPE" = "vm" ]; then
+          HELM_RELEASE_NAME=cncf-gha-controller
+        else
+          HELM_RELEASE_NAME=cncf
+        fi
+
         cat <<EOF > kind-config.yaml
         kind: Cluster
         apiVersion: kind.x-k8s.io/v1alpha4
@@ -98,7 +104,7 @@ runs:
 
         kubectl wait --for=condition=Ready nodes --all --timeout=120s
 
-        helm install cncf \
+        helm install ${HELM_RELEASE_NAME} \
           --namespace arc-systems \
           --create-namespace \
           --version 0.14.1 \
