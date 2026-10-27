@@ -147,7 +147,10 @@ func run(cmd *cobra.Command, argv []string) error {
 	baseDir := strings.Split(filename, "/")[0]
 	installRunnerPackage(baseDir)
 
-	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", "http://azure.archive.ubuntu.com/ubuntu/", "https://archive.ubuntu.com/ubuntu/")
+	//  move Azure mirror to lowest prio
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `(azure\.archive\.ubuntu\.com/ubuntu/\\t)priority:1`, `${1}priority:3`)
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `(https://archive\.ubuntu\.com/ubuntu/\\t)priority:2`, `${1}priority:1`)
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `(security\.ubuntu\.com/ubuntu/\\t)priority:3`, `${1}priority:2`)
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GHCupVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-FastlaneVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "bz2", "gz")
