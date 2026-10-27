@@ -222,16 +222,17 @@ jobs:
             # GPU scale sets (nvidia.com/gpu request in the manifest) are
             # allocated case-by-case per project rather than generally
             # available, so their names are withheld here — only counted.
-            MATCH_FILES=$(grep -rl "external-gha-runner:${BASE_IMAGE}" ci/cluster/ 2>/dev/null)
+            # grep exits 1 on no match, which would abort the step under
+            # `bash -e` before the fallback message below can be emitted.
+            MATCH_FILES=$(grep -rl "external-gha-runner:${BASE_IMAGE}" ci/cluster/ 2>/dev/null || true)
             GENERAL_NAMES=""
             GPU_COUNT=0
             for f in ${MATCH_FILES}; do
               if grep -q "nvidia.com/gpu" "$f"; then
                 GPU_COUNT=$((GPU_COUNT + 1))
               else
-                NAME=$(grep -h "scale-set-name:" "$f" | awk '{print $2}')
-                GENERAL_NAMES="${GENERAL_NAMES}${NAME}
-            "
+                NAME=$(grep -h "scale-set-name:" "$f" | awk '{print $2}' || true)
+                GENERAL_NAMES="${GENERAL_NAMES}${NAME}"$'\n'
               fi
             done
             GENERAL_NAMES=$(echo "${GENERAL_NAMES}" | sort -u | sed '/^$/d')
@@ -251,9 +252,9 @@ jobs:
             echo "| Tool | Version/source |"
             echo "|------|------|"
             grep -E '^ARG (RUNNER_VERSION|RUNNER_CONTAINER_HOOKS_VERSION|DOCKER_VERSION|BUILDX_VERSION)=' ci/gha-runner-image/Dockerfile \
-              | sed -E 's/^ARG ([A-Z_]+)=(.*)$/| \1 | \2 |/'
+              | sed -E 's/^ARG ([A-Z_]+)=(.*)$/| \1 | \2 |/' || true
             grep -E '^ENV KIND_VERSION=' ci/gha-runner-image/Dockerfile \
-              | sed -E 's/^ENV ([A-Z_]+)=(.*)$/| \1 | \2 |/'
+              | sed -E 's/^ENV ([A-Z_]+)=(.*)$/| \1 | \2 |/' || true
             echo "| go | 1.27.1 (pinned in Dockerfile) |"
             echo
             echo "Also preinstalled: git (git-core PPA), make, maven, jq, zip/unzip, python3-pip, kind, docker CLI + buildx (dockerd runs in a sidecar container)."
