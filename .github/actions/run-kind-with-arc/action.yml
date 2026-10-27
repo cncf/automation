@@ -152,8 +152,8 @@ runs:
           OLD_NAME=$(grep -m1 'scale-set-name:' "$MANIFEST_FILE" | awk '{print $2}')
 
           sed -e "s|${OLD_NAME}|${SCALE_SET}|g" \
-              -e "s|image: ghcr.io/cncf/external-gha-runner[@:][^[:space:]]*|image: ${RUNNER_IMAGE}|" \
-            "$MANIFEST_FILE" | kubectl apply -f -
+              -e "s|image: ghcr.io/cncf/external-gha-runner[@:][^[:space:]]*|image: ${RUNNER_IMAGE}|" $MANIFEST_FILE \
+              | sed '/nodeSelector/,+1d' | kubectl apply -f -
         fi
 
     - name: Wait for test-runner to complete
