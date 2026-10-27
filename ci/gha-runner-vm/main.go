@@ -162,6 +162,7 @@ func run(cmd *cobra.Command, argv []string) error {
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-python.sh", `(?m)python3 -m pip install pipx$`, `python3 -m pip install "pipx==1.17.10"`)
 	// PSGallery downloads are flaky (e.g. "Source Location ... is not valid"); retry each module install
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/Install-PowerShellModules.ps1", `(?m)^(\s*)Install-Module -Name \$moduleName (.*)$`, `${1}for ($$i = 1; $$i -le 5; $$i++) { try { Install-Module -Name $$moduleName ${2}; break } catch { if ($$i -eq 5) { throw }; Write-Host "Attempt $$i failed: $$_"; Start-Sleep 30 } }`)
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/Install-PowerShellAzModules.ps1", `(?m)^(\s*)Save-Module (.*)$`, `${1}for ($$i = 1; $$i -le 5; $$i++) { try { Save-Module ${2}; break } catch { if ($$i -eq 5) { throw }; Write-Host "Attempt $$i failed: $$_"; Start-Sleep 30 } }`)
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
