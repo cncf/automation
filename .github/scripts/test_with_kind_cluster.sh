@@ -29,6 +29,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: nginx
+  namespace: default
 spec:
   containers:
   - name: nginx
@@ -43,13 +44,13 @@ spec:
 EOF
 
 echo "[*] Waiting for pods to be ready..."
-kubectl wait --for=condition=Ready pod/nginx --timeout=300s
+kubectl wait --for=condition=Ready pod/nginx --namespace default --timeout=300s
 
 echo "[*] Pods running, doing test workload..."
 sleep 60
 
 echo "[*] Deleting pods..."
-kubectl delete pod nginx
+kubectl delete pod nginx --namespace default
 
 echo "[*] Deleting Kind cluster..."
 kind delete cluster --name $CLUSTER_NAME
