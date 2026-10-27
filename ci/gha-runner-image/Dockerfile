@@ -2,10 +2,10 @@ ARG BASE_IMAGE
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:10.0-${BASE_IMAGE} AS build
 
-ARG RUNNER_VERSION=2.336.0
+ARG RUNNER_VERSION=2.338.2
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.8.1
-ARG DOCKER_VERSION=29.7.1
-ARG BUILDX_VERSION=0.36.0
+ARG DOCKER_VERSION=29.9.2
+ARG BUILDX_VERSION=0.38.1
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -47,7 +47,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_MANUALLY_TRAP_SIG=1
 ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
-ENV KIND_VERSION=v0.32.0
+ENV KIND_VERSION=v0.33.0
+ENV GO_VERSION=1.27.3
 
 # 'gpg-agent' and 'software-properties-common' are needed for the 'add-apt-repository' command that follows
 RUN apt update -y \
@@ -102,7 +103,7 @@ COPY --chown=runner:docker --from=build /actions-runner .
 COPY --from=build /usr/bin/docker /usr/bin/docker
 COPY --from=build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
 
-RUN curl -sSLo /tmp/go.tar.gz https://go.dev/dl/go1.27.1.linux-${TARGETARCH}.tar.gz \
+RUN curl -sSLo /tmp/go.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-${TARGETARCH}.tar.gz \
     && tar -C /usr/local -xzf /tmp/go.tar.gz \
     && rm /tmp/go.tar.gz \
     && rm -rf /usr/local/go/test /usr/local/go/api /usr/local/go/doc /usr/local/go/misc \

@@ -346,7 +346,7 @@ jobs:
   # Upload the provenance to ghcr.io
   provenance:
     if: ${{ github.event_name != 'pull_request_target' }}
-    needs: [build-runner-images]
+    needs: [build-runner-images, test-runner, run-kind-with-arc]
     strategy:
       matrix:
         include:

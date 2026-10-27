@@ -98,7 +98,7 @@ runs:
 
         kubectl wait --for=condition=Ready nodes --all --timeout=120s
 
-        helm install cncf-gha-controller \
+        helm install cncf \
           --namespace arc-systems \
           --create-namespace \
           --version 0.14.1 \

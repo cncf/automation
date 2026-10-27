@@ -202,7 +202,7 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
           os-version: ${{ matrix.os-version }}
-          manifest-file: ci/cluster/oci/vm-runners/cncf-ubuntu-2-8-${{ matrix.arch }}.yaml
+          manifest-file:  ci/cluster/oke-gha-phx/manifests/vm-runners/cncf-ubuntu-8-32-${{ matrix.arch }}.yaml
           runner-image: ${{ needs.build-cloudrunner-images.outputs.image }}@${{ needs.build-cloudrunner-images.outputs.digest }}
           oci-user: ${{ secrets.OCI_CLI_USER }}
           oci-tenancy: ${{ secrets.OCI_CLI_TENANCY }}
