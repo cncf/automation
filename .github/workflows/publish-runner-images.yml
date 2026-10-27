@@ -9,14 +9,16 @@ name: Build GitHub Runner Images
 on:
   push:
     branches: [main]
-    paths: ['ci/gha-runner-image/Dockerfile*', '.github/actions/run-kind-with-arc/**']
-  # pull_request_target (not pull_request) so fork PRs get the secrets needed
-  # to deploy a real ARC runner for testing; the authorize job below gates
-  # fork PRs behind a manual environment approval before any of their code
-  # runs with those secrets.
+    paths:
+      - 'ci/gha-runner-image/Dockerfile*'
+      - '.github/actions/run-kind-with-arc/**'
+      - '.github/workflows/publish-runner-images.yml'
   pull_request_target:
     branches: [main]
-    paths: ['ci/gha-runner-image/Dockerfile*', '.github/actions/run-kind-with-arc/**']
+    paths:
+      - 'ci/gha-runner-image/Dockerfile*'
+      - '.github/actions/run-kind-with-arc/**'
+      - '.github/workflows/publish-runner-images.yml'
   workflow_dispatch:
 
 permissions:
@@ -265,7 +267,6 @@ jobs:
   # picks up the test-runner job below. PR-only: pushes/dispatches aren't
   # gated on this (they still go through provenance/verify).
   run-kind-with-arc:
-    if: ${{ github.event_name == 'pull_request_target' }}
     needs: [authorize, build-runner-images]
     runs-on: ubuntu-latest
     permissions:
@@ -306,7 +307,6 @@ jobs:
           pickup-timeout: '600'
 
   test-runner:
-    if: ${{ github.event_name == 'pull_request_target' }}
     needs: build-runner-images
     strategy:
       matrix:
@@ -338,6 +338,9 @@ jobs:
 
       - name: Run a real job via the docker-in-docker sidecar
         run: docker run --rm hello-world
+
+       - name: Run kind cluster
+        run: ${{ github.workspace }}/.github/scripts/test_with_kind_cluster.sh
 
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io

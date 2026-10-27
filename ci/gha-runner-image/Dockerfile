@@ -114,7 +114,10 @@ RUN curl -fsSLo /tmp/kind-linux-${TARGETARCH} https://kind.sigs.k8s.io/dl/${KIND
     && curl -fsSLo /tmp/kind-linux-${TARGETARCH}.sha256sum https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-${TARGETARCH}.sha256sum \
     && (cd /tmp && sha256sum -c kind-linux-${TARGETARCH}.sha256sum) \
     && install -m 0755 /tmp/kind-linux-${TARGETARCH} /usr/local/bin/kind \
-    && rm -f /tmp/kind-linux-${TARGETARCH} /tmp/kind-linux-${TARGETARCH}.sha256sum
+    && rm -f /tmp/kind-linux-${TARGETARCH} /tmp/kind-linux-${TARGETARCH}.sha256sum \
+    && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${TARGETARCH}/kubectl" \
+    && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
+    && rm -f kubectl
 
 ENV ENV=/etc/profile
 
