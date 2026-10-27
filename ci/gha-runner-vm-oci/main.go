@@ -194,12 +194,22 @@ packer {
 	baseDir := strings.Split(filename, "/")[0]
 	installRunnerPackage(baseDir)
 
-	// Fix PSGallery not being registered in tar.gz-based PowerShell installations (ARM64)
+	// PSGallery via PowerShellGet v2 (PackageManagement/NuGet provider) fails intermittently with
+	// "Source Location ... is not valid"; switch every download to PSResourceGet, which ships with pwsh 7.4+.
+	// This also drops the need to Register-PSRepository on tar.gz-based (arm64) pwsh installs.
 	psModulesScript := baseDir + "/images/ubuntu/scripts/build/Install-PowerShellModules.ps1"
 	if err := replaceInFileRegex(psModulesScript, map[*regexp.Regexp]string{
-		regexp.MustCompile(`Set-PSRepository -InstallationPolicy Trusted -Name PSGallery`): "Register-PSRepository -Default -ErrorAction SilentlyContinue\nSet-PSRepository -InstallationPolicy Trusted -Name PSGallery",
+		regexp.MustCompile(`(?m)^(# Specifies the installation policy|Set-PSRepository |# Try to update PowerShellGet|Install-Module -Name PowerShellGet|Update-Module -Name PowerShellGet).*\n`): "",
+		regexp.MustCompile(`Install-Module -Name \$moduleName -RequiredVersion \$version -Scope AllUsers -SkipPublisherCheck -Force`):                                                             `Install-PSResource -Name $$moduleName -Version $$version -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`,
+		regexp.MustCompile(`Install-Module -Name \$moduleName -Scope AllUsers -SkipPublisherCheck -Force`):                                                                                        `Install-PSResource -Name $$moduleName -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`,
 	}); err != nil {
 		log.Fatalf("Failed to patch Install-PowerShellModules.ps1: %v", err)
+	}
+	psAzModulesScript := baseDir + "/images/ubuntu/scripts/build/Install-PowerShellAzModules.ps1"
+	if err := replaceInFileRegex(psAzModulesScript, map[*regexp.Regexp]string{
+		regexp.MustCompile(`Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`): `Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet`,
+	}); err != nil {
+		log.Fatalf("Failed to patch Install-PowerShellAzModules.ps1: %v", err)
 	}
 
 	// Upstream sed only rewrites the Azure mirror; cloud-init on OCI writes *.clouds.archive.ubuntu.com, leaving Apt.Tests.ps1's mirror-list check failing

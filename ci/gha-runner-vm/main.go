@@ -160,9 +160,14 @@ func run(cmd *cobra.Command, argv []string) error {
 	// pipx 1.17.11 needs packaging>=26.3 but resolute's Debian-owned packaging 26.0 can't be replaced by pip;
 	// mirrors upstream main (actions/runner-images#14839) until a 26.04 release tarball carries the pin
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-python.sh", `(?m)python3 -m pip install pipx$`, `python3 -m pip install "pipx==1.17.10"`)
-	// PSGallery downloads are flaky (e.g. "Source Location ... is not valid"); retry each module install
-	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/Install-PowerShellModules.ps1", `(?m)^(\s*)Install-Module -Name \$moduleName (.*)$`, `${1}for ($$i = 1; $$i -le 5; $$i++) { try { Install-Module -Name $$moduleName ${2}; break } catch { if ($$i -eq 5) { throw }; Write-Host "Attempt $$i failed: $$_"; Start-Sleep 30 } }`)
-	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/Install-PowerShellAzModules.ps1", `(?m)^(\s*)Save-Module (.*)$`, `${1}for ($$i = 1; $$i -le 5; $$i++) { try { Save-Module ${2}; break } catch { if ($$i -eq 5) { throw }; Write-Host "Attempt $$i failed: $$_"; Start-Sleep 30 } }`)
+	// PSGallery via PowerShellGet v2 (PackageManagement/NuGet provider) fails intermittently with
+	// "Source Location ... is not valid"; switch every download to PSResourceGet, which ships with pwsh 7.4+
+	psModules := "/images/ubuntu/scripts/build/Install-PowerShellModules.ps1"
+	psAzModules := "/images/ubuntu/scripts/build/Install-PowerShellAzModules.ps1"
+	updatePackerConfig(baseDir, psModules, `(?m)^(# Specifies the installation policy|Set-PSRepository |# Try to update PowerShellGet|Install-Module -Name PowerShellGet|Update-Module -Name PowerShellGet).*\n`, "")
+	updatePackerConfig(baseDir, psModules, `Install-Module -Name \$moduleName -RequiredVersion \$version -Scope AllUsers -SkipPublisherCheck -Force`, `Install-PSResource -Name $$moduleName -Version $$version -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`)
+	updatePackerConfig(baseDir, psModules, `Install-Module -Name \$moduleName -Scope AllUsers -SkipPublisherCheck -Force`, `Install-PSResource -Name $$moduleName -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`)
+	updatePackerConfig(baseDir, psAzModules, `Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`, `Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet`)
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
