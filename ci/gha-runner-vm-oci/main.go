@@ -23,6 +23,24 @@ import (
 
 var replacements = make(map[string]string)
 var selectedRelease *github.RepositoryRelease
+
+// Inserted into the PowerShell module scripts; $$ because it goes through regexp.ReplaceAllString
+const psRetryHelper = `
+function Invoke-WithRetry {
+    param([scriptblock] $$ScriptBlock, [int] $$Attempts = 5, [int] $$DelaySeconds = 30)
+    for ($$i = 1; $$i -le $$Attempts; $$i++) {
+        try {
+            & $$ScriptBlock
+            return
+        } catch {
+            if ($$i -eq $$Attempts) { throw }
+            Write-Host "Attempt $$i of $$Attempts failed: $$_"
+            Start-Sleep -Seconds ($$DelaySeconds * $$i)
+        }
+    }
+}
+`
+
 var Cmd = &cobra.Command{
 	Use:  "gha-runner-vm-oci",
 	Long: "Generate and upload a new GHA runner image to OCI using the oracle-oci Packer builder",
@@ -210,6 +228,20 @@ packer {
 		regexp.MustCompile(`Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`): `Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet`,
 	}); err != nil {
 		log.Fatalf("Failed to patch Install-PowerShellAzModules.ps1: %v", err)
+	}
+	// cdn.powershellgallery.com intermittently 404s existing packages from the build network; retry whole installs.
+	// Separate pass: must run after the cmdlet swap above, and map iteration order is not guaranteed.
+	for _, script := range []string{psModulesScript, psAzModulesScript} {
+		if err := replaceInFileRegex(script, map[*regexp.Regexp]string{
+			regexp.MustCompile(`(?m)^(Import-Module "\$env:HELPER_SCRIPTS/\.\./tests/Helpers\.psm1")$`): "${1}\n" + psRetryHelper,
+		}); err != nil {
+			log.Fatalf("Failed to add retry helper to %s: %v", script, err)
+		}
+		if err := replaceInFileRegex(script, map[*regexp.Regexp]string{
+			regexp.MustCompile(`(?m)^(\s*)((Install|Save)-PSResource .*)$`): `${1}Invoke-WithRetry { ${2} }`,
+		}); err != nil {
+			log.Fatalf("Failed to wrap PSResource calls in %s: %v", script, err)
+		}
 	}
 
 	// Upstream sed only rewrites the Azure mirror; cloud-init on OCI writes *.clouds.archive.ubuntu.com, leaving Apt.Tests.ps1's mirror-list check failing

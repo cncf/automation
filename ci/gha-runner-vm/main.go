@@ -24,6 +24,24 @@ import (
 
 var replacements = make(map[string]string)
 var selectedRelease *github.RepositoryRelease
+
+// Inserted into the PowerShell module scripts; $$ because it goes through regexp.ReplaceAllString
+const psRetryHelper = `
+function Invoke-WithRetry {
+    param([scriptblock] $$ScriptBlock, [int] $$Attempts = 5, [int] $$DelaySeconds = 30)
+    for ($$i = 1; $$i -le $$Attempts; $$i++) {
+        try {
+            & $$ScriptBlock
+            return
+        } catch {
+            if ($$i -eq $$Attempts) { throw }
+            Write-Host "Attempt $$i of $$Attempts failed: $$_"
+            Start-Sleep -Seconds ($$DelaySeconds * $$i)
+        }
+    }
+}
+`
+
 var Cmd = &cobra.Command{
 	Use:  "gha-runner-vm",
 	Long: "Generate and upload a new GHA runner image to OCI (Oracle Cloud Infrastructure)",
@@ -168,6 +186,11 @@ func run(cmd *cobra.Command, argv []string) error {
 	updatePackerConfig(baseDir, psModules, `Install-Module -Name \$moduleName -RequiredVersion \$version -Scope AllUsers -SkipPublisherCheck -Force`, `Install-PSResource -Name $$moduleName -Version $$version -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`)
 	updatePackerConfig(baseDir, psModules, `Install-Module -Name \$moduleName -Scope AllUsers -SkipPublisherCheck -Force`, `Install-PSResource -Name $$moduleName -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`)
 	updatePackerConfig(baseDir, psAzModules, `Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`, `Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet`)
+	// cdn.powershellgallery.com intermittently 404s existing packages from the build network; retry whole installs
+	for _, script := range []string{psModules, psAzModules} {
+		updatePackerConfig(baseDir, script, `(?m)^(Import-Module "\$env:HELPER_SCRIPTS/\.\./tests/Helpers\.psm1")$`, "${1}\n"+psRetryHelper)
+		updatePackerConfig(baseDir, script, `(?m)^(\s*)((Install|Save)-PSResource .*)$`, `${1}Invoke-WithRetry { ${2} }`)
+	}
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
