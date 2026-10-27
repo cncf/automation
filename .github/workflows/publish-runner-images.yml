@@ -339,7 +339,7 @@ jobs:
       - name: Run a real job via the docker-in-docker sidecar
         run: docker run --rm hello-world
 
-       - name: Run kind cluster
+      - name: Run kind cluster
         run: ${{ github.workspace }}/.github/scripts/test_with_kind_cluster.sh
 
   # Generate SLSA provenance for the image
