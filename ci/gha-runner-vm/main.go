@@ -185,7 +185,8 @@ func run(cmd *cobra.Command, argv []string) error {
 	updatePackerConfig(baseDir, psModules, `(?m)^(# Specifies the installation policy|Set-PSRepository |# Try to update PowerShellGet|Install-Module -Name PowerShellGet|Update-Module -Name PowerShellGet).*\n`, "")
 	updatePackerConfig(baseDir, psModules, `Install-Module -Name \$moduleName -RequiredVersion \$version -Scope AllUsers -SkipPublisherCheck -Force`, `Install-PSResource -Name $$moduleName -Version $$version -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`)
 	updatePackerConfig(baseDir, psModules, `Install-Module -Name \$moduleName -Scope AllUsers -SkipPublisherCheck -Force`, `Install-PSResource -Name $$moduleName -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`)
-	updatePackerConfig(baseDir, psAzModules, `Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`, `Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet`)
+	// Save-Module created $modulePath implicitly; Save-PSResource requires it to exist
+	updatePackerConfig(baseDir, psAzModules, `(?m)^(\s*)Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`, "${1}New-Item -ItemType Directory -Path $$modulePath -Force | Out-Null\n${1}Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet")
 	// cdn.powershellgallery.com intermittently 404s existing packages from the build network; retry whole installs
 	for _, script := range []string{psModules, psAzModules} {
 		updatePackerConfig(baseDir, script, `(?m)^(Import-Module "\$env:HELPER_SCRIPTS/\.\./tests/Helpers\.psm1")$`, "${1}\n"+psRetryHelper)
