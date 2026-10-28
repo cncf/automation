@@ -2,17 +2,17 @@
 # Source: gha-runner-scale-set/templates/no_permission_serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
-metadata:
-  name: oracle-2cpu-8gb-x86-64-gha-rs-no-permission
+metadata: 
+  name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000-gha-rs-no-permission
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.14.1
-    app.kubernetes.io/name: oracle-2cpu-8gb-x86-64
-    app.kubernetes.io/instance: oracle-2cpu-8gb-x86-64
+    app.kubernetes.io/name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
+    app.kubernetes.io/instance: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
     app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: oracle-2cpu-8gb-x86-64
+    actions.github.com/scale-set-name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
     actions.github.com/scale-set-namespace: arc-systems
   finalizers:
     - actions.github.com/cleanup-protection
@@ -21,16 +21,16 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: oracle-2cpu-8gb-x86-64-gha-rs-manager
+  name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000-gha-rs-manager
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.14.1
-    app.kubernetes.io/name: oracle-2cpu-8gb-x86-64
-    app.kubernetes.io/instance: oracle-2cpu-8gb-x86-64
+    app.kubernetes.io/name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
+    app.kubernetes.io/instance: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
     app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: oracle-2cpu-8gb-x86-64
+    actions.github.com/scale-set-name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role
   finalizers:
@@ -97,16 +97,16 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: oracle-2cpu-8gb-x86-64-gha-rs-manager
+  name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000-gha-rs-manager
   namespace: arc-systems
   labels:
     helm.sh/chart: gha-rs-0.14.1
-    app.kubernetes.io/name: oracle-2cpu-8gb-x86-64
-    app.kubernetes.io/instance: oracle-2cpu-8gb-x86-64
+    app.kubernetes.io/name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
+    app.kubernetes.io/instance: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
     app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: oracle-2cpu-8gb-x86-64
+    actions.github.com/scale-set-name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
     actions.github.com/scale-set-namespace: arc-systems
     app.kubernetes.io/component: manager-role-binding
   finalizers:
@@ -114,11 +114,11 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: oracle-2cpu-8gb-x86-64-gha-rs-manager
+  name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000-gha-rs-manager
 subjects:
 - kind: ServiceAccount
   name: 
-    cncf-gha-controller-gha-rs-controller
+    cncf-gha-rs-controller
   namespace: 
     arc-systems
 ---
@@ -126,28 +126,36 @@ subjects:
 apiVersion: actions.github.com/v1alpha1
 kind: AutoscalingRunnerSet
 metadata:
-  name: oracle-2cpu-8gb-x86-64
+  name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
   namespace: arc-systems
   labels:
     app.kubernetes.io/component: "autoscaling-runner-set"
     helm.sh/chart: gha-rs-0.14.1
-    app.kubernetes.io/name: oracle-2cpu-8gb-x86-64
-    app.kubernetes.io/instance: oracle-2cpu-8gb-x86-64
+    app.kubernetes.io/name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
+    app.kubernetes.io/instance: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
     app.kubernetes.io/version: "0.14.1"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: gha-rs
-    actions.github.com/scale-set-name: oracle-2cpu-8gb-x86-64
+    actions.github.com/scale-set-name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000
     actions.github.com/scale-set-namespace: arc-systems
   annotations:
     actions.github.com/values-hash: 5a160ea308cd51d6f4c27515e5040d9dc34be0acda7289ea0d7ad9cffff39e1
-    actions.github.com/cleanup-manager-role-binding: oracle-2cpu-8gb-x86-64-gha-rs-manager
-    actions.github.com/cleanup-manager-role-name: oracle-2cpu-8gb-x86-64-gha-rs-manager
-    actions.github.com/cleanup-no-permission-service-account-name: oracle-2cpu-8gb-x86-64-gha-rs-no-permission
+    actions.github.com/cleanup-manager-role-binding: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000-gha-rs-manager
+    actions.github.com/cleanup-manager-role-name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000-gha-rs-manager
+    actions.github.com/cleanup-no-permission-service-account-name: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000-gha-rs-no-permission
 spec:
   githubConfigUrl: https://github.com/enterprises/cncf
   githubConfigSecret: github-arc-secret
-  maxRunners: 200
+  maxRunners: 10
   minRunners: 0
+  runnerGroup: "GPUs"
+  runnerScaleSetLabels:
+  - ubuntu-26.04
+  - x86_64
+  - rtxpro6000
+  - 2xGPU
+  - 16xCPU
+  - 64GBxRAM
   listenerMetrics:
     counters:
       gha_started_jobs_total:
@@ -306,15 +314,17 @@ spec:
           value: unix:///var/run/docker.sock
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:072ec0c6b43e657d85db23adfc4f39b4737f2368bdfdacb6caa408d61fa372bd
+        image: ghcr.io/cncf/external-gha-runner:resolute@sha256:c7570e7233286d5f7fd64d407f928c836a37024f6d0445a1ec494c0ff8dd94aa
         name: runner
         resources:
           limits:
-            cpu: 4
-            memory: 12Gi
+            cpu: 18
+            memory: 70Gi
+            nvidia.com/gpu: 2
           requests:
-            cpu: 2
-            memory: 8Gi
+            cpu: 16
+            memory: 64Gi
+            nvidia.com/gpu: 2
         volumeMounts:
         - mountPath: /home/runner/_work
           name: work
@@ -409,7 +419,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:072ec0c6b43e657d85db23adfc4f39b4737f2368bdfdacb6caa408d61fa372bd
+        image: ghcr.io/cncf/external-gha-runner:resolute@sha256:c7570e7233286d5f7fd64d407f928c836a37024f6d0445a1ec494c0ff8dd94aa
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
@@ -419,7 +429,7 @@ spec:
         fsGroup: 1001
         supplementalGroups:
         - 999
-      serviceAccountName: oracle-16cpu-64gb-x86-64-gha-rs-no-permission
+      serviceAccountName: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000-gha-rs-no-permission
       volumes:
       - name: modules
         hostPath:
@@ -436,9 +446,3 @@ spec:
       - emptyDir:
           sizeLimit: 50Gi
         name: work
-      tolerations:
-      - key: "cncf.io/gha-runner"
-        operator: "Exists"
-        effect: "NoSchedule"
-      nodeSelector:
-        nodepool: karpenter

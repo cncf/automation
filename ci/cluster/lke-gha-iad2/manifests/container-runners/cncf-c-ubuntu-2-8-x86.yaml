@@ -148,6 +148,9 @@ spec:
   githubConfigSecret: github-arc-secret
   maxRunners: 200
   minRunners: 0
+  runnerScaleSetLabels:
+  - oracle-2cpu-8gb-x86-64
+  - cncf-c-ubuntu-24.04-2-8-x86
   listenerMetrics:
     counters:
       gha_started_jobs_total:
@@ -306,7 +309,7 @@ spec:
           value: unix:///var/run/docker.sock
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:072ec0c6b43e657d85db23adfc4f39b4737f2368bdfdacb6caa408d61fa372bd
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:962919625fcedc5f84362b49029cfa5298549a4ba4e191fe6eea432f1efd9dcf
         name: runner
         resources:
           limits:
@@ -409,7 +412,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:noble@sha256:072ec0c6b43e657d85db23adfc4f39b4737f2368bdfdacb6caa408d61fa372bd
+        image: ghcr.io/cncf/external-gha-runner:noble@sha256:962919625fcedc5f84362b49029cfa5298549a4ba4e191fe6eea432f1efd9dcf
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
