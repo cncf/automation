@@ -19,16 +19,23 @@ set does not fail: the job stays queued until GitHub cancels it 24 hours later.
 
 ### Container runners
 
-These run your job in a container. They are defined in
-[`ci/cluster/oci/runners`](./cluster/oci/runners) and
-[`ci/cluster/lke-gha-iad2/manifests/container-runners`](./cluster/lke-gha-iad2/manifests/container-runners).
+These run your job in a container.
 
-For an amd64/x86_64 runner you can choose from:
+#### amd64/x86_64 runners
 
-- `runs-on: oracle-2cpu-8gb-x86-64`
-- `runs-on: oracle-8cpu-32gb-x86-64`
-- `runs-on: oracle-16cpu-64gb-x86-64`
+##### ubuntu 24.04
 - `runs-on: cncf-c-ubuntu-2-8-x86`
+- `runs-on: cncf-c-ubuntu-8-32-x86`
+- `runs-on: cncf-c-ubuntu-16-64-x86`
+
+The former `oracle-2cpu-8gb-x86-64`, `oracle-8cpu-32gb-x86-64` and
+`oracle-16cpu-64gb-x86-64` labels still work as aliases for the runners above,
+but please switch to the `cncf-c-ubuntu-*` labels.
+
+##### ubuntu 26.04
+- `runs-on: cncf-c-ubuntu-26.04-2-8-x86`
+- `runs-on: cncf-c-ubuntu-26.04-8-32-x86`
+- `runs-on: cncf-c-ubuntu-26.04-16-64-x86`
 
 ### VM runners
 
@@ -81,8 +88,15 @@ Please reach out to the CNCF team on the `#cncf-ci-infra` channel for usage.
 
 For a GPU runner choose one of:
 
+##### ubuntu 24.04
 - `runs-on: oracle-vm-gpu-a10-1`
 - `runs-on: oracle-vm-gpu-a10-2`
+- `runs-on: cncf-c-ubuntu-24.04-16-64-x86-1xrtxpro6000`
+- `runs-on: cncf-c-ubuntu-24.04-16-64-x86-2xrtxpro6000`
+
+##### ubuntu 26.04
+- `runs-on: cncf-c-ubuntu-26.04-16-64-x86-1xrtxpro6000`
+- `runs-on: cncf-c-ubuntu-26.04-16-64-x86-2xrtxpro6000`
 
 Please reach out to the CNCF team on the `#cncf-ci-infra` channel for usage.
 
