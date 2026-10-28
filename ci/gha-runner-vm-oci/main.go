@@ -245,10 +245,14 @@ packer {
 		}
 	}
 
+	// Move the Azure mirror to lowest priority; patterns match distinct hostnames so map order is irrelevant.
 	// Upstream sed only rewrites the Azure mirror; cloud-init on OCI writes *.clouds.archive.ubuntu.com, leaving Apt.Tests.ps1's mirror-list check failing
 	aptSourcesScript := baseDir + "/images/ubuntu/scripts/build/configure-apt-sources.sh"
 	if err := replaceInFileRegex(aptSourcesScript, map[*regexp.Regexp]string{
-		regexp.MustCompile(`http://azure\\\.archive\\\.ubuntu\\\.com/ubuntu/`): `http://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu/*`,
+		regexp.MustCompile(`(azure\.archive\.ubuntu\.com/ubuntu/\\t)priority:1`):  `${1}priority:3`,
+		regexp.MustCompile(`(https://archive\.ubuntu\.com/ubuntu/\\t)priority:2`): `${1}priority:1`,
+		regexp.MustCompile(`(security\.ubuntu\.com/ubuntu/\\t)priority:3`):        `${1}priority:2`,
+		regexp.MustCompile(`http://azure\\\.archive\\\.ubuntu\\\.com/ubuntu/`):    `http://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu/*`,
 	}); err != nil {
 		log.Fatalf("Failed to patch configure-apt-sources.sh: %v", err)
 	}
