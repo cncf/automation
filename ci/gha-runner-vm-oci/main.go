@@ -224,8 +224,9 @@ packer {
 		log.Fatalf("Failed to patch Install-PowerShellModules.ps1: %v", err)
 	}
 	psAzModulesScript := baseDir + "/images/ubuntu/scripts/build/Install-PowerShellAzModules.ps1"
+	// Save-Module created $modulePath implicitly; Save-PSResource requires it to exist
 	if err := replaceInFileRegex(psAzModulesScript, map[*regexp.Regexp]string{
-		regexp.MustCompile(`Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`): `Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet`,
+		regexp.MustCompile(`(?m)^(\s*)Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`): "${1}New-Item -ItemType Directory -Path $$modulePath -Force | Out-Null\n${1}Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet",
 	}); err != nil {
 		log.Fatalf("Failed to patch Install-PowerShellAzModules.ps1: %v", err)
 	}
