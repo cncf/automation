@@ -335,6 +335,7 @@ jobs:
 
           which git
           which docker
+          gh --version
           docker version
 
       - name: Run a real job via the docker-in-docker sidecar

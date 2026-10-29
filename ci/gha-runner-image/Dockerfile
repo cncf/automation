@@ -42,6 +42,7 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-${BASE_IMAGE}
 
 ARG TARGETOS
 ARG TARGETARCH
+ARG GH_VERSION=2.103.3
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_MANUALLY_TRAP_SIG=1
@@ -89,6 +90,15 @@ RUN add-apt-repository ppa:git-core/ppa \
     && apt-get purge -y --auto-remove software-properties-common dirmngr \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /usr/share/doc/* /usr/share/man/*
+
+# Install the GitHub CLI the way actions/runner-images does: the release .deb,
+# checked against the release's checksums.txt.
+RUN curl -fsSLo /tmp/gh_${GH_VERSION}_linux_${TARGETARCH}.deb https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${TARGETARCH}.deb \
+    && curl -fsSLo /tmp/gh_checksums.txt https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_checksums.txt \
+    && (cd /tmp && grep " gh_${GH_VERSION}_linux_${TARGETARCH}.deb\$" gh_checksums.txt | sha256sum -c -) \
+    && apt-get install -y --no-install-recommends /tmp/gh_${GH_VERSION}_linux_${TARGETARCH}.deb \
+    && rm -f /tmp/gh_${GH_VERSION}_linux_${TARGETARCH}.deb /tmp/gh_checksums.txt \
+    && rm -rf /usr/share/doc/* /usr/share/man/*
 
 RUN adduser --disabled-password --gecos "" --uid 1001 runner \
     && groupadd docker --gid 123 \
