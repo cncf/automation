@@ -25,6 +25,7 @@ These run your job in a container.
 
 ##### ubuntu 24.04
 - `runs-on: cncf-c-ubuntu-2-8-x86`
+- `runs-on: cncf-c-ubuntu-4-16-x86`
 - `runs-on: cncf-c-ubuntu-8-32-x86`
 - `runs-on: cncf-c-ubuntu-16-64-x86`
 
@@ -34,6 +35,7 @@ but please switch to the `cncf-c-ubuntu-*` labels.
 
 ##### ubuntu 26.04
 - `runs-on: cncf-c-ubuntu-26.04-2-8-x86`
+- `runs-on: cncf-c-ubuntu-26.04-4-16-x86`
 - `runs-on: cncf-c-ubuntu-26.04-8-32-x86`
 - `runs-on: cncf-c-ubuntu-26.04-16-64-x86`
 
