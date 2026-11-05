@@ -41,11 +41,19 @@ spec:
           apiGateway:
             resources:
               requests:
-                cpu: 100m
+                cpu: 500m
                 memory: 512Mi
               limits:
-                cpu: 500m
+                cpu: 1000m
                 memory: 1Gi
+          ui:
+            resources:
+              requests:
+                cpu: 200m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 256Mi
           gitSync:
             enabled: false
           sbomSource:
