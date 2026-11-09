@@ -138,7 +138,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      flex-wrap: wrap;
+      position: relative;
     }
 
     .nav-group {
@@ -155,8 +155,29 @@
 
     .nav-group.secondary {
       flex: 0 1 auto;
-      flex-wrap: wrap;
       justify-content: flex-end;
+    }
+
+    .nav-resources {
+      flex: 0 0 auto;
+    }
+
+    .nav-resources summary {
+      display: none;
+      padding: 14px;
+      color: var(--text-muted);
+      cursor: pointer;
+      list-style: none;
+      border-radius: var(--radius);
+    }
+
+    .nav-resources summary::-webkit-details-marker { display: none; }
+    .nav-resources summary:hover { color: var(--text); }
+    .nav-resources summary svg { display: block; }
+
+    .nav-resources summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
     }
 
     .nav-tab {
@@ -721,6 +742,30 @@
     }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 1800px) {
+      .nav-resources {
+        position: relative;
+      }
+
+      .nav-resources summary {
+        display: block;
+      }
+
+      .nav-resources .secondary {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: max-content;
+        max-width: calc(100vw - 40px);
+        flex-direction: column;
+        align-items: stretch;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+    }
+
     @media (max-width: 900px) {
       main { padding: 20px 24px; }
       header { padding: 0 20px; }
@@ -752,18 +797,11 @@
         padding-top: 8px;
         padding-bottom: 8px;
         gap: 8px;
-      }
-
-      .nav-group {
-        width: 100%;
+        align-items: flex-start;
       }
 
       .nav-group.primary {
-        flex-basis: 100%;
-      }
-
-      .nav-group.secondary {
-        justify-content: flex-start;
+        flex: 1 1 0;
       }
 
       .nav-tab,
@@ -815,7 +853,14 @@
     <button type="button" class="nav-tab" data-page="servicedesk">Service Desk</button>
     <button type="button" class="nav-tab" data-page="satisfaction">Satisfaction</button>
   </div>
-  <div class="nav-group secondary">
+  <details class="nav-resources" open>
+    <summary role="button" aria-label="External links" title="External links">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </summary>
+    <div class="nav-group secondary">
     <a class="nav-ext-link" href="https://fictional-adventure-8wvgr64.pages.github.io/viewer/v2/" target="_blank" rel="noopener noreferrer">Project Maintainers <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     <a class="nav-ext-link" href="https://www.cncf.io/project-metrics/" target="_blank" rel="noopener noreferrer">Project Metrics <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     <a class="nav-ext-link" href="https://landscape.cncf.io/stats" target="_blank" rel="noopener noreferrer">Landscape <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
@@ -823,7 +868,8 @@
     <a class="nav-ext-link" href="https://clomonitor.io/stats" target="_blank" rel="noopener noreferrer">CLOMonitor <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     <a class="nav-ext-link" href="https://gitjobs.dev/stats" target="_blank" rel="noopener noreferrer">GitJobs <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     <a class="nav-ext-link" href="https://ocgroups.dev/stats" target="_blank" rel="noopener noreferrer">OCG <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
-  </div>
+    </div>
+  </details>
 </nav>
 
 <main>
@@ -1708,6 +1754,30 @@ function renderLevelChanges() {
 // ══════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════
+
+const resourceMenu = document.querySelector('.nav-resources');
+const resourceToggle = resourceMenu.querySelector('summary');
+const compactNavigation = window.matchMedia('(max-width: 1800px)');
+
+function resetResourceMenu() {
+  resourceMenu.open = !compactNavigation.matches;
+}
+
+resetResourceMenu();
+compactNavigation.addEventListener('change', resetResourceMenu);
+
+document.addEventListener('click', event => {
+  if (compactNavigation.matches && !resourceMenu.contains(event.target)) {
+    resourceMenu.open = false;
+  }
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && compactNavigation.matches && resourceMenu.open) {
+    resourceMenu.open = false;
+    resourceToggle.focus();
+  }
+});
 
 const DEFAULT_PAGE = 'overview';
 const VALID_PAGES = new Set(['overview', 'pipeline', 'onboarding', 'servicedesk', 'satisfaction']);
