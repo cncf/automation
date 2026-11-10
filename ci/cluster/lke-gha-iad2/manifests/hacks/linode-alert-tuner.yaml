@@ -1,0 +1,148 @@
+---
+# Deploys into the karpenter namespace and reuses the existing
+# linode-credentials Secret (key: LINODE_TOKEN).
+# Thresholds to apply. 0 disables that alert entirely.
+# cpu is cumulative across cores (4 vCPU -> 400 max); io is blocks/s;
+# network_in / network_out are Mb/s; transfer_quota is % of monthly quota.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: linode-alert-thresholds
+  namespace: karpenter
+data:
+  ALERT_CPU: "0"
+  ALERT_IO: "0"
+  ALERT_NETWORK_IN: "0"
+  ALERT_NETWORK_OUT: "0"
+  ALERT_TRANSFER_QUOTA: "0"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: linode-alert-tuner
+  namespace: karpenter
+  labels:
+    app.kubernetes.io/name: linode-alert-tuner
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: linode-alert-tuner
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: linode-alert-tuner
+    spec:
+      # Host networking is required to reach the link-local metadata service
+      # (169.254.169.254) from inside the pod.
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      # Land on nodes as early as possible, regardless of taints.
+      tolerations:
+        - operator: Exists
+      priorityClassName: system-node-critical
+      automountServiceAccountToken: false
+      # Only Karpenter-managed nodes.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: karpenter.sh/nodepool
+                    operator: Exists
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: tuner
+          image: curlimages/curl:8.23.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          envFrom:
+            - configMapRef:
+                name: linode-alert-thresholds
+          env:
+            - name: LINODE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: linode-credentials
+                  key: LINODE_TOKEN
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 32Mi
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              META=http://169.254.169.254/v1
+              API=https://api.linode.com/v4
+
+              retry() {
+                n=0
+                until "$@"; do
+                  n=$((n+1))
+                  if [ "$n" -ge 10 ]; then
+                    echo "giving up after $n attempts: $*" >&2
+                    return 1
+                  fi
+                  sleep $((n * 3))
+                done
+              }
+
+              get_instance_id() {
+                MT=$(curl -sS -f -X PUT "$META/token" \
+                      -H "Metadata-Token-Expiry-Seconds: 300") || return 1
+                curl -sS -f "$META/instance" \
+                  -H "Metadata-Token: $MT" \
+                  -H "Accept: application/json" \
+                  | tr -d ' \t\n' | grep -o '"id":[0-9]*' | head -n1 | cut -d: -f2
+              }
+
+              echo "node=$NODE_NAME: resolving Linode instance id via metadata service"
+              ID=""
+              n=0
+              while [ -z "$ID" ]; do
+                ID=$(get_instance_id) || ID=""
+                [ -n "$ID" ] && break
+                n=$((n+1))
+                [ "$n" -ge 10 ] && { echo "metadata lookup failed" >&2; exit 1; }
+                sleep $((n * 3))
+              done
+              echo "node=$NODE_NAME linode_id=$ID"
+
+              BODY=$(printf '{"alerts":{"cpu":%s,"io":%s,"network_in":%s,"network_out":%s,"transfer_quota":%s}}' \
+                      "$ALERT_CPU" "$ALERT_IO" "$ALERT_NETWORK_IN" "$ALERT_NETWORK_OUT" "$ALERT_TRANSFER_QUOTA")
+
+              update() {
+                out=$(curl -sS -w '\n%{http_code}' -X PUT "$API/linode/instances/$ID" \
+                  -H "Authorization: Bearer $LINODE_TOKEN" \
+                  -H "Content-Type: application/json" \
+                  -d "$BODY") || return 1
+                code=$(printf '%s\n' "$out" | tail -n1)
+                body=$(printf '%s\n' "$out" | sed '$d')
+                case "$code" in
+                  2*) return 0 ;;
+                  *)  echo "PUT $API/linode/instances/$ID -> HTTP $code: $body" >&2; return 1 ;;
+                esac
+              }
+
+              retry update
+              echo "node=$NODE_NAME linode_id=$ID alerts updated: $BODY"
+
+              # Job is done for this node; park the process so the pod stays Running.
+              exec sleep infinity
