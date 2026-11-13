@@ -42,11 +42,11 @@ jobs:
     if: >-
       github.repository == 'cncf/automation' &&
       github.event_name != 'workflow_dispatch' && github.event_name != 'push' && github.event_name != 'schedule'
-    uses: cncf/prow-github-actions/.github/workflows/prow.yml@187c5e3cd95a329c43448e1bdb3b1f5249232e44 # v3.0.1
+    uses: cncf/prow-github-actions/.github/workflows/prow.yml@a192ee15687d4ede4d553ff0929b2b296666afd7 # v3.5.0
 
   sweep:
     if: github.repository == 'cncf/automation' && github.event_name == 'schedule'
-    uses: cncf/prow-github-actions/.github/workflows/prow.yml@187c5e3cd95a329c43448e1bdb3b1f5249232e44 # v3.0.1
+    uses: cncf/prow-github-actions/.github/workflows/prow.yml@a192ee15687d4ede4d553ff0929b2b296666afd7 # v3.5.0
     with:
       jobs: sweep lgtm
 
@@ -54,6 +54,6 @@ jobs:
     if: >-
       github.repository == 'cncf/automation' &&
       (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
-    uses: cncf/prow-github-actions/.github/workflows/prow.yml@187c5e3cd95a329c43448e1bdb3b1f5249232e44 # v3.0.1
+    uses: cncf/prow-github-actions/.github/workflows/prow.yml@a192ee15687d4ede4d553ff0929b2b296666afd7 # v3.5.0
     with:
       jobs: label-sync
