@@ -3,21 +3,21 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "landscape-mcp-server",
-  "documentNamespace": "https://waybill.kusari.dev/spdx/JYUFAWHCK44CANNZGOXAXWDAUGUTFCQ3",
+  "documentNamespace": "https://waybill.kusari.dev/spdx/JST6HMVUT564CASAPSUXAMCL7LHPSW2P",
   "creationInfo": {
-    "created": "2026-11-16T00:27:34Z",
+    "created": "2026-11-16T16:41:52Z",
     "creators": [
       "Tool: waybill-0.2.0",
       "Organization: waybill contributors",
-      "Tool: waybill-0.2.0 source: git:https://github.com/cncf/automation.git#b614de7be85e25937d82c3c37e8da3635d8b9c9d"
+      "Tool: waybill-0.2.0 source: git:https://github.com/cncf/automation.git#15c7b1f66962f006b804c61eba8ce9fd603d91d2"
     ],
     "comment": "Scope: manifest (declared transitives included). Observed lifecycle phases: pre-build. Per-component scope detail in waybill:sbom-tier annotations."
   },
   "packages": [
     {
-      "SPDXID": "SPDXRef-DocumentRoot-O66RWMKC6JUQ24AE",
+      "SPDXID": "SPDXRef-DocumentRoot-OUO5CMBQHZJMCW6J",
       "name": "cncf/automation/utilities/landscape-mcp-server",
-      "versionInfo": "b614de7be85e25937d82c3c37e8da3635d8b9c9d",
+      "versionInfo": "15c7b1f66962f006b804c61eba8ce9fd603d91d2",
       "downloadLocation": "NOASSERTION",
       "supplier": "Organization: waybill contributors",
       "filesAnalyzed": false,
@@ -27,12 +27,12 @@
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:generic/cncf%2Fautomation%2Futilities%2Flandscape-mcp-server@b614de7be85e25937d82c3c37e8da3635d8b9c9d"
+          "referenceLocator": "pkg:generic/cncf%2Fautomation%2Futilities%2Flandscape-mcp-server@15c7b1f66962f006b804c61eba8ce9fd603d91d2"
         },
         {
           "referenceCategory": "SECURITY",
           "referenceType": "cpe23Type",
-          "referenceLocator": "cpe:2.3:a:waybill:cncf_automation_utilities_landscape-mcp-server:b614de7be85e25937d82c3c37e8da3635d8b9c9d:*:*:*:*:*:*:*"
+          "referenceLocator": "cpe:2.3:a:waybill:cncf_automation_utilities_landscape-mcp-server:15c7b1f66962f006b804c61eba8ce9fd603d91d2:*:*:*:*:*:*:*"
         }
       ]
     },
@@ -59,31 +59,31 @@
       "annotations": [
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-11-16T00:27:34Z",
+          "annotationDate": "2026-11-16T16:41:52Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:sbom-tier\",\"value\":\"source\"}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-11-16T00:27:34Z",
+          "annotationDate": "2026-11-16T16:41:52Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:source-files\",\"value\":[\"go.mod\"]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-11-16T00:27:34Z",
+          "annotationDate": "2026-11-16T16:41:52Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.identity\",\"value\":{\"confidence\":0.85,\"technique\":\"package-database\"}}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-11-16T00:27:34Z",
+          "annotationDate": "2026-11-16T16:41:52Z",
           "annotationType": "OTHER",
-          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.mod\",\"sha256\":\"dee944d34472debbd855fcf151fc8e3c2b1c990e9e9ad84d3bee260cc903101c\"}]}"
+          "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"evidence.occurrences\",\"value\":[{\"location\":\"go.mod\",\"sha256\":\"d34f206c8f71ca672af9502b8afe0f424e83ec2a3eae1656e7601c100e6bb7b1\"}]}"
         },
         {
           "annotator": "Tool: waybill-0.2.0",
-          "annotationDate": "2026-11-16T00:27:34Z",
+          "annotationDate": "2026-11-16T16:41:52Z",
           "annotationType": "OTHER",
           "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspace-member\",\"value\":\"[\\\".\\\"]\"}"
         }
@@ -93,11 +93,11 @@
   "relationships": [
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
-      "relatedSpdxElement": "SPDXRef-DocumentRoot-O66RWMKC6JUQ24AE",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-OUO5CMBQHZJMCW6J",
       "relationshipType": "DESCRIBES"
     },
     {
-      "spdxElementId": "SPDXRef-DocumentRoot-O66RWMKC6JUQ24AE",
+      "spdxElementId": "SPDXRef-DocumentRoot-OUO5CMBQHZJMCW6J",
       "relatedSpdxElement": "SPDXRef-Package-KB3RXWKFWTJPSOZQ",
       "relationshipType": "DEPENDS_ON"
     }
@@ -105,84 +105,84 @@
   "annotations": [
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:generation-context\",\"value\":\"filesystem-scan\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:cisa-2026-lifecycle\",\"value\":\"after-build\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:os-release-missing-fields\",\"value\":[\"ID\",\"VERSION_ID\"]}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:graph-completeness\",\"value\":\"complete\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:workspaces-detected\",\"value\":\"[\\\".\\\"]\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-cache-warming-mode\",\"value\":\"off\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-coverage\",\"value\":\"complete\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:go-transitive-fallback-count\",\"value\":\"0\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-ring-buffer-overflows\",\"value\":\"0\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-events-dropped\",\"value\":\"0\"}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-uprobe-attach-failures\",\"value\":[]}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"waybill:trace-integrity-kprobe-attach-failures\",\"value\":[]}"
     },
     {
       "annotator": "Tool: waybill-0.2.0",
-      "annotationDate": "2026-11-16T00:27:34Z",
+      "annotationDate": "2026-11-16T16:41:52Z",
       "annotationType": "OTHER",
       "comment": "{\"schema\":\"waybill-annotation/v1\",\"field\":\"compositions\",\"value\":{\"complete_ecosystems\":[\"golang\"]}}"
     }
   ],
   "documentDescribes": [
-    "SPDXRef-DocumentRoot-O66RWMKC6JUQ24AE"
+    "SPDXRef-DocumentRoot-OUO5CMBQHZJMCW6J"
   ]
 }
