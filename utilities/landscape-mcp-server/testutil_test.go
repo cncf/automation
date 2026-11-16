@@ -27,11 +27,6 @@ func timePtr(s string) *time.Time {
 	return &t
 }
 
-// int64Ptr returns a pointer to the given int64 value.
-func int64Ptr(v int64) *int64 {
-	return &v
-}
-
 // makeItem creates a LandscapeItem with the given name and maturity, applying optional modifiers.
 func makeItem(name, maturity string, opts ...func(*LandscapeItem)) LandscapeItem {
 	item := LandscapeItem{
