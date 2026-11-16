@@ -142,8 +142,8 @@ Run the binary directly, or point it at a local dataset file for offline use:
 ./landscape2-mcp-server --data-file ./full.json
 ```
 
-`make ci` runs the same checks as CI: `gofmt` verification, `go vet`, and the
-test suite with the race detector.
+`make ci` runs the same checks as CI: `gofmt` verification, `go vet`,
+`golangci-lint`, and the test suite with the race detector.
 
 ## Naming
 
@@ -196,8 +196,8 @@ One limitation: the metric names themselves (`gold_members_joined_this_year`,
 - `make test` — run tests with the race detector
 - `make vet` — run `go vet`
 - `make fmt-check` — verify `gofmt` cleanliness
-- `make lint` — run `golangci-lint` if installed
-- `make ci` — `fmt-check` + `vet` + `test`
+- `make lint` — run `golangci-lint` (fails if it is not installed)
+- `make ci` — `fmt-check` + `vet` + `lint` + `test`
 
 The module is stdlib-only; there are no external dependencies and no `go.sum`.
 

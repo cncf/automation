@@ -61,10 +61,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Tool execution failures (invalid arguments, unknown tools, ambiguous or
-  missing lookups, dataset unavailable) are now returned as MCP tool results
-  flagged `isError: true` instead of JSON-RPC protocol errors, as the spec
-  requires.
+- Tool execution failures (invalid arguments, ambiguous or missing lookups,
+  dataset unavailable) are now returned as MCP tool results flagged
+  `isError: true` instead of JSON-RPC protocol errors, as the spec requires.
+- An unknown tool name is reported as JSON-RPC error `-32602`.
 - Notifications (requests without an `id`) no longer receive responses.
 - `get_project_details` prefers an exact case-insensitive name match and
   returns an error listing candidates when a substring match is ambiguous.
