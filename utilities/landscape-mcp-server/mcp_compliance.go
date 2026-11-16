@@ -103,17 +103,17 @@ func resolveResource(uri string) (resourceReader, error) {
 			notFoundIsInvalidParams: true,
 		}, nil
 	default:
-		return resourceReader{}, fmt.Errorf("Unknown resource URI: %s", uri)
+		return resourceReader{}, fmt.Errorf("unknown resource URI: %s", uri)
 	}
 }
 
 func entityName(uri, prefix string) (string, error) {
 	name, err := url.PathUnescape(strings.TrimPrefix(uri, prefix))
 	if err != nil {
-		return "", fmt.Errorf("Invalid resource URI %s: %v", uri, err)
+		return "", fmt.Errorf("invalid resource URI %s: %v", uri, err)
 	}
 	if name == "" || strings.Contains(name, "/") {
-		return "", fmt.Errorf("Invalid resource URI: %s", uri)
+		return "", fmt.Errorf("invalid resource URI: %s", uri)
 	}
 	return name, nil
 }
@@ -122,7 +122,7 @@ func changesReportPrompt(cfgName, since string, now time.Time) (string, error) {
 	if since == "" {
 		since = now.AddDate(-1, 0, 0).Format("2006-01-02")
 	} else if _, err := time.Parse("2006-01-02", since); err != nil {
-		return "", fmt.Errorf("Invalid argument since: %q is not a YYYY-MM-DD date", since)
+		return "", fmt.Errorf("invalid argument since: %q is not a YYYY-MM-DD date", since)
 	}
 	return fmt.Sprintf(`Please produce a report of changes in the %[1]s landscape since %[2]s. Use the available tools:
 1. Use query_projects with graduated_from=%[2]s to find projects that graduated

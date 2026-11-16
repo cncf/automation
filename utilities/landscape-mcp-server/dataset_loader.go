@@ -60,19 +60,13 @@ func loadDataset(ctx context.Context, src dataSource, prev fetchValidators) (*Da
 		// Map repositories
 		repos := make([]Repository, 0, len(it.Repositories))
 		for _, r := range it.Repositories {
-			repos = append(repos, Repository{
-				URL:     r.URL,
-				Primary: r.Primary,
-			})
+			repos = append(repos, Repository(r))
 		}
 
 		// Map additional categories
 		addlCategories := make([]ItemCategory, 0, len(it.AdditionalCategories))
 		for _, ac := range it.AdditionalCategories {
-			addlCategories = append(addlCategories, ItemCategory{
-				Category:    ac.Category,
-				Subcategory: ac.Subcategory,
-			})
+			addlCategories = append(addlCategories, ItemCategory(ac))
 		}
 
 		// Map summary

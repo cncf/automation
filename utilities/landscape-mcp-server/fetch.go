@@ -93,7 +93,7 @@ func fetchOnce(ctx context.Context, url string, prev fetchValidators) ([]byte, f
 	if err != nil {
 		return nil, fetchValidators{}, &retryableError{err}
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	hasValidators := prev != fetchValidators{}
 	switch {
