@@ -705,6 +705,9 @@ func buildOrgSummary(org CrunchbaseOrganization) *orgSummary {
 // ambiguity error listing the candidate names. Archived projects are included.
 func resolveProjects(ds *Dataset, name string) ([]*LandscapeItem, error) {
 	nameLower := strings.ToLower(strings.TrimSpace(name))
+	if nameLower == "" {
+		return nil, fmt.Errorf("project name cannot be empty")
+	}
 	var exact, partial []*LandscapeItem
 
 	for i := range ds.Items {
@@ -732,15 +735,18 @@ func resolveProjects(ds *Dataset, name string) ([]*LandscapeItem, error) {
 		return nil, fmt.Errorf("ambiguous project name %q matches %d projects: %s", name, len(partial), strings.Join(names, ", "))
 	}
 	if len(partial) == 0 {
-		return nil, fmt.Errorf("no project found matching name: %s", name)
+		return nil, notFoundf("no project found matching name: %s", name)
 	}
 	return partial, nil
 }
 
-// normalizeURL lowercases a URL and drops surrounding whitespace, a trailing
-// slash and a ".git" suffix so repository URLs compare loosely.
+// normalizeURL lowercases a URL and drops surrounding whitespace, the http(s)
+// scheme, a trailing slash and a ".git" suffix so repository URLs compare
+// loosely.
 func normalizeURL(u string) string {
 	u = strings.ToLower(strings.TrimSpace(u))
+	u = strings.TrimPrefix(u, "https://")
+	u = strings.TrimPrefix(u, "http://")
 	u = strings.TrimRight(u, "/")
 	u = strings.TrimSuffix(u, ".git")
 	return strings.TrimRight(u, "/")
@@ -1376,7 +1382,10 @@ func geographicDistribution(ds *Dataset, groupBy string) (string, error) {
 
 // getMemberDetails returns detailed information about a specific member
 func getMemberDetails(ds *Dataset, name string) (string, error) {
-	nameLower := strings.ToLower(name)
+	nameLower := strings.ToLower(strings.TrimSpace(name))
+	if nameLower == "" {
+		return "", fmt.Errorf("member name cannot be empty")
+	}
 	var matches []memberDetailResult
 
 	for _, item := range ds.Items {
@@ -1409,7 +1418,7 @@ func getMemberDetails(ds *Dataset, name string) (string, error) {
 	}
 
 	if len(matches) == 0 {
-		return "", fmt.Errorf("no member found matching name: %s", name)
+		return "", notFoundf("no member found matching name: %s", name)
 	}
 
 	response := map[string]interface{}{

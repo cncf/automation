@@ -178,6 +178,8 @@ func TestResourcesReadEntityTemplates(t *testing.T) {
 			makeItem("Envoy", "graduated"),
 			makeItem("Alpha One", "sandbox"),
 			makeItem("Alpha Two", "sandbox"),
+			makeItem("OPA/Gatekeeper", "graduated"),
+			makeItem("Core 24/7 (member)", "", func(i *LandscapeItem) { i.Category = "CNCF Members" }),
 		},
 	}
 	state := newTestState(t, ds)
@@ -189,6 +191,8 @@ func TestResourcesReadEntityTemplates(t *testing.T) {
 	}{
 		{"project", "landscape://project/Envoy", "Envoy"},
 		{"percent-encoded project", "landscape://project/Alpha%20One", "Alpha One"},
+		{"encoded slash in project name", "landscape://project/OPA%2FGatekeeper", "OPA/Gatekeeper"},
+		{"encoded slash in member name", "landscape://member/Core%2024%2F7%20%28member%29", "Core 24/7 (member)"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -225,20 +229,24 @@ func TestResourcesReadMemberTemplate(t *testing.T) {
 	}
 }
 
-func TestResourcesReadInvalidURIsReturnInvalidParams(t *testing.T) {
+func TestResourcesReadErrorCodes(t *testing.T) {
 	state := newTestState(t, complianceDataset())
 
 	tests := []struct {
-		name string
-		uri  string
+		name     string
+		uri      string
+		wantCode int
 	}{
-		{"unknown project", "landscape://project/DoesNotExist"},
-		{"unknown member", "landscape://member/DoesNotExist"},
-		{"ambiguous project", "landscape://project/Alpha"},
-		{"empty name", "landscape://project/"},
-		{"bad percent-encoding", "landscape://project/%zz"},
-		{"nested path", "landscape://project/a/b"},
-		{"unknown scheme", "landscape://nope"},
+		{"unknown project", "landscape://project/DoesNotExist", -32002},
+		{"unknown member", "landscape://member/DoesNotExist", -32002},
+		{"unknown resource", "landscape://nope", -32002},
+		{"ambiguous project", "landscape://project/Alpha", -32602},
+		{"empty name", "landscape://project/", -32602},
+		{"blank project name", "landscape://project/%20", -32602},
+		{"blank member name", "landscape://member/%20", -32602},
+		{"bad percent-encoding", "landscape://project/%zz", -32602},
+		{"nested path", "landscape://project/a/b", -32602},
+		{"missing uri", "", -32602},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -247,10 +255,27 @@ func TestResourcesReadInvalidURIsReturnInvalidParams(t *testing.T) {
 			if resp == nil || resp.Error == nil {
 				t.Fatalf("expected error, got %+v", resp)
 			}
-			if resp.Error.Code != -32602 || resp.Error.Message == "" {
-				t.Errorf("error = %+v, want code -32602 with a message", resp.Error)
+			if resp.Error.Code != tt.wantCode || resp.Error.Message == "" {
+				t.Errorf("error = %+v, want code %d with a message", resp.Error, tt.wantCode)
 			}
 		})
+	}
+}
+
+func TestResourcesReadNotFoundCarriesURI(t *testing.T) {
+	state := newTestState(t, complianceDataset())
+
+	resp := rpc(t, state, "resources/read", `{"uri":"landscape://project/DoesNotExist"}`, "1")
+
+	if resp == nil || resp.Error == nil {
+		t.Fatalf("expected error, got %+v", resp)
+	}
+	var data map[string]string
+	if err := json.Unmarshal(resp.Error.Data, &data); err != nil {
+		t.Fatalf("error data: %v", err)
+	}
+	if data["uri"] != "landscape://project/DoesNotExist" {
+		t.Errorf("error data = %v, want the requested uri", data)
 	}
 }
 

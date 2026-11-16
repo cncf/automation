@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -30,6 +31,25 @@ func handleResourcesList(req *jsonRPCRequest, state *serverState) *jsonRPCRespon
 	}
 }
 
+// errCodeResourceNotFound is the MCP error code for a resource that does not
+// exist.
+const errCodeResourceNotFound = -32002
+
+// resourceErrorResponse maps a resources/read failure to its JSON-RPC error: a
+// URI that names nothing is -32002, any other fault of the caller's URI is
+// -32602, and everything else is an internal error.
+func resourceErrorResponse(id json.RawMessage, uri string, err error, callerFault bool) *jsonRPCResponse {
+	var notFound *notFoundError
+	switch {
+	case errors.As(err, &notFound):
+		return errorResponse(id, errCodeResourceNotFound, err.Error(), mustJSON(map[string]string{"uri": uri}))
+	case callerFault:
+		return errorResponse(id, -32602, err.Error(), nil)
+	default:
+		return errorResponse(id, -32000, err.Error(), nil)
+	}
+}
+
 func handleResourcesRead(ctx context.Context, req *jsonRPCRequest, state *serverState) *jsonRPCResponse {
 	var params struct {
 		URI string `json:"uri"`
@@ -38,9 +58,13 @@ func handleResourcesRead(ctx context.Context, req *jsonRPCRequest, state *server
 		return errorResponse(req.ID, -32602, "Invalid params", nil)
 	}
 
+	if params.URI == "" {
+		return errorResponse(req.ID, -32602, "uri parameter is required", nil)
+	}
+
 	reader, err := resolveResource(params.URI)
 	if err != nil {
-		return errorResponse(req.ID, -32602, err.Error(), nil)
+		return resourceErrorResponse(req.ID, params.URI, err, true)
 	}
 
 	waitCtx, cancel := context.WithTimeout(ctx, datasetWaitTimeout)
@@ -52,11 +76,7 @@ func handleResourcesRead(ctx context.Context, req *jsonRPCRequest, state *server
 
 	text, err := reader.read(dataset)
 	if err != nil {
-		code := -32000
-		if reader.notFoundIsInvalidParams {
-			code = -32602
-		}
-		return errorResponse(req.ID, code, err.Error(), nil)
+		return resourceErrorResponse(req.ID, params.URI, err, reader.byName)
 	}
 
 	return &jsonRPCResponse{

@@ -48,7 +48,7 @@ last.
 | --- | --- | --- |
 | `query_projects` | Query projects filtered by maturity, dates, name, flags, and parent project | `maturity` (string), `name` (string, substring), `category` (string), `subcategory` (string), `graduated_from` / `graduated_to` / `incubating_from` / `incubating_to` / `accepted_from` / `accepted_to` (string, `YYYY-MM-DD`), `oss` / `end_user` / `specification` (boolean), `parent_project` (string, exact match), `sort_by` (enum: `name`, `accepted_at`, `incubating_at`, `graduated_at`; default `name`), `sort_order` (enum: `asc` default, `desc`), `limit` (integer; default 100, max 500), `offset` (integer; default 0) |
 | `query_members` | Query members filtered by tier and join dates | `tier` (string), `category` (string), `joined_from` / `joined_to` (string, `YYYY-MM-DD`), `sort_by` (enum: `name`, `joined_at`; default `name`), `sort_order` (enum: `asc` default, `desc`), `limit` (integer; default 100, max 500), `offset` (integer; default 0) |
-| `get_project_details` | Detailed info on one project, by name or by repository/homepage URL | `name` (string; exact case-insensitive match preferred, otherwise unique substring; takes precedence), `repo_url` (string; alternative to `name`, trailing slash and `.git` ignored). One of the two is required. |
+| `get_project_details` | Detailed info on one project, by name or by repository/homepage URL | `name` (string; exact case-insensitive match preferred, otherwise unique substring; takes precedence), `repo_url` (string; alternative to `name`; `http(s)://` scheme, trailing slash and `.git` ignored). One of the two is required. |
 | `get_member_details` | Detailed info on one member by name | `name` (string, required; case-insensitive) |
 | `list_categories` | List all categories and subcategories with item counts | none |
 | `landscape_summary` | High-level statistical overview of the landscape | none |
@@ -75,6 +75,11 @@ Resource templates:
 - `landscape://project/{name}` — detailed information about a single project, looked up by name
 - `landscape://member/{name}` — detailed information about a single member, looked up by name
 
+`{name}` is a single percent-encoded path segment: encode a `/` in a name as
+`%2F` (e.g. `landscape://member/Core%2024%2F7%20%28member%29`). A URI that
+names no resource is answered with JSON-RPC error `-32002` (resource not
+found); a malformed URI or an ambiguous name is `-32602`.
+
 Prompts:
 
 - `analyze_landscape` — analyze the current state of the landscape (no arguments)
@@ -91,12 +96,15 @@ Prompts:
 | `--landscape-description` | `Cloud Native Computing Foundation` | Description of the landscape. |
 | `--member-category-match` | `member` | Case-insensitive substring of an item's category that marks it as a member. |
 | `--tiers` | `Gold,Silver` | Comma-separated membership tiers backing the `gold_`/`silver_` metrics, high tier first. |
-| `--refresh-interval` | `6h` | How often to reload the dataset from its source. `0` disables periodic refresh. |
+| `--refresh-interval` | `6h` | How often to reload the dataset from its source. `0` disables periodic refresh (a failed initial load is still retried). |
 
 ### Dataset refresh
 
 The dataset is loaded once at startup; the server answers requests as soon as
-the load finishes (requests wait up to 60 seconds for it). When
+the load finishes (requests wait up to 60 seconds for it). If that initial
+load fails, it is retried with exponential backoff (30s, doubling up to 5
+minutes) until a dataset is available, regardless of `--refresh-interval`;
+until then requests fail with "Dataset unavailable". When
 `--refresh-interval` is positive, the dataset is then reloaded periodically:
 
 - Remote sources are re-fetched with a conditional GET using the previous
@@ -188,6 +196,10 @@ One limitation: the metric names themselves (`gold_members_joined_this_year`,
   requested version when supported and otherwise answers with its latest
   version.
 - `ping` is supported and returns an empty result.
+- A line that is not valid JSON is answered with JSON-RPC error `-32700`, and
+  valid JSON that is not a single request object with `-32600`. The response
+  `id` is `null` unless the request's `id` could still be read.
+- JSON-RPC batch arrays are not supported and are answered with `-32600`.
 - Declared capabilities: `tools`, `resources`, `prompts`.
 
 ## Development
