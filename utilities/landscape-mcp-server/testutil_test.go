@@ -9,9 +9,9 @@ import (
 // loadTestDataset loads the test fixture from testdata/sample.json.
 func loadTestDataset(t *testing.T) *Dataset {
 	t.Helper()
-	ds, err := loadDataset(context.Background(), dataSource{
+	ds, _, err := loadDataset(context.Background(), dataSource{
 		filePath: "testdata/sample.json",
-	})
+	}, fetchValidators{})
 	if err != nil {
 		t.Fatalf("failed to load test dataset: %v", err)
 	}
@@ -25,11 +25,6 @@ func timePtr(s string) *time.Time {
 		panic("timePtr: " + err.Error())
 	}
 	return &t
-}
-
-// int64Ptr returns a pointer to the given int64 value.
-func int64Ptr(v int64) *int64 {
-	return &v
 }
 
 // makeItem creates a LandscapeItem with the given name and maturity, applying optional modifiers.
