@@ -7,6 +7,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -17,6 +18,18 @@ import (
 // serverVersion is the semantic version of the MCP server, reported in the
 // initialize handshake.
 const serverVersion = "0.2.0"
+
+const (
+	// maxLineBytes is the largest single JSON-RPC line accepted on stdin.
+	maxLineBytes = 16 * 1024 * 1024
+	// maxQueryLimit is the largest page size accepted by query_projects/query_members.
+	maxQueryLimit = 500
+	// defaultQueryLimit is used when limit is missing or non-positive.
+	defaultQueryLimit = 100
+)
+
+// datasetWaitTimeout bounds how long a request waits for the dataset to load.
+var datasetWaitTimeout = 60 * time.Second
 
 // JSON-RPC structures -------------------------------------------------------
 
@@ -71,7 +84,7 @@ func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
 		catalog: map[string]toolDefinition{
 			"project_metrics": {
 				Name:        "project_metrics",
-				Description: fmt.Sprintf("Answer questions about %s project counts and progress.", cfg.Name),
+				Description: fmt.Sprintf("Answer questions about %s project counts and progress. Archived projects are excluded.", cfg.Name),
 				Metrics: []string{
 					"incubating_project_count",
 					"sandbox_projects_joined_this_year",
@@ -90,15 +103,15 @@ func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
 			},
 			"query_projects": {
 				Name:        "query_projects",
-				Description: fmt.Sprintf("Query %s projects with flexible filtering by maturity, dates, and name. Returns detailed project information.", cfg.Name),
+				Description: fmt.Sprintf("Query %s projects with flexible filtering by maturity, dates, and name. Returns detailed project information. Archived projects are excluded. The total field is the number of matches ignoring limit/offset.", cfg.Name),
 			},
 			"query_members": {
 				Name:        "query_members",
-				Description: fmt.Sprintf("Query %s members with flexible filtering by membership tier and join dates.", cfg.Name),
+				Description: fmt.Sprintf("Query %s members with flexible filtering by membership tier and join dates. Archived items are excluded. The total field is the number of matches ignoring limit/offset.", cfg.Name),
 			},
 			"get_project_details": {
 				Name:        "get_project_details",
-				Description: fmt.Sprintf("Get detailed information about a specific %s project by name.", cfg.Name),
+				Description: fmt.Sprintf("Get detailed information about a specific %s project by name. An exact (case-insensitive) name match is preferred; otherwise substring matching is used and an error listing candidates is returned if it is ambiguous. Archived projects can be looked up.", cfg.Name),
 			},
 			"get_member_details": {
 				Name:        "get_member_details",
@@ -110,7 +123,7 @@ func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
 			},
 			"landscape_summary": {
 				Name:        "landscape_summary",
-				Description: fmt.Sprintf("Get a high-level statistical overview of the entire %s landscape.", cfg.Name),
+				Description: fmt.Sprintf("Get a high-level statistical overview of the entire %s landscape. Archived items are excluded from totals.", cfg.Name),
 			},
 			"search_landscape": {
 				Name:        "search_landscape",
@@ -118,7 +131,7 @@ func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
 			},
 			"compare_projects": {
 				Name:        "compare_projects",
-				Description: fmt.Sprintf("Side-by-side comparison of two or more %s projects.", cfg.Name),
+				Description: fmt.Sprintf("Side-by-side comparison of two or more %s projects. Each name is matched exactly (case-insensitive) first, then by substring; ambiguous substring matches return an error listing candidates.", cfg.Name),
 			},
 			"funding_analysis": {
 				Name:        "funding_analysis",
@@ -244,12 +257,21 @@ func main() {
 		}
 	}()
 
-	scanner := bufio.NewScanner(os.Stdin)
-	buf := make([]byte, 0, 1024*1024)
-	scanner.Buffer(buf, 1024*1024)
+	reader := bufio.NewReaderSize(os.Stdin, 64*1024)
+	for {
+		raw, tooLong, err := readLine(reader, maxLineBytes)
+		if err != nil {
+			if !errors.Is(err, io.EOF) {
+				log.Printf("stdin read error: %v", err)
+			}
+			return
+		}
+		if tooLong {
+			log.Printf("skipping stdin line longer than %d bytes", maxLineBytes)
+			continue
+		}
 
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
+		line := strings.TrimSpace(string(raw))
 		if line == "" {
 			continue
 		}
@@ -264,13 +286,51 @@ func main() {
 			writeResponse(resp)
 		}
 	}
+}
 
-	if err := scanner.Err(); err != nil {
-		log.Printf("stdin scanner error: %v", err)
+// readLine reads one newline-terminated line of at most max bytes. A longer
+// line is consumed in full and reported via tooLong so the caller can skip it.
+// A final unterminated line at EOF is returned with a nil error; io.EOF is
+// returned only once no more data remains.
+func readLine(r *bufio.Reader, max int) (line []byte, tooLong bool, err error) {
+	for {
+		chunk, readErr := r.ReadSlice('\n')
+		if !tooLong {
+			if len(line)+len(chunk) > max {
+				tooLong = true
+				line = nil
+			} else {
+				line = append(line, chunk...)
+			}
+		}
+		switch {
+		case errors.Is(readErr, bufio.ErrBufferFull):
+			continue
+		case readErr == nil:
+			return line, tooLong, nil
+		case errors.Is(readErr, io.EOF) && (len(line) > 0 || tooLong):
+			return line, tooLong, nil
+		default:
+			return nil, false, readErr
+		}
 	}
 }
 
+// isNotification reports whether the request carries no id and therefore must
+// never receive a response.
+func isNotification(req *jsonRPCRequest) bool {
+	return len(req.ID) == 0
+}
+
 func handleRequest(ctx context.Context, req *jsonRPCRequest, state *serverState) *jsonRPCResponse {
+	resp := dispatchRequest(ctx, req, state)
+	if isNotification(req) {
+		return nil
+	}
+	return resp
+}
+
+func dispatchRequest(ctx context.Context, req *jsonRPCRequest, state *serverState) *jsonRPCResponse {
 	switch req.Method {
 	case "initialize":
 		return &jsonRPCResponse{
@@ -325,6 +385,10 @@ func handleRequest(ctx context.Context, req *jsonRPCRequest, state *serverState)
 	case "prompts/get":
 		return handlePromptsGet(req, state)
 	default:
+		if isNotification(req) {
+			log.Printf("ignoring unknown notification: %s", req.Method)
+			return nil
+		}
 		return errorResponse(req.ID, -32601, "Method not found", nil)
 	}
 }
@@ -340,12 +404,14 @@ func handleToolsCall(ctx context.Context, req *jsonRPCRequest, state *serverStat
 
 	def, ok := state.tools.catalog[payload.Name]
 	if !ok {
-		return errorResponse(req.ID, -32601, "Tool not found", nil)
+		return errorResponse(req.ID, -32602, fmt.Sprintf("Unknown tool: %s", payload.Name), nil)
 	}
 
-	dataset, err := state.waitForDataset(ctx)
+	waitCtx, cancel := context.WithTimeout(ctx, datasetWaitTimeout)
+	defer cancel()
+	dataset, err := state.waitForDataset(waitCtx)
 	if err != nil {
-		return errorResponse(req.ID, -32603, "Dataset unavailable", mustJSON(map[string]string{"error": err.Error()}))
+		return toolErrorResult(req.ID, datasetErrorText(err))
 	}
 
 	// Handle different tool types
@@ -378,24 +444,20 @@ func handleToolsCall(ctx context.Context, req *jsonRPCRequest, state *serverStat
 		if len(def.Metrics) > 0 {
 			if len(payload.Arguments) > 0 {
 				if err := json.Unmarshal(payload.Arguments, &args); err != nil {
-					return errorResponse(req.ID, -32602, "Invalid arguments", nil)
+					return toolErrorResult(req.ID, "Invalid arguments: "+err.Error())
 				}
 			}
 			if args.Metric == "" {
-				return errorResponse(req.ID, -32602, "Metric is required", mustJSON(map[string]interface{}{
-					"allowedMetrics": def.Metrics,
-				}))
+				return toolErrorResult(req.ID, fmt.Sprintf("Metric is required; allowed metrics: %s", strings.Join(def.Metrics, ", ")))
 			}
 			if !metricAllowed(def.Metrics, args.Metric) {
-				return errorResponse(req.ID, -32602, fmt.Sprintf("Unsupported metric %q", args.Metric), mustJSON(map[string]interface{}{
-					"allowedMetrics": def.Metrics,
-				}))
+				return toolErrorResult(req.ID, fmt.Sprintf("Unsupported metric %q; allowed metrics: %s", args.Metric, strings.Join(def.Metrics, ", ")))
 			}
 		}
 
 		result, err := executeMetric(args.Metric, dataset, time.Now().UTC())
 		if err != nil {
-			return errorResponse(req.ID, -32000, err.Error(), nil)
+			return toolErrorResult(req.ID, err.Error())
 		}
 
 		return &jsonRPCResponse{
@@ -466,7 +528,7 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 			},
 			"limit": map[string]interface{}{
 				"type":        "integer",
-				"description": "Maximum number of results to return (default: 100)",
+				"description": "Maximum number of results to return (default: 100; values <= 0 use 100, values above 500 are clamped to 500)",
 			},
 			"offset": map[string]interface{}{
 				"type":        "integer",
@@ -494,7 +556,7 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 			},
 			"limit": map[string]interface{}{
 				"type":        "integer",
-				"description": "Maximum number of results to return (default: 100)",
+				"description": "Maximum number of results to return (default: 100; values <= 0 use 100, values above 500 are clamped to 500)",
 			},
 			"offset": map[string]interface{}{
 				"type":        "integer",
@@ -506,7 +568,7 @@ func toolInputSchema(def toolDefinition) map[string]interface{} {
 		schema["properties"] = map[string]interface{}{
 			"name": map[string]interface{}{
 				"type":        "string",
-				"description": "Project name to search for (case-insensitive)",
+				"description": "Project name (case-insensitive; exact match preferred, otherwise unique substring)",
 			},
 		}
 		schema["required"] = []string{"name"}
@@ -632,6 +694,37 @@ func errorResponse(id json.RawMessage, code int, message string, data json.RawMe
 	}
 }
 
+// toolErrorResult reports a tool execution failure as a normal result flagged
+// with isError, as MCP requires, rather than as a JSON-RPC protocol error.
+func toolErrorResult(id json.RawMessage, message string) *jsonRPCResponse {
+	return &jsonRPCResponse{
+		JSONRPC: "2.0",
+		Result: mustJSON(map[string]interface{}{
+			"content": []map[string]string{{"type": "text", "text": message}},
+			"isError": true,
+		}),
+		ID: id,
+	}
+}
+
+func datasetErrorText(err error) string {
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "Dataset unavailable: timed out waiting for dataset to load"
+	}
+	return "Dataset unavailable: " + err.Error()
+}
+
+// clampLimit applies the query_projects/query_members page-size rules.
+func clampLimit(limit int) int {
+	if limit <= 0 {
+		return defaultQueryLimit
+	}
+	if limit > maxQueryLimit {
+		return maxQueryLimit
+	}
+	return limit
+}
+
 func metricAllowed(allowed []string, metric string) bool {
 	for _, m := range allowed {
 		if m == metric {
@@ -658,12 +751,10 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
-			return errorResponse(id, -32602, "Invalid arguments", nil)
+			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
-	if args.Limit <= 0 || args.Limit > 500 {
-		args.Limit = 100
-	}
+	args.Limit = clampLimit(args.Limit)
 
 	result, err := queryProjects(ds, ProjectQuery{
 		Maturity:       args.Maturity,
@@ -680,7 +771,7 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 		Offset:         args.Offset,
 	})
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -701,12 +792,10 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
-			return errorResponse(id, -32602, "Invalid arguments", nil)
+			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
-	if args.Limit <= 0 || args.Limit > 500 {
-		args.Limit = 100
-	}
+	args.Limit = clampLimit(args.Limit)
 
 	result, err := queryMembers(ds, MemberQuery{
 		Tier:       args.Tier,
@@ -717,7 +806,7 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 		Offset:     args.Offset,
 	})
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -733,16 +822,16 @@ func handleGetProjectDetails(id json.RawMessage, argsRaw json.RawMessage, ds *Da
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
-			return errorResponse(id, -32602, "Invalid arguments", nil)
+			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
 	if args.Name == "" {
-		return errorResponse(id, -32602, "name parameter is required", nil)
+		return toolErrorResult(id, "name parameter is required")
 	}
 
 	result, err := getProjectDetails(ds, args.Name)
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -758,16 +847,16 @@ func handleGetMemberDetails(id json.RawMessage, argsRaw json.RawMessage, ds *Dat
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
-			return errorResponse(id, -32602, "Invalid arguments", nil)
+			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
 	if args.Name == "" {
-		return errorResponse(id, -32602, "name parameter is required", nil)
+		return toolErrorResult(id, "name parameter is required")
 	}
 
 	result, err := getMemberDetails(ds, args.Name)
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -780,7 +869,7 @@ func handleGetMemberDetails(id json.RawMessage, argsRaw json.RawMessage, ds *Dat
 func handleListCategories(id json.RawMessage, ds *Dataset) *jsonRPCResponse {
 	result, err := listCategories(ds)
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -793,7 +882,7 @@ func handleListCategories(id json.RawMessage, ds *Dataset) *jsonRPCResponse {
 func handleLandscapeSummary(id json.RawMessage, ds *Dataset) *jsonRPCResponse {
 	result, err := landscapeSummary(ds)
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -810,16 +899,16 @@ func handleSearchLandscape(id json.RawMessage, argsRaw json.RawMessage, ds *Data
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
-			return errorResponse(id, -32602, "Invalid arguments", nil)
+			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
 	if args.Query == "" {
-		return errorResponse(id, -32602, "query parameter is required", nil)
+		return toolErrorResult(id, "query parameter is required")
 	}
 
 	result, err := searchLandscape(ds, args.Query, args.Limit)
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -835,16 +924,16 @@ func handleCompareProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Data
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
-			return errorResponse(id, -32602, "Invalid arguments", nil)
+			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
 	if len(args.Names) < 2 {
-		return errorResponse(id, -32602, "at least 2 project names are required", nil)
+		return toolErrorResult(id, "at least 2 project names are required")
 	}
 
 	result, err := compareProjects(ds, args.Names)
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -861,13 +950,13 @@ func handleFundingAnalysis(id json.RawMessage, argsRaw json.RawMessage, ds *Data
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
-			return errorResponse(id, -32602, "Invalid arguments", nil)
+			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
 
 	result, err := fundingAnalysis(ds, args.Tier, args.Year)
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -883,13 +972,13 @@ func handleGeographicDistribution(id json.RawMessage, argsRaw json.RawMessage, d
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
-			return errorResponse(id, -32602, "Invalid arguments", nil)
+			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
 
 	result, err := geographicDistribution(ds, args.GroupBy)
 	if err != nil {
-		return errorResponse(id, -32000, err.Error(), nil)
+		return toolErrorResult(id, err.Error())
 	}
 
 	return &jsonRPCResponse{
@@ -931,9 +1020,11 @@ func handleResourcesRead(ctx context.Context, req *jsonRPCRequest, state *server
 		return errorResponse(req.ID, -32602, "Invalid params", nil)
 	}
 
-	dataset, err := state.waitForDataset(ctx)
+	waitCtx, cancel := context.WithTimeout(ctx, datasetWaitTimeout)
+	defer cancel()
+	dataset, err := state.waitForDataset(waitCtx)
 	if err != nil {
-		return errorResponse(req.ID, -32603, "Dataset unavailable", mustJSON(map[string]string{"error": err.Error()}))
+		return errorResponse(req.ID, -32603, datasetErrorText(err), mustJSON(map[string]string{"error": err.Error()}))
 	}
 
 	var text string

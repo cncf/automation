@@ -83,6 +83,9 @@ func executeMetric(metric string, ds *Dataset, now time.Time) (string, error) {
 	case "incubating_project_count":
 		count := 0
 		for _, item := range ds.Items {
+			if item.ArchivedAt != nil {
+				continue
+			}
 			if strings.EqualFold(item.Maturity, "incubating") {
 				count++
 			}
@@ -96,7 +99,7 @@ func executeMetric(metric string, ds *Dataset, now time.Time) (string, error) {
 		year := now.Year()
 		count := 0
 		for _, item := range ds.Items {
-			if !strings.EqualFold(item.Maturity, "sandbox") {
+			if item.ArchivedAt != nil || !strings.EqualFold(item.Maturity, "sandbox") {
 				continue
 			}
 			if item.AcceptedAt != nil && item.AcceptedAt.Year() == year {
@@ -113,7 +116,7 @@ func executeMetric(metric string, ds *Dataset, now time.Time) (string, error) {
 		targetYear := now.AddDate(-1, 0, 0).Year()
 		count := 0
 		for _, item := range ds.Items {
-			if item.GraduatedAt != nil && item.GraduatedAt.Year() == targetYear {
+			if item.ArchivedAt == nil && item.GraduatedAt != nil && item.GraduatedAt.Year() == targetYear {
 				count++
 			}
 		}
@@ -339,9 +342,14 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 
 	results := make([]projectResult, 0)
 	nameLower := strings.ToLower(q.Name)
-	skipped := 0
+	total := 0
 
 	for _, item := range ds.Items {
+		// Archived items are excluded from queries
+		if item.ArchivedAt != nil {
+			continue
+		}
+
 		// Filter by maturity
 		if q.Maturity != "" && !strings.EqualFold(item.Maturity, q.Maturity) {
 			continue
@@ -402,9 +410,9 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 			continue
 		}
 
-		// Apply offset — skip matching items until we've skipped enough
-		if q.Offset > 0 && skipped < q.Offset {
-			skipped++
+		// Count every match; only append the requested page
+		total++
+		if total <= q.Offset || len(results) >= q.Limit {
 			continue
 		}
 
@@ -428,13 +436,11 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 		}
 
 		results = append(results, result)
-		if len(results) >= q.Limit {
-			break
-		}
 	}
 
 	response := map[string]interface{}{
 		"count":    len(results),
+		"total":    total,
 		"projects": results,
 	}
 
@@ -476,9 +482,14 @@ func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 	}
 
 	results := make([]memberResult, 0)
-	skipped := 0
+	total := 0
 
 	for _, item := range ds.Items {
+		// Archived items are excluded from queries
+		if item.ArchivedAt != nil {
+			continue
+		}
+
 		// Only include members
 		if !isMember(item) {
 			continue
@@ -506,9 +517,9 @@ func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 			}
 		}
 
-		// Apply offset — skip matching items until we've skipped enough
-		if q.Offset > 0 && skipped < q.Offset {
-			skipped++
+		// Count every match; only append the requested page
+		total++
+		if total <= q.Offset || len(results) >= q.Limit {
 			continue
 		}
 
@@ -523,13 +534,11 @@ func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 		}
 
 		results = append(results, result)
-		if len(results) >= q.Limit {
-			break
-		}
 	}
 
 	response := map[string]interface{}{
 		"count":   len(results),
+		"total":   total,
 		"members": results,
 	}
 
@@ -606,89 +615,118 @@ func buildOrgSummary(org CrunchbaseOrganization) *orgSummary {
 	}
 }
 
-// getProjectDetails returns detailed information about a specific project
-func getProjectDetails(ds *Dataset, name string) (string, error) {
-	nameLower := strings.ToLower(name)
-	var matches []projectDetailResult
+// resolveProjects finds projects by name. An exact case-insensitive name match
+// wins; otherwise substring matching is used and more than one match is an
+// ambiguity error listing the candidate names. Archived projects are included.
+func resolveProjects(ds *Dataset, name string) ([]*LandscapeItem, error) {
+	nameLower := strings.ToLower(strings.TrimSpace(name))
+	var exact, partial []*LandscapeItem
 
-	for _, item := range ds.Items {
+	for i := range ds.Items {
+		item := &ds.Items[i]
 		// Only include projects (items with maturity)
 		if item.Maturity == "" {
 			continue
 		}
-
-		if strings.Contains(strings.ToLower(item.Name), nameLower) {
-			detail := projectDetailResult{
-				Name:        item.Name,
-				Category:    item.Category,
-				Subcategory: item.Subcategory,
-				Maturity:    item.Maturity,
-				Description: item.Description,
-				HomepageURL: item.HomepageURL,
-				OSS:         item.OSS,
-				Summary:     item.Summary,
-			}
-			if item.AcceptedAt != nil {
-				detail.AcceptedAt = item.AcceptedAt.Format("2006-01-02")
-			}
-			if item.IncubatingAt != nil {
-				detail.IncubatingAt = item.IncubatingAt.Format("2006-01-02")
-			}
-			if item.GraduatedAt != nil {
-				detail.GraduatedAt = item.GraduatedAt.Format("2006-01-02")
-			}
-			if item.ArchivedAt != nil {
-				detail.ArchivedAt = item.ArchivedAt.Format("2006-01-02")
-			}
-			if item.JoinedAt != nil {
-				detail.JoinedAt = item.JoinedAt.Format("2006-01-02")
-			}
-			if item.LatestAnnualReviewAt != nil {
-				detail.LatestAnnualReviewAt = item.LatestAnnualReviewAt.Format("2006-01-02")
-			}
-			detail.LatestAnnualReviewURL = item.LatestAnnualReviewURL
-
-			if len(item.Repositories) > 0 {
-				detail.Repositories = item.Repositories
-			}
-
-			// Map audits
-			if len(item.Audits) > 0 {
-				audits := make([]auditResult, 0, len(item.Audits))
-				for _, a := range item.Audits {
-					ar := auditResult{
-						Type:   a.Type,
-						URL:    a.URL,
-						Vendor: a.Vendor,
-					}
-					if a.Date != nil {
-						ar.Date = a.Date.Format("2006-01-02")
-					}
-					audits = append(audits, ar)
-				}
-				detail.Audits = audits
-			}
-
-			if len(item.AdditionalCategories) > 0 {
-				detail.AdditionalCategories = item.AdditionalCategories
-			}
-
-			// Build links
-			detail.Links = buildLinks(item)
-
-			// Look up Crunchbase org
-			if item.CrunchbaseURL != "" {
-				if org, ok := ds.CrunchbaseOrgs[item.CrunchbaseURL]; ok {
-					detail.Organization = buildOrgSummary(org)
-				}
-			}
-
-			matches = append(matches, detail)
+		itemLower := strings.ToLower(item.Name)
+		if itemLower == nameLower {
+			exact = append(exact, item)
+		} else if strings.Contains(itemLower, nameLower) {
+			partial = append(partial, item)
 		}
 	}
 
-	if len(matches) == 0 {
-		return "", fmt.Errorf("no project found matching name: %s", name)
+	if len(exact) > 0 {
+		return exact, nil
+	}
+	if len(partial) > 1 {
+		names := make([]string, 0, len(partial))
+		for _, item := range partial {
+			names = append(names, item.Name)
+		}
+		return nil, fmt.Errorf("ambiguous project name %q matches %d projects: %s", name, len(partial), strings.Join(names, ", "))
+	}
+	if len(partial) == 0 {
+		return nil, fmt.Errorf("no project found matching name: %s", name)
+	}
+	return partial, nil
+}
+
+// getProjectDetails returns detailed information about a specific project
+func getProjectDetails(ds *Dataset, name string) (string, error) {
+	found, err := resolveProjects(ds, name)
+	if err != nil {
+		return "", err
+	}
+	var matches []projectDetailResult
+
+	for _, item := range found {
+		detail := projectDetailResult{
+			Name:        item.Name,
+			Category:    item.Category,
+			Subcategory: item.Subcategory,
+			Maturity:    item.Maturity,
+			Description: item.Description,
+			HomepageURL: item.HomepageURL,
+			OSS:         item.OSS,
+			Summary:     item.Summary,
+		}
+		if item.AcceptedAt != nil {
+			detail.AcceptedAt = item.AcceptedAt.Format("2006-01-02")
+		}
+		if item.IncubatingAt != nil {
+			detail.IncubatingAt = item.IncubatingAt.Format("2006-01-02")
+		}
+		if item.GraduatedAt != nil {
+			detail.GraduatedAt = item.GraduatedAt.Format("2006-01-02")
+		}
+		if item.ArchivedAt != nil {
+			detail.ArchivedAt = item.ArchivedAt.Format("2006-01-02")
+		}
+		if item.JoinedAt != nil {
+			detail.JoinedAt = item.JoinedAt.Format("2006-01-02")
+		}
+		if item.LatestAnnualReviewAt != nil {
+			detail.LatestAnnualReviewAt = item.LatestAnnualReviewAt.Format("2006-01-02")
+		}
+		detail.LatestAnnualReviewURL = item.LatestAnnualReviewURL
+
+		if len(item.Repositories) > 0 {
+			detail.Repositories = item.Repositories
+		}
+
+		// Map audits
+		if len(item.Audits) > 0 {
+			audits := make([]auditResult, 0, len(item.Audits))
+			for _, a := range item.Audits {
+				ar := auditResult{
+					Type:   a.Type,
+					URL:    a.URL,
+					Vendor: a.Vendor,
+				}
+				if a.Date != nil {
+					ar.Date = a.Date.Format("2006-01-02")
+				}
+				audits = append(audits, ar)
+			}
+			detail.Audits = audits
+		}
+
+		if len(item.AdditionalCategories) > 0 {
+			detail.AdditionalCategories = item.AdditionalCategories
+		}
+
+		// Build links
+		detail.Links = buildLinks(*item)
+
+		// Look up Crunchbase org
+		if item.CrunchbaseURL != "" {
+			if org, ok := ds.CrunchbaseOrgs[item.CrunchbaseURL]; ok {
+				detail.Organization = buildOrgSummary(org)
+			}
+		}
+
+		matches = append(matches, detail)
 	}
 
 	response := map[string]interface{}{
@@ -775,7 +813,7 @@ func listCategories(ds *Dataset) (string, error) {
 
 // landscapeSummary provides a high-level statistical overview of the landscape.
 func landscapeSummary(ds *Dataset) (string, error) {
-	totalItems := len(ds.Items)
+	totalItems := 0
 	totalProjects := 0
 	totalMembers := 0
 	projectsByMaturity := make(map[string]int)
@@ -784,6 +822,11 @@ func landscapeSummary(ds *Dataset) (string, error) {
 	itemsWithCB := 0
 
 	for _, item := range ds.Items {
+		// Archived items are excluded from landscape totals
+		if item.ArchivedAt != nil {
+			continue
+		}
+		totalItems++
 		categoriesSet[item.Category] = struct{}{}
 
 		// Count projects (items with non-empty maturity)
@@ -958,21 +1001,11 @@ func compareProjects(ds *Dataset, names []string) (string, error) {
 
 	results := make([]comparisonProject, 0, len(names))
 	for _, name := range names {
-		nameLower := strings.ToLower(name)
-		var found *LandscapeItem
-		for i := range ds.Items {
-			item := &ds.Items[i]
-			if item.Maturity == "" {
-				continue
-			}
-			if strings.Contains(strings.ToLower(item.Name), nameLower) {
-				found = item
-				break
-			}
+		resolved, err := resolveProjects(ds, name)
+		if err != nil {
+			return "", err
 		}
-		if found == nil {
-			return "", fmt.Errorf("project not found: %s", name)
-		}
+		found := resolved[0]
 
 		cp := comparisonProject{
 			Name:        found.Name,
