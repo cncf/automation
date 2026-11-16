@@ -2040,8 +2040,8 @@ func TestHandlePromptsList(t *testing.T) {
 		t.Fatalf("failed to parse result: %v", err)
 	}
 
-	if len(result.Prompts) != 2 {
-		t.Fatalf("expected 2 prompts, got %d", len(result.Prompts))
+	if len(result.Prompts) != 3 {
+		t.Fatalf("expected 3 prompts, got %d", len(result.Prompts))
 	}
 
 	// Verify analyze_landscape prompt

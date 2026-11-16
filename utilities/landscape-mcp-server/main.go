@@ -237,10 +237,8 @@ func main() {
 		state.setDataset(ds, err)
 		if err != nil {
 			log.Printf("error loading dataset: %v", err)
-			sendNotification("notifications/serverReady", map[string]interface{}{"error": err.Error()})
 		} else {
-			log.Printf("dataset loaded (%d items)", len(ds.Items))
-			sendNotification("notifications/serverReady", map[string]interface{}{})
+			log.Printf("dataset loaded (%d items); server ready", len(ds.Items))
 		}
 		state.runRefreshLoop(ctx, *refreshInterval)
 	}()
@@ -324,7 +322,7 @@ func dispatchRequest(ctx context.Context, req *jsonRPCRequest, state *serverStat
 		return &jsonRPCResponse{
 			JSONRPC: "2.0",
 			Result: mustJSON(map[string]interface{}{
-				"protocolVersion": "2024-11-05",
+				"protocolVersion": negotiateProtocolVersion(req.Params),
 				"capabilities": map[string]interface{}{
 					"tools":     map[string]interface{}{},
 					"resources": map[string]interface{}{},
@@ -339,6 +337,8 @@ func dispatchRequest(ctx context.Context, req *jsonRPCRequest, state *serverStat
 		}
 	case "notifications/initialized":
 		return nil
+	case "ping":
+		return &jsonRPCResponse{JSONRPC: "2.0", Result: json.RawMessage(`{}`), ID: req.ID}
 	case "tools/list":
 		tools := make([]map[string]interface{}, 0, len(state.tools.advertisedTools))
 		for _, name := range state.tools.advertisedTools {
@@ -350,6 +350,7 @@ func dispatchRequest(ctx context.Context, req *jsonRPCRequest, state *serverStat
 				"name":        def.Name,
 				"description": def.Description,
 				"inputSchema": toolInputSchema(def),
+				"annotations": toolAnnotations(),
 			})
 		}
 		return &jsonRPCResponse{
@@ -363,6 +364,8 @@ func dispatchRequest(ctx context.Context, req *jsonRPCRequest, state *serverStat
 		return handleToolsCall(ctx, req, state)
 	case "resources/list":
 		return handleResourcesList(req, state)
+	case "resources/templates/list":
+		return handleResourceTemplatesList(req, state)
 	case "resources/read":
 		return handleResourcesRead(ctx, req, state)
 	case "prompts/list":
@@ -642,26 +645,6 @@ func writeResponse(resp *jsonRPCResponse) {
 	data, err := json.Marshal(resp)
 	if err != nil {
 		log.Printf("unable to marshal response: %v", err)
-		return
-	}
-	fmt.Println(string(data))
-}
-
-func sendNotification(method string, params interface{}) {
-	payload := map[string]interface{}{
-		"jsonrpc": "2.0",
-		"method":  method,
-	}
-	if params != nil {
-		payload["params"] = params
-	}
-
-	outputMu.Lock()
-	defer outputMu.Unlock()
-
-	data, err := json.Marshal(payload)
-	if err != nil {
-		log.Printf("unable to marshal notification %s: %v", method, err)
 		return
 	}
 	fmt.Println(string(data))
@@ -1005,6 +988,11 @@ func handleResourcesRead(ctx context.Context, req *jsonRPCRequest, state *server
 		return errorResponse(req.ID, -32602, "Invalid params", nil)
 	}
 
+	reader, err := resolveResource(params.URI)
+	if err != nil {
+		return errorResponse(req.ID, -32602, err.Error(), nil)
+	}
+
 	waitCtx, cancel := context.WithTimeout(ctx, datasetWaitTimeout)
 	defer cancel()
 	dataset, err := state.waitForDataset(waitCtx)
@@ -1012,18 +1000,13 @@ func handleResourcesRead(ctx context.Context, req *jsonRPCRequest, state *server
 		return errorResponse(req.ID, -32603, datasetErrorText(err), mustJSON(map[string]string{"error": err.Error()}))
 	}
 
-	var text string
-	switch params.URI {
-	case "landscape://categories":
-		text, err = listCategories(dataset)
-	case "landscape://summary":
-		text, err = landscapeSummary(dataset)
-	default:
-		return errorResponse(req.ID, -32602, fmt.Sprintf("Unknown resource URI: %s", params.URI), nil)
-	}
-
+	text, err := reader.read(dataset)
 	if err != nil {
-		return errorResponse(req.ID, -32000, err.Error(), nil)
+		code := -32000
+		if reader.notFoundIsInvalidParams {
+			code = -32602
+		}
+		return errorResponse(req.ID, code, err.Error(), nil)
 	}
 
 	return &jsonRPCResponse{
@@ -1061,6 +1044,17 @@ func handlePromptsList(req *jsonRPCRequest, state *serverState) *jsonRPCResponse
 				},
 			},
 		},
+		{
+			"name":        "landscape_changes_report",
+			"description": fmt.Sprintf("Report promotions, new sandbox projects, and archived projects in the %s landscape", state.cfg.Name),
+			"arguments": []map[string]interface{}{
+				{
+					"name":        "since",
+					"description": "Report changes since this date; defaults to 12 months ago",
+					"required":    false,
+				},
+			},
+		},
 	}
 	return &jsonRPCResponse{
 		JSONRPC: "2.0",
@@ -1092,7 +1086,7 @@ func handlePromptsGet(req *jsonRPCRequest, state *serverState) *jsonRPCResponse 
 							"text": fmt.Sprintf(`Please analyze the current state of the %s landscape. Use the available tools to:
 1. Get a landscape summary using the landscape_summary tool
 2. List all categories using the list_categories tool
-3. Identify trends in project maturity levels
+3. Identify trends in project maturity levels, using the query_projects tool to list projects by maturity
 4. Analyze membership distribution across tiers
 5. Provide insights and recommendations based on the data`, state.cfg.Name),
 						},
@@ -1124,6 +1118,24 @@ Use the compare_projects tool to get detailed information, then analyze:
 4. Key similarities and differences
 5. Recommendations for each project's growth path`, state.cfg.Name, projectNames),
 						},
+					},
+				},
+			}),
+			ID: req.ID,
+		}
+	case "landscape_changes_report":
+		text, err := changesReportPrompt(state.cfg.Name, params.Arguments["since"], time.Now())
+		if err != nil {
+			return errorResponse(req.ID, -32602, err.Error(), nil)
+		}
+		return &jsonRPCResponse{
+			JSONRPC: "2.0",
+			Result: mustJSON(map[string]interface{}{
+				"description": fmt.Sprintf("Report promotions, new sandbox projects, and archived projects in the %s landscape", state.cfg.Name),
+				"messages": []map[string]interface{}{
+					{
+						"role":    "user",
+						"content": map[string]string{"type": "text", "text": text},
 					},
 				},
 			}),
