@@ -1,0 +1,14 @@
+maintainers:
+  - project_id: "alpha"
+    org: "example-org"
+    teams:
+      - name: "alpha-maintainers"
+        members:
+          - alice
+          - bob
+      # Shared with the beta project: one org-scoped team whose remit spans
+      # both projects. Identical membership, so no warning is raised.
+      - name: "steering-committee"
+        members:
+          - alice
+          - dave

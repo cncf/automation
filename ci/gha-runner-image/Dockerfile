@@ -1,11 +1,11 @@
 ARG BASE_IMAGE
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:8.0-${BASE_IMAGE} AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/runtime-deps:10.0-${BASE_IMAGE} AS build
 
-ARG RUNNER_VERSION=2.336.0
+ARG RUNNER_VERSION=2.338.2
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.8.1
-ARG DOCKER_VERSION=29.7.1
-ARG BUILDX_VERSION=0.36.0
+ARG DOCKER_VERSION=29.9.2
+ARG BUILDX_VERSION=0.38.1
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -38,16 +38,18 @@ RUN export RUNNER_ARCH=${TARGETARCH} \
         "https://github.com/docker/buildx/releases/download/v${BUILDX_VERSION}/buildx-v${BUILDX_VERSION}.linux-${TARGETARCH}" \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-${BASE_IMAGE}
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-${BASE_IMAGE}
 
 ARG TARGETOS
 ARG TARGETARCH
+ARG GH_VERSION=2.103.3
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_MANUALLY_TRAP_SIG=1
 ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
-ENV KIND_VERSION=v0.32.0
+ENV KIND_VERSION=v0.33.0
+ENV GO_VERSION=1.27.3
 
 # 'gpg-agent' and 'software-properties-common' are needed for the 'add-apt-repository' command that follows
 RUN apt update -y \
@@ -89,6 +91,15 @@ RUN add-apt-repository ppa:git-core/ppa \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /usr/share/doc/* /usr/share/man/*
 
+# Install the GitHub CLI the way actions/runner-images does: the release .deb,
+# checked against the release's checksums.txt.
+RUN curl -fsSLo /tmp/gh_${GH_VERSION}_linux_${TARGETARCH}.deb https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${TARGETARCH}.deb \
+    && curl -fsSLo /tmp/gh_checksums.txt https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_checksums.txt \
+    && (cd /tmp && grep " gh_${GH_VERSION}_linux_${TARGETARCH}.deb\$" gh_checksums.txt | sha256sum -c -) \
+    && apt-get install -y --no-install-recommends /tmp/gh_${GH_VERSION}_linux_${TARGETARCH}.deb \
+    && rm -f /tmp/gh_${GH_VERSION}_linux_${TARGETARCH}.deb /tmp/gh_checksums.txt \
+    && rm -rf /usr/share/doc/* /usr/share/man/*
+
 RUN adduser --disabled-password --gecos "" --uid 1001 runner \
     && groupadd docker --gid 123 \
     && usermod -aG sudo runner \
@@ -102,7 +113,7 @@ COPY --chown=runner:docker --from=build /actions-runner .
 COPY --from=build /usr/bin/docker /usr/bin/docker
 COPY --from=build /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
 
-RUN curl -sSLo /tmp/go.tar.gz https://go.dev/dl/go1.25.4.linux-${TARGETARCH}.tar.gz \
+RUN curl -sSLo /tmp/go.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-${TARGETARCH}.tar.gz \
     && tar -C /usr/local -xzf /tmp/go.tar.gz \
     && rm /tmp/go.tar.gz \
     && rm -rf /usr/local/go/test /usr/local/go/api /usr/local/go/doc /usr/local/go/misc \
@@ -114,7 +125,10 @@ RUN curl -fsSLo /tmp/kind-linux-${TARGETARCH} https://kind.sigs.k8s.io/dl/${KIND
     && curl -fsSLo /tmp/kind-linux-${TARGETARCH}.sha256sum https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-${TARGETARCH}.sha256sum \
     && (cd /tmp && sha256sum -c kind-linux-${TARGETARCH}.sha256sum) \
     && install -m 0755 /tmp/kind-linux-${TARGETARCH} /usr/local/bin/kind \
-    && rm -f /tmp/kind-linux-${TARGETARCH} /tmp/kind-linux-${TARGETARCH}.sha256sum
+    && rm -f /tmp/kind-linux-${TARGETARCH} /tmp/kind-linux-${TARGETARCH}.sha256sum \
+    && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${TARGETARCH}/kubectl" \
+    && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
+    && rm -f kubectl
 
 ENV ENV=/etc/profile
 

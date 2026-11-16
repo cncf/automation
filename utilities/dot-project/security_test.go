@@ -35,17 +35,17 @@ func TestSecurityContactValidation(t *testing.T) {
 		{
 			name:          "Invalid Advisory URL - Wrong Domain",
 			contact:       &SecurityContact{AdvisoryURL: "https://evil.com/org/repo/security/advisories/new"},
-			expectedError: "security.contact.advisory_url must be a valid GitHub Security Advisory URL",
+			expectedError: "security.contact.advisory_url must be a valid GitHub URL",
 		},
 		{
-			name:          "Invalid Advisory URL - Missing /new",
-			contact:       &SecurityContact{AdvisoryURL: "https://github.com/org/repo/security/advisories"},
-			expectedError: "security.contact.advisory_url must be a valid GitHub Security Advisory URL",
+			name:          "Valid Advisory URL - SECURITY.md instead of advisories form",
+			contact:       &SecurityContact{AdvisoryURL: "https://github.com/org/repo/blob/main/SECURITY.md"},
+			expectedError: "",
 		},
 		{
-			name:          "Invalid Advisory URL - Not advisories path",
-			contact:       &SecurityContact{AdvisoryURL: "https://github.com/org/repo/issues/new"},
-			expectedError: "security.contact.advisory_url must be a valid GitHub Security Advisory URL",
+			name:          "Invalid Advisory URL - Missing repo",
+			contact:       &SecurityContact{AdvisoryURL: "https://github.com/org"},
+			expectedError: "security.contact.advisory_url must be a valid GitHub URL",
 		},
 		{
 			name: "Both Email and Advisory URL Valid",

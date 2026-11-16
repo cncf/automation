@@ -666,3 +666,112 @@ func TestValidateMaintainerEntry(t *testing.T) {
 		}
 	})
 }
+
+// ---------------------------------------------------------------------------
+// ExtractHandlesFrom / FindMaintainersFiles
+// ---------------------------------------------------------------------------
+
+// The base side of a diff is checked out from the target branch, which may
+// predate a layout change, so the handle set has to be collected without
+// assuming either layout.
+func TestExtractHandlesFrom(t *testing.T) {
+	pv := NewValidator(filepath.Join(t.TempDir(), "cache"))
+
+	write := func(t *testing.T, path, body string) {
+		t.Helper()
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatalf("mkdir: %v", err)
+		}
+		if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+			t.Fatalf("write %s: %v", path, err)
+		}
+	}
+
+	maintainers := func(projectID string, members ...string) string {
+		body := "maintainers:\n  - project_id: \"" + projectID + "\"\n    org: \"example-org\"\n    teams:\n      - name: \"" + projectID + "-maintainers\"\n        members:\n"
+		for _, m := range members {
+			// "@" is a reserved YAML indicator, so handles must be quoted.
+			body += "          - \"" + m + "\"\n"
+		}
+		return body
+	}
+
+	t.Run("single file behaves like ExtractHandles", func(t *testing.T) {
+		dir := t.TempDir()
+		path := filepath.Join(dir, MaintainersFileName)
+		write(t, path, maintainers("alpha", "Alice", "@Bob"))
+
+		handles, err := pv.ExtractHandlesFrom(path)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(handles) != 2 || !handles["alice"] || !handles["bob"] {
+			t.Errorf("expected normalized {alice bob}, got %v", handles)
+		}
+	})
+
+	t.Run("directory unions every project", func(t *testing.T) {
+		dir := t.TempDir()
+		write(t, filepath.Join(dir, "alpha", MaintainersFileName), maintainers("alpha", "alice", "dave"))
+		write(t, filepath.Join(dir, "beta", MaintainersFileName), maintainers("beta", "carol", "DAVE"))
+
+		handles, err := pv.ExtractHandlesFrom(dir)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		// dave appears in both projects but is one GitHub identity, so the
+		// union must not double count it.
+		expected := []string{"alice", "carol", "dave"}
+		if len(handles) != len(expected) {
+			t.Errorf("expected %d handles, got %d: %v", len(expected), len(handles), handles)
+		}
+		for _, h := range expected {
+			if !handles[h] {
+				t.Errorf("expected handle %q", h)
+			}
+		}
+	})
+
+	t.Run("directory includes a root file alongside project dirs", func(t *testing.T) {
+		dir := t.TempDir()
+		write(t, filepath.Join(dir, MaintainersFileName), maintainers("legacy", "root-user"))
+		write(t, filepath.Join(dir, "alpha", MaintainersFileName), maintainers("alpha", "alice"))
+
+		handles, err := pv.ExtractHandlesFrom(dir)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if !handles["root-user"] || !handles["alice"] {
+			t.Errorf("expected both root and nested handles, got %v", handles)
+		}
+	})
+
+	t.Run("directory with no maintainers files yields no handles", func(t *testing.T) {
+		handles, err := pv.ExtractHandlesFrom(t.TempDir())
+		if err != nil {
+			t.Fatalf("expected an empty result rather than an error: %v", err)
+		}
+		if len(handles) != 0 {
+			t.Errorf("expected no handles, got %v", handles)
+		}
+	})
+
+	t.Run("nesting deeper than one level is ignored", func(t *testing.T) {
+		dir := t.TempDir()
+		write(t, filepath.Join(dir, "alpha", "nested", MaintainersFileName), maintainers("nested", "mallory"))
+
+		handles, err := pv.ExtractHandlesFrom(dir)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if handles["mallory"] {
+			t.Error("project directories are exactly one level deep; deeper files must not be picked up")
+		}
+	})
+
+	t.Run("missing path is an error", func(t *testing.T) {
+		if _, err := pv.ExtractHandlesFrom(filepath.Join(t.TempDir(), "nope")); err == nil {
+			t.Fatal("expected an error for a path that does not exist")
+		}
+	})
+}

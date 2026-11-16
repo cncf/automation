@@ -148,11 +148,21 @@
     {
       "name": "Meshery",
       "path": "Provisioning / Automation & Configuration",
-      "maturity": "sandbox",
+      "maturity": "incubating",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": []
+      "findings": [
+        {
+          "field": "project (maturity)",
+          "landscape": "incubating",
+          "pcc": "sandbox",
+          "clomonitor": "incubating",
+          "pcc_clomonitor_agree": false,
+          "landscape_clomonitor_agree": true,
+          "message": "PCC ('sandbox') and CLOMonitor ('incubating') disagree. Landscape ('incubating') ≠ PCC ('sandbox')."
+        }
+      ]
     },
     {
       "name": "metal3-io",
@@ -284,29 +294,10 @@
       "name": "Cedar",
       "path": "Provisioning / Security & Compliance",
       "maturity": "sandbox",
-      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": "cedar",
-          "pcc": null,
-          "clomonitor": "cedar-policy",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('cedar') ≠ CLOMonitor ('cedar-policy')."
-        },
-        {
-          "field": "extra.dev_stats_url",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "https://cedarpolicy.devstats.cncf.io/",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'https://cedarpolicy.devstats.cncf.io/'."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "cert-manager",
@@ -807,20 +798,10 @@
       "name": "Podman Container Tools",
       "path": "Runtime / Container Runtime",
       "maturity": "sandbox",
-      "match_note": "clo_via_pcc_slug+lfx_slug",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": "podman",
-          "pcc": null,
-          "clomonitor": "podman-container-tools",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('podman') ≠ CLOMonitor ('podman-container-tools')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "rkt",
@@ -1077,7 +1058,7 @@
     {
       "name": "Karmada",
       "path": "Orchestration & Management / Scheduling & Orchestration",
-      "maturity": "incubating",
+      "maturity": "graduated",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
@@ -1426,15 +1407,6 @@
       "findings": []
     },
     {
-      "name": "Kmesh",
-      "path": "Orchestration & Management / Service Mesh",
-      "maturity": "sandbox",
-      "match_note": "clomonitor_name",
-      "matched_pcc": false,
-      "matched_clomonitor": true,
-      "findings": []
-    },
-    {
       "name": "Kuma",
       "path": "Orchestration & Management / Service Mesh",
       "maturity": "sandbox",
@@ -1471,20 +1443,11 @@
       "findings": []
     },
     {
-      "name": "Sermant",
-      "path": "Orchestration & Management / Service Mesh",
-      "maturity": "sandbox",
-      "match_note": "clomonitor_name",
-      "matched_pcc": false,
-      "matched_clomonitor": true,
-      "findings": []
-    },
-    {
       "name": "Service Mesh Interface (SMI)",
       "path": "Orchestration & Management / Service Mesh",
       "maturity": "archived",
-      "match_note": "none",
-      "matched_pcc": false,
+      "match_note": "pcc_name",
+      "matched_pcc": true,
       "matched_clomonitor": false,
       "findings": []
     },
@@ -1586,17 +1549,7 @@
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "http://github.com/drasi-project/drasi-platform",
-          "pcc": "https://github.com/drasi-project",
-          "clomonitor": "https://github.com/drasi-project/drasi-platform",
-          "pcc_clomonitor_agree": true,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape ('http://github.com/drasi-project/drasi-platform') ≠ PCC ('https://github.com/drasi-project'). Landscape ('http://github.com/drasi-project/drasi-platform') ≠ CLOMonitor ('https://github.com/drasi-project/drasi-platform')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "NATS",
@@ -2211,15 +2164,6 @@
       "findings": []
     },
     {
-      "name": "Monocle",
-      "path": "Observability and Analysis / Observability",
-      "maturity": "sandbox",
-      "match_note": "none",
-      "matched_pcc": false,
-      "matched_clomonitor": false,
-      "findings": []
-    },
-    {
       "name": "OpenMetrics",
       "path": "Observability and Analysis / Observability",
       "maturity": "archived",
@@ -2310,32 +2254,13 @@
       "findings": []
     },
     {
-      "name": "SpinKube",
-      "path": "Wasm / Orchestration & Management",
-      "maturity": "sandbox",
-      "match_note": "clomonitor_name",
-      "matched_pcc": false,
-      "matched_clomonitor": true,
-      "findings": []
-    },
-    {
       "name": "container2wasm",
       "path": "Wasm / Orchestration & Management",
       "maturity": "sandbox",
       "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "repo_url",
-          "landscape": "https://github.com/container2wasm/container2wasm",
-          "pcc": "https://github.com/ktock/container2wasm",
-          "clomonitor": "https://github.com/container2wasm/container2wasm",
-          "pcc_clomonitor_agree": false,
-          "landscape_clomonitor_agree": true,
-          "message": "PCC ('https://github.com/ktock/container2wasm') and CLOMonitor ('https://github.com/container2wasm/container2wasm') disagree. Landscape ('https://github.com/container2wasm/container2wasm') ≠ PCC ('https://github.com/ktock/container2wasm')."
-        }
-      ]
+      "findings": []
     },
     {
       "name": "KAITO",
@@ -2359,38 +2284,10 @@
       "name": "llm-d",
       "path": "Inference / Framework",
       "maturity": "sandbox",
-      "match_note": "clo_slug_guess+pcc_name",
+      "match_note": "clomonitor_name+lfx_slug",
       "matched_pcc": true,
       "matched_clomonitor": true,
-      "findings": [
-        {
-          "field": "extra.lfx_slug",
-          "landscape": null,
-          "pcc": "llm-d",
-          "clomonitor": null,
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": null,
-          "message": "Landscape missing; PCC has 'llm-d'."
-        },
-        {
-          "field": "extra.clomonitor_name",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "llm-d",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'llm-d'."
-        },
-        {
-          "field": "extra.dev_stats_url",
-          "landscape": null,
-          "pcc": null,
-          "clomonitor": "https://llmd.devstats.cncf.io/",
-          "pcc_clomonitor_agree": null,
-          "landscape_clomonitor_agree": false,
-          "message": "Landscape missing; CLOMonitor has 'https://llmd.devstats.cncf.io/'."
-        }
-      ]
+      "findings": []
     }
   ]
 }

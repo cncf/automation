@@ -1,0 +1,178 @@
+# prow-github-actions configuration for cncf/automation.
+# Reference: https://github.com/cncf/prow-github-actions/blob/main/docs/configuration.md
+#
+# Sections mirror the repo-specific parts of .github/labels.yaml. The TOC-only
+# families there (dd/*, tag/*, sub/*, toc, init/*, vote/*, level/*, review/*)
+# are intentionally left out; they do not apply to this repository.
+# Every key under `labels` is a /<key> command; the label-sync job creates the labels.
+# `good first issue` and `help wanted` are built in (/good-first-issue, /help).
+
+labels:
+  kind:
+    - name: automation
+      color: 8250DF
+      description: Automated or bot-driven change; CI-generated issues/PRs
+    - name: bug
+      color: 8250DF
+      description: Bug or issue
+    - name: chore
+      color: 8250DF
+      description: Chore or maintenance
+    - name: docker
+      color: 8250DF
+      description: Dockerfiles, containers, images, or container tooling
+    - name: docs
+      color: 8250DF
+      description: Docs related changes or updates
+    - name: enhancement
+      color: 8250DF
+      description: General items related to enhancements or improvements.
+    - name: external-gha
+      color: 8250DF
+      description: External or third-party GitHub Actions integrations
+    - name: github-actions
+      color: 8250DF
+      description: This repository's workflows, reusable actions, and GitHub Actions tooling
+    - name: go
+      color: 8250DF
+      description: Go code, tooling, or modules in this repository
+    - name: question
+      color: 8250DF
+      description: Question or discussion
+
+  area:
+    values:
+      - name: ci
+        color: 7057FF
+        description: CI/CD infrastructure and automation
+      - name: utilities
+        color: 7057FF
+        description: Utilities and helper tools
+      - name: cloudrunners
+        color: 7057FF
+        description: Cloud runner infrastructure
+      - name: dot-project
+        color: 7057FF
+        description: utilities/dot-project scaffolding and bootstrap tooling
+      - name: infrastructure
+        color: 7057FF
+        description: Infrastructure and deployment
+      - name: observability
+        color: 7057FF
+        description: Observability, monitoring, and logging
+      - name: ambassadors
+        color: 7057FF
+        description: CNCF Ambassadors program
+      - name: kubestronaut
+        color: 7057FF
+        description: Kubestronaut program
+    exclusive: true
+
+  priority:
+    values:
+      - name: critical
+        color: B62324
+        description: Critical priority - needs immediate attention
+      - name: high
+        color: FF6B35
+        description: High priority
+      - name: medium
+        color: FFA500
+        description: Medium priority
+      - name: low
+        color: D3D3D3
+        description: Low priority
+    exclusive: true
+
+  status:
+    values:
+      - name: needs-review
+        color: FBCA04
+        description: Needs review before proceeding
+      - name: blocked
+        color: b60205
+        description: Blocked or waiting on something
+      - name: in-progress
+        color: 1F6FEB
+        description: Currently being worked on
+    exclusive: true
+
+  triage:
+    values:
+      - name: valid
+        color: 2DA44E
+        description: Issue or PR is valid with enough information to be actionable
+      - name: needs-information
+        color: b60205
+        description: Needs additional information provided before it can be worked on
+      - name: duplicate
+        color: ebf84a
+        description: Duplicate issue or PR, can be closed
+      - name: not-planned
+        color: D97706
+        description: Out of scope, or not planned to be worked on
+    exclusive: true
+
+  do-not-merge:
+    - name: hold
+      color: e11d21
+      description: Indicates that a PR should not merge because someone has issued a /hold command.
+    - name: work-in-progress
+      color: e11d21
+      description: Indicates that a PR should not merge because it is a work in progress.
+
+  labels:
+    - name: landscape-sync
+      color: ededed
+      description: Applied by the landscape-sync workflow to automated report issues/PRs
+    - name: docker
+      color: 21ceff
+      description: Pull requests that update docker code
+    - name: github-actions
+      color: '000000'
+      description: Pull requests that update GitHub Actions code
+    - name: go
+      color: 16e2e2
+      description: Pull requests that update go code
+    - name: terraform
+      color: 5C4EE5
+      description: Pull requests that update terraform code
+
+require_matching_label:
+  - regexp: ^kind/
+    missing_label: needs-kind
+    issues: true
+    prs: true
+  - regexp: ^area/
+    missing_label: needs-area
+    issues: true
+    prs: true
+  - regexp: ^priority/
+    missing_label: needs-priority
+    issues: true
+    prs: true
+  - regexp: ^status/
+    missing_label: needs-status
+    issues: true
+    prs: true
+  - regexp: ^triage/
+    missing_label: needs-triage
+    issues: true
+    prs: false
+
+tide:
+  labels: [lgtm, approved]
+  missing_labels: [do-not-merge/*, needs-rebase, hold]
+  merge_method: squash
+  merge_on_events: true
+
+hold:
+  label: do-not-merge/hold
+
+blunderbuss:
+  request_count: 2
+  ignore_drafts: true
+  ignore_authors: ['dependabot[bot]']
+
+lgtm:
+  bind_to_commit: true

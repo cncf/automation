@@ -48,7 +48,11 @@ SESSION.headers.update(
     }
 )
 
-OVERALL_SCORE_RE = re.compile(r'overall-score="(\d+)"')
+# Insights renders the overall score as:
+#   <span ...>NN</span><span ...>out of 100</span>
+OVERALL_SCORE_RE = re.compile(
+    r">\s*(\d{1,3})\s*</span>\s*<span[^>]*>\s*out of 100\s*</span>"
+)
 SLEEP_SECONDS = 0.35
 
 

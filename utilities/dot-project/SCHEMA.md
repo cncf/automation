@@ -5,6 +5,118 @@
 
 This document defines the schema for CNCF `.project` repository metadata files.
 
+## Repository layouts
+
+A `.project` repository uses one of two layouts.
+
+**Single-project (default).** `project.yaml` and `maintainers.yaml` sit at the
+repository root. This is what almost every CNCF project needs, and it remains
+the layout produced when nothing indicates otherwise.
+
+```
+.project/
+├── project.yaml
+├── maintainers.yaml
+└── .github/workflows/
+```
+
+**Multi-project.** A few GitHub organizations host more than one distinct CNCF
+project — `spiffe` holds both SPIFFE and SPIRE, and `spinframework` holds both
+Spin and SpinKube. These are separately accepted projects with their own
+maturity, their own landscape entry, and frequently their own maintainers, so
+they cannot share a single `project.yaml`. Such a repository declares an
+`org.yaml` index at its root and gives every project its own directory:
+
+```
+.project/
+├── org.yaml
+├── spiffe/
+│   ├── project.yaml
+│   └── maintainers.yaml
+├── spire/
+│   ├── project.yaml
+│   └── maintainers.yaml
+└── .github/workflows/
+```
+
+The presence of `org.yaml` is the only thing that selects the multi-project
+layout; every tool detects it automatically. The two layouts are mutually
+exclusive: when `org.yaml` exists, a root `project.yaml` or `maintainers.yaml`
+is an error, because it would be ambiguous which project it described.
+
+Project directories are exactly one level deep. That is what lets workflows use
+an unambiguous `*/project.yaml` path filter rather than a recursive glob that
+would also match unrelated files.
+
+## org.yaml
+
+`org.yaml` is deliberately *only* an index. It names the projects in the
+repository and where they live, and carries no project metadata of its own.
+
+Shared values are not hoisted into it even when several projects genuinely share
+them. A value that looks shared today — a security contact, an adopters list —
+is routinely project-specific tomorrow (SPIRE maintainers handle their own
+security reports while the SPIFFE Steering Committee handles the rest), and
+hoisting it would mean no single file fully describes a project. Every
+`project.yaml` therefore stands alone, exactly as it does in the single-project
+layout.
+
+### Top-Level Fields
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `schema_version` | string | Yes | `org.yaml` schema version | Must be a supported version (currently `"1.0.0"`) |
+| `org` | string | Yes | The GitHub organization that owns this repository | Non-empty |
+| `projects` | OrgProjectEntry[] | Yes | The CNCF projects in this organization | At least two entries; `id` values must be unique |
+
+`org.yaml` has its own version line, independent of `project.yaml`. The
+multi-project layout introduced no change to the `project.yaml` schema, so
+`project.yaml` stays at `1.0.0`.
+
+### OrgProjectEntry
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `id` | string | Yes | Project identifier, and by default the directory name | Lowercase alphanumeric and hyphens only, no leading/trailing hyphens; unique within the file |
+| `path` | string | No | Directory holding the project, when it differs from `id` | Relative, exactly one level deep, no `.`/`..` segments, not dot-prefixed |
+
+Use `path` only when a directory has to be named something other than the
+project id. Omitting it is the norm.
+
+### Example
+
+```yaml
+schema_version: "1.0.0"
+org: "spiffe"
+
+projects:
+  # SPIFFE (graduated)
+  - id: "spiffe"
+  # SPIRE (graduated)
+  - id: "spire"
+```
+
+### Validation
+
+When `org.yaml` is present:
+
+- A root `project.yaml` or `maintainers.yaml` is an error.
+- Every declared project must have a directory containing both `project.yaml`
+  and `maintainers.yaml`.
+- A directory that looks like a project directory but is not declared in
+  `org.yaml` is an error — silently ignoring it would let a project drop out of
+  every automation without anyone noticing.
+- Each `project.yaml`'s `slug` and each `maintainers.yaml`'s `project_id` must
+  match the directory's project id, so that the routing key is the same
+  everywhere.
+- A `slug` may not be reused across projects in the repository.
+
+A team name may appear in more than one project. GitHub teams are org-scoped, so
+one team that appears twice is one team whose membership is the union of both
+definitions. This is legitimate — a shared steering committee, or an
+"authentication" team staffed partly from each project — so it is reported as a
+warning, never an error, when the member lists differ.
+
 ## project.yaml
 
 ### Top-Level Fields
@@ -108,7 +220,7 @@ At least one of `email` or `advisory_url` must be provided when the `contact` se
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
 | `email` | string | No* | Security contact email | Valid email address (RFC 5322) if present |
-| `advisory_url` | string | No* | GitHub Security Advisory form URL | Must match `https://github.com/{org}/{repo}/security/advisories/new` |
+| `advisory_url` | string | No* | GitHub URL for reporting security issues (e.g., the repo's Security Advisory form or a SECURITY.md file) | Must be a `https://github.com/{org}/{repo}/...` URL |
 
 \* At least one of `email` or `advisory_url` is required when the section is present.
 
@@ -205,9 +317,15 @@ PathRef values should be **full GitHub URLs** (e.g., `https://github.com/org/rep
 
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| `name` | string | Yes | Team name | Any descriptive name (e.g., `maintainers`, `committers`, `reviewers`, `emeritus`) |
+| `name` | string | Yes | Team name | Any descriptive name (e.g., `maintainers`, `committers`, `reviewers`, `emeritus`). In a multi-project repository the same name may appear in several projects; GitHub teams are org-scoped, so the team's membership is the union of those definitions |
 | `members` | string[] | Yes | GitHub handles | At least one managed team must have members; normalized (trimmed, `@` stripped) |
 | `managed` | bool | No | Whether team is provisioned to CNCF resources | Defaults to `true` if omitted. Teams with `managed: false` are excluded from handle verification, mailing lists, service desk, and Copilot seat provisioning |
+
+This schema records GitHub handles and team membership only; it has no field
+for a maintainer's name, email, or company affiliation. Keep current affiliation
+visible in the project's public maintainer or governance documentation, and
+keep each maintainer's LFID profile at [openprofile.dev](https://openprofile.dev)
+accurate. Changes to one do not update the others.
 
 ## Validation Rules
 
@@ -218,3 +336,117 @@ PathRef values should be **full GitHub URLs** (e.g., `https://github.com/org/rep
 5. **Maturity ordering** -- maturity_log entries must be in chronological order
 6. **Handle normalization** -- leading `@` and whitespace are stripped; duplicates are detected case-insensitively
 7. **Required managed team** -- every maintainer entry must include at least one team with `managed: true` (or `managed` omitted) that has at least one member
+8. **`name` is the landscape key** -- the landscape updater matches a landscape item by `name` *and* repository URL. If `name` does not match the item's name in `cncf/landscape`, the updater finds nothing to update and emits a warning rather than silently succeeding. This matters most in a multi-project repository, where two sibling projects have similar names and it is easy to give one of them the other's landscape name.
+
+### Link resolution (opt-in)
+
+Schema validation checks URL *format* only, and PathRef values only for being
+non-empty. With `-check-links` (or `check_links: 'true'` in the actions) the
+validator also checks that each URL, PathRef and maintainer handle resolves:
+
+- **Broken (error):** HTTP 404/410, a GitHub handle that is not a user or
+  organization, or a value that is not an `http(s)` URL (for example a PathRef
+  of `htps://…`). Relative PathRefs are resolved against the primary repository.
+- **Warning:** `XXX`/`TODO` placeholders, plain `http://` URLs, and any other
+  failure (403, 429, 5xx, timeouts), since those are often transient.
+
+On pull requests and pushes only the links that change adds are checked.
+
+### Multi-project repositories
+
+These rules apply additionally when `org.yaml` is present; see
+[Repository layouts](#repository-layouts) for the full list.
+
+9. **No root metadata** -- a root `project.yaml` or `maintainers.yaml` is an error
+10. **Declared and present must agree** -- every declared project needs a directory with both files, and every undeclared project-shaped directory is an error
+11. **Identity must match the directory** -- `slug` and `project_id` must both equal the project's `id`
+12. **Slugs are unique** -- no two projects in the repository may share a slug
+
+## committees.yaml
+
+`committees.yaml` describes an organization's governance bodies (for CNCF: the
+TOC, TAGs and their subprojects, the End User TAB, the Governing Board and
+staff), the role teams inside each body, and who holds each role and for which
+term. It lives in the organization's `.project` repository (for CNCF,
+`cncf/.project`) and is independent of `project.yaml`/`maintainers.yaml`.
+Nothing in the schema is CNCF-specific, so another organization can adopt it
+unchanged. Requirements and design rationale are in
+[COMMITTEES.md](COMMITTEES.md); a complete example is
+[example/committees.yaml](example/committees.yaml).
+
+Validate with `validator -committees committees.yaml`, or in CI with the
+[`validate-committees`](../../.github/actions/validate-committees/action.yml)
+action. Both check that every member handle is an existing GitHub account and
+every `url` resolves (404/410 fails); pass `-check-links=false` (or
+`check_links: 'false'`) to skip this offline. The validator reads the GitHub
+token from `GITHUB_TOKEN` or `GH_TOKEN`, then the `-env-file` (default `.env`),
+then `gh auth token`; without one, rate-limited lookups are only warnings.
+
+### Top-Level
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `schema_version` | string | Yes | Must be `"1.0.0"` |
+| `org` | string | No | GitHub organization that owns the `github_teams` |
+| `committees` | Committee[] | Yes | At least one entry |
+
+### Committee
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `id` | string | Yes | Stable identifier | Slug; unique in the file |
+| `name` | string | Yes | Display name | |
+| `description` | string | No | One-line purpose | |
+| `type` | string | No | Free-form category, e.g. `toc`, `tag`, `subproject`, `board`, `staff` | |
+| `url` | string | No | Home page or charter | `http(s)` URL |
+| `teams` | CommitteeTeam[] | Yes | Roles in the committee | At least one; at least one must be non-emeritus |
+
+### CommitteeTeam
+
+A team is a **role** (members, alternates, tech-leads, ...). The same person
+may hold several roles, so may appear in several teams. A position held within
+a team, such as chair of the TOC members, is a member's `role` rather than a
+separate team, and a member's liaison duties to other committees are its
+`liaison` list.
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `name` | string | Yes | Role name | Slug; unique within the committee |
+| `github_teams` | string[] | No | GitHub team slugs this role grants | Slugs; no duplicates. A GitHub team's intended membership is the union of the current members of every non-emeritus role that lists it |
+| `emeritus` | bool | No | Past role holders, kept for the record | Default `false`; cannot have `github_teams`; every member needs an `end` |
+| `members` | CommitteeMember[] | Yes | Role holders | At least one; leave a role out until it is filled |
+
+### CommitteeMember
+
+Members are always mappings; a bare handle string is an error. Members are
+identified by GitHub handle only: names and affiliations come from the
+member's LFID profile, not from this file.
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `github` | string | Yes | GitHub handle | No leading `@`; valid GitHub login |
+| `role` | string | No | Position within the team, e.g. `chair`, `vice-chair` | Slug |
+| `liaison` | string[] | No | Committees the member is liaison to, e.g. `[tag-infrastructure, tag-workloads-foundation]` | Non-empty list; each entry is the `id` of another committee in the file, listed once |
+| `elected_by` | string | Yes | Body or constituency that elected/appointed the person (e.g. `Governing Board`, `End User TAB`, `TOC`) | Non-empty free text |
+| `start` | date | Yes | Term start | `YYYY-MM-DD` |
+| `end` | date | No | Term end; omit it when the term has no fixed end (staff, board seats) | `YYYY-MM-DD` after `start`; required in emeritus teams |
+
+No other member fields are accepted (including `name` and `company`), so
+emails and other personal data cannot be added by accident.
+
+### committees.yaml validation rules
+
+Errors fail validation:
+
+1. A file with more than one YAML document; unknown fields at any level, duplicate keys, and bare-string members
+2. Missing required fields, bad slugs, bad handles, bad dates, `end` not after `start`
+3. Duplicate committee `id`s, duplicate team names in a committee; a `liaison` entry that is repeated, is not a committee `id` in the file, or is the member's own committee
+4. A team with no members, or a committee whose teams are all emeritus
+5. Emeritus teams that grant GitHub teams, or emeritus members without an `end`
+6. A handle repeated within one team with **overlapping** terms (case-insensitive); a missing `end` counts as open. Repeats with disjoint terms record re-elections or separate stints
+
+Warnings never fail validation, so a file does not start failing CI just
+because time passed:
+
+- A non-emeritus member whose `end` is in the past (renew the term or move them to the emeritus team)
+- An emeritus member whose `end` is in the future

@@ -1,15 +1,15 @@
-data "oci_containerengine_node_pool_option" "amd64" {
+data "oci_containerengine_node_pool_option" "ol9" {
   compartment_id = var.compartment_ocid
   node_pool_option_id = "all"
   node_pool_k8s_version = var.nodepool_k8s_version
   node_pool_os_arch = "X86_64"
-  node_pool_os_type = "OL8"
 }
 
 locals {
-  non_gpu_images = [
-    for source in data.oci_containerengine_node_pool_option.amd64.sources :
-    source if !strcontains(source.source_name, "GPU")
+  non_gpu_images_ol9 = [
+    for source in data.oci_containerengine_node_pool_option.ol9.sources :
+    source if strcontains(source.source_name, "Oracle-Linux-9")
+         && !strcontains(source.source_name, "GPU")
   ]
 }
 
@@ -40,14 +40,13 @@ data "oci_containerengine_cluster_kube_config" "service" {
   cluster_id = oci_containerengine_cluster.service.id
 }
 
-resource "oci_containerengine_node_pool" "service_worker" {
+resource "oci_containerengine_node_pool" "ol9_workers" {
   cluster_id     = oci_containerengine_cluster.service.id
   compartment_id = var.compartment_ocid
 
   kubernetes_version = var.nodepool_k8s_version
-  name               = "${var.cluster_name}-pool1"
+  name               = "${var.cluster_name}-pool-ol9"
 
-  # this matches t3.2xlarge sizings.
   node_shape = var.oke_node_shape
   node_shape_config {
     memory_in_gbs = var.oke_node_memory
@@ -56,7 +55,7 @@ resource "oci_containerengine_node_pool" "service_worker" {
 
   node_source_details {
     boot_volume_size_in_gbs = var.oke_node_boot_volume_size
-    image_id                = local.non_gpu_images[0].image_id
+    image_id                = local.non_gpu_images_ol9[0].image_id
     source_type             = "image"
   }
 
@@ -77,7 +76,7 @@ resource "oci_containerengine_node_pool" "service_worker" {
       cni_type          = "OCI_VCN_IP_NATIVE"
       pod_nsg_ids       = []
       pod_subnet_ids    = [oci_core_subnet.node.id]
-      max_pods_per_node = 110
+      max_pods_per_node = var.max_pods_per_node
     }
   }
 

@@ -3,7 +3,6 @@ package projects
 import (
 	"strings"
 	"testing"
-	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -306,50 +305,6 @@ func TestPackageManagersMultiValue(t *testing.T) {
 			if strings.Contains(e, "package_managers") {
 				t.Errorf("unexpected package_managers error: %s", e)
 			}
-		}
-	})
-}
-
-// ---------------------------------------------------------------------------
-// Staleness — multiple leads and @ stripping
-// ---------------------------------------------------------------------------
-
-func TestCheckStalenessMultipleLeads(t *testing.T) {
-	staleDate := time.Now().Add(-200 * 24 * time.Hour)
-
-	t.Run("single lead with @ prefix is stripped in output", func(t *testing.T) {
-		project := validBaseProject()
-		project.ProjectLeads = StringOrSlice{"@jdoe"}
-		result := CheckStaleness(project, staleDate, 180)
-		if result.ProjectLead != "jdoe" {
-			t.Errorf("expected '@' stripped to 'jdoe', got %q", result.ProjectLead)
-		}
-	})
-
-	t.Run("multiple leads are joined with comma", func(t *testing.T) {
-		project := validBaseProject()
-		project.ProjectLeads = StringOrSlice{"thockin", "jsmith"}
-		result := CheckStaleness(project, staleDate, 180)
-		if result.ProjectLead != "thockin, jsmith" {
-			t.Errorf("expected 'thockin, jsmith', got %q", result.ProjectLead)
-		}
-	})
-
-	t.Run("multiple leads with @ prefixes are all stripped", func(t *testing.T) {
-		project := validBaseProject()
-		project.ProjectLeads = StringOrSlice{"@thockin", "@jsmith"}
-		result := CheckStaleness(project, staleDate, 180)
-		if result.ProjectLead != "thockin, jsmith" {
-			t.Errorf("expected 'thockin, jsmith', got %q", result.ProjectLead)
-		}
-	})
-
-	t.Run("no leads produces empty string", func(t *testing.T) {
-		project := validBaseProject()
-		project.ProjectLeads = nil
-		result := CheckStaleness(project, staleDate, 180)
-		if result.ProjectLead != "" {
-			t.Errorf("expected empty project_lead, got %q", result.ProjectLead)
 		}
 	})
 }

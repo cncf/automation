@@ -3,7 +3,7 @@
 In order to deploy (or version update by changing [kustomization.yaml](./kustomization.yaml#L6)) ArgoCD on the cluster, run this command:
 
 ```bash
-kubectl apply -k argocd
+kubectl apply -k argocd --server-side
 ```
 
 ## Deploy app-of-apps

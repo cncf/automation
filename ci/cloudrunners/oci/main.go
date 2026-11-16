@@ -47,6 +47,7 @@ var args struct {
 	runEnv             string
 	preemptible        bool
 	preemptionQueue    string
+	osVersion          string
 
 	fallbackRegions             []string
 	fallbackAvailabilityDomains []string
@@ -59,6 +60,10 @@ var args struct {
 const exitCodePreempted = 79
 
 var errPreempted = errors.New("instance preempted")
+
+// errNoNestedVirt signals the launched host lacks hardware virtualization
+// (svm/vmx); the launch loop recycles the placement instead of failing mid-job.
+var errNoNestedVirt = errors.New("nested virtualization not available on instance")
 
 func main() {
 	log.SetFlags(log.Flags() | log.Lshortfile)
@@ -111,10 +116,10 @@ func vcpusPerOcpu(shape string) float32 {
 }
 
 // findImage returns the latest GHA runner image available in the current region of the given compute client.
-func findImage(ctx context.Context, computeClient core.ComputeClient, compartmentId, arch, runEnv string) (*core.Image, error) {
-	osname := fmt.Sprintf("ubuntu-24.04-%s-gha-image", arch)
+func findImage(ctx context.Context, computeClient core.ComputeClient, compartmentId, osVersion, arch, runEnv string) (*core.Image, error) {
+	osname := fmt.Sprintf("ubuntu-%s-%s-gha-image", osVersion, arch)
 	if runEnv != "production" {
-		osname = fmt.Sprintf("rc-ubuntu-24.04-%s-gha-image", arch)
+		osname = fmt.Sprintf("rc-ubuntu-%s-%s-gha-image", osVersion, arch)
 	}
 	images, err := computeClient.ListImages(ctx, core.ListImagesRequest{
 		CompartmentId:   common.String(compartmentId),
@@ -213,6 +218,13 @@ func run(cmd *cobra.Command, argv []string) error {
 
 			log.Printf("instance launched successfully: region=%s shape=%s", region.Region, shape)
 			err = runOnMachine(ctx, machine, sshKeyPair)
+			if errors.Is(err, errNoNestedVirt) {
+				log.Printf("nested virt missing: region=%s ad=%s shape=%s: terminating instance and recycling placement",
+					region.Region, region.AvailabilityDomain, shape)
+				cleanup()
+				lastErr = err
+				continue
+			}
 			if err != nil && args.preemptible {
 				if state, stateErr := machine.LifecycleState(context.Background()); stateErr == nil &&
 					(state == core.InstanceLifecycleStateTerminating || state == core.InstanceLifecycleStateTerminated) {
@@ -252,7 +264,7 @@ func tryLaunch(ctx context.Context, region regionConfig, shape string, sshKeyPai
 	computeClient.SetRegion(region.Region)
 	networkClient.SetRegion(region.Region)
 
-	latestImage, err := findImage(ctx, computeClient, args.compartmentId, args.arch, args.runEnv)
+	latestImage, err := findImage(ctx, computeClient, args.compartmentId, args.osVersion, args.arch, args.runEnv)
 	if err != nil {
 		return nil, err
 	}
@@ -340,6 +352,19 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 	}
 	defer sshClient.Close()
 
+	// Fail fast if the host doesn't expose hardware virtualization so the
+	// caller can recycle the placement instead of failing mid-job.
+	// svm/vmx are x86 CPU flags; /dev/kvm confirms the KVM module loaded.
+	if args.arch == "amd64" {
+		virtCheck := "grep -qE 'svm|vmx' /proc/cpuinfo && test -c /dev/kvm"
+		log.Println("running ssh command", "command", virtCheck)
+		if output, err := sshClient.RunCommand(ctx, virtCheck); err != nil {
+			log.Println(err, "nested virtualization check failed", "command", virtCheck, "output", string(output))
+			return fmt.Errorf("%w: %s", errNoNestedVirt, ip)
+		}
+		log.Println("nested virtualization check passed")
+	}
+
 	if args.arch == "arm64" {
 		arm_command := "sudo nft insert rule ip filter INPUT iifname \"br-*\" accept && sudo nft insert rule ip filter FORWARD iifname \"br-*\" accept"
 		log.Println("running ssh command", "command", arm_command)
@@ -366,7 +391,7 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
 		"sudo sysctl fs.inotify.max_user_instances=1280",
 		"sudo sysctl fs.inotify.max_user_watches=655360",
-		"export PATH=$PATH:/home/ubuntu/.local/bin:/home/ubuntu/.cargo/bin:/home/ubuntu/.rustup/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash -x /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
+		"export PATH=$PATH:/home/ubuntu/.local/bin:/home/ubuntu/.cargo/bin:/home/ubuntu/.rustup/bin && export HOME=/home/ubuntu && export NVM_DIR=/home/ubuntu/.nvm && bash /home/ubuntu/run.sh --jitconfig \"${ACTIONS_RUNNER_INPUT_JITCONFIG}\"",
 	}
 
 	for _, cmd := range commands {
@@ -424,6 +449,12 @@ func init() {
 		"subnet-id",
 		"ocid1.subnet.oc1.us-sanjose-1.aaaaaaaahgdslvujnywu3hvhqbvgz23souseseozvypng7ehnxgcotislubq",
 		"Subnet ID",
+	)
+	flags.StringVar(
+		&args.osVersion,
+		"os-version",
+		"24.04",
+		"Operating System Version",
 	)
 	flags.StringVar(
 		&args.shape,

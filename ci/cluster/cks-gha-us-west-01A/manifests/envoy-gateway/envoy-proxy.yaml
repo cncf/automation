@@ -1,0 +1,34 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: ha-envoy-proxy
+  namespace: envoy-gateway
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        annotations:
+          service.beta.kubernetes.io/coreweave-load-balancer-type: public
+        externalTrafficPolicy: Local
+      envoyDeployment:
+        pod:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: proxy
+                  topologyKey: kubernetes.io/hostname
+      envoyHpa:
+        minReplicas: 3
+        maxReplicas: 10
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80

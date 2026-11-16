@@ -83,6 +83,17 @@ type BootstrapResult struct {
 	// Source tracking: which fields came from which source
 	Sources map[string]string `json:"sources,omitempty" yaml:"sources,omitempty"`
 
+	// BrokenLinks maps every URL that returned 404/410 during provisioning to
+	// the reason. GenerateProjectYAML comments these out under a TODO rather
+	// than shipping a link that is already dead.
+	BrokenLinks map[string]string `json:"broken_links,omitempty" yaml:"broken_links,omitempty"`
+
+	// UnknownMaintainers are handles from the foundation CSV that have no
+	// GitHub account. They are kept out of the roster and CODEOWNERS (a
+	// CODEOWNERS entry for a missing user is an error on GitHub) and listed as
+	// TODO comments in maintainers.yaml instead.
+	UnknownMaintainers []string `json:"unknown_maintainers,omitempty" yaml:"unknown_maintainers,omitempty"`
+
 	// TODOs: fields the user must manually fill in
 	TODOs []string `json:"todos,omitempty" yaml:"todos,omitempty"`
 }

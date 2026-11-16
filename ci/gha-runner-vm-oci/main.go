@@ -23,6 +23,24 @@ import (
 
 var replacements = make(map[string]string)
 var selectedRelease *github.RepositoryRelease
+
+// Inserted into the PowerShell module scripts; $$ because it goes through regexp.ReplaceAllString
+const psRetryHelper = `
+function Invoke-WithRetry {
+    param([scriptblock] $$ScriptBlock, [int] $$Attempts = 5, [int] $$DelaySeconds = 30)
+    for ($$i = 1; $$i -le $$Attempts; $$i++) {
+        try {
+            & $$ScriptBlock
+            return
+        } catch {
+            if ($$i -eq $$Attempts) { throw }
+            Write-Host "Attempt $$i of $$Attempts failed: $$_"
+            Start-Sleep -Seconds ($$DelaySeconds * $$i)
+        }
+    }
+}
+`
+
 var Cmd = &cobra.Command{
 	Use:  "gha-runner-vm-oci",
 	Long: "Generate and upload a new GHA runner image to OCI using the oracle-oci Packer builder",
@@ -107,6 +125,11 @@ func run(cmd *cobra.Command, argv []string) error {
 		log.Fatalf("Failed to open vars file: %s\n", err)
 	}
 
+	ociConfigFile := os.Getenv("OCI_CONFIG_FILE")
+	if ociConfigFile == "" {
+		ociConfigFile = os.Getenv("HOME") + "/.oci/config"
+	}
+
 	// Set oracle-oci source block now that imageName is available
 	regionLine := ""
 	if args.ociRegion != "" {
@@ -124,11 +147,12 @@ func run(cmd *cobra.Command, argv []string) error {
   ssh_username         = "ubuntu"
   communicator         = "ssh"
   image_launch_mode	   = "PARAVIRTUALIZED"
+	access_cfg_file      = "%s"
   shape_config {
     ocpus = 16
     memory_in_gbs = 64
   }
-}`, args.availabilityDomain, args.baseImageOCID, args.compartmentId, args.ociShape, args.subnetOCID, regionLine, imageName)
+}`, args.availabilityDomain, args.baseImageOCID, args.compartmentId, args.ociShape, args.subnetOCID, regionLine, imageName, ociConfigFile)
 
 	for key, value := range replacements {
 		log.Printf("Replacing %s with %s\n", key, value)
@@ -188,12 +212,58 @@ packer {
 	baseDir := strings.Split(filename, "/")[0]
 	installRunnerPackage(baseDir)
 
-	// Fix PSGallery not being registered in tar.gz-based PowerShell installations (ARM64)
+	// PSGallery via PowerShellGet v2 (PackageManagement/NuGet provider) fails intermittently with
+	// "Source Location ... is not valid"; switch every download to PSResourceGet, which ships with pwsh 7.4+.
+	// This also drops the need to Register-PSRepository on tar.gz-based (arm64) pwsh installs.
 	psModulesScript := baseDir + "/images/ubuntu/scripts/build/Install-PowerShellModules.ps1"
 	if err := replaceInFileRegex(psModulesScript, map[*regexp.Regexp]string{
-		regexp.MustCompile(`Set-PSRepository -InstallationPolicy Trusted -Name PSGallery`): "Register-PSRepository -Default -ErrorAction SilentlyContinue\nSet-PSRepository -InstallationPolicy Trusted -Name PSGallery",
+		regexp.MustCompile(`(?m)^(# Specifies the installation policy|Set-PSRepository |# Try to update PowerShellGet|Install-Module -Name PowerShellGet|Update-Module -Name PowerShellGet).*\n`): "",
+		regexp.MustCompile(`Install-Module -Name \$moduleName -RequiredVersion \$version -Scope AllUsers -SkipPublisherCheck -Force`):                                                             `Install-PSResource -Name $$moduleName -Version $$version -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`,
+		regexp.MustCompile(`Install-Module -Name \$moduleName -Scope AllUsers -SkipPublisherCheck -Force`):                                                                                        `Install-PSResource -Name $$moduleName -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`,
 	}); err != nil {
 		log.Fatalf("Failed to patch Install-PowerShellModules.ps1: %v", err)
+	}
+	psAzModulesScript := baseDir + "/images/ubuntu/scripts/build/Install-PowerShellAzModules.ps1"
+	// Save-Module created $modulePath implicitly; Save-PSResource requires it to exist
+	if err := replaceInFileRegex(psAzModulesScript, map[*regexp.Regexp]string{
+		regexp.MustCompile(`(?m)^(\s*)Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`): "${1}New-Item -ItemType Directory -Path $$modulePath -Force | Out-Null\n${1}Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet",
+	}); err != nil {
+		log.Fatalf("Failed to patch Install-PowerShellAzModules.ps1: %v", err)
+	}
+	// cdn.powershellgallery.com intermittently 404s existing packages from the build network; retry whole installs.
+	// Separate pass: must run after the cmdlet swap above, and map iteration order is not guaranteed.
+	for _, script := range []string{psModulesScript, psAzModulesScript} {
+		if err := replaceInFileRegex(script, map[*regexp.Regexp]string{
+			regexp.MustCompile(`(?m)^(Import-Module "\$env:HELPER_SCRIPTS/\.\./tests/Helpers\.psm1")$`): "${1}\n" + psRetryHelper,
+		}); err != nil {
+			log.Fatalf("Failed to add retry helper to %s: %v", script, err)
+		}
+		if err := replaceInFileRegex(script, map[*regexp.Regexp]string{
+			regexp.MustCompile(`(?m)^(\s*)((Install|Save)-PSResource .*)$`): `${1}Invoke-WithRetry { ${2} }`,
+		}); err != nil {
+			log.Fatalf("Failed to wrap PSResource calls in %s: %v", script, err)
+		}
+	}
+
+	// Move the Azure mirror to lowest priority; patterns match distinct hostnames so map order is irrelevant.
+	// Upstream sed only rewrites the Azure mirror; cloud-init on OCI writes *.clouds.archive.ubuntu.com, leaving Apt.Tests.ps1's mirror-list check failing
+	aptSourcesScript := baseDir + "/images/ubuntu/scripts/build/configure-apt-sources.sh"
+	if err := replaceInFileRegex(aptSourcesScript, map[*regexp.Regexp]string{
+		regexp.MustCompile(`(azure\.archive\.ubuntu\.com/ubuntu/\\t)priority:1`):  `${1}priority:3`,
+		regexp.MustCompile(`(https://archive\.ubuntu\.com/ubuntu/\\t)priority:2`): `${1}priority:1`,
+		regexp.MustCompile(`(security\.ubuntu\.com/ubuntu/\\t)priority:3`):        `${1}priority:2`,
+		regexp.MustCompile(`http://azure\\\.archive\\\.ubuntu\\\.com/ubuntu/`):    `http://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu/*`,
+	}); err != nil {
+		log.Fatalf("Failed to patch configure-apt-sources.sh: %v", err)
+	}
+
+	// pipx 1.17.11 needs packaging>=26.3 but resolute's Debian-owned packaging 26.0 can't be replaced by pip;
+	// mirrors upstream main (actions/runner-images#14839) until a 26.04 release tarball carries the pin
+	pythonScript := baseDir + "/images/ubuntu/scripts/build/install-python.sh"
+	if err := replaceInFileRegex(pythonScript, map[*regexp.Regexp]string{
+		regexp.MustCompile(`(?m)python3 -m pip install pipx$`): `python3 -m pip install "pipx==1.17.10"`,
+	}); err != nil {
+		log.Fatalf("Failed to patch install-python.sh: %v", err)
 	}
 
 	command := exec.Command("packer", "build", "-var", "architecture=arm64", newFile)

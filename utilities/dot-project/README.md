@@ -1,14 +1,51 @@
 # .project - CNCF Project Metadata
 
-Every CNCF project maintains a `.project` repository in their GitHub organization containing standardized metadata about the project. This enables maintainers to own their own data while CNCF automation can act on it for landscape updates, governance audits, staleness checks, and more.
+Every CNCF project maintains a `.project` repository in their GitHub organization containing standardized metadata about the project. This enables maintainers to own their own data while CNCF automation can act on it for landscape updates, and more.
 
 ## Quick Start
 
 For CNCF projects adopting `.project`:
 
-1. Copy the `template/` directory contents into your `.project` repo
-2. Fill in your project details in `project.yaml` and `maintainers.yaml`
-3. The included GitHub Actions workflow will validate on every PR
+1. Copy the `example/` directory contents into your `.project` repo
+2. Replace the example values in `project.yaml` and `maintainers.yaml` with your project's details
+3. The included GitHub Actions workflows (`.github/workflows/`) will validate on every PR and sync changes to the CNCF Landscape
+4. Keep maintainer information current in both places: `maintainers.yaml` lists GitHub handles and teams, while each maintainer's name, primary email, and affiliation come from their LFID profile at [openprofile.dev](https://openprofile.dev). Also ensure current affiliations are shown in your project's public maintainer or governance documentation; updating one record does not update the others.
+
+## Repository Layouts
+
+A `.project` repository uses one of two layouts, and every tool here detects
+which one it is looking at.
+
+**Single-project** is the default and what almost every project needs:
+`project.yaml` and `maintainers.yaml` at the repository root.
+
+**Multi-project** is for the few GitHub organizations that host more than one
+distinct CNCF project — `spiffe` holds both SPIFFE and SPIRE, `spinframework`
+holds both Spin and SpinKube. These are separately accepted projects with their
+own maturity and their own landscape entry, so they each need their own
+metadata. Such a repository declares an `org.yaml` index at its root and gives
+every project a directory:
+
+```
+.project/
+├── org.yaml            # index: which projects live here
+├── spiffe/
+│   ├── project.yaml
+│   └── maintainers.yaml
+├── spire/
+│   ├── project.yaml
+│   └── maintainers.yaml
+└── .github/workflows/
+```
+
+`org.yaml` is the only marker; its presence switches the repository to the
+multi-project layout. When it exists, a root `project.yaml` or
+`maintainers.yaml` is an error, since it would be ambiguous which project it
+described. Project directories are exactly one level deep.
+
+The same workflows and the same actions serve both layouts — there is no
+multi-project variant to adopt. See [SCHEMA.md](SCHEMA.md) for the `org.yaml`
+fields and the full validation rules.
 
 ## Schema (v1.0.0)
 
@@ -66,13 +103,14 @@ repositories:
 
 ### Example: Full `project.yaml`
 
-See `example/project.yaml` for a complete filled-in example, or `template/project.yaml` for a blank starter.
+See `example/project.yaml` for a complete filled-in example to copy and adapt.
 
 ## Tools
 
 ### Validator
 
-Validates `project.yaml` and `maintainers.yaml` files.
+Validates `project.yaml` and `maintainers.yaml` files, or an organization's
+`committees.yaml` with `-committees` (see [COMMITTEES.md](COMMITTEES.md)).
 
 ```bash
 # Build
@@ -80,6 +118,9 @@ make build
 
 # Validate with defaults
 ./bin/validator
+
+# Validate a .project repository, whichever layout it uses
+./bin/validator -repo-root .
 
 # Validate specific files
 ./bin/validator -config testdata/projectlist.yaml -maintainers testdata/maintainers.yaml
@@ -92,18 +133,53 @@ make build
 
 # Enable LFX handle verification
 ./bin/validator -verify-maintainers
+
+# Validate an organization's committees.yaml (see COMMITTEES.md)
+./bin/validator -committees committees.yaml
 ```
 
 #### Flags
 
 | Flag | Default | Description |
 |------|---------|-------------|
+| `-repo-root` | | Path to a `.project` repository. Detects the layout and validates every project it contains, plus the repository structure itself. Mutually exclusive with `-config`/`-maintainers` |
+| `-committees` | | Validate an org-level `committees.yaml` instead of projects (see [COMMITTEES.md](COMMITTEES.md)). Checks every handle and URL by default (`-check-links=false` to skip); honours `-output`, `-links-base`, `-links-report` and `-env-file`; ignores the project flags |
 | `-config` | `testdata/projectlist.yaml` | Path to project list configuration |
 | `-maintainers` | `testdata/maintainers.yaml` | Path to maintainers file (empty to skip) |
-| `-base-maintainers` | | Base maintainers file for diff validation |
+| `-base-maintainers` | | Base maintainers file or directory, for diff validation |
 | `-cache` | `.cache` | Cache directory |
 | `-output` | `text` | Output format: `text`, `json`, `yaml` |
 | `-verify-maintainers` | `false` | Verify handles via LFX API |
+| `-check-links` | `false` (`true` with `-committees`) | Check that every URL and maintainer handle resolves (see [Link Checking](#link-checking)) |
+| `-links-base` | | Base checkout of the repository; only links not already present there are checked |
+| `-links-report` | | Write a Markdown report of broken links to this file (empty when none are broken) |
+| `-env-file` | `.env` | Env file read for `GITHUB_TOKEN` when checking links (real env vars win) |
+
+`-repo-root` is what the GitHub Actions use. It reports the detected layout,
+checks the repository structure (see [SCHEMA.md](SCHEMA.md#validation)), then
+validates each project found. Pass `-config=/dev/null` alongside it to validate
+maintainers only, or `-maintainers=` to validate projects only.
+
+#### Link Checking
+
+`-check-links` resolves every URL in the project files and every maintainer
+handle. Relative paths are resolved against the primary repository. GitHub
+links go through the GitHub API; everything else gets a `HEAD` request,
+falling back to `GET`. A 404 is retried once before it counts.
+
+The GitHub token comes from `GITHUB_TOKEN` or `GH_TOKEN`, then the `-env-file`
+(default `.env`), then `gh auth token`. Without a token the validator prints a
+notice: unauthenticated requests are rate-limited, and rate-limited links are
+reported as warnings, so a local run without a token proves little.
+
+| Result | Examples | Effect |
+|--------|----------|--------|
+| Broken | 404/410, not an `http(s)` URL (`htps://…`), unknown GitHub handle | Exit code 1 |
+| Warning | `XXX`/`TODO` placeholders, plain `http://`, 403/429/5xx, timeouts | Reported only |
+
+```bash
+GITHUB_TOKEN=ghp_xxx ./bin/validator -repo-root ../my-org/.project -check-links
+```
 
 ### Landscape Updater
 
@@ -115,17 +191,25 @@ The `landscape-updater` tool automates the process of updating the CNCF Landscap
 
 # Apply changes and create a PR
 ./bin/landscape-updater --project ./project.yaml --landscape ./landscape.yml --create-pr
+
+# Update every project in a .project repository, whichever layout it uses
+./bin/landscape-updater --repo-root . --landscape ./landscape.yml --create-pr
 ```
 
 #### Flags
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--project` | | Path to the project's `project.yaml` file (required) |
+| `--project` | | Path to the project's `project.yaml` file (required unless `--repo-root` is given) |
+| `--repo-root` | | Path to a `.project` repository; processes every project it contains, one branch and one PR per project |
 | `--landscape` | | Path to the `landscape.yml` file (required) |
 | `--landscape-repo` | `cncf/landscape` | Target repository for the PR |
 | `--create-pr` | `false` | Create a Pull Request with the changes |
 | `--dry-run` | `false` | Print diff and PR details without executing |
+
+A project whose `name` matches no landscape item produces a warning annotation
+rather than a silent no-op, and does not stop the remaining projects from being
+processed.
 
 ### Bootstrap
 
@@ -143,11 +227,28 @@ The `bootstrap` tool auto-generates a complete `.project` scaffold by fetching d
 | `.gitignore` | Build/OS artifact exclusions |
 | `.github/workflows/validate.yaml` | CI validation workflow |
 | `.github/workflows/update-landscape.yml` | Landscape sync workflow |
+| `.github/workflows/check-links.yml` | Scheduled link check, every other Saturday |
 
 All generated files use:
 - **Full GitHub URLs** for all path references (not relative paths)
 - **SHA-pinned action refs** for deterministic CI
 - **`LANDSCAPE_REPO_TOKEN`** as the standardized secret name
+
+**Multi-project organizations.** Before generating anything, bootstrap scans the
+CNCF landscape for every active project in the given organization. If it finds
+more than one, it runs the whole pipeline once per project and writes the
+[multi-project layout](#repository-layouts) instead: an `org.yaml` index, a
+directory per project, and one shared set of repository-level files. Generated
+team names are always prefixed with the project slug (`spire-maintainers`, not
+`maintainers`), because GitHub teams are org-scoped and two projects that both
+scaffolded a team called `maintainers` would silently share it.
+
+The landscape is the only reliable signal here — nothing in a GitHub
+organization itself says "these two repositories are separately accepted CNCF
+projects". Use `-layout` to override the detection: `-layout single` forces the
+flat layout, and `-layout multi` forces the directory layout for an
+organization whose split the CNCF has not recorded in the landscape yet, leaving
+the remaining projects to be added to `org.yaml` by hand.
 
 ```bash
 # Dry run: preview generated YAML on stdout
@@ -158,6 +259,9 @@ All generated files use:
 
 # Generate into a specific directory
 ./bin/bootstrap -name "Envoy" -github-org envoyproxy -github-repo envoy -output-dir ./envoy/.project
+
+# A multi-project org: detected from the landscape, no extra flags needed
+./bin/bootstrap -github-org spiffe -output-dir ./spiffe/.project
 
 # Skip external API lookups (GitHub-only)
 ./bin/bootstrap -github-org my-org -skip-clomonitor
@@ -185,11 +289,21 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 | `-github-token` | | GitHub token (or set `GITHUB_TOKEN` env, or a `.env` file) |
 | `-env-file` | `.env` | Path to a `.env` file to load (real env vars take precedence) |
 | `-output-dir` | `.` | Directory to write scaffold output |
+| `-layout` | `auto` | Repository layout: `auto` (detect from the landscape), `single`, or `multi` |
 | `-skip-landscape` | `false` | Skip CNCF landscape YAML lookup |
 | `-skip-clomonitor` | `false` | Skip CLOMonitor API lookup |
 | `-skip-github` | `false` | Skip GitHub API lookup |
 | `-maintainers-csv` | | Optional path to a local `project-maintainers.csv` (default: fetch fresh from `cncf/foundation`) |
+| `-skip-link-check` | `false` | Skip checking generated links and handles before writing files |
 | `-dry-run` | `false` | Print generated YAML without writing files |
+
+Before writing anything, bootstrap checks every link it generated and every
+maintainer handle it found. Links that return 404 are commented out under a
+`# TODO` instead of failing the run (a broken repository URL is kept, flagged
+with a `# TODO`, because `repositories` is required), handles that are not GitHub accounts are
+moved to commented `# TODO` lines in `maintainers.yaml`, and the
+`SECURITY.md` template drops its link to a policy file that does not exist.
+Search the output for `TODO` before opening the pull request.
 
 #### Data Sources and Priority
 
@@ -262,45 +376,78 @@ grpc|gRPC|grpc
 | `LANDSCAPE_REPO_TOKEN` | Token for `update-landscape.yml` to open PRs against `cncf/landscape` |
 | `LFX_AUTH_TOKEN` | Token for `validate.yaml` to verify maintainer handles via LFX |
 
-### Staleness Checker
-
-Checks if maintainer data hasn't been updated within a threshold.
-
-```bash
-./bin/staleness-checker -project project.yaml -threshold 180
-```
-
-### Audit Checker
-
-Verifies all URLs referenced in a project are accessible.
-
-```bash
-./bin/audit-checker -project project.yaml
-```
-
 ## GitHub Actions
 
 All action references should be **SHA-pinned** for reproducibility.
 
+Each action's file inputs are optional. Leave them unset and the action
+discovers the repository layout for itself, validating a root `project.yaml` or
+every project directory as appropriate. Setting them pins the action to one
+file, which in a multi-project repository would silently skip the other
+projects — so the actions emit a warning and fall back to discovery if a file
+input is set in a repository that has an `org.yaml`.
+
 ### Using the Validate Project Action
 
 ```yaml
-- uses: cncf/automation/.github/actions/validate-project@53810a548b46f33421cd67e57d16e4b7251416d9
+- uses: cncf/automation/.github/actions/validate-project@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
   with:
-    project_file: 'project.yaml'
+    check_links: 'true'
 ```
 
 ### Using the Validate Maintainers Action
 
 ```yaml
-- uses: cncf/automation/.github/actions/validate-maintainers@53810a548b46f33421cd67e57d16e4b7251416d9
+- uses: cncf/automation/.github/actions/validate-maintainers@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
   with:
-    maintainers_file: 'maintainers.yaml'
     # Disabled until the LFX LLT issue is resolved. Validation is done manually for now.
     verify_maintainers: 'false'
+    check_links: 'true'
   env:
     LFX_AUTH_TOKEN: ${{ secrets.LFX_AUTH_TOKEN }}
 ```
+
+Both actions accept `check_links` (default `'false'`) and `token` (default
+`github.token`). On a pull request or push, only links and handles that change
+adds are checked, so an unrelated dead link never blocks a contributor or turns
+`main` red (the scheduled scan reports those); the checkout needs
+`fetch-depth: 0` for the base commit to be available.
+
+### Using the Validate Committees Action
+
+For an organization's `.project` repository that keeps a
+[`committees.yaml`](COMMITTEES.md) at its root:
+
+```yaml
+- uses: cncf/automation/.github/actions/validate-committees@<sha> # pin to a commit
+  with:
+    committees_file: 'committees.yaml' # default
+```
+
+Unlike the project actions, `check_links` defaults to `'true'`: every new
+member handle must be an existing GitHub account. As above, a pull request or
+push only checks the entries it adds (with `fetch-depth: 0`). See
+[COMMITTEES.md](COMMITTEES.md#adopting-it-in-an-organizations-project-repository)
+for a complete workflow.
+
+### Check Links Action
+
+```yaml
+- uses: cncf/automation/.github/actions/check-links@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
+  with:
+    label: 'broken-links'
+```
+
+Checks every link in the repository and keeps a single issue labeled `label`
+up to date: it opens one when links are broken (or reopens the most recent
+closed one, so the history stays in one place), rewrites its body with the
+latest results on each run, and closes it once everything resolves. Set
+`fail_on_broken: 'true'` to also fail the job; a failed issue update always
+fails it. The job needs `issues: write`. The scaffolded `check-links.yml`
+runs it on Saturdays at 11:23 UTC (still Saturday from UTC-11 to UTC+12, and
+off the top of the hour) and skips every other week, since cron cannot express
+a two-week interval. GitHub disables scheduled workflows in repositories with
+no activity for 60 days; re-enable it from the Actions tab if that happens.
 
 ### Landscape Update Action
 
@@ -310,7 +457,9 @@ on:
   push:
     branches: [main]
     paths:
+      - 'org.yaml'
       - 'project.yaml'
+      - '*/project.yaml'
   workflow_dispatch:
 
 permissions:
@@ -329,11 +478,14 @@ jobs:
           fetch-depth: 0
 
       - name: Update Landscape
-        uses: cncf/automation/.github/actions/landscape-update@53810a548b46f33421cd67e57d16e4b7251416d9
+        uses: cncf/automation/.github/actions/landscape-update@85e0bcd298817a6e26e286d6b22615f8c81b4e4b
         with:
-          project_file: 'project.yaml'
           token: ${{ secrets.LANDSCAPE_REPO_TOKEN }}
 ```
+
+The `*/project.yaml` filter covers the multi-project layout; it is harmless in a
+single-project repository and costs nothing to keep. In a multi-project
+repository the action opens one pull request per changed project.
 
 ## Maintainer Verification
 
@@ -386,13 +538,51 @@ docker run --rm --entrypoint landscape-updater dot-project-validator --help
 maintainers:
   - project_id: "your-project"
     teams:
-      - name: "project-maintainers"
+      - name: "your-project-maintainers"
         members:
           - githubuser1
           - githubuser2
 ```
 
-Each maintainer entry must contain a `project-maintainers` team which cannot be empty. Handles are normalized (trimmed and stripped of leading `@`) before verification.
+Each maintainer entry must contain at least one team with `managed: true` (the default when `managed` is omitted) that has at least one member. Team names are free-form (e.g. `maintainers`, `committers`, `reviewers`, `emeritus`); set `managed: false` on teams that should be tracked but excluded from CNCF resource provisioning (handle verification, mailing lists, service desk, Copilot seats). Handles are normalized (trimmed and stripped of leading `@`) before verification.
+
+Prefixing the team name with the project slug is what the bootstrap tool
+generates. GitHub teams are org-scoped, so in an organization that hosts (or one
+day may host) more than one CNCF project, an unprefixed `maintainers` team would
+collide.
+
+#### Service desk team
+
+CNCF Jira Service Desk seats are limited. By default **every** maintainer of a qualifying project gets a seat, so a project with more maintainers than it needs seats for can narrow access by adding a `servicedesk` team that lists the subset of maintainers who should have it:
+
+```yaml
+maintainers:
+  - project_id: "your-project"
+    org: "your-org"
+    teams:
+      - name: "your-project-maintainers"
+        members:
+          - githubuser1
+          - githubuser2
+          - githubuser3
+      - name: "servicedesk"
+        members:
+          - githubuser1
+          - githubuser3
+```
+
+How [cncf/maintainer-manager](https://github.com/cncf/maintainer-manager) resolves this:
+
+| In `maintainers.yaml` | Result |
+|------------------------|--------|
+| No `servicedesk` team | Every maintainer gets service desk access (`service_desk_source: all_maintainers`) |
+| `servicedesk` team with members | Only those members get access (`service_desk_source: servicedesk_team`) |
+| `servicedesk` team that is empty, or lists nobody who is a maintainer | Warning only; existing access is left unchanged so a data error never revokes seats |
+
+Notes:
+
+- A handle must appear in **both** the maintainers team and the `servicedesk` team. Handles listed only under `servicedesk` are warned about and ignored. Duplicate handles are only rejected within a single team, so the same handle can safely appear in both.
+- `servicedesk`, `service-desk`, and `service_desk` are all recognized as the team name.
 
 3. **Add GitHub Actions** to automatically validate changes (see GitHub Actions section above).
 
@@ -413,9 +603,21 @@ Each maintainer entry must contain a `project-maintainers` team which cannot be 
 | `CONTRIBUTING.md` | Recommended | Contribution guidelines |
 | `GOVERNANCE.md` | Recommended | Project governance document |
 
+In a [multi-project repository](#repository-layouts), `project.yaml` and
+`maintainers.yaml` live in each project's directory rather than at the root, and
+an `org.yaml` index at the root is required.
+
+An organization's `.project` repository may also keep an org-level
+`committees.yaml` at its root for its governance bodies; it is optional and
+validated separately (see [COMMITTEES.md](COMMITTEES.md)).
+
 ## Schema Versioning
 
 The `schema_version` field is required and validated. Currently supported: `1.0.0`.
+
+`org.yaml` carries its own independent `schema_version`, also currently `1.0.0`.
+The multi-project layout introduced no change to the `project.yaml` schema, so
+existing files did not need a version bump.
 
 New schema versions will be added as the format evolves. The validator supports multiple versions simultaneously to allow gradual migration.
 

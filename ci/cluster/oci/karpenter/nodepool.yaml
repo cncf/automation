@@ -8,6 +8,9 @@ spec:
   disruption:
     budgets:
       - nodes: 20%
+      - nodes: "0"
+        reasons:
+          - Drifted
     consolidateAfter: 1m0s
     consolidationPolicy: WhenEmpty
   limits:

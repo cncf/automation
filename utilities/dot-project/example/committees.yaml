@@ -1,0 +1,56 @@
+# committees.yaml — roster of an organization's governance bodies.
+# Schema: https://github.com/cncf/automation/blob/main/utilities/dot-project/SCHEMA.md#committeesyaml
+# Lives at the root of the organization's .project repository (e.g. cncf/.project).
+schema_version: "1.0.0"
+org: example-org
+committees:
+  - id: toc
+    name: Technical Oversight Committee
+    type: committee
+    url: https://github.com/example-org/toc
+    teams:
+      - name: members
+        github_teams: [example-toc, example-toc-voters]
+        members:
+          - github: alice
+            role: chair
+            liaison: [tag-example]
+            elected_by: Governing Board
+            start: 2025-03-04
+            end: 2027-03-04
+          - github: bob
+            elected_by: Maintainers
+            start: 2026-05-12
+            end: 2028-05-12
+      - name: alternates
+        github_teams: [example-toc]
+        members:
+          - github: carol
+            elected_by: Governing Board
+            start: 2026-05-12
+            end: 2027-05-12
+      - name: staff
+        github_teams: [example-toc]
+        members:
+          - github: dave
+            elected_by: Staff assignment
+            start: 2024-01-01
+      - name: emeritus
+        emeritus: true
+        members:
+          - github: erin
+            elected_by: End Users
+            start: 2022-01-29
+            end: 2024-01-29
+
+  - id: tag-example
+    name: TAG Example
+    type: tag
+    teams:
+      - name: chairs
+        github_teams: [tag-example-chairs]
+        members:
+          - github: frank
+            elected_by: TOC
+            start: 2025-07-01
+            end: 2027-06-30

@@ -1,0 +1,282 @@
+name: 'Run kind with ARC'
+description: 'Start a kind cluster with ARC, deploy a runner scale set (VM or container mode) for CI testing by patching a committed production manifest, and wait for the matching test-runner job to complete. Requires kind, kubectl, helm and docker on the runner (all preinstalled on ubuntu-latest).'
+inputs:
+  runner-type:
+    description: >
+      Kind of runner scale set to deploy: 'vm' (OCI gha-cloudrunner, the
+      original/default behavior) or 'container' (dind-mode external-gha-runner
+      image). Only the manifest-patching and secrets differ between the two;
+      everything else (kind cluster, ARC controller, wait loop, cleanup) is
+      shared.
+    required: false
+    default: 'vm'
+  arch:
+    description: 'Runner architecture to test (x86 or arm). VM mode only.'
+    required: false
+    default: ''
+  os-version:
+    description: 'Operating System version for the OCI image (e.g., 24.04). VM mode only.'
+    default: '24.04'
+    required: false
+  base-image:
+    description: 'Base image codename under test (e.g. resolute, noble). Container mode only; used for the scale-set name and job matching.'
+    required: false
+    default: ''
+  manifest-file:
+    description: 'Path to the committed runner scale set manifest to patch and deploy'
+    required: true
+  runner-image:
+    description: 'Override the runner image reference in the manifest with a full reference, e.g. ghcr.io/cncf/gha-cloudrunner-pr@sha256:... (VM mode defaults to the pinned image if left empty; required for container mode)'
+    required: false
+    default: ''
+  running-environment:
+    description: 'Value passed as --running-environment to the cloudrunner (ci selects rc-ubuntu images, production selects the released ones). VM mode only.'
+    required: false
+    default: 'production'
+  oci-user:
+    description: 'OCI user OCID. VM mode only.'
+    required: false
+    default: ''
+  oci-tenancy:
+    description: 'OCI tenancy OCID. VM mode only.'
+    required: false
+    default: ''
+  oci-fingerprint:
+    description: 'API key fingerprint. VM mode only.'
+    required: false
+    default: ''
+  oci-region:
+    description: 'Default region. VM mode only.'
+    required: false
+    default: ''
+  oci-key-content:
+    description: 'PEM-encoded OCI API private key. VM mode only.'
+    required: false
+    default: ''
+  arc-github-token:
+    description: 'GitHub PAT used by ARC to register runners'
+    required: true
+  github-token:
+    description: 'Token used to poll job status and cancel the run (needs actions: write)'
+    required: true
+  pickup-timeout:
+    description: 'Seconds to wait for the test-runner job to be picked up before cancelling the run'
+    required: false
+    default: '900'
+runs:
+  using: 'composite'
+  steps:
+    - name: Start kind cluster
+      shell: bash
+      env:
+        RUNNER_TYPE: ${{ inputs.runner-type }}
+        ARCH: ${{ inputs.arch }}
+        OS_VERSION: ${{ inputs.os-version }}
+        BASE_IMAGE: ${{ inputs.base-image }}
+        MANIFEST_FILE: ${{ inputs.manifest-file }}
+        RUNNER_IMAGE: ${{ inputs.runner-image }}
+        RUNNING_ENVIRONMENT: ${{ inputs.running-environment }}
+        OCI_USER: ${{ inputs.oci-user }}
+        OCI_TENANCY: ${{ inputs.oci-tenancy }}
+        OCI_FINGERPRINT: ${{ inputs.oci-fingerprint }}
+        OCI_REGION: ${{ inputs.oci-region }}
+        OCI_KEY_CONTENT: ${{ inputs.oci-key-content }}
+        ARC_GITHUB_TOKEN: ${{ inputs.arc-github-token }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+      run: |
+        if [ "$RUNNER_TYPE" = "vm" ]; then
+          HELM_RELEASE_NAME=cncf-gha-controller
+        else
+          HELM_RELEASE_NAME=cncf
+        fi
+
+        sudo sysctl -w fs.inotify.max_user_instances=1280
+        sudo sysctl -w fs.inotify.max_user_watches=655360
+
+        cat <<EOF > kind-config.yaml
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha4
+        nodes:
+        - role: control-plane
+          image: kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5
+        - role: worker
+          image: kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5
+        EOF
+
+        kind create cluster --config kind-config.yaml
+
+        kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+        helm install ${HELM_RELEASE_NAME} \
+          --namespace arc-systems \
+          --create-namespace \
+          --version 0.14.1 \
+          oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=controller-manager --timeout=600s -n arc-systems
+
+        kubectl create secret generic github-arc-secret --from-literal=github_token="${ARC_GITHUB_TOKEN}" -n arc-systems
+
+        if [ "$RUNNER_TYPE" = "vm" ]; then
+          kubectl create secret generic oci-api-key --from-literal=oci_api_key.pem="${OCI_KEY_CONTENT}" -n arc-systems
+
+          cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: oci-config
+          namespace: arc-systems
+        type: Opaque
+        stringData:
+          config: |
+            [DEFAULT]
+            user=${OCI_USER}
+            fingerprint=${OCI_FINGERPRINT}
+            tenancy=${OCI_TENANCY}
+            region=${OCI_REGION}
+            key_file=/oci/oci_api_key.pem
+        EOF
+
+          # the manifest pins the prod image by digest; swap in the full reference when one is given
+          if [ -n "$RUNNER_IMAGE" ]; then
+            sed -i -E "s|image: ghcr.io/cncf/gha-cloudrunner[@:][^[:space:]]+|image: ${RUNNER_IMAGE}|" "$MANIFEST_FILE"
+          fi
+
+          # scale-set name must be unique per (run, os-version); arch suffix comes from the manifest
+          sed "s/cncf-ubuntu-2-8/oci-ci-test-${GITHUB_RUN_ID}-${OS_VERSION}/g" "$MANIFEST_FILE" \
+            | sed "/--subnet-id/a \\        - --running-environment=${RUNNING_ENVIRONMENT}" \
+            | sed "/--subnet-id/a \\        - --os-version=${OS_VERSION}" \
+            | sed 's/E5.Flex/E4.Flex/g' \
+            | sed '/nodeSelector/,+1d' \
+            | sed '/runnerScaleSetLabels/,+2d' | kubectl apply -f -
+
+          # new service account is needed.
+          kubectl apply -f ci/cluster/oci/hacks/preemption-rerun-cj.yaml
+        else
+          # Container mode: patch the committed manifest in place (same
+          # technique as VM mode) rather than re-deriving an equivalent one
+          # via `helm install --set`, so CI tests the literal production
+          # YAML. No OCI secrets or VM-only CLI flags are needed.
+          SCALE_SET="runner-img-test-${GITHUB_RUN_ID}-${BASE_IMAGE}"
+          OLD_NAME=$(grep -m1 'scale-set-name:' "$MANIFEST_FILE" | awk '{print $2}')
+
+          sed -e "s|${OLD_NAME}|${SCALE_SET}|g" \
+              -e "s|image: ghcr.io/cncf/external-gha-runner[@:][^[:space:]]*|image: ${RUNNER_IMAGE}|" $MANIFEST_FILE \
+              | sed '/nodeSelector/,+1d' | kubectl apply -f -
+        fi
+
+    - name: Wait for test-runner to complete
+      shell: bash
+      env:
+        RUNNER_TYPE: ${{ inputs.runner-type }}
+        ARCH: ${{ inputs.arch }}
+        OS_VERSION: ${{ inputs.os-version }}
+        BASE_IMAGE: ${{ inputs.base-image }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        PICKUP_TIMEOUT: ${{ inputs.pickup-timeout }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+      run: |
+        # vm mode matches the matrix job name (arch, os-version); container
+        # mode's matrix is a single dimension (base-image).
+        if [ "$RUNNER_TYPE" = "vm" ]; then
+          TARGET_JOB="test-runner (${ARCH}, ${OS_VERSION})"
+        else
+          TARGET_JOB="test-runner (${BASE_IMAGE})"
+        fi
+        START_TIME=$(date +%s)
+        echo "Waiting for job: ${TARGET_JOB}"
+
+        dump_arc_diagnostics() {
+          echo "::group::pods"
+          kubectl get pods -n arc-systems -o wide || true
+          echo "::endgroup::"
+          echo "::group::autoscalingrunnersets"
+          kubectl get autoscalingrunnersets,ephemeralrunnersets,ephemeralrunners -n arc-systems -o wide || true
+          echo "::endgroup::"
+          echo "::group::controller-manager logs"
+          kubectl logs -n arc-systems -l app.kubernetes.io/component=controller-manager --tail=300 || true
+          echo "::endgroup::"
+          echo "::group::listener logs"
+          for pod in $(kubectl get pods -n arc-systems -l actions.github.com/scale-set-name --no-headers -o custom-columns=:metadata.name 2>/dev/null); do
+            echo "--- $pod ---"
+            kubectl logs -n arc-systems "$pod" --all-containers --tail=300 || true
+            kubectl describe pod -n arc-systems "$pod" || true
+          done
+          echo "::endgroup::"
+        }
+
+        while true; do
+          if ! RESULT=$(gh api repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs); then
+            echo "WARNING: gh api call failed, retrying..."
+            sleep 30
+            continue
+          fi
+
+          JOB_STATUS=$(echo "$RESULT" | jq -r --arg job "$TARGET_JOB" '.jobs[] | select(.name == $job) | .status')
+          JOB_CONCLUSION=$(echo "$RESULT" | jq -r --arg job "$TARGET_JOB" '.jobs[] | select(.name == $job) | .conclusion')
+
+          # GitHub's timeout-minutes only starts once a runner picks the job up,
+          # so guard the queued phase separately.
+          if [ "$JOB_STATUS" != "in_progress" ] && [ "$JOB_STATUS" != "completed" ]; then
+            ELAPSED=$(( $(date +%s) - START_TIME ))
+            if [ "$ELAPSED" -ge "$PICKUP_TIMEOUT" ]; then
+              echo "ERROR: ${TARGET_JOB} was not picked up by a runner within $(( PICKUP_TIMEOUT / 60 )) minutes"
+              dump_arc_diagnostics
+              # A queued job's timeout-minutes never starts, so cancel the run
+              # to avoid the test-runner job sitting queued for 24h.
+              gh api -X POST repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/cancel || true
+              exit 1
+            fi
+          fi
+
+          if [ -z "$JOB_STATUS" ]; then
+            echo "Job '${TARGET_JOB}' not found yet, waiting..."
+            sleep 30
+            continue
+          fi
+
+          if [ "$JOB_STATUS" = "completed" ]; then
+            if [ "$JOB_CONCLUSION" != "success" ]; then
+              echo "ERROR: ${TARGET_JOB} failed"
+              dump_arc_diagnostics
+              exit 1
+            fi
+            echo "${TARGET_JOB} completed successfully"
+            break
+          fi
+
+          echo "${TARGET_JOB} status: ${JOB_STATUS}, waiting..."
+          sleep 30
+        done
+
+    - name: Dump ARC diagnostics (externally cancelled run)
+      # Covers cancellation sources other than our own pickup-timeout branch
+      # (e.g. a human cancelling the run), where diagnostics are captured
+      # inline before we self-cancel via the GitHub API.
+      if: ${{ cancelled() }}
+      shell: bash
+      run: |
+        echo "::group::pods"
+        kubectl get pods -n arc-systems -o wide || true
+        echo "::endgroup::"
+        echo "::group::autoscalingrunnersets"
+        kubectl get autoscalingrunnersets,ephemeralrunnersets,ephemeralrunners -n arc-systems -o wide || true
+        echo "::endgroup::"
+        echo "::group::controller-manager logs"
+        kubectl logs -n arc-systems -l app.kubernetes.io/component=controller-manager --tail=300 || true
+        echo "::endgroup::"
+        echo "::group::listener logs"
+        for pod in $(kubectl get pods -n arc-systems -l actions.github.com/scale-set-name --no-headers -o custom-columns=:metadata.name 2>/dev/null); do
+          echo "--- $pod ---"
+          kubectl logs -n arc-systems "$pod" --all-containers --tail=300 || true
+          kubectl describe pod -n arc-systems "$pod" || true
+        done
+        echo "::endgroup::"
+
+    - name: Delete kind cluster
+      if: ${{ always() }}
+      shell: bash
+      run: |
+        kubectl delete autoscalingrunnerset -n arc-systems --all --timeout=120s || true
+        kind delete cluster || true

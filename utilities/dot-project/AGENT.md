@@ -2,7 +2,34 @@
 
 ## Project Overview
 
-This is a Go-based utility for validating CNCF project metadata and maintainer rosters. It validates project YAML manifests against structured schema requirements, reconciles maintainer lists against canonical sources, surfaces changes via cached diffs, converts project metadata to CNCF landscape format, checks maintainer data staleness, and audits URL accessibility in project references.
+This is a Go-based utility for validating CNCF project metadata and maintainer rosters. It validates project YAML manifests against structured schema requirements, reconciles maintainer lists against canonical sources, surfaces changes via cached diffs, and converts project metadata to CNCF landscape format.
+
+### Repository layouts
+
+Every tool here handles two `.project` repository layouts, detected at runtime:
+
+- **single** — `project.yaml` and `maintainers.yaml` at the repository root.
+  This is the overwhelming majority and the default.
+- **multi** — an `org.yaml` index at the root and one directory per project,
+  for the few GitHub organizations that host more than one distinct CNCF
+  project (for example, `spiffe` holds SPIFFE and SPIRE; `spinframework` holds Spin and
+  SpinKube).
+
+`Discover(repoRoot)` in `discovery.go` reports the layout; `ValidateRepo` in
+`repo_validate.go` enforces the structural rules. Detection is based purely on
+the presence of `org.yaml` — never on a flag, an org name list, or a heuristic
+over directory contents. See [SCHEMA.md](SCHEMA.md#repository-layouts).
+
+Two invariants are worth knowing before changing anything here:
+
+1. **One set of workflows and actions serves both layouts.** There is no
+   multi-project variant. Around 218 repositories are already onboarded and
+   updating them is slow, so anything that would require them to change their
+   workflow is not an option.
+2. **`Discover` reports the layout, not correctness.** It succeeds on a
+   repository that `ValidateRepo` will reject. Callers that need a valid
+   repository must run both.
+
 
 ## Repository Structure
 
@@ -11,8 +38,6 @@ utilities/dot-project/
 ├── cmd/
 │   ├── validator/              # Main CLI validator tool
 │   ├── landscape-updater/      # Tool to convert project.yaml to landscape format
-│   ├── staleness-checker/      # Tool to check maintainer data freshness
-│   ├── audit-checker/          # Tool to verify referenced URLs are accessible
 │   └── bootstrap/              # Tool to auto-generate project scaffolds from external data
 ├── template/                   # Template files for new .project repositories
 │   ├── project.yaml
@@ -30,20 +55,22 @@ utilities/dot-project/
 ├── bootstrap_parsers.go        # CODEOWNERS, OWNERS, MAINTAINERS file parsers
 ├── bootstrap_sources.go        # Landscape/CLOMonitor/GitHub API clients, fuzzy matching, data merge
 ├── bootstrap_scaffold.go       # Scaffold generator (project.yaml, maintainers.yaml templates)
+├── bootstrap_multiproject.go   # Landscape scan for multi-project orgs, org.yaml generation
+├── org.go                      # org.yaml types, loading, and validation
+├── discovery.go                # Repository layout detection (single vs. multi-project)
+├── repo_validate.go            # Whole-repository structural validation
 ├── validator.go                # Project validation logic
 ├── maintainers.go              # Maintainer validation logic with LFX integration
 ├── landscape.go                # Landscape entry conversion and comparison
-├── staleness.go                # Maintainer staleness detection
-├── audit.go                    # URL accessibility audit
 ├── validator_test.go           # Core validation tests
 ├── bootstrap_parsers_test.go   # CODEOWNERS/OWNERS/MAINTAINERS parser tests
 ├── bootstrap_sources_test.go   # Landscape/CLOMonitor/GitHub client, fuzzy match, merge tests
 ├── bootstrap_scaffold_test.go  # Scaffold generation and WriteScaffold tests
+├── bootstrap_multiproject_test.go # Org scan, slugify, org.yaml, multi-scaffold tests
+├── discovery_test.go           # Layout detection and repository validation tests
 ├── security_test.go            # Security contact email validation tests
 ├── social_test.go              # Social links URL validation tests
 ├── landscape_test.go           # Landscape conversion and diff tests
-├── staleness_test.go           # Staleness detection tests
-├── audit_test.go               # URL audit tests
 ├── integration_test.go         # YAML fixture integration tests
 ├── test_helpers_test.go        # Shared test helpers (validBaseProject, etc.)
 ├── Dockerfile                  # Multi-stage Docker build
@@ -57,12 +84,12 @@ utilities/dot-project/
 ```
 .github/
 ├── actions/
+│   ├── check-links/            # Scheduled link check; opens/reopens/updates/closes an issue
 │   ├── validate-maintainers/   # Reusable action for maintainer validation
 │   └── validate-project/       # Reusable action for project validation
 └── workflows/
     ├── project-validator.yml                  # Main CI workflow for this tool
     ├── validate-maintainers.yaml              # Validates maintainers on PR
-    └── reusable-validate-maintainers.yaml     # Reusable workflow for external repos
 ```
 
 ## Build and Development
@@ -97,13 +124,7 @@ docker build -t dot-project-validator .
 make clean
 ```
 
-Note: The Makefile `build` target builds the `validator`, `landscape-updater`, and `bootstrap` binaries. The other CLI tools (`staleness-checker`, `audit-checker`) must be built manually:
-
-```bash
-go build -o bin/landscape-updater ./cmd/landscape-updater
-go build -o bin/staleness-checker ./cmd/staleness-checker
-go build -o bin/audit-checker ./cmd/audit-checker
-```
+Note: The Makefile `build` target builds the `validator`, `landscape-updater`, and `bootstrap` binaries.
 
 ### Running the Validator
 
@@ -116,6 +137,13 @@ make run
 
 # Skip maintainer validation
 ./bin/validator --config testdata/projectlist.yaml --maintainers ""
+
+# Validate a whole .project repository, in either layout
+./bin/validator --repo-root .
+
+# Repository-scoped, projects only / maintainers only
+./bin/validator --repo-root . --maintainers=
+./bin/validator --repo-root . --config=/dev/null
 
 # With external verification enabled
 ./bin/validator --verify-maintainers
@@ -142,6 +170,9 @@ Converts a `project.yaml` to CNCF landscape entry format. Validates the project 
 
 # Dry run is on by default
 ./bin/landscape-updater --project project.yaml --dry-run=false
+
+# Process every project in a .project repository (one branch and one PR each)
+./bin/landscape-updater --repo-root . --landscape landscape.yml --create-pr
 ```
 
 ### Running the Bootstrap Tool
@@ -157,6 +188,13 @@ Auto-generates `project.yaml` and `maintainers.yaml` scaffolds by fetching data 
 
 # Generate into a specific directory
 ./bin/bootstrap -name "Envoy" -github-org envoyproxy -github-repo envoy -output-dir /tmp/envoy
+
+# A multi-project org. Detected automatically by scanning the landscape for
+# every active CNCF project in the org; writes org.yaml plus one directory each.
+./bin/bootstrap -github-org spiffe -output-dir /tmp/spiffe
+
+# Force a layout when the landscape does not reflect reality yet
+./bin/bootstrap -github-org fluent -name Fluentd -layout multi
 
 # Skip landscape fetch (CLOMonitor + GitHub only)
 ./bin/bootstrap -name "My Project" -github-org my-org -skip-landscape
@@ -179,45 +217,12 @@ echo 'GITHUB_TOKEN=ghp_xxx' > .env
 - `-github-token` - GitHub token. Resolution order: flag → `GITHUB_TOKEN` → the env file specified by `-env-file` (default: `.env`)
 - `-env-file` - Path to a `.env` file to load (default: `.env`; real env vars take precedence)
 - `-output-dir` - Directory for scaffold output (default: `.`)
+- `-layout` - `auto` (default; detect from the landscape), `single`, or `multi`
 - `-skip-landscape` - Skip CNCF landscape YAML lookup (default: false)
 - `-skip-clomonitor` - Skip CLOMonitor API lookup (default: false)
 - `-skip-github` - Skip GitHub API lookup (default: false)
+- `-skip-link-check` - Skip checking generated links/handles; by default 404 links are commented out under a `# TODO` and unknown handles are moved to TODO comments (default: false)
 - `-dry-run` - Print generated YAML without writing files (default: false)
-
-### Running the Staleness Checker
-
-Checks if a project's maintainer data has become stale based on a configurable threshold.
-
-```bash
-./bin/staleness-checker --project path/to/project.yaml
-
-# Custom threshold (default: 180 days)
-./bin/staleness-checker --project project.yaml --threshold 90
-
-# Override last update date instead of using file modification time
-./bin/staleness-checker --project project.yaml --last-update 2025-01-15
-
-# Output formats: text (default), json, yaml
-./bin/staleness-checker --project project.yaml --output json
-```
-
-Exit code 1 if the project is stale.
-
-### Running the Audit Checker
-
-Verifies that all URLs referenced in a project (website, artwork, repositories, audit reports, security/governance/documentation paths) are accessible via HTTP HEAD requests.
-
-```bash
-./bin/audit-checker --project path/to/project.yaml
-
-# Custom HTTP timeout (default: 10 seconds)
-./bin/audit-checker --project project.yaml --timeout 30
-
-# Output formats: text (default), json, yaml
-./bin/audit-checker --project project.yaml --output json
-```
-
-Exit code 1 if any URL check fails.
 
 ## Testing
 
@@ -241,8 +246,6 @@ go tool cover -html=coverage.out -o coverage.html
 - `security_test.go` - Security contact email validation tests
 - `social_test.go` - Social links URL validation tests
 - `landscape_test.go` - Landscape entry conversion and diff comparison tests
-- `staleness_test.go` - Staleness detection threshold tests
-- `audit_test.go` - URL accessibility audit tests
 - `integration_test.go` - YAML fixture integration tests (loads files from `testdata/` and `example/`)
 - `test_helpers_test.go` - Shared test helpers (`validBaseProject()` factory function)
 
@@ -306,7 +309,6 @@ All core types are defined in `types.go`:
 Additional types in domain-specific files:
 - `LandscapeEntry`, `LandscapeDiff`, `LandscapeChange` - in `landscape.go`
 - `StalenessResult` - in `staleness.go`
-- `AuditResult`, `AuditCheck` - in `audit.go`
 - `BootstrapConfig`, `BootstrapResult`, `CLOMonitorProject`, `CLOMonitorRepo`, `CLOMonitorReport`, `CLOMonitorScore` - in `bootstrap_types.go`
 - `GitHubRepoData`, `GitHubOrgData`, `GitHubCommunityProfile`, `GitHubContentEntry` - in `bootstrap_types.go`
 - `GitHubData`, `LandscapeData` - in `bootstrap_sources.go`
@@ -316,8 +318,11 @@ Additional types in domain-specific files:
 - `validator.go` contains project validation (`ValidateProjectStruct`) and the `ProjectValidator` type with `ValidateAll`, `FormatResults`, `NewValidator`
 - `maintainers.go` contains maintainer validation with optional LFX integration and handle normalization
 - `landscape.go` contains `ProjectToLandscapeEntry`, `CompareLandscapeEntries`, `LoadProjectFromFile`
-- `staleness.go` contains `CheckStaleness` and `FormatStalenessResults`
-- `audit.go` contains `AuditProject` and `FormatAuditResult`
+- `org.go` contains `LoadOrgFromFile` and `ValidateOrgStruct` for the `org.yaml` index
+- `discovery.go` contains `Discover`, which returns the layout and the projects in the repository. It reports the layout, not correctness — it succeeds on repositories `ValidateRepo` rejects
+- `linkcheck.go` contains link collection (`CollectRepoLinks`, `CollectLinksFromFiles`), `LinkChecker` (GitHub API mapping, HEAD→GET fallback, one 404 recheck) and the text/annotation/Markdown formatters
+- `bootstrap_linkcheck.go` contains `CheckBootstrapLinks` and `PruneBrokenLinks`, which comment broken links out of generated YAML under a `# TODO`
+- `repo_validate.go` contains `ValidateRepo`, which enforces every cross-file rule (no root metadata in multi mode, declared vs. present directories, slug/`project_id` matching the directory, unique slugs) and returns errors *and* warnings. Shared team names across projects are a warning, never an error
 - Handle normalization strips whitespace and leading `@` symbols
 - All URLs are validated for proper format
 - Email addresses use `net/mail.ParseAddress` for validation
@@ -334,29 +339,25 @@ Additional types in domain-specific files:
 ### CLI Flags
 
 **validator** (`cmd/validator/main.go`):
+- `--repo-root` - Path to a `.project` repository; validates its structure and every project in it. Mutually exclusive with `--config`/`--maintainers`
 - `--config` - Path to project list configuration file (default: `testdata/projectlist.yaml`)
 - `--cache` - Directory to store cached validation results (default: `.cache`)
 - `--maintainers` - Path to maintainers file, set empty to skip (default: `testdata/maintainers.yaml`)
-- `--base-maintainers` - Path to base maintainers file for diff validation
+- `--base-maintainers` - Path to a base maintainers file *or directory* for diff validation
 - `--verify-maintainers` - Verify maintainer handles via external service (default: false)
+- `--check-links` - Resolve every URL and maintainer handle; 404s and non-http(s) values fail, placeholders/`http://`/other errors warn (default: false; true with `--committees`). Token: `GITHUB_TOKEN`/`GH_TOKEN`, then `--env-file`, then `gh auth token`
+- `--links-base` - Base checkout; only links not present there are checked (used on pull requests)
+- `--links-report` - Write a Markdown report of broken links (empty file when none)
+- `--env-file` - Env file read for `GITHUB_TOKEN` when checking links (default: `.env`; real env vars win)
+- `--committees` - Validate an org-level `committees.yaml` only and exit (see `COMMITTEES.md`)
 - `--output` - Output format: text, json, yaml (default: `text`)
 
 **landscape-updater** (`cmd/landscape-updater/main.go`):
-- `--project` - Path to project.yaml file (required)
+- `--project` - Path to project.yaml file (required unless `--repo-root` is set)
+- `--repo-root` - Path to a `.project` repository; processes every project, one branch and one PR each
 - `--landscape` - Path to landscape.yml for comparison (optional)
 - `--output` - Output format: text, json, yaml (default: `text`)
 - `--dry-run` - Show changes without applying (default: true)
-
-**staleness-checker** (`cmd/staleness-checker/main.go`):
-- `--project` - Path to project.yaml file (required)
-- `--threshold` - Days before considering maintainers stale (default: 180)
-- `--last-update` - Override last update date (YYYY-MM-DD format)
-- `--output` - Output format: text, json, yaml (default: `text`)
-
-**audit-checker** (`cmd/audit-checker/main.go`):
-- `--project` - Path to project.yaml file (required)
-- `--output` - Output format: text, json, yaml (default: `text`)
-- `--timeout` - HTTP request timeout in seconds (default: 10)
 
 ## Docker
 
@@ -377,7 +378,7 @@ The Dockerfile uses a multi-stage build:
 1. `golang:1.24-alpine` builder stage (builds only the `validator` binary)
 2. `alpine:3.20` runtime with `git` and `ca-certificates`
 
-Note: The Docker image includes `validator` and `landscape-updater` binaries. The other CLI tools (bootstrap, staleness-checker, audit-checker, etc.) are not built in the Dockerfile.
+Note: The Docker image includes `validator` and `landscape-updater` binaries. The other CLI tools (bootstrap, etc.) are not built in the Dockerfile.
 
 ## Configuration Files
 
@@ -398,11 +399,12 @@ maintainers:
   - project_id: "project-id"
     org: "github-org"  # optional
     teams:
-      - name: "project-maintainers"  # required team
+      - name: "maintainers"  # managed: true by default; at least one managed team is required
         members:
           - alice
           - bob
-      - name: "other-team"
+      - name: "emeritus"
+        managed: false        # excluded from handle verification and CNCF resource provisioning
         members:
           - carol
 ```
@@ -452,12 +454,34 @@ audits:
     url: "https://project.io/audit.pdf"
 ```
 
-### Template Files (`template/`)
+### Org Index (`org.yaml`)
 
-The `template/` directory contains starter files for new `.project` repositories:
+Present only in multi-project repositories. Pure index — no project metadata:
+
+```yaml
+schema_version: "1.0.0"
+org: "spiffe"
+
+projects:
+  - id: "spiffe"
+  - id: "spire"
+    path: "spire-project"   # optional; defaults to id
+```
+
+Shared values are deliberately *not* hoisted here. A value that looks shared
+(security contact, adopters list) is routinely project-specific, and hoisting it
+would mean no single file fully describes a project.
+
+### Example Files (`example/`)
+
+The `example/` directory contains starter files for new `.project` repositories
+(a filled-in, realistic Kubernetes example — copy and replace values):
 - `project.yaml` - Example project metadata
 - `maintainers.yaml` - Example maintainers configuration
+- `projectlist.yaml` - Example project list entry (used by validator tests)
 - `.github/workflows/validate.yaml` - CI workflow to validate project files
+- `.github/workflows/update-landscape.yml` - CI workflow to sync changes to the CNCF Landscape
+- `.github/workflows/check-links.yml` - Biweekly scheduled link check (generated from `checkLinksWorkflowContent`)
 
 ## Common Tasks
 
@@ -476,6 +500,27 @@ The `template/` directory contains starter files for new `.project` repositories
 ### Modifying CLI Flags
 
 Edit the corresponding `cmd/*/main.go` file. All CLIs use the standard `flag` package.
+
+### Touching Anything Layout-Aware
+
+The workflows and composite actions are shared by every onboarded `.project`
+repository and by both layouts. Before changing them:
+
+1. Keep the file inputs on the composite actions optional. Unset means
+   "discover the layout"; that is what makes one workflow serve both layouts.
+2. Keep workflow `paths:` filters covering `org.yaml`, `project.yaml`,
+   `maintainers.yaml`, `*/project.yaml`, and `*/maintainers.yaml`. GitHub
+   Actions does **not** support YAML anchors, so the list has to be repeated.
+3. The workflows exist in three places that must stay in sync: `template/`,
+   `example/`, and the embedded Go string literals in `bootstrap_scaffold.go`.
+4. Per-project loops must isolate failures — one project's error must be
+   reported and must not abort the remaining projects, and the command exits
+   non-zero if any project failed.
+5. The `uses:` references in `template/` and in the embedded literals currently
+   point at `@main` so that a workflow and the action it calls are never out of
+   step. Pin them back to a commit SHA once the change has landed on `main`, and
+   bump all of them together — a workflow that omits an input the pinned action
+   still declares `required: true` fails before it runs anything.
 
 ### Adding a New CLI Tool
 

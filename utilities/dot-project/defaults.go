@@ -9,10 +9,6 @@ const (
 	// clients (validator, bootstrap sources, etc.).
 	DefaultHTTPTimeout = 30 * time.Second
 
-	// DefaultStalenessThresholdDays is the number of days after which a
-	// project's maintainer data is considered stale.
-	DefaultStalenessThresholdDays = 180
-
 	// DefaultDCOCommitSampleSize is how many recent commits we fetch when
 	// detecting whether a repo uses DCO (Signed-off-by).
 	DefaultDCOCommitSampleSize = 20
@@ -36,6 +32,38 @@ const (
 	// DefaultGitHubGraphQLURL is the GitHub GraphQL API endpoint.
 	DefaultGitHubGraphQLURL = "https://api.github.com/graphql"
 
-	// DefaultEnterprise is the GitHub Enterprise slug for CNCF.
-	DefaultEnterprise = "cncf"
+	// DefaultLinkCheckConcurrency is how many links are checked in parallel.
+	// It stays well below GitHub's secondary rate limit on concurrent requests.
+	DefaultLinkCheckConcurrency = 8
+
+	// DefaultLinkCheckRecheckDelay is how long the checker waits before
+	// re-fetching a link that returned 404/410, so a momentary outage is not
+	// reported as a broken link.
+	DefaultLinkCheckRecheckDelay = 10 * time.Second
+
+	// OrgFileName is the org.yaml index found at the root of a .project
+	// repository whose GitHub organization hosts multiple CNCF projects.
+	OrgFileName = "org.yaml"
+
+	// ProjectFileName is the per-project metadata file. It lives at the
+	// repository root in single-project repos, and inside each project
+	// directory in multi-project repos.
+	ProjectFileName = "project.yaml"
+
+	// MaintainersFileName is the per-project maintainer roster, colocated
+	// with its ProjectFileName.
+	MaintainersFileName = "maintainers.yaml"
+
+	// CommitteesFileName is the roster of an organization's governance
+	// bodies (committees, boards, TAGs, staff), kept at the root of the
+	// organization's .project repository.
+	CommitteesFileName = "committees.yaml"
+
+	// CommitteesSchemaVersion is the committees.yaml schema version this
+	// validator understands.
+	CommitteesSchemaVersion = "1.0.0"
+
+	// CommitteeDateLayout is the format of every start/end date in
+	// committees.yaml (ISO 8601 calendar date).
+	CommitteeDateLayout = "2006-01-02"
 )

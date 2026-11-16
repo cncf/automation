@@ -10,61 +10,91 @@ metadata:
     cluster: oke-cncf-automation
 spec:
   project: default
-  source:
-    repoURL: ghcr.io/seebom-labs/bomhort/charts
-    chart: bomhort
-    targetRevision: 0.6.0
-    helm:
-      values: |
-        cleanBatchJobs: false
-        clickhouse:
-          database: bomhort
-          host: chi-bomhort-clickhouse-bomhort-cluster-0-0
-          installation:
-            podTemplate:
-              containerImage: docker.io/clickhouse/clickhouse-server:24.8
-              resources:
-                limits:
-                  cpu: "4"
-                  memory: 16Gi
-                requests:
-                  cpu: "2"
-                  memory: 8Gi
-            volumeClaimTemplate:
-              dataStorage: 500Gi
-              logStorage: 10Gi
-          port: 9000
-          user: default
-          userPasswordSecret:
-            enabled: true
-            key: password
-            secretName: clickhouse-password
-        gitSync:
-          enabled: false
-        image:
-          registry: ghcr.io
-          repository: seebom-labs/bomhort
-          tag: 0.6.0
-        sbomSource:
-          mountPath: /data/sboms
-          pvcName: bomhort-sbom-data
-          storageSize: 20Gi
-        seedJob:
-          cncfExceptionsURL: https://raw.githubusercontent.com/cncf/foundation/main/license-exceptions/exceptions.json
-          sbomBranch: main
-          sbomRepo: https://github.com/cncf/sbom.git
-        s3:
-          buckets: '[{"name":"cncf-subproject-sboms","endpoint":"axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com","region":"us-sanjose-1"},{"name":"cncf-project-sboms","endpoint":"axtwf1hkrwcy.compat.objectstorage.us-sanjose-1.oraclecloud.com","region":"us-sanjose-1"}]'
-        dataMigration:
-          enabled: true
-          source:
-            host: chi-seebom-clickhouse-seebom-cluster-0-0.seebom.svc.cluster.local
+  sources:
+    - repoURL: ghcr.io/seebom-labs/bomhort/charts
+      chart: bomhort
+      targetRevision: 0.8.0
+      helm:
+        values: |
+          cleanBatchJobs: false
+          clickhouse:
+            database: bomhort
+            host: chi-bomhort-clickhouse-bomhort-cluster-0-0
+            installation:
+              podTemplate:
+                resources:
+                  limits:
+                    cpu: "4"
+                    memory: 16Gi
+                  requests:
+                    cpu: "2"
+                    memory: 8Gi
+              volumeClaimTemplate:
+                dataStorage: 500Gi
+                logStorage: 10Gi
             port: 9000
-            database: seebom
             user: default
-            passwordSecret:
-              secretName: clickhouse-migration-source
+            userPasswordSecret:
+              enabled: true
               key: password
+              secretName: clickhouse-password
+          apiGateway:
+            resources:
+              requests:
+                cpu: 500m
+                memory: 512Mi
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+          ui:
+            resources:
+              requests:
+                cpu: 200m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 256Mi
+          gitSync:
+            enabled: false
+          sbomSource:
+            mountPath: /data/sboms
+            pvcName: bomhort-sbom-data
+            storageSize: 20Gi
+          originalStore:
+            # Explicit: `auto` would resolve to s3 and write originals into the
+            # first bucket below, which these credentials cannot write to.
+            backend: none
+          s3:
+            buckets:
+              - name: cncf-project-sboms
+                endpoint: https://us-iad-18.linodeobjects.com
+                region: us-iad-18
+                usePathStyle: true
+                tags: ["projects"]
+                pathLayout: "project"
+              - name: cncf-subproject-sboms
+                endpoint: https://us-iad-18.linodeobjects.com
+                region: us-iad-18
+                usePathStyle: true
+                tags: ["subprojects"]
+                pathLayout: "namespace/project"
+              - name: sandbox-reviews
+                endpoint: https://us-iad-18.linodeobjects.com
+                region: us-iad-18
+                usePathStyle: true
+                tags: ["sandbox-applications"]
+                pathLayout: "_/_/project"
+          licenseExceptions:
+            enabled: true
+            source: https://exceptions.cncf.io/exceptions.json
+          mcp:
+            enabled: true
+            transport: http
+            allowedOrigins: ["https://bomhort.cncf.io"]
+            existingSecret:
+              enabled: true
+              secretName: bomhort-mcp
+              httpTokenKey: MCP_HTTP_TOKEN
   destination:
     server: https://kubernetes.default.svc
     namespace: bomhort

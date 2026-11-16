@@ -2,33 +2,52 @@ name: 'Validate Maintainers'
 description: 'Validate a maintainers.yaml file against the CNCF .project schema'
 inputs:
   maintainers_file:
-    description: 'Path to the maintainers.yaml file to validate'
-    required: true
+    description: >-
+      Path to a single maintainers.yaml to validate. Leave empty (recommended)
+      to discover every maintainers file in the repository, which works for
+      both single-project and multi-project layouts. Ignored when org.yaml
+      exists.
+    required: false
+    default: ''
   base_maintainers_file:
-    description: 'Path to the base maintainers file for diff validation (optional)'
+    description: >-
+      Path to the base maintainers file, or to a base repository root, for
+      diff validation (optional). A directory is scanned for the root file and
+      one level of project directories, and the handles are unioned.
     required: false
     default: ''
   verify_maintainers:
     description: 'Verify maintainer handles against LFX (requires LFX_AUTH_TOKEN secret)'
     required: false
     default: 'false'
-  go_version:
-    description: 'DEPRECATED: no longer used. Version is read from utilities/dot-project/go.mod'
+  check_links:
+    description: >-
+      Check that every maintainer handle is an existing GitHub account. An
+      unknown handle fails the run. On pull_request and push events only
+      handles that are new relative to the base branch (or the previous push)
+      are checked, which requires a checkout with fetch-depth: 0.
     required: false
-    default: ''
+    default: 'false'
+  token:
+    description: 'GitHub token used for handle checking (raises the API rate limit)'
+    required: false
+    default: ${{ github.token }}
 runs:
   using: 'composite'
   steps:
     - name: Checkout automation tools
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      env:
+        ACTION_REF: ${{ github.action_ref }}
       with:
         persist-credentials: false
         repository: cncf/automation
+        ref: ${{ env.ACTION_REF }}
         path: _cncf-automation
         sparse-checkout: utilities/dot-project
 
     - name: Set up Go
-      uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version-file: _cncf-automation/utilities/dot-project/go.mod
 
@@ -47,18 +66,52 @@ runs:
         MAINTAINERS_FILE: ${{ inputs.maintainers_file }}
         BASE_MAINTAINERS_FILE: ${{ inputs.base_maintainers_file }}
         VERIFY_MAINTAINERS: ${{ inputs.verify_maintainers }}
+        CHECK_LINKS: ${{ inputs.check_links }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+        BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       run: |
-        ARGS="-config /dev/null -maintainers ${MAINTAINERS_FILE}"
+        set -euo pipefail
+
+        # See validate-project: org.yaml means the repository holds several
+        # projects, each with its own maintainers.yaml, so a single explicit
+        # path cannot describe it.
+        if [ -f org.yaml ] && [ -n "${MAINTAINERS_FILE}" ]; then
+          echo "::warning::org.yaml is present, so all maintainers files in the repository are validated and the maintainers_file input (${MAINTAINERS_FILE}) is ignored. Remove that input from this workflow."
+          MAINTAINERS_FILE=""
+        fi
+
+        if [ -z "${MAINTAINERS_FILE}" ]; then
+          ARGS=(-repo-root . -config=/dev/null)
+        else
+          ARGS=(-config /dev/null -maintainers "${MAINTAINERS_FILE}")
+        fi
+
         if [ -n "${BASE_MAINTAINERS_FILE}" ]; then
-          ARGS="$ARGS -base-maintainers ${BASE_MAINTAINERS_FILE}"
+          ARGS+=(-base-maintainers "${BASE_MAINTAINERS_FILE}")
         fi
         if [ "${VERIFY_MAINTAINERS}" = "true" ]; then
-          ARGS="$ARGS -verify-maintainers"
+          ARGS+=(-verify-maintainers)
         fi
-        "${WORKSPACE}/_cncf-validator" $ARGS
+        if [ "${CHECK_LINKS}" = "true" ]; then
+          ARGS+=(-check-links)
+          # See validate-project: a pull request or push only answers for
+          # the handles it adds.
+          if [ -n "${BASE_SHA}" ] && [ -n "${BASE_SHA//0/}" ]; then
+            if git worktree add --detach "${RUNNER_TEMP}/_cncf-base-maintainers" "${BASE_SHA}" > /dev/null 2>&1; then
+              ARGS+=(-links-base "${RUNNER_TEMP}/_cncf-base-maintainers")
+            else
+              echo "::notice::Base commit ${BASE_SHA} is not available (checkout with fetch-depth: 0); checking every handle."
+            fi
+          fi
+        fi
+
+        "${WORKSPACE}/_cncf-validator" "${ARGS[@]}"
 
     - name: Cleanup
       shell: bash
       if: always()
+      env:
+        BASE_DIR: ${{ runner.temp }}/_cncf-base-maintainers
       run: |
+        if [ -d "${BASE_DIR}" ]; then git worktree remove --force "${BASE_DIR}" || true; fi
         rm -rf _cncf-automation _cncf-validator

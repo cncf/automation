@@ -1,0 +1,52 @@
+name: Test CoreWeave Runners
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner name.'
+        required: true
+        type: string
+        default: cncf-cw-ubuntu-2-8-x86
+
+permissions:
+  contents: read
+
+jobs:
+  test-runner:
+    runs-on: ${{ github.event.inputs.runner }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run uname to verify architecture
+        run: |
+          uname -a
+          lsb_release -a
+          id
+          cat /etc/group
+          cat /proc/cpuinfo
+
+      - name: Run a basic workload
+        run: |
+          echo "Testing Runner"
+          echo "CPU Info:"
+          lscpu
+          docker run hello-world
+
+      - name: Check local disk 
+        run: |
+         df -h /
+
+      - name: checkout gpus
+        run: |
+          echo "[*] Detailed GPU query"
+          nvidia-smi -q
+
+          echo "[*] Specific information"
+          nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv
+
+          echo "[*] NVIDIA driver version"
+          cat /proc/driver/nvidia/version

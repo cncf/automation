@@ -18,12 +18,6 @@ run external GitHub Action Runners for use by Projects governed by the CNCF.
 https://github.com/actions/actions-runner-controller
 
 
-### Initial Proof of concept work
-https://github.com/jeefy/gha-runner - ARC Work by @jeefy
-https://github.com/jeefy/automation/commit/e3524e225b14dcd4b40663b8a73ee46421f5ab51 ArgoWork
-
-### Legacy notes
-
 ## Secrets
 
 Regardless of the provider, this secret will be expected in the namespace for GitHub's ARC to work properly:

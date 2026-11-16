@@ -24,6 +24,24 @@ import (
 
 var replacements = make(map[string]string)
 var selectedRelease *github.RepositoryRelease
+
+// Inserted into the PowerShell module scripts; $$ because it goes through regexp.ReplaceAllString
+const psRetryHelper = `
+function Invoke-WithRetry {
+    param([scriptblock] $$ScriptBlock, [int] $$Attempts = 5, [int] $$DelaySeconds = 30)
+    for ($$i = 1; $$i -le $$Attempts; $$i++) {
+        try {
+            & $$ScriptBlock
+            return
+        } catch {
+            if ($$i -eq $$Attempts) { throw }
+            Write-Host "Attempt $$i of $$Attempts failed: $$_"
+            Start-Sleep -Seconds ($$DelaySeconds * $$i)
+        }
+    }
+}
+`
+
 var Cmd = &cobra.Command{
 	Use:  "gha-runner-vm",
 	Long: "Generate and upload a new GHA runner image to OCI (Oracle Cloud Infrastructure)",
@@ -147,10 +165,33 @@ func run(cmd *cobra.Command, argv []string) error {
 	baseDir := strings.Split(filename, "/")[0]
 	installRunnerPackage(baseDir)
 
+	//  move Azure mirror to lowest prio
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `(azure\.archive\.ubuntu\.com/ubuntu/\\t)priority:1`, `${1}priority:3`)
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `(https://archive\.ubuntu\.com/ubuntu/\\t)priority:2`, `${1}priority:1`)
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `(security\.ubuntu\.com/ubuntu/\\t)priority:3`, `${1}priority:2`)
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-GHCupVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/docs-gen/Generate-SoftwareReport.ps1", ".*Get-FastlaneVersion.*", "")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-pypy.sh", "bz2", "gz")
 	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-google-chrome.sh", "invoke_tests \"Browsers\" \"Chromium\"", "apt-get install -y libxtst6\ninvoke_tests \"Browsers\" \"Chromium\"")
+	// Upstream sed only rewrites the Azure mirror; cloud-init off-Azure writes archive.ubuntu.com or *.clouds.archive.ubuntu.com, leaving Apt.Tests.ps1's mirror-list check failing
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/configure-apt-sources.sh", `http://azure\\\.archive\\\.ubuntu\\\.com/ubuntu/`, `http://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu/*`)
+	// pipx 1.17.11 needs packaging>=26.3 but resolute's Debian-owned packaging 26.0 can't be replaced by pip;
+	// mirrors upstream main (actions/runner-images#14839) until a 26.04 release tarball carries the pin
+	updatePackerConfig(baseDir, "/images/ubuntu/scripts/build/install-python.sh", `(?m)python3 -m pip install pipx$`, `python3 -m pip install "pipx==1.17.10"`)
+	// PSGallery via PowerShellGet v2 (PackageManagement/NuGet provider) fails intermittently with
+	// "Source Location ... is not valid"; switch every download to PSResourceGet, which ships with pwsh 7.4+
+	psModules := "/images/ubuntu/scripts/build/Install-PowerShellModules.ps1"
+	psAzModules := "/images/ubuntu/scripts/build/Install-PowerShellAzModules.ps1"
+	updatePackerConfig(baseDir, psModules, `(?m)^(# Specifies the installation policy|Set-PSRepository |# Try to update PowerShellGet|Install-Module -Name PowerShellGet|Update-Module -Name PowerShellGet).*\n`, "")
+	updatePackerConfig(baseDir, psModules, `Install-Module -Name \$moduleName -RequiredVersion \$version -Scope AllUsers -SkipPublisherCheck -Force`, `Install-PSResource -Name $$moduleName -Version $$version -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`)
+	updatePackerConfig(baseDir, psModules, `Install-Module -Name \$moduleName -Scope AllUsers -SkipPublisherCheck -Force`, `Install-PSResource -Name $$moduleName -Scope AllUsers -TrustRepository -AcceptLicense -Quiet`)
+	// Save-Module created $modulePath implicitly; Save-PSResource requires it to exist
+	updatePackerConfig(baseDir, psAzModules, `(?m)^(\s*)Save-Module -Path \$modulePath -Name \$moduleName -RequiredVersion \$version -Force`, "${1}New-Item -ItemType Directory -Path $$modulePath -Force | Out-Null\n${1}Save-PSResource -Path $$modulePath -Name $$moduleName -Version $$version -TrustRepository -AcceptLicense -Quiet")
+	// cdn.powershellgallery.com intermittently 404s existing packages from the build network; retry whole installs
+	for _, script := range []string{psModules, psAzModules} {
+		updatePackerConfig(baseDir, script, `(?m)^(Import-Module "\$env:HELPER_SCRIPTS/\.\./tests/Helpers\.psm1")$`, "${1}\n"+psRetryHelper)
+		updatePackerConfig(baseDir, script, `(?m)^(\s*)((Install|Save)-PSResource .*)$`, `${1}Invoke-WithRetry { ${2} }`)
+	}
 
 	command := exec.Command("packer", "build", "-var", "architecture="+args.arch, newFile)
 
@@ -671,7 +712,7 @@ build {
   }`
 
 	replacements[`"${path.root}/../scripts/build/install-actions-cache.sh",`] = `"${path.root}/../scripts/build/install-actions-cache.sh",
-				"${path.root}/../scripts/build/install-runner-package.sh",`
+      "${path.root}/../scripts/build/install-runner-package.sh",`
 
 	replacements[`sources = ["source.azure-arm.build_image"]`] = `sources = ["source.azure-arm.build_image", "source.qemu.img"]
 		provisioner "shell" {
@@ -679,14 +720,20 @@ build {
 				inline = ["touch /etc/waagent.conf"]
 		}`
 
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = `[
+	// The unversioned linux-oracle meta rolls noble to the 7.0 kernel, which ships no
+	// linux-modules-extra; pin noble to the 6.17 HWE line (has modules-extra) instead.
+	kernelPkg := "linux-oracle"
+	if args.osVersion == "24.04" {
+		kernelPkg = "linux-oracle-6.17"
+	}
+	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = fmt.Sprintf(`[
 				"sleep 30",
 				"export HISTSIZE=0 && sync",
 				"usermod -aG docker ubuntu",
-				"apt install -y libelf-dev linux-oracle",
+				"apt install -y libelf-dev %s",
 				"apt-get clean",
 				"rm -rf /var/lib/apt/lists/*"
-			]`
+			]`, kernelPkg)
 
 	// At this point this is the only Ubuntu-specific hard coded blocks we have left.
 	replacements[`destination = "${path.root}/../Ubuntu2404-Readme.md"`] = `only = ["azure-arm.build_image"]
