@@ -1,3 +1,3 @@
-module github.com/cncf/landscape2/go/mcp-server
+module github.com/cncf/automation/utilities/landscape-mcp-server
 
 go 1.26.1
