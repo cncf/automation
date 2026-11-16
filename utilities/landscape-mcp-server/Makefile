@@ -15,6 +15,7 @@ fmt-check:
 	@out="$$(gofmt -l .)"; if [ -n "$$out" ]; then echo "gofmt needed:"; echo "$$out"; exit 1; fi
 
 lint:
-	@if command -v golangci-lint >/dev/null 2>&1; then golangci-lint run; else echo "golangci-lint not installed, skipping"; fi
+	@command -v golangci-lint >/dev/null 2>&1 || { echo "golangci-lint is required: https://golangci-lint.run/welcome/install/"; exit 1; }
+	golangci-lint run
 
 ci: fmt-check vet lint test
