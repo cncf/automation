@@ -18,7 +18,33 @@ env:
   IMAGE_NAME: cncf/landscape-mcp-server
 
 jobs:
+  test:
+    if: github.repository == 'cncf/automation'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: utilities/landscape-mcp-server/go.mod
+
+      - name: Vet
+        working-directory: utilities/landscape-mcp-server
+        run: go vet ./...
+
+      - name: Test
+        working-directory: utilities/landscape-mcp-server
+        run: go test -race -count=1 ./...
+
   build-and-push:
+    needs: test
     if: github.repository == 'cncf/automation'
     runs-on: ubuntu-latest
     permissions:

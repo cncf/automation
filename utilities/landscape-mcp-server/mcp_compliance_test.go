@@ -349,3 +349,16 @@ func TestCompareProjectsPromptStillRequiresArgument(t *testing.T) {
 		t.Fatalf("expected -32602, got %+v", resp)
 	}
 }
+
+func TestPromptsGetUnknownPromptIsInvalidParams(t *testing.T) {
+	// Given a server state
+	state := newTestState(t, complianceDataset())
+
+	// When requesting a prompt that does not exist
+	resp := rpc(t, state, "prompts/get", `{"name":"no_such_prompt"}`, "1")
+
+	// Then a -32602 error is returned
+	if resp == nil || resp.Error == nil || resp.Error.Code != -32602 {
+		t.Fatalf("expected -32602, got %+v", resp)
+	}
+}

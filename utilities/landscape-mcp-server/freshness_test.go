@@ -438,3 +438,57 @@ func TestLoadDataset_summarises_invalid_dates_in_one_log_line(t *testing.T) {
 		t.Errorf("log output = %q", buf.String())
 	}
 }
+
+func TestLoadDataset_rejects_malformed_json_from_file(t *testing.T) {
+	// Given a file that is not valid JSON
+	path := t.TempDir() + "/broken.json"
+	if err := os.WriteFile(path, []byte(`{"items": [`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	// When loading
+	ds, _, err := loadDataset(context.Background(), dataSource{filePath: path}, fetchValidators{})
+
+	// Then loading fails and no dataset is returned
+	if err == nil || ds != nil {
+		t.Fatalf("ds = %v, err = %v; want nil dataset and error", ds, err)
+	}
+}
+
+func TestLoadDataset_rejects_malformed_json_from_url(t *testing.T) {
+	// Given a server answering 200 with a non-JSON body
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte("<html>not json</html>"))
+	}))
+	defer srv.Close()
+
+	// When loading
+	ds, _, err := loadDataset(context.Background(), dataSource{url: srv.URL}, fetchValidators{})
+
+	// Then loading fails and no dataset is returned
+	if err == nil || ds != nil {
+		t.Fatalf("ds = %v, err = %v; want nil dataset and error", ds, err)
+	}
+}
+
+func TestLoadDataset_propagates_non_retried_4xx(t *testing.T) {
+	// Given a server answering 403
+	fastRetries(t)
+	var calls atomic.Int32
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		calls.Add(1)
+		w.WriteHeader(http.StatusForbidden)
+	}))
+	defer srv.Close()
+
+	// When loading
+	ds, _, err := loadDataset(context.Background(), dataSource{url: srv.URL}, fetchValidators{})
+
+	// Then loading fails after a single attempt
+	if err == nil || ds != nil {
+		t.Fatalf("ds = %v, err = %v; want nil dataset and error", ds, err)
+	}
+	if calls.Load() != 1 {
+		t.Errorf("calls = %d, want 1", calls.Load())
+	}
+}
