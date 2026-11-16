@@ -64,6 +64,10 @@ type serverState struct {
 	cfg     LandscapeConfig
 	tools   toolCatalogData
 	src     dataSource
+	// validators are the ETag/Last-Modified of the dataset currently served.
+	// They are only touched by the goroutine that loads and refreshes the
+	// dataset (initial load, then the refresh loop), so they need no lock.
+	validators fetchValidators
 }
 
 var outputMu sync.Mutex
@@ -196,25 +200,6 @@ func (s *serverState) waitForDataset(ctx context.Context) (*Dataset, error) {
 	return s.dataset, nil
 }
 
-// refreshDataset reloads the dataset from the configured data source.
-// It replaces the in-memory dataset under a write lock so that in-flight
-// requests see a consistent snapshot.
-func refreshDataset(ctx context.Context, state *serverState) {
-	log.Println("dataset refresh requested")
-	go func() {
-		ds, err := loadDataset(ctx, state.src)
-		if err != nil {
-			log.Printf("dataset refresh failed: %v", err)
-			return
-		}
-		state.mu.Lock()
-		state.dataset = ds
-		state.loadErr = nil
-		state.mu.Unlock()
-		log.Printf("dataset refreshed (%d items)", len(ds.Items))
-	}()
-}
-
 // Main ----------------------------------------------------------------------
 
 func main() {
@@ -222,6 +207,7 @@ func main() {
 	dataURL := flag.String("data-url", "https://landscape.cncf.io/data/full.json", "URL to the landscape full dataset JSON file")
 	landscapeName := flag.String("landscape-name", "", "Name of the landscape (e.g. CNCF)")
 	landscapeDesc := flag.String("landscape-description", "", "Description of the landscape")
+	refreshInterval := flag.Duration("refresh-interval", defaultRefreshInterval, "How often to reload the dataset from its source (0 disables periodic refresh)")
 	flag.Parse()
 
 	cfg := defaultConfig()
@@ -246,7 +232,8 @@ func main() {
 	state.src = src
 
 	go func() {
-		ds, err := loadDataset(ctx, src)
+		ds, validators, err := loadDataset(ctx, src, fetchValidators{})
+		state.validators = validators
 		state.setDataset(ds, err)
 		if err != nil {
 			log.Printf("error loading dataset: %v", err)
@@ -255,6 +242,7 @@ func main() {
 			log.Printf("dataset loaded (%d items)", len(ds.Items))
 			sendNotification("notifications/serverReady", map[string]interface{}{})
 		}
+		state.runRefreshLoop(ctx, *refreshInterval)
 	}()
 
 	reader := bufio.NewReaderSize(os.Stdin, 64*1024)
@@ -350,9 +338,6 @@ func dispatchRequest(ctx context.Context, req *jsonRPCRequest, state *serverStat
 			ID: req.ID,
 		}
 	case "notifications/initialized":
-		return nil
-	case "notifications/dataset_refreshed":
-		refreshDataset(ctx, state)
 		return nil
 	case "tools/list":
 		tools := make([]map[string]interface{}, 0, len(state.tools.advertisedTools))

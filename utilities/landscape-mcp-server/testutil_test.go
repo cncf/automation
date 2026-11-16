@@ -9,9 +9,9 @@ import (
 // loadTestDataset loads the test fixture from testdata/sample.json.
 func loadTestDataset(t *testing.T) *Dataset {
 	t.Helper()
-	ds, err := loadDataset(context.Background(), dataSource{
+	ds, _, err := loadDataset(context.Background(), dataSource{
 		filePath: "testdata/sample.json",
-	})
+	}, fetchValidators{})
 	if err != nil {
 		t.Fatalf("failed to load test dataset: %v", err)
 	}

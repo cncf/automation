@@ -3,13 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
 	"log"
 	"math"
-	"net/http"
-	"os"
 	"strings"
 	"time"
 )
@@ -19,50 +15,38 @@ type dataSource struct {
 	url      string
 }
 
-func loadDataset(ctx context.Context, src dataSource) (*Dataset, error) {
-	raw, err := readSource(ctx, src.filePath, src.url)
+// loadDataset reads and parses the data source. prev carries the validators
+// from the last successful fetch so remote sources can answer 304; the
+// returned validators belong to the freshly fetched body. When the remote
+// reports the dataset unchanged the error wraps errNotModified.
+func loadDataset(ctx context.Context, src dataSource, prev fetchValidators) (*Dataset, fetchValidators, error) {
+	raw, validators, err := readSource(ctx, src, prev)
 	if err != nil {
-		return nil, fmt.Errorf("load data source: %w", err)
+		return nil, fetchValidators{}, fmt.Errorf("load data source: %w", err)
 	}
 
 	var full fullDataset
 	if err := json.Unmarshal(raw, &full); err != nil {
-		return nil, fmt.Errorf("parse full dataset: %w", err)
+		return nil, fetchValidators{}, fmt.Errorf("parse full dataset: %w", err)
 	}
+
+	var warns dateWarnings
+	defer warns.log()
 
 	items := make([]LandscapeItem, 0, len(full.Items))
 	for _, it := range full.Items {
-		accepted, err := parseDate(it.AcceptedAt)
-		if err != nil {
-			log.Printf("warning: invalid accepted_at for %s: %v", it.Name, err)
-		}
-		graduated, err := parseDate(it.GraduatedAt)
-		if err != nil {
-			log.Printf("warning: invalid graduated_at for %s: %v", it.Name, err)
-		}
-		incubating, err := parseDate(it.IncubatingAt)
-		if err != nil {
-			log.Printf("warning: invalid incubating_at for %s: %v", it.Name, err)
-		}
-		joined, err := parseDate(it.JoinedAt)
-		if err != nil {
-			log.Printf("warning: invalid joined_at for %s: %v", it.Name, err)
-		}
-		archived, err := parseDate(it.ArchivedAt)
-		if err != nil {
-			log.Printf("warning: invalid archived_at for %s: %v", it.Name, err)
-		}
-		latestAnnualReview, err := parseDate(it.LatestAnnualReviewAt)
-		if err != nil {
-			log.Printf("warning: invalid latest_annual_review_at for %s: %v", it.Name, err)
-		}
+		accepted, _ := warns.parse(it.Name, "accepted_at", it.AcceptedAt)
+		graduated, _ := warns.parse(it.Name, "graduated_at", it.GraduatedAt)
+		incubating, _ := warns.parse(it.Name, "incubating_at", it.IncubatingAt)
+		joined, _ := warns.parse(it.Name, "joined_at", it.JoinedAt)
+		archived, _ := warns.parse(it.Name, "archived_at", it.ArchivedAt)
+		latestAnnualReview, _ := warns.parse(it.Name, "latest_annual_review_at", it.LatestAnnualReviewAt)
 
 		// Map audits
 		audits := make([]Audit, 0, len(it.Audits))
 		for _, a := range it.Audits {
-			auditDate, err := parseDate(a.Date)
-			if err != nil {
-				log.Printf("warning: invalid audit date for %s: %v", it.Name, err)
+			auditDate, ok := warns.parse(it.Name, "audit date", a.Date)
+			if !ok {
 				continue
 			}
 			audits = append(audits, Audit{
@@ -157,9 +141,8 @@ func loadDataset(ctx context.Context, src dataSource) (*Dataset, error) {
 	for url, org := range full.CrunchbaseData {
 		rounds := make([]FundingRound, 0, len(org.FundingRounds))
 		for _, round := range org.FundingRounds {
-			date, err := parseDate(round.AnnouncedOn)
-			if err != nil {
-				log.Printf("warning: invalid announced_on for %s: %v", url, err)
+			date, ok := warns.parse(url, "announced_on", round.AnnouncedOn)
+			if !ok {
 				continue
 			}
 
@@ -179,9 +162,8 @@ func loadDataset(ctx context.Context, src dataSource) (*Dataset, error) {
 		// Map acquisitions
 		acquisitions := make([]Acquisition, 0, len(org.Acquisitions))
 		for _, acq := range org.Acquisitions {
-			acqDate, err := parseDate(acq.AnnouncedOn)
-			if err != nil {
-				log.Printf("warning: invalid acquisition announced_on for %s: %v", url, err)
+			acqDate, ok := warns.parse(url, "acquisition announced_on", acq.AnnouncedOn)
+			if !ok {
 				continue
 			}
 			acquisitions = append(acquisitions, Acquisition{
@@ -221,30 +203,33 @@ func loadDataset(ctx context.Context, src dataSource) (*Dataset, error) {
 	return &Dataset{
 		Items:          items,
 		CrunchbaseOrgs: orgs,
-	}, nil
+	}, validators, nil
 }
 
-func readSource(ctx context.Context, filePath, url string) ([]byte, error) {
-	switch {
-	case filePath != "":
-		return os.ReadFile(filePath)
-	case url != "":
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-		if err != nil {
-			return nil, err
+// dateWarnings collects invalid-date occurrences during one load so they can
+// be reported as a single log line instead of one per item.
+type dateWarnings struct {
+	count int
+	first string
+}
+
+// parse parses value as a date. ok is false when value is non-empty and
+// malformed; the occurrence is recorded for the summary.
+func (w *dateWarnings) parse(subject, field, value string) (t *time.Time, ok bool) {
+	t, err := parseDate(value)
+	if err != nil {
+		if w.count == 0 {
+			w.first = fmt.Sprintf("%s %s", subject, field)
 		}
-		client := &http.Client{Timeout: 30 * time.Second}
-		resp, err := client.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("unexpected status %d", resp.StatusCode)
-		}
-		return io.ReadAll(resp.Body)
-	default:
-		return nil, errors.New("either file or url must be provided")
+		w.count++
+		return nil, false
+	}
+	return t, true
+}
+
+func (w *dateWarnings) log() {
+	if w.count > 0 {
+		log.Printf("warning: %d invalid dates in dataset (first: %s)", w.count, w.first)
 	}
 }
 
