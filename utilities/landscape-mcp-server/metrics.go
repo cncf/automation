@@ -26,18 +26,24 @@ type projectResult struct {
 }
 
 type orgSummary struct {
-	Name            string   `json:"name,omitempty"`
-	Description     string   `json:"description,omitempty"`
-	City            string   `json:"city,omitempty"`
-	Country         string   `json:"country,omitempty"`
-	Region          string   `json:"region,omitempty"`
-	CompanyType     string   `json:"company_type,omitempty"`
-	NumEmployeesMin int      `json:"num_employees_min,omitempty"`
-	NumEmployeesMax int      `json:"num_employees_max,omitempty"`
-	Categories      []string `json:"categories,omitempty"`
-	TotalFunding    *int64   `json:"total_funding_usd,omitempty"`
-	StockExchange   string   `json:"stock_exchange,omitempty"`
-	Ticker          string   `json:"ticker,omitempty"`
+	Name            string              `json:"name,omitempty"`
+	Description     string              `json:"description,omitempty"`
+	City            string              `json:"city,omitempty"`
+	Country         string              `json:"country,omitempty"`
+	Region          string              `json:"region,omitempty"`
+	CompanyType     string              `json:"company_type,omitempty"`
+	NumEmployeesMin int                 `json:"num_employees_min,omitempty"`
+	NumEmployeesMax int                 `json:"num_employees_max,omitempty"`
+	Categories      []string            `json:"categories,omitempty"`
+	TotalFunding    *int64              `json:"total_funding_usd,omitempty"`
+	StockExchange   string              `json:"stock_exchange,omitempty"`
+	Ticker          string              `json:"ticker,omitempty"`
+	Acquisitions    []acquisitionResult `json:"acquisitions,omitempty"`
+}
+
+type acquisitionResult struct {
+	AcquireeName string `json:"acquiree_name"`
+	AnnouncedOn  string `json:"announced_on,omitempty"`
 }
 
 type auditResult struct {
@@ -49,6 +55,8 @@ type auditResult struct {
 
 type projectDetailResult struct {
 	Name                  string            `json:"name"`
+	ID                    string            `json:"id,omitempty"`
+	LogoURL               string            `json:"logo_url,omitempty"`
 	Category              string            `json:"category"`
 	Subcategory           string            `json:"subcategory"`
 	Maturity              string            `json:"maturity,omitempty"`
@@ -60,6 +68,9 @@ type projectDetailResult struct {
 	JoinedAt              string            `json:"joined_at,omitempty"`
 	HomepageURL           string            `json:"homepage_url,omitempty"`
 	OSS                   bool              `json:"oss"`
+	EndUser               bool              `json:"end_user"`
+	Specification         bool              `json:"specification"`
+	ParentProject         string            `json:"parent_project,omitempty"`
 	Summary               *ItemSummary      `json:"summary,omitempty"`
 	Repositories          []Repository      `json:"repositories,omitempty"`
 	Audits                []auditResult     `json:"audits,omitempty"`
@@ -78,7 +89,12 @@ type memberResult struct {
 	JoinedAt          string `json:"joined_at,omitempty"`
 }
 
-func executeMetric(metric string, ds *Dataset, now time.Time) (string, error) {
+// executeMetric computes one named metric. The gold_*/silver_* metric names are
+// specific to CNCF-style membership tiers; cfg.Tiers maps them onto the tiers
+// of other landscapes (Tiers[0] for gold_, Tiers[1] for silver_) and cfg.Name
+// is used in the descriptions.
+func executeMetric(metric string, ds *Dataset, now time.Time, cfg LandscapeConfig) (string, error) {
+	highTier, secondTier := cfg.metricTiers()
 	switch metric {
 	case "incubating_project_count":
 		count := 0
@@ -92,7 +108,7 @@ func executeMetric(metric string, ds *Dataset, now time.Time) (string, error) {
 		}
 		return encodeResult(metric, map[string]interface{}{
 			"value":       count,
-			"description": "Total CNCF projects currently in incubating maturity",
+			"description": fmt.Sprintf("Total %s projects currently in incubating maturity", cfg.Name),
 		})
 
 	case "sandbox_projects_joined_this_year":
@@ -109,7 +125,7 @@ func executeMetric(metric string, ds *Dataset, now time.Time) (string, error) {
 		return encodeResult(metric, map[string]interface{}{
 			"value":       count,
 			"year":        year,
-			"description": "Sandbox projects accepted into CNCF this year",
+			"description": fmt.Sprintf("Sandbox projects accepted into %s this year", cfg.Name),
 		})
 
 	case "projects_graduated_last_year":
@@ -128,45 +144,45 @@ func executeMetric(metric string, ds *Dataset, now time.Time) (string, error) {
 
 	case "gold_members_joined_this_year":
 		year := now.Year()
-		members := membersJoinedByTier(ds, "Gold", year)
+		members := membersJoinedByTier(ds, highTier, year)
 		return encodeResult(metric, map[string]interface{}{
 			"value":       len(members),
 			"year":        year,
-			"description": "Gold members that joined CNCF this year",
+			"description": fmt.Sprintf("%s members that joined %s this year", highTier, cfg.Name),
 			"members":     members,
 		})
 
 	case "silver_members_joined_this_year":
 		year := now.Year()
-		members := membersJoinedByTier(ds, "Silver", year)
+		members := membersJoinedByTier(ds, secondTier, year)
 		return encodeResult(metric, map[string]interface{}{
 			"value":       len(members),
 			"year":        year,
-			"description": "Silver members that joined CNCF this year",
+			"description": fmt.Sprintf("%s members that joined %s this year", secondTier, cfg.Name),
 			"members":     members,
 		})
 
 	case "silver_members_raised_last_month":
 		prev := now.AddDate(0, -1, 0)
-		events := fundingEventsForPeriod(ds, "Silver", prev.Year(), prev.Month())
+		events := fundingEventsForPeriod(ds, secondTier, prev.Year(), prev.Month())
 		members := uniqueMembers(events)
 		return encodeResult(metric, map[string]interface{}{
 			"value":       len(members),
 			"year":        prev.Year(),
 			"month":       int(prev.Month()),
-			"description": "Silver members with funding rounds last month",
+			"description": fmt.Sprintf("%s members with funding rounds last month", secondTier),
 			"members":     members,
 			"events":      events,
 		})
 
 	case "gold_members_raised_this_year":
 		year := now.Year()
-		events := fundingEventsForPeriod(ds, "Gold", year, 0)
+		events := fundingEventsForPeriod(ds, highTier, year, 0)
 		members := uniqueMembers(events)
 		return encodeResult(metric, map[string]interface{}{
 			"value":       len(members),
 			"year":        year,
-			"description": "Gold members with funding rounds announced this year",
+			"description": fmt.Sprintf("%s members with funding rounds announced this year", highTier),
 			"members":     members,
 			"events":      events,
 		})
@@ -185,8 +201,24 @@ func encodeResult(metric string, payload map[string]interface{}) (string, error)
 	return string(data), nil
 }
 
+// memberCategoryMatch is the lowercase category substring that marks an item
+// as a member. It is written only by setMemberCategoryMatch, which main calls
+// once at startup before any request is served; afterwards it is read-only, so
+// no locking is needed.
+var memberCategoryMatch = defaultMemberCategoryMatch
+
+// setMemberCategoryMatch configures isMember. An empty value restores the
+// default. It must not be called while requests are being served.
+func setMemberCategoryMatch(match string) {
+	match = strings.ToLower(strings.TrimSpace(match))
+	if match == "" {
+		match = defaultMemberCategoryMatch
+	}
+	memberCategoryMatch = match
+}
+
 func isMember(item LandscapeItem) bool {
-	return strings.Contains(strings.ToLower(item.Category), "member")
+	return strings.Contains(strings.ToLower(item.Category), memberCategoryMatch)
 }
 
 func isMemberTier(item LandscapeItem, tier string) bool {
@@ -288,12 +320,26 @@ type ProjectQuery struct {
 	IncubatingTo   string
 	AcceptedFrom   string
 	AcceptedTo     string
-	Limit          int
-	Offset         int
+	// OSS, EndUser and Specification filter on the flag when non-nil.
+	OSS           *bool
+	EndUser       *bool
+	Specification *bool
+	// ParentProject is a case-insensitive exact match.
+	ParentProject string
+	// SortBy is one of projectSortFields (default name); SortOrder is asc or desc.
+	SortBy    string
+	SortOrder string
+	Limit     int
+	Offset    int
 }
 
 // queryProjects filters and returns projects based on various criteria
 func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
+	spec, err := parseSort(q.SortBy, q.SortOrder, projectSortFields)
+	if err != nil {
+		return "", err
+	}
+
 	// Parse date filters
 	var gradFromDate, gradToDate, incFromDate, incToDate, accFromDate, accToDate *time.Time
 
@@ -340,11 +386,11 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 		accToDate = &d
 	}
 
-	results := make([]projectResult, 0)
 	nameLower := strings.ToLower(q.Name)
-	total := 0
+	var matches []*LandscapeItem
 
-	for _, item := range ds.Items {
+	for i := range ds.Items {
+		item := &ds.Items[i]
 		// Archived items are excluded from queries
 		if item.ArchivedAt != nil {
 			continue
@@ -366,6 +412,20 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 
 		// Filter by name
 		if q.Name != "" && !strings.Contains(strings.ToLower(item.Name), nameLower) {
+			continue
+		}
+
+		// Filter by project flags and parent project
+		if q.OSS != nil && item.OSS != *q.OSS {
+			continue
+		}
+		if q.EndUser != nil && item.EndUser != *q.EndUser {
+			continue
+		}
+		if q.Specification != nil && item.Specification != *q.Specification {
+			continue
+		}
+		if q.ParentProject != "" && !strings.EqualFold(item.ParentProject, strings.TrimSpace(q.ParentProject)) {
 			continue
 		}
 
@@ -410,12 +470,16 @@ func queryProjects(ds *Dataset, q ProjectQuery) (string, error) {
 			continue
 		}
 
-		// Count every match; only append the requested page
-		total++
-		if total <= q.Offset || len(results) >= q.Limit {
-			continue
-		}
+		matches = append(matches, item)
+	}
 
+	// Sort before paginating so pages are stable and ordered.
+	sortItems(matches, spec)
+	total := len(matches)
+	start, end := pageBounds(total, q.Offset, q.Limit)
+	results := make([]projectResult, 0, end-start)
+
+	for _, item := range matches[start:end] {
 		result := projectResult{
 			Name:        item.Name,
 			Category:    item.Category,
@@ -457,12 +521,20 @@ type MemberQuery struct {
 	Category   string
 	JoinedFrom string
 	JoinedTo   string
-	Limit      int
-	Offset     int
+	// SortBy is one of memberSortFields (default name); SortOrder is asc or desc.
+	SortBy    string
+	SortOrder string
+	Limit     int
+	Offset    int
 }
 
 // queryMembers filters and returns members based on tier and join dates
 func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
+	spec, err := parseSort(q.SortBy, q.SortOrder, memberSortFields)
+	if err != nil {
+		return "", err
+	}
+
 	// Parse date filters
 	var joinFromDate, joinToDate *time.Time
 
@@ -481,22 +553,22 @@ func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 		joinToDate = &d
 	}
 
-	results := make([]memberResult, 0)
-	total := 0
+	var matches []*LandscapeItem
 
-	for _, item := range ds.Items {
+	for i := range ds.Items {
+		item := &ds.Items[i]
 		// Archived items are excluded from queries
 		if item.ArchivedAt != nil {
 			continue
 		}
 
 		// Only include members
-		if !isMember(item) {
+		if !isMember(*item) {
 			continue
 		}
 
 		// Filter by tier
-		if q.Tier != "" && !isMemberTier(item, q.Tier) {
+		if q.Tier != "" && !isMemberTier(*item, q.Tier) {
 			continue
 		}
 
@@ -517,12 +589,16 @@ func queryMembers(ds *Dataset, q MemberQuery) (string, error) {
 			}
 		}
 
-		// Count every match; only append the requested page
-		total++
-		if total <= q.Offset || len(results) >= q.Limit {
-			continue
-		}
+		matches = append(matches, item)
+	}
 
+	// Sort before paginating so pages are stable and ordered.
+	sortItems(matches, spec)
+	total := len(matches)
+	start, end := pageBounds(total, q.Offset, q.Limit)
+	results := make([]memberResult, 0, end-start)
+
+	for _, item := range matches[start:end] {
 		result := memberResult{
 			Name:              item.Name,
 			Category:          item.Category,
@@ -599,7 +675,16 @@ func buildLinks(item LandscapeItem) map[string]string {
 
 // buildOrgSummary creates an orgSummary from a CrunchbaseOrganization.
 func buildOrgSummary(org CrunchbaseOrganization) *orgSummary {
+	var acquisitions []acquisitionResult
+	for _, acq := range org.Acquisitions {
+		ar := acquisitionResult{AcquireeName: acq.AcquireeName}
+		if acq.AnnouncedOn != nil {
+			ar.AnnouncedOn = acq.AnnouncedOn.Format("2006-01-02")
+		}
+		acquisitions = append(acquisitions, ar)
+	}
 	return &orgSummary{
+		Acquisitions:    acquisitions,
 		Name:            org.Name,
 		Description:     org.Description,
 		City:            org.City,
@@ -652,24 +737,77 @@ func resolveProjects(ds *Dataset, name string) ([]*LandscapeItem, error) {
 	return partial, nil
 }
 
+// normalizeURL lowercases a URL and drops surrounding whitespace, a trailing
+// slash and a ".git" suffix so repository URLs compare loosely.
+func normalizeURL(u string) string {
+	u = strings.ToLower(strings.TrimSpace(u))
+	u = strings.TrimRight(u, "/")
+	u = strings.TrimSuffix(u, ".git")
+	return strings.TrimRight(u, "/")
+}
+
+// resolveProjectsByURL finds projects with a repository URL or homepage URL
+// equal (after normalizeURL) to repoURL. Archived projects are included.
+func resolveProjectsByURL(ds *Dataset, repoURL string) ([]*LandscapeItem, error) {
+	want := normalizeURL(repoURL)
+	var found []*LandscapeItem
+	if want != "" {
+		for i := range ds.Items {
+			item := &ds.Items[i]
+			if item.Maturity == "" {
+				continue
+			}
+			matched := normalizeURL(item.HomepageURL) == want
+			for _, repo := range item.Repositories {
+				matched = matched || normalizeURL(repo.URL) == want
+			}
+			if matched {
+				found = append(found, item)
+			}
+		}
+	}
+	if len(found) == 0 {
+		return nil, fmt.Errorf("no project found matching repo_url: %s", repoURL)
+	}
+	return found, nil
+}
+
 // getProjectDetails returns detailed information about a specific project
 func getProjectDetails(ds *Dataset, name string) (string, error) {
 	found, err := resolveProjects(ds, name)
 	if err != nil {
 		return "", err
 	}
+	return projectDetailsJSON(ds, found)
+}
+
+// getProjectDetailsByURL is getProjectDetails keyed by repository/homepage URL.
+func getProjectDetailsByURL(ds *Dataset, repoURL string) (string, error) {
+	found, err := resolveProjectsByURL(ds, repoURL)
+	if err != nil {
+		return "", err
+	}
+	return projectDetailsJSON(ds, found)
+}
+
+func projectDetailsJSON(ds *Dataset, found []*LandscapeItem) (string, error) {
 	var matches []projectDetailResult
 
 	for _, item := range found {
 		detail := projectDetailResult{
-			Name:        item.Name,
-			Category:    item.Category,
-			Subcategory: item.Subcategory,
-			Maturity:    item.Maturity,
-			Description: item.Description,
-			HomepageURL: item.HomepageURL,
-			OSS:         item.OSS,
-			Summary:     item.Summary,
+			Name:          item.Name,
+			Category:      item.Category,
+			Subcategory:   item.Subcategory,
+			Maturity:      item.Maturity,
+			ID:            item.ID,
+			LogoURL:       item.LogoURL,
+			Description:   item.Description,
+			HomepageURL:   item.HomepageURL,
+			OSS:           item.OSS,
+			EndUser:       item.EndUser,
+			Specification: item.Specification,
+			ParentProject: item.ParentProject,
+			Summary:       item.Summary,
 		}
 		if item.AcceptedAt != nil {
 			detail.AcceptedAt = item.AcceptedAt.Format("2006-01-02")

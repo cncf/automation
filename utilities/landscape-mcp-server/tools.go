@@ -37,9 +37,19 @@ func stringProp(description string) map[string]interface{} {
 	return map[string]interface{}{"type": "string", "description": description}
 }
 
+func boolProp(description string) map[string]interface{} {
+	return map[string]interface{}{"type": "boolean", "description": description}
+}
+
+func enumProp(description string, values []string) map[string]interface{} {
+	return map[string]interface{}{"type": "string", "description": description, "enum": values}
+}
+
 func integerProp(description string) map[string]interface{} {
 	return map[string]interface{}{"type": "integer", "description": description}
 }
+
+const sortOrderDescription = "Sort direction: asc (default) or desc. Items without the sort date always sort last."
 
 const queryLimitDescription = "Maximum number of results to return (default: 100; values <= 0 use 100, values above 500 are clamped to 500)"
 
@@ -47,7 +57,7 @@ const queryLimitDescription = "Maximum number of results to return (default: 100
 var toolSpecs = []toolSpec{
 	{
 		name:              "query_projects",
-		descriptionFormat: "Query %s projects with flexible filtering by maturity, dates, and name. Returns detailed project information. Archived projects are excluded. The total field is the number of matches ignoring limit/offset.",
+		descriptionFormat: "Query %s projects with flexible filtering by maturity, dates, name, oss/end_user/specification flags and parent project, sorted by name (default), accepted_at, incubating_at or graduated_at. Returns detailed project information. Archived projects are excluded. The total field is the number of matches ignoring limit/offset.",
 		properties: map[string]interface{}{
 			"maturity":        stringProp("Filter by maturity level (e.g., graduated, incubating, sandbox)"),
 			"name":            stringProp("Filter by project name (case-insensitive substring match)"),
@@ -59,6 +69,12 @@ var toolSpecs = []toolSpec{
 			"incubating_to":   stringProp("Filter projects that reached incubating on or before this date (YYYY-MM-DD)"),
 			"accepted_from":   stringProp("Filter projects accepted on or after this date (YYYY-MM-DD)"),
 			"accepted_to":     stringProp("Filter projects accepted on or before this date (YYYY-MM-DD)"),
+			"oss":             boolProp("Filter by open-source flag; omit to include both"),
+			"end_user":        boolProp("Filter by end-user flag; omit to include both"),
+			"specification":   boolProp("Filter by specification flag; omit to include both"),
+			"parent_project":  stringProp("Filter by parent project name (case-insensitive exact match)"),
+			"sort_by":         enumProp("Sort field (default: name, ascending, case-insensitive). Sorting is applied before limit/offset.", projectSortFields),
+			"sort_order":      enumProp(sortOrderDescription, sortOrders),
 			"limit":           integerProp(queryLimitDescription),
 			"offset":          integerProp("Number of results to skip before returning (default: 0)"),
 		},
@@ -66,12 +82,14 @@ var toolSpecs = []toolSpec{
 	},
 	{
 		name:              "query_members",
-		descriptionFormat: "Query %s members with flexible filtering by membership tier and join dates. Archived items are excluded. The total field is the number of matches ignoring limit/offset.",
+		descriptionFormat: "Query %s members with flexible filtering by membership tier and join dates, sorted by name (default) or joined_at. Archived items are excluded. The total field is the number of matches ignoring limit/offset.",
 		properties: map[string]interface{}{
 			"tier":        stringProp("Filter by membership tier (e.g., Gold, Silver, Platinum, End User Supporter)"),
 			"category":    stringProp("Filter by category (e.g., CNCF Members)"),
 			"joined_from": stringProp("Filter members joined on or after this date (YYYY-MM-DD)"),
 			"joined_to":   stringProp("Filter members joined on or before this date (YYYY-MM-DD)"),
+			"sort_by":     enumProp("Sort field (default: name, ascending, case-insensitive). Sorting is applied before limit/offset.", memberSortFields),
+			"sort_order":  enumProp(sortOrderDescription, sortOrders),
 			"limit":       integerProp(queryLimitDescription),
 			"offset":      integerProp("Number of results to skip before returning (default: 0)"),
 		},
@@ -79,12 +97,12 @@ var toolSpecs = []toolSpec{
 	},
 	{
 		name:              "get_project_details",
-		descriptionFormat: "Get detailed information about a specific %s project by name. An exact (case-insensitive) name match is preferred; otherwise substring matching is used and an error listing candidates is returned if it is ambiguous. Archived projects can be looked up.",
+		descriptionFormat: "Get detailed information about a specific %s project by name or by repository/homepage URL (repo_url). An exact (case-insensitive) name match is preferred; otherwise substring matching is used and an error listing candidates is returned if it is ambiguous. Archived projects can be looked up.",
 		properties: map[string]interface{}{
-			"name": stringProp("Project name (case-insensitive; exact match preferred, otherwise unique substring)"),
+			"name":     stringProp("Project name (case-insensitive; exact match preferred, otherwise unique substring). Takes precedence over repo_url when both are given."),
+			"repo_url": stringProp("Alternative to name: a repository or homepage URL (case-insensitive; trailing slash and .git are ignored)"),
 		},
-		required: []string{"name"},
-		handler:  handleGetProjectDetails,
+		handler: handleGetProjectDetails,
 	},
 	{
 		name:              "get_member_details",
@@ -199,7 +217,7 @@ func buildToolCatalog(cfg LandscapeConfig) toolCatalogData {
 			Handler:     spec.handler,
 		}
 		if len(spec.metrics) > 0 {
-			def.Handler = metricToolHandler(spec.metrics)
+			def.Handler = metricToolHandler(spec.metrics, cfg)
 		}
 		data.catalog[spec.name] = def
 		data.advertisedTools = append(data.advertisedTools, spec.name)
@@ -280,7 +298,7 @@ func handleToolsCall(ctx context.Context, req *jsonRPCRequest, state *serverStat
 
 // metricToolHandler builds the handler shared by the metric-based tools, which
 // accept a required "metric" argument restricted to the allowed list.
-func metricToolHandler(allowed []string) toolHandler {
+func metricToolHandler(allowed []string, cfg LandscapeConfig) toolHandler {
 	return func(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset) *jsonRPCResponse {
 		var args struct {
 			Metric string `json:"metric"`
@@ -297,7 +315,7 @@ func metricToolHandler(allowed []string) toolHandler {
 			return toolErrorResult(id, fmt.Sprintf("Unsupported metric %q; allowed metrics: %s", args.Metric, strings.Join(allowed, ", ")))
 		}
 
-		result, err := executeMetric(args.Metric, ds, time.Now().UTC())
+		result, err := executeMetric(args.Metric, ds, time.Now().UTC(), cfg)
 		if err != nil {
 			return toolErrorResult(id, err.Error())
 		}
@@ -337,6 +355,12 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 		IncubatingTo   string `json:"incubating_to"`
 		AcceptedFrom   string `json:"accepted_from"`
 		AcceptedTo     string `json:"accepted_to"`
+		OSS            *bool  `json:"oss"`
+		EndUser        *bool  `json:"end_user"`
+		Specification  *bool  `json:"specification"`
+		ParentProject  string `json:"parent_project"`
+		SortBy         string `json:"sort_by"`
+		SortOrder      string `json:"sort_order"`
 		Limit          int    `json:"limit"`
 		Offset         int    `json:"offset"`
 	}
@@ -358,6 +382,12 @@ func handleQueryProjects(id json.RawMessage, argsRaw json.RawMessage, ds *Datase
 		IncubatingTo:   args.IncubatingTo,
 		AcceptedFrom:   args.AcceptedFrom,
 		AcceptedTo:     args.AcceptedTo,
+		OSS:            args.OSS,
+		EndUser:        args.EndUser,
+		Specification:  args.Specification,
+		ParentProject:  args.ParentProject,
+		SortBy:         args.SortBy,
+		SortOrder:      args.SortOrder,
 		Limit:          args.Limit,
 		Offset:         args.Offset,
 	})
@@ -374,6 +404,8 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 		Category   string `json:"category"`
 		JoinedFrom string `json:"joined_from"`
 		JoinedTo   string `json:"joined_to"`
+		SortBy     string `json:"sort_by"`
+		SortOrder  string `json:"sort_order"`
 		Limit      int    `json:"limit"`
 		Offset     int    `json:"offset"`
 	}
@@ -389,6 +421,8 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 		Category:   args.Category,
 		JoinedFrom: args.JoinedFrom,
 		JoinedTo:   args.JoinedTo,
+		SortBy:     args.SortBy,
+		SortOrder:  args.SortOrder,
 		Limit:      args.Limit,
 		Offset:     args.Offset,
 	})
@@ -401,18 +435,25 @@ func handleQueryMembers(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset
 
 func handleGetProjectDetails(id json.RawMessage, argsRaw json.RawMessage, ds *Dataset) *jsonRPCResponse {
 	var args struct {
-		Name string `json:"name"`
+		Name    string `json:"name"`
+		RepoURL string `json:"repo_url"`
 	}
 	if len(argsRaw) > 0 {
 		if err := json.Unmarshal(argsRaw, &args); err != nil {
 			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
-	if args.Name == "" {
-		return toolErrorResult(id, "name parameter is required")
+	if args.Name == "" && strings.TrimSpace(args.RepoURL) == "" {
+		return toolErrorResult(id, "name parameter is required (or provide repo_url)")
 	}
 
-	result, err := getProjectDetails(ds, args.Name)
+	var result string
+	var err error
+	if args.Name != "" {
+		result, err = getProjectDetails(ds, args.Name)
+	} else {
+		result, err = getProjectDetailsByURL(ds, args.RepoURL)
+	}
 	if err != nil {
 		return toolErrorResult(id, err.Error())
 	}

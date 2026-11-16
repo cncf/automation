@@ -247,7 +247,7 @@ func TestArchivedItemsExcludedFromAggregates(t *testing.T) {
 	}
 	for _, tt := range metrics {
 		t.Run(tt.metric, func(t *testing.T) {
-			out, err := executeMetric(tt.metric, ds, now)
+			out, err := executeMetric(tt.metric, ds, now, defaultConfig())
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}

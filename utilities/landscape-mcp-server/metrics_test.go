@@ -608,7 +608,7 @@ func TestExecuteMetric(t *testing.T) {
 	ds := loadTestDataset(t)
 
 	t.Run("incubating_project_count", func(t *testing.T) {
-		result, err := executeMetric("incubating_project_count", ds, time.Now())
+		result, err := executeMetric("incubating_project_count", ds, time.Now(), defaultConfig())
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -622,7 +622,7 @@ func TestExecuteMetric(t *testing.T) {
 	t.Run("sandbox_projects_joined_this_year", func(t *testing.T) {
 		// Akri accepted_at = 2021-09-14
 		now := time.Date(2021, 6, 1, 0, 0, 0, 0, time.UTC)
-		result, err := executeMetric("sandbox_projects_joined_this_year", ds, now)
+		result, err := executeMetric("sandbox_projects_joined_this_year", ds, now, defaultConfig())
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -635,7 +635,7 @@ func TestExecuteMetric(t *testing.T) {
 	t.Run("projects_graduated_last_year", func(t *testing.T) {
 		// Kubernetes graduated_at = 2018-03-06, so now must be in 2019
 		now := time.Date(2019, 6, 1, 0, 0, 0, 0, time.UTC)
-		result, err := executeMetric("projects_graduated_last_year", ds, now)
+		result, err := executeMetric("projects_graduated_last_year", ds, now, defaultConfig())
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -648,7 +648,7 @@ func TestExecuteMetric(t *testing.T) {
 	t.Run("gold_members_joined_this_year", func(t *testing.T) {
 		// TestGoldCorp joined_at = 2026-01-15
 		now := time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC)
-		result, err := executeMetric("gold_members_joined_this_year", ds, now)
+		result, err := executeMetric("gold_members_joined_this_year", ds, now, defaultConfig())
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -661,7 +661,7 @@ func TestExecuteMetric(t *testing.T) {
 	t.Run("silver_members_joined_this_year", func(t *testing.T) {
 		// TestSilverInc joined_at = 2025-06-01
 		now := time.Date(2025, 6, 1, 0, 0, 0, 0, time.UTC)
-		result, err := executeMetric("silver_members_joined_this_year", ds, now)
+		result, err := executeMetric("silver_members_joined_this_year", ds, now, defaultConfig())
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -675,7 +675,7 @@ func TestExecuteMetric(t *testing.T) {
 		// TestSilverInc funding: seed 2026-02-01
 		// Set now to March 2026 so last month = Feb 2026
 		now := time.Date(2026, 3, 15, 0, 0, 0, 0, time.UTC)
-		result, err := executeMetric("silver_members_raised_last_month", ds, now)
+		result, err := executeMetric("silver_members_raised_last_month", ds, now, defaultConfig())
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -688,7 +688,7 @@ func TestExecuteMetric(t *testing.T) {
 	t.Run("gold_members_raised_this_year", func(t *testing.T) {
 		// TestGoldCorp funding: series_b 2026-01-10
 		now := time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC)
-		result, err := executeMetric("gold_members_raised_this_year", ds, now)
+		result, err := executeMetric("gold_members_raised_this_year", ds, now, defaultConfig())
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

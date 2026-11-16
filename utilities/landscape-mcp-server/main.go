@@ -88,6 +88,8 @@ func main() {
 	dataURL := flag.String("data-url", "https://landscape.cncf.io/data/full.json", "URL to the landscape full dataset JSON file")
 	landscapeName := flag.String("landscape-name", "", "Name of the landscape (e.g. CNCF)")
 	landscapeDesc := flag.String("landscape-description", "", "Description of the landscape")
+	memberMatch := flag.String("member-category-match", defaultMemberCategoryMatch, "Case-insensitive substring of an item's category that marks it as a member")
+	tiers := flag.String("tiers", "", "Comma-separated membership tiers backing the gold_/silver_ metrics, high tier first (default \"Gold,Silver\")")
 	refreshInterval := flag.Duration("refresh-interval", defaultRefreshInterval, "How often to reload the dataset from its source (0 disables periodic refresh)")
 	flag.Parse()
 
@@ -98,6 +100,15 @@ func main() {
 	if *landscapeDesc != "" {
 		cfg.Description = *landscapeDesc
 	}
+
+	if *memberMatch != "" {
+		cfg.MemberCategoryMatch = *memberMatch
+	}
+	if *tiers != "" {
+		cfg.Tiers = strings.Split(*tiers, ",")
+	}
+	// Set once, before any request is served; see memberCategoryMatch.
+	setMemberCategoryMatch(cfg.MemberCategoryMatch)
 
 	log.SetOutput(os.Stderr)
 	log.SetFlags(0)
