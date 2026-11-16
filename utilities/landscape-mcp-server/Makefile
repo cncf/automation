@@ -17,4 +17,4 @@ fmt-check:
 lint:
 	@if command -v golangci-lint >/dev/null 2>&1; then golangci-lint run; else echo "golangci-lint not installed, skipping"; fi
 
-ci: fmt-check vet test
+ci: fmt-check vet lint test
