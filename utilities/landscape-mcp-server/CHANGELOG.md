@@ -68,6 +68,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Notifications (requests without an `id`) no longer receive responses.
 - `get_project_details` prefers an exact case-insensitive name match and
   returns an error listing candidates when a substring match is ambiguous.
+- Malformed input is answered instead of silently dropped: invalid JSON gets
+  JSON-RPC error `-32700`, and valid JSON that is not a single request object
+  (including batch arrays, which are not supported) gets `-32600`.
+- A failed initial dataset load is retried with exponential backoff (30s up
+  to 5 minutes) until it succeeds, instead of leaving the server without data
+  until the next periodic refresh, or forever with `--refresh-interval 0`.
+- Resource template names may contain an encoded slash (`%2F`), so entities
+  such as `Core 24/7 (member)` are reachable.
+- A blank name no longer matches every project or member in
+  `get_project_details`, `get_member_details`, and the resource templates.
+- `resources/read` reports a URI that names no resource as `-32002` (resource
+  not found) with the URI in the error data; malformed URIs and ambiguous
+  names stay `-32602`.
+- `repo_url` lookups ignore the `http://`/`https://` scheme, so
+  `github.com/org/repo` and `http://github.com/org/repo` match.
 
 ### Removed
 
