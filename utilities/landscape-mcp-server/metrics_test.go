@@ -1901,8 +1901,8 @@ func TestHandleResourcesReadUnknownURI(t *testing.T) {
 	if resp.Error == nil {
 		t.Fatal("expected error for unknown URI, got success")
 	}
-	if resp.Error.Code != -32602 {
-		t.Errorf("error code = %d, want %d", resp.Error.Code, -32602)
+	if resp.Error.Code != -32002 {
+		t.Errorf("error code = %d, want %d", resp.Error.Code, -32002)
 	}
 }
 

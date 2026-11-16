@@ -68,12 +68,23 @@ func handleResourceTemplatesList(req *jsonRPCRequest, state *serverState) *jsonR
 	}
 }
 
+// notFoundError reports a lookup that matched nothing, as opposed to a
+// malformed or ambiguous one. resources/read answers it with -32002.
+type notFoundError struct{ msg string }
+
+func (e *notFoundError) Error() string { return e.msg }
+
+func notFoundf(format string, args ...any) error {
+	return &notFoundError{msg: fmt.Sprintf(format, args...)}
+}
+
 // resourceReader produces the text of one resource from a loaded dataset.
-// notFoundIsInvalidParams marks readers whose errors mean the URI named
-// something that does not exist (JSON-RPC -32602) rather than an internal fault.
+// byName marks readers that look an entity up by the name in the URI, whose
+// errors are therefore the caller's (-32602, or -32002 for a notFoundError)
+// rather than an internal fault.
 type resourceReader struct {
-	read                    func(ds *Dataset) (string, error)
-	notFoundIsInvalidParams bool
+	read   func(ds *Dataset) (string, error)
+	byName bool
 }
 
 // resolveResource maps a resource URI to its reader. It never touches the
@@ -90,8 +101,8 @@ func resolveResource(uri string) (resourceReader, error) {
 			return resourceReader{}, err
 		}
 		return resourceReader{
-			read:                    func(ds *Dataset) (string, error) { return getProjectDetails(ds, name) },
-			notFoundIsInvalidParams: true,
+			read:   func(ds *Dataset) (string, error) { return getProjectDetails(ds, name) },
+			byName: true,
 		}, nil
 	case strings.HasPrefix(uri, memberResourcePrefix):
 		name, err := entityName(uri, memberResourcePrefix)
@@ -99,20 +110,27 @@ func resolveResource(uri string) (resourceReader, error) {
 			return resourceReader{}, err
 		}
 		return resourceReader{
-			read:                    func(ds *Dataset) (string, error) { return getMemberDetails(ds, name) },
-			notFoundIsInvalidParams: true,
+			read:   func(ds *Dataset) (string, error) { return getMemberDetails(ds, name) },
+			byName: true,
 		}, nil
 	default:
-		return resourceReader{}, fmt.Errorf("unknown resource URI: %s", uri)
+		return resourceReader{}, notFoundf("unknown resource URI: %s", uri)
 	}
 }
 
+// entityName extracts the percent-decoded name from a template URI. The name
+// must be a single path segment, so a literal "/" is rejected while an encoded
+// one ("%2F") is part of the name.
 func entityName(uri, prefix string) (string, error) {
-	name, err := url.PathUnescape(strings.TrimPrefix(uri, prefix))
+	segment := strings.TrimPrefix(uri, prefix)
+	if strings.Contains(segment, "/") {
+		return "", fmt.Errorf("invalid resource URI: %s", uri)
+	}
+	name, err := url.PathUnescape(segment)
 	if err != nil {
 		return "", fmt.Errorf("invalid resource URI %s: %v", uri, err)
 	}
-	if name == "" || strings.Contains(name, "/") {
+	if name == "" {
 		return "", fmt.Errorf("invalid resource URI: %s", uri)
 	}
 	return name, nil

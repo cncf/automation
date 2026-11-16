@@ -202,12 +202,39 @@ func TestProjectNameResolution(t *testing.T) {
 		})
 	}
 
+	t.Run("blank name is rejected instead of matching everything", func(t *testing.T) {
+		for _, tool := range []string{"get_project_details", "get_member_details"} {
+			res := decodeToolResult(t, callTool(t, state, tool, `{"name":"  "}`))
+			if !res.IsError || strings.Contains(res.Content[0].Text, "Alpha") {
+				t.Errorf("%s: want an error naming no candidates, got %+v", tool, res)
+			}
+		}
+	})
+
 	t.Run("exact match does not return substring neighbors", func(t *testing.T) {
 		res := decodeToolResult(t, callTool(t, state, "get_project_details", `{"name":"foo"}`))
 		if strings.Contains(res.Content[0].Text, "Foo Beta") {
 			t.Errorf("exact match leaked substring match: %s", res.Content[0].Text)
 		}
 	})
+}
+
+func TestBlankLookupNamesMatchNothing(t *testing.T) {
+	ds := &Dataset{Items: []LandscapeItem{
+		makeItem("Alpha One", "sandbox"),
+		makeItem("Alpha Two", "sandbox"),
+		makeItem("Acme Corp (member)", "", func(i *LandscapeItem) { i.Category = "CNCF Members" }),
+		makeItem("Beta Inc (member)", "", func(i *LandscapeItem) { i.Category = "CNCF Members" }),
+	}}
+
+	for _, name := range []string{"", " ", "\t "} {
+		if found, err := resolveProjects(ds, name); err == nil || strings.Contains(err.Error(), "Alpha") {
+			t.Errorf("resolveProjects(%q) = %d projects, err %v; want an error naming no candidates", name, len(found), err)
+		}
+		if text, err := getMemberDetails(ds, name); err == nil {
+			t.Errorf("getMemberDetails(%q) returned members: %s", name, text)
+		}
+	}
 }
 
 func archivedDataset() *Dataset {
@@ -385,6 +412,68 @@ func TestResourcesReadDatasetTimeout(t *testing.T) {
 	}, state)
 	if resp == nil || resp.Error == nil || !strings.Contains(resp.Error.Message, "timed out") {
 		t.Fatalf("expected timeout error, got %+v", resp)
+	}
+}
+
+func TestDecodeRequestRejectsUnservableLines(t *testing.T) {
+	tests := []struct {
+		name     string
+		line     string
+		wantCode int
+		wantID   string
+	}{
+		{"not json", `this is not json`, -32700, "null"},
+		{"truncated json", `{"jsonrpc":"2.0","id":1,"method":"pi`, -32700, "null"},
+		{"batch array", `[{"jsonrpc":"2.0","id":1,"method":"ping"}]`, -32600, "null"},
+		{"scalar", `5`, -32600, "null"},
+		{"wrong field type keeps the id", `{"jsonrpc":"2.0","id":5,"method":123}`, -32600, "5"},
+		{"wrong field type with string id", `{"jsonrpc":"2.0","id":"abc","method":[]}`, -32600, `"abc"`},
+		{"wrong field type without id", `{"jsonrpc":"2.0","method":123}`, -32600, "null"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// When an unservable line is decoded
+			req, resp := decodeRequest([]byte(tt.line))
+
+			// Then it yields an error response instead of a request
+			if req != nil || resp == nil || resp.Error == nil {
+				t.Fatalf("req = %+v, resp = %+v; want only an error response", req, resp)
+			}
+			if resp.Error.Code != tt.wantCode {
+				t.Errorf("code = %d, want %d", resp.Error.Code, tt.wantCode)
+			}
+			// And the id survives marshalling, including an explicit null
+			var wire map[string]json.RawMessage
+			if err := json.Unmarshal(mustJSON(resp), &wire); err != nil {
+				t.Fatalf("marshal response: %v", err)
+			}
+			if got := string(wire["id"]); got != tt.wantID {
+				t.Errorf("id on the wire = %q, want %q", got, tt.wantID)
+			}
+		})
+	}
+}
+
+func TestDecodeRequestAcceptsRequestsAndNotifications(t *testing.T) {
+	tests := []struct {
+		name, line, wantMethod, wantID string
+	}{
+		{"request", `{"jsonrpc":"2.0","id":7,"method":"ping"}`, "ping", "7"},
+		{"null id", `{"jsonrpc":"2.0","id":null,"method":"ping"}`, "ping", "null"},
+		{"notification", `{"jsonrpc":"2.0","method":"notifications/initialized"}`, "notifications/initialized", ""},
+		{"leading whitespace", `  {"jsonrpc":"2.0","id":1,"method":"ping"}`, "ping", "1"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req, resp := decodeRequest([]byte(tt.line))
+
+			if resp != nil || req == nil {
+				t.Fatalf("req = %+v, resp = %+v; want only a request", req, resp)
+			}
+			if req.Method != tt.wantMethod || string(req.ID) != tt.wantID {
+				t.Errorf("method/id = %q/%q, want %q/%q", req.Method, req.ID, tt.wantMethod, tt.wantID)
+			}
+		})
 	}
 }
 

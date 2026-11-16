@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"io"
@@ -154,13 +153,14 @@ func main() {
 			continue
 		}
 
-		var req jsonRPCRequest
-		if err := json.Unmarshal([]byte(line), &req); err != nil {
-			log.Printf("unable to parse JSON-RPC request: %v", err)
+		req, rejection := decodeRequest([]byte(line))
+		if rejection != nil {
+			log.Printf("rejecting JSON-RPC message: %s", rejection.Error.Message)
+			writeResponse(rejection)
 			continue
 		}
 
-		if resp := handleRequest(ctx, &req, state); resp != nil {
+		if resp := handleRequest(ctx, req, state); resp != nil {
 			writeResponse(resp)
 		}
 	}

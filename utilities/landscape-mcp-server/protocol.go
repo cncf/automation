@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -38,6 +39,37 @@ var outputMu sync.Mutex
 // never receive a response.
 func isNotification(req *jsonRPCRequest) bool {
 	return len(req.ID) == 0
+}
+
+// nullID is the id of a response to a message whose own id is unknown.
+var nullID = json.RawMessage("null")
+
+// decodeRequest parses one line of input. A line that cannot be served yields
+// the error response to send instead, so the client is never left waiting:
+// -32700 for invalid JSON and -32600 for JSON that is not a single request
+// object. Batch arrays are not supported and fall into the latter.
+func decodeRequest(line []byte) (*jsonRPCRequest, *jsonRPCResponse) {
+	if !json.Valid(line) {
+		return nil, errorResponse(nullID, -32700, "Parse error", nil)
+	}
+	if bytes.HasPrefix(bytes.TrimSpace(line), []byte("[")) {
+		return nil, errorResponse(nullID, -32600, "Invalid Request: batch requests are not supported", nil)
+	}
+
+	var req jsonRPCRequest
+	if err := json.Unmarshal(line, &req); err != nil {
+		// Echo the id when it can still be read so the client can match the
+		// error to its request.
+		id := nullID
+		var probe struct {
+			ID json.RawMessage `json:"id"`
+		}
+		if json.Unmarshal(line, &probe) == nil && len(probe.ID) > 0 {
+			id = probe.ID
+		}
+		return nil, errorResponse(id, -32600, "Invalid Request", nil)
+	}
+	return &req, nil
 }
 
 func handleRequest(ctx context.Context, req *jsonRPCRequest, state *serverState) *jsonRPCResponse {

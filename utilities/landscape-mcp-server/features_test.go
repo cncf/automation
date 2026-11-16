@@ -352,6 +352,9 @@ func TestGetProjectDetailsByRepoURL(t *testing.T) {
 		{"stored .git and case-insensitive", `{"repo_url":"HTTPS://GITHUB.COM/org/CHARLIE.git/"}`, "charlie"},
 		{"stored trailing slash", `{"repo_url":"https://github.com/org/alpha"}`, "Alpha"},
 		{"homepage match", `{"repo_url":"https://charlie.example.com"}`, "charlie"},
+		{"no scheme", `{"repo_url":"github.com/org/charlie"}`, "charlie"},
+		{"http scheme", `{"repo_url":"http://github.com/org/charlie.git"}`, "charlie"},
+		{"blank name falls back to repo_url", `{"name":"  ","repo_url":"https://github.com/org/alpha"}`, "Alpha"},
 		{"name wins over repo_url", `{"name":"bravo","repo_url":"https://github.com/org/alpha"}`, "bravo"},
 	}
 	for _, tt := range tests {

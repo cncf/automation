@@ -443,14 +443,15 @@ func handleGetProjectDetails(id json.RawMessage, argsRaw json.RawMessage, ds *Da
 			return toolErrorResult(id, "Invalid arguments: "+err.Error())
 		}
 	}
-	if args.Name == "" && strings.TrimSpace(args.RepoURL) == "" {
+	name := strings.TrimSpace(args.Name)
+	if name == "" && strings.TrimSpace(args.RepoURL) == "" {
 		return toolErrorResult(id, "name parameter is required (or provide repo_url)")
 	}
 
 	var result string
 	var err error
-	if args.Name != "" {
-		result, err = getProjectDetails(ds, args.Name)
+	if name != "" {
+		result, err = getProjectDetails(ds, name)
 	} else {
 		result, err = getProjectDetailsByURL(ds, args.RepoURL)
 	}

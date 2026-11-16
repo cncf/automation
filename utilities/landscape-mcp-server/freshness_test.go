@@ -397,6 +397,89 @@ func TestRunRefreshLoop_refreshes_periodically_and_stops_on_cancel(t *testing.T)
 	}
 }
 
+// fastInitialLoadRetries shrinks the initial-load backoff for the test.
+func fastInitialLoadRetries(t *testing.T) {
+	t.Helper()
+	base, max := initialLoadRetryBaseDelay, initialLoadRetryMaxDelay
+	initialLoadRetryBaseDelay, initialLoadRetryMaxDelay = time.Millisecond, 4*time.Millisecond
+	t.Cleanup(func() { initialLoadRetryBaseDelay, initialLoadRetryMaxDelay = base, max })
+}
+
+// failedState returns a serverState whose initial load failed.
+func failedState(f *refreshFixture) *serverState {
+	state := newServerState(LandscapeConfig{Name: "CNCF"})
+	state.src = dataSource{url: f.srv.URL}
+	state.setDataset(nil, errors.New("boom"))
+	return state
+}
+
+func TestRunRefreshLoop_retries_failed_initial_load_even_when_refresh_disabled(t *testing.T) {
+	// Given a state whose initial load failed and a source that is still down
+	fastRetries(t)
+	fastInitialLoadRetries(t)
+	f := newRefreshFixture(t)
+	f.failing.Store(true)
+	state := failedState(f)
+	done := make(chan struct{})
+
+	// When the loop runs with periodic refresh disabled
+	go func() {
+		state.runRefreshLoop(context.Background(), 0)
+		close(done)
+	}()
+
+	// Then it keeps retrying while the source is down
+	deadline := time.After(2 * time.Second)
+	for int(f.calls.Load()) < 2*fetchAttempts {
+		select {
+		case <-done:
+			t.Fatal("loop gave up while no dataset was loaded")
+		case <-deadline:
+			t.Fatal("loop did not retry the initial load")
+		case <-time.After(time.Millisecond):
+		}
+	}
+
+	// And once the source recovers the dataset is served and the loop ends
+	f.failing.Store(false)
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("loop did not finish after the dataset loaded")
+	}
+	if _, err := state.waitForDataset(context.Background()); err != nil {
+		t.Errorf("waitForDataset after recovery: %v", err)
+	}
+}
+
+func TestRunRefreshLoop_initial_load_retry_stops_on_cancel(t *testing.T) {
+	// Given a state whose initial load failed and a source that stays down
+	fastRetries(t)
+	fastInitialLoadRetries(t)
+	f := newRefreshFixture(t)
+	f.failing.Store(true)
+	state := failedState(f)
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		state.runRefreshLoop(ctx, time.Hour)
+		close(done)
+	}()
+
+	// When the context is cancelled
+	cancel()
+
+	// Then the loop stops without a dataset
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("loop did not stop after cancel")
+	}
+	if state.hasDataset() {
+		t.Error("dataset loaded from a failing source")
+	}
+}
+
 func TestRunRefreshLoop_zero_interval_returns_immediately(t *testing.T) {
 	// Given a state and a disabled interval
 	f := newRefreshFixture(t)
