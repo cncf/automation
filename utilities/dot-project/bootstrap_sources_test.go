@@ -1396,3 +1396,39 @@ func TestDetectPrimaryRepo(t *testing.T) {
 		})
 	}
 }
+
+func TestMergeBootstrapData_Artwork(t *testing.T) {
+	const canonical = "https://github.com/cncf/artwork/tree/main/projects/demo"
+	tests := []struct {
+		name       string
+		landscape  *LandscapeData
+		clomonitor *CLOMonitorProject
+		want       string
+	}{
+		{
+			name:      "landscape artwork link wins over the hosted logo",
+			landscape: &LandscapeData{LogoURL: "https://landscape.cncf.io/logos/demo.svg", ArtworkURL: canonical + "/"},
+			want:      canonical,
+		},
+		{
+			name:       "clomonitor raw logo is reduced to the project directory",
+			landscape:  &LandscapeData{LogoURL: "https://landscape.cncf.io/logos/demo.svg"},
+			clomonitor: &CLOMonitorProject{LogoURL: "https://raw.githubusercontent.com/cncf/artwork/master/projects/demo/icon/color/demo-icon-color.svg"},
+			want:       canonical,
+		},
+		{
+			name:       "nothing in cncf/artwork leaves it to the template default",
+			landscape:  &LandscapeData{LogoURL: "https://landscape.cncf.io/logos/demo.svg", ArtworkURL: "https://github.com/cncf/artwork/blob/main/examples/sandbox.md#demo-logos"},
+			clomonitor: &CLOMonitorProject{LogoURL: "https://demo.io/logo.svg"},
+			want:       "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := mergeBootstrapData("demo", tt.landscape, tt.clomonitor, nil)
+			if result.Artwork != tt.want {
+				t.Errorf("Artwork = %q, want %q", result.Artwork, tt.want)
+			}
+		})
+	}
+}

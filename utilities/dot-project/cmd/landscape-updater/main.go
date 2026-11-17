@@ -44,17 +44,33 @@ func main() {
 	landscapeRepo := flag.String("landscape-repo", "cncf/landscape", "Target repository for the PR (e.g. cncf/landscape)")
 	createPR := flag.Bool("create-pr", false, "Create a Pull Request with the changes")
 	dryRun := flag.Bool("dry-run", false, "Print changes and PR details without executing")
+	logosDir := flag.String("logos-dir", "", "Directory holding the landscape logos (e.g. hosted_logos); when set, the matched item's logo is refreshed from the project's cncf/artwork link")
+	listProjects := flag.Bool("list-projects", false, "Print the project.yaml path of every project under --repo-root, one per line, and exit")
 	flag.Parse()
-
-	if *landscapePath == "" {
-		log.Fatal("The --landscape flag is required")
-	}
 
 	switch {
 	case *projectPath == "" && *repoRoot == "":
 		*repoRoot = "."
 	case *projectPath != "" && *repoRoot != "":
 		log.Fatal("The --project and --repo-root flags are mutually exclusive")
+	}
+
+	if *listProjects {
+		if *repoRoot == "" {
+			log.Fatal("The --list-projects flag requires --repo-root")
+		}
+		d, err := projects.Discover(*repoRoot)
+		if err != nil {
+			log.Fatalf("Discovery failed: %v", err)
+		}
+		for _, path := range d.ProjectPaths() {
+			fmt.Println(path)
+		}
+		return
+	}
+
+	if *landscapePath == "" {
+		log.Fatal("The --landscape flag is required")
 	}
 
 	projectPaths := []string{*projectPath}
@@ -91,7 +107,7 @@ func main() {
 			}
 		}
 
-		if err := processProject(path, *landscapePath, *landscapeRepo, *createPR, *dryRun); err != nil {
+		if err := processProject(path, *landscapePath, *landscapeRepo, *logosDir, *createPR, *dryRun); err != nil {
 			// One project's failure must not hide its siblings, so report and
 			// keep going, then fail the run at the end.
 			log.Printf("::error::%s: %v", path, err)
@@ -106,7 +122,7 @@ func main() {
 
 // processProject applies one project's metadata to the landscape and, when
 // requested, opens a pull request for it.
-func processProject(projectPath, landscapePath, landscapeRepo string, createPR, dryRun bool) error {
+func processProject(projectPath, landscapePath, landscapeRepo, logosDir string, createPR, dryRun bool) error {
 	projectData, err := os.ReadFile(projectPath)
 	if err != nil {
 		return fmt.Errorf("failed to read project file: %w", err)
@@ -136,7 +152,22 @@ func processProject(projectPath, landscapePath, landscapeRepo string, createPR, 
 		fmt.Printf("::warning::No landscape entry matched project %q. The landscape item name must match the name in %s, and one of its repo_url values must appear in repositories.\n",
 			project.Name, projectPath)
 		return nil
-	case statusNoChanges:
+	}
+
+	// The logo lives in a file next to landscape.yml rather than in it, so it
+	// is refreshed independently of whether any field changed. A logo that
+	// cannot be resolved is not worth failing the metadata sync over.
+	if logosDir != "" && !dryRun {
+		changed, err := syncLogo(&project, findLogoName(&root, &project), logosDir)
+		switch {
+		case err != nil:
+			fmt.Printf("::warning::Could not refresh the logo for project %q: %v\n", project.Name, err)
+		case changed:
+			log.Printf("Refreshed the logo for project %s", project.Name)
+		}
+	}
+
+	if status == statusNoChanges {
 		log.Printf("Landscape entry for %s is already up to date", project.Name)
 		return nil
 	}
@@ -375,43 +406,189 @@ func updateLandscape(root *yaml.Node, project *projects.Project, lines []string)
 // and repo_url), and if so, detects changes and applies line-level edits.
 // It reports whether the item matched and, separately, whether it was changed.
 func matchAndUpdateItem(itemNode *yaml.Node, project *projects.Project, lines []string) ([]string, bool, bool) {
-	var nameNode *yaml.Node
-	var repoURLNode *yaml.Node
-
-	for i := 0; i < len(itemNode.Content); i += 2 {
-		key := itemNode.Content[i]
-		val := itemNode.Content[i+1]
-		if key.Value == "name" {
-			nameNode = val
-		} else if key.Value == "repo_url" {
-			repoURLNode = val
-		}
-	}
-
-	if nameNode == nil || repoURLNode == nil {
-		return lines, false, false
-	}
-
-	nameMatch := strings.EqualFold(nameNode.Value, project.Name)
-	repoMatch := false
-	for _, repo := range project.Repositories {
-		if strings.EqualFold(repoURLNode.Value, repo.URL) {
-			repoMatch = true
-			break
-		}
-	}
-
-	if !nameMatch || !repoMatch {
+	if !itemMatches(itemNode, project) {
 		return lines, false, false
 	}
 
 	edits := detectChanges(itemNode, project)
-	if len(edits) == 0 {
+	audits := missingAudits(itemNode, project)
+	if len(edits) == 0 && len(audits) == 0 {
 		return lines, true, false
 	}
 
 	newLines := applyItemEdits(lines, edits, itemNode)
+	newLines = appendAudits(newLines, itemNode, audits)
 	return newLines, true, true
+}
+
+// itemMatches reports whether a landscape item belongs to the project: the
+// names are equal and the item's repo_url is one of the project's repositories.
+func itemMatches(itemNode *yaml.Node, project *projects.Project) bool {
+	if itemNode.Kind != yaml.MappingNode {
+		return false
+	}
+	nameNode := mappingValue(itemNode, "name")
+	repoURLNode := mappingValue(itemNode, "repo_url")
+	if nameNode == nil || repoURLNode == nil {
+		return false
+	}
+	if !strings.EqualFold(nameNode.Value, project.Name) {
+		return false
+	}
+	for _, repo := range project.Repositories {
+		if strings.EqualFold(repoURLNode.Value, repo.URL) {
+			return true
+		}
+	}
+	return false
+}
+
+// mappingValue returns the value node stored under key, or nil.
+func mappingValue(node *yaml.Node, key string) *yaml.Node {
+	for i := 0; i+1 < len(node.Content); i += 2 {
+		if node.Content[i].Value == key {
+			return node.Content[i+1]
+		}
+	}
+	return nil
+}
+
+// findLogoName returns the logo file name of the first landscape item matching
+// the project, or "" when there is none.
+func findLogoName(node *yaml.Node, project *projects.Project) string {
+	if itemMatches(node, project) {
+		if logo := mappingValue(node, "logo"); logo != nil {
+			return logo.Value
+		}
+		return ""
+	}
+	for _, child := range node.Content {
+		if name := findLogoName(child, project); name != "" {
+			return name
+		}
+	}
+	return ""
+}
+
+// explicitPrimaryRepositoryURL returns the repository marked primary: true.
+// Unlike projects.PrimaryRepositoryURL it does not fall back to the first
+// entry: an unordered repository list must not re-point the landscape item.
+func explicitPrimaryRepositoryURL(repos []projects.RepositoryEntry) string {
+	for _, r := range repos {
+		if r.Primary {
+			return r.URL
+		}
+	}
+	return ""
+}
+
+// syncableArtworkURL returns the project's artwork link when it points into
+// cncf/artwork, and "" otherwise. cncf/artwork is the reviewed home of CNCF
+// project logos; a link anywhere else (the project's own site, or the
+// landscape-hosted logo that older bootstrapped files default to) must not
+// replace the curated link in the landscape.
+func syncableArtworkURL(artwork string) string {
+	if _, _, ok := projects.ParseCNCFArtworkURL(artwork); !ok {
+		return ""
+	}
+	return artwork
+}
+
+// missingAudits returns the project's audits that the landscape item does not
+// list yet, keyed by report URL. The sync is append-only: landscape audits are
+// curated by hand and are never rewritten or removed. Audits without a vendor
+// are skipped because the landscape schema requires one.
+func missingAudits(itemNode *yaml.Node, project *projects.Project) []projects.Audit {
+	known := map[string]bool{}
+	if extra := mappingValue(itemNode, "extra"); extra != nil && extra.Kind == yaml.MappingNode {
+		if audits := mappingValue(extra, "audits"); audits != nil {
+			if audits.Kind != yaml.SequenceNode || audits.Style&yaml.FlowStyle != 0 {
+				return nil // not a block list we can safely extend
+			}
+			for _, entry := range audits.Content {
+				if entry.Kind != yaml.MappingNode {
+					continue
+				}
+				if u := mappingValue(entry, "url"); u != nil {
+					known[u.Value] = true
+				}
+			}
+		}
+	}
+
+	var missing []projects.Audit
+	for _, audit := range project.Audits {
+		if audit.URL == "" || audit.Vendor == "" || audit.Type == "" || audit.Date.IsZero() || known[audit.URL] {
+			continue
+		}
+		known[audit.URL] = true
+		missing = append(missing, audit)
+	}
+	return missing
+}
+
+// appendAudits adds audits to the end of the item's extra.audits list,
+// creating the list (and the extra block) when absent.
+func appendAudits(lines []string, itemNode *yaml.Node, audits []projects.Audit) []string {
+	if len(audits) == 0 {
+		return lines
+	}
+
+	start, end := getItemLineRange(lines, itemNode)
+	fieldIndent := detectFieldIndent(lines, start, end)
+	extraIndent := fieldIndent + 2
+	dashIndent := extraIndent + 2
+
+	var insertAt int
+	var block []string
+
+	extraLine := findFieldLine(lines, start, end, "extra", fieldIndent)
+	auditsLine := -1
+	if extraLine >= 0 {
+		extraEnd := findExtraBlockEnd(lines, extraLine, end, extraIndent)
+		auditsLine = findFieldLine(lines, extraLine+1, extraEnd, "audits", extraIndent)
+		insertAt = extraEnd
+	} else {
+		insertAt = findLastFieldLine(lines, start, end, fieldIndent) + 1
+		block = append(block, strings.Repeat(" ", fieldIndent)+"extra:")
+	}
+
+	if auditsLine >= 0 {
+		// Extend the existing list, matching its indentation.
+		insertAt = auditsLine + 1
+		for i := auditsLine + 1; i < end && i < len(lines); i++ {
+			trimmed := strings.TrimLeft(lines[i], " ")
+			if trimmed == "" {
+				continue
+			}
+			indent := len(lines[i]) - len(trimmed)
+			if indent < extraIndent || (indent == extraIndent && !strings.HasPrefix(trimmed, "- ")) {
+				break
+			}
+			if strings.HasPrefix(trimmed, "- ") && insertAt == auditsLine+1 {
+				dashIndent = indent
+			}
+			insertAt = i + 1
+		}
+	} else {
+		block = append(block, strings.Repeat(" ", extraIndent)+"audits:")
+	}
+
+	dash := strings.Repeat(" ", dashIndent)
+	for _, audit := range audits {
+		block = append(block,
+			dash+"- date: '"+audit.Date.Format("2006-01-02")+"'",
+			dash+"  type: "+yamlQuoteIfNeeded(audit.Type),
+			dash+"  url: "+yamlQuoteIfNeeded(audit.URL),
+			dash+"  vendor: "+yamlQuoteIfNeeded(audit.Vendor),
+		)
+	}
+
+	result := make([]string, 0, len(lines)+len(block))
+	result = append(result, lines[:insertAt]...)
+	result = append(result, block...)
+	result = append(result, lines[insertAt:]...)
+	return result
 }
 
 // detectChanges compares the YAML node tree values against the project and
@@ -442,44 +619,39 @@ func detectChanges(itemNode *yaml.Node, project *projects.Project) []fieldEdit {
 	checkField("homepage_url", project.Website, false, itemNode)
 	checkField("description", project.Description, false, itemNode)
 
+	// The item was matched through one of the project's repositories, so
+	// re-pointing it at the declared primary keeps it matching afterwards.
+	if primary := explicitPrimaryRepositoryURL(project.Repositories); primary != "" {
+		if current := mappingValue(itemNode, "repo_url"); current != nil && !strings.EqualFold(current.Value, primary) {
+			checkField("repo_url", primary, false, itemNode)
+		}
+	}
+
 	if val, ok := project.Social["twitter"]; ok {
 		checkField("twitter", val, false, itemNode)
 	}
 
-	// Extra fields
-	extraMappings := map[string]string{
-		"slack":    "slack_url",
-		"linkedin": "linkedin_url",
-		"youtube":  "youtube_url",
+	// Extra fields, in a fixed order so repeated runs produce identical edits.
+	extras := []struct{ key, value string }{
+		{"artwork_url", syncableArtworkURL(project.Artwork)},
+		{"slack_url", project.Social["slack"]},
+		{"linkedin_url", project.Social["linkedin"]},
+		{"youtube_url", project.Social["youtube"]},
+		{"stack_overflow_url", project.Social["stackoverflow"]},
+		{"bluesky_url", project.Social["bluesky"]},
+		{"discord_url", project.Social["discord"]},
+		{"github_discussions_url", project.Social["github_discussions"]},
 	}
 
-	needsExtra := false
-	for key := range extraMappings {
-		if _, ok := project.Social[key]; ok {
-			needsExtra = true
-			break
+	extraNode := mappingValue(itemNode, "extra")
+	for _, extra := range extras {
+		if extra.value == "" {
+			continue
 		}
-	}
-
-	if needsExtra {
-		var extraNode *yaml.Node
-		for i := 0; i < len(itemNode.Content); i += 2 {
-			if itemNode.Content[i].Value == "extra" {
-				extraNode = itemNode.Content[i+1]
-				break
-			}
-		}
-
-		for socialKey, landscapeKey := range extraMappings {
-			val, ok := project.Social[socialKey]
-			if !ok || val == "" {
-				continue
-			}
-			if extraNode != nil {
-				checkField(landscapeKey, val, true, extraNode)
-			} else {
-				edits = append(edits, fieldEdit{key: landscapeKey, newValue: val, isExtra: true, exists: false})
-			}
+		if extraNode != nil {
+			checkField(extra.key, extra.value, true, extraNode)
+		} else {
+			edits = append(edits, fieldEdit{key: extra.key, newValue: extra.value, isExtra: true, exists: false})
 		}
 	}
 

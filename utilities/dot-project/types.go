@@ -277,6 +277,9 @@ type Audit struct {
 	Date time.Time `json:"date" yaml:"date"` // Date of the audit
 	Type string    `json:"type" yaml:"type"` // Type of audit (e.g., "security", "performance")
 	URL  string    `json:"url" yaml:"url"`   // URL to the audit report
+	// Vendor is who performed the audit. The CNCF landscape requires it, so
+	// only audits that name a vendor are synced there.
+	Vendor string `json:"vendor,omitempty" yaml:"vendor,omitempty"`
 }
 
 // MaintainersConfig represents the maintainers configuration file
