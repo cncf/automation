@@ -386,7 +386,6 @@ func runOnMachine(ctx context.Context, machine *oci.EphemeralMachine, sshKeyPair
 		"sudo mv /etc/skel/.cargo /home/ubuntu/",
 		"sudo mv /etc/skel/.nvm /home/ubuntu/",
 		"sudo mv /etc/skel/.rustup /home/ubuntu/",
-		"sudo mv /etc/skel/.dotnet /home/ubuntu/",
 		"sudo mv /etc/skel/.composer /home/ubuntu/",
 		"sudo setfacl -m u:ubuntu:rw /var/run/docker.sock",
 		"sudo sysctl fs.inotify.max_user_instances=1280",
