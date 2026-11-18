@@ -1,6 +1,6 @@
 {
-  "generated": "2026-11-17T00:21:50.118200Z",
-  "report_date": "2026-11-17",
+  "generated": "2026-11-18T00:21:53.504861Z",
+  "report_date": "2026-11-18",
   "metrics": {
     "maturity": {
       "Sandbox": 157,
@@ -15,7 +15,7 @@
       "total": 2,
       "stages": [
         {
-          "status": "New",
+          "status": "TOC DD Evaluation",
           "count": 1
         },
         {
@@ -26,7 +26,7 @@
     },
     "graduation_velocity": {
       "avg_days_to_complete": 278,
-      "avg_age_open": 213,
+      "avg_age_open": 214,
       "total_closed": 61
     },
     "incubation_backlog": {
@@ -34,7 +34,11 @@
       "stages": [
         {
           "status": "New",
-          "count": 5
+          "count": 1
+        },
+        {
+          "status": "TOC DD Evaluation",
+          "count": 4
         },
         {
           "status": "Adopter Interviews & Project Discussion",
@@ -48,7 +52,7 @@
     },
     "incubation_velocity": {
       "avg_days_to_complete": 300,
-      "avg_age_open": 334,
+      "avg_age_open": 335,
       "total_closed": 107
     },
     "sandbox_backlog": {
@@ -74,7 +78,7 @@
     },
     "sandbox_velocity": {
       "avg_days_to_complete": 129,
-      "avg_age_open": 61,
+      "avg_age_open": 62,
       "total_closed": 151
     },
     "sandbox_completed_by_year": [
@@ -319,8 +323,8 @@
     },
     {
       "date": "2026-11-01",
-      "created": 306,
-      "resolved": 61
+      "created": 337,
+      "resolved": 74
     }
   ],
   "service_desk_satisfaction": [
@@ -446,14 +450,29 @@
   "onboarding": {
     "summary": {
       "total": 24,
-      "one_task_left": 4,
-      "nearly_complete_only": 10,
+      "one_task_left": 5,
+      "nearly_complete_only": 9,
       "more_than_halfway": 6,
       "low_progress": 4,
-      "nearly_complete": 4,
-      "in_progress": 16
+      "nearly_complete": 5,
+      "in_progress": 15
     },
     "issues": [
+      {
+        "name": "Hive Commons",
+        "url": "https://github.com/cncf/sandbox/issues/545",
+        "progress": 97.4,
+        "status": "green",
+        "ca": "green",
+        "dco": "green",
+        "license_scanning": "red",
+        "ghe": "green",
+        "footer": "green",
+        "domain": "green",
+        "landscape": "green",
+        "days_open": 20,
+        "age": "green"
+      },
       {
         "name": "Agones",
         "url": "https://github.com/cncf/sandbox/issues/469",
@@ -466,7 +485,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 249,
+        "days_open": 250,
         "age": "orange"
       },
       {
@@ -481,7 +500,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 1063,
+        "days_open": 1064,
         "age": "red"
       },
       {
@@ -496,7 +515,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 760,
+        "days_open": 761,
         "age": "red"
       },
       {
@@ -511,7 +530,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 1574,
+        "days_open": 1575,
         "age": "red"
       },
       {
@@ -526,7 +545,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 760,
+        "days_open": 761,
         "age": "red"
       },
       {
@@ -541,7 +560,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 1525,
+        "days_open": 1526,
         "age": "red"
       },
       {
@@ -556,7 +575,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 1279,
+        "days_open": 1280,
         "age": "red"
       },
       {
@@ -571,7 +590,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 861,
+        "days_open": 862,
         "age": "red"
       },
       {
@@ -586,7 +605,7 @@
         "footer": "green",
         "domain": "red",
         "landscape": "green",
-        "days_open": 1063,
+        "days_open": 1064,
         "age": "red"
       },
       {
@@ -601,23 +620,8 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 1279,
+        "days_open": 1280,
         "age": "red"
-      },
-      {
-        "name": "Hive Commons",
-        "url": "https://github.com/cncf/sandbox/issues/545",
-        "progress": 89.5,
-        "status": "green",
-        "ca": "green",
-        "dco": "green",
-        "license_scanning": "red",
-        "ghe": "green",
-        "footer": "green",
-        "domain": "green",
-        "landscape": "green",
-        "days_open": 19,
-        "age": "green"
       },
       {
         "name": "SDC - Schema Driven Configuration",
@@ -631,7 +635,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 68,
+        "days_open": 69,
         "age": "yellow"
       },
       {
@@ -646,7 +650,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "red",
-        "days_open": 33,
+        "days_open": 34,
         "age": "yellow"
       },
       {
@@ -661,7 +665,7 @@
         "footer": "red",
         "domain": "red",
         "landscape": "green",
-        "days_open": 861,
+        "days_open": 862,
         "age": "red"
       },
       {
@@ -676,7 +680,7 @@
         "footer": "red",
         "domain": "green",
         "landscape": "green",
-        "days_open": 45,
+        "days_open": 46,
         "age": "yellow"
       },
       {
@@ -691,13 +695,13 @@
         "footer": "green",
         "domain": "green",
         "landscape": "green",
-        "days_open": 124,
+        "days_open": 125,
         "age": "yellow"
       },
       {
         "name": "OpenRL",
         "url": "https://github.com/cncf/sandbox/issues/543",
-        "progress": 65.8,
+        "progress": 71.1,
         "status": "yellow",
         "ca": "green",
         "dco": "green",
@@ -706,8 +710,38 @@
         "footer": "green",
         "domain": "red",
         "landscape": "red",
-        "days_open": 27,
+        "days_open": 28,
         "age": "green"
+      },
+      {
+        "name": "vm-api",
+        "url": "https://github.com/cncf/sandbox/issues/544",
+        "progress": 68.4,
+        "status": "yellow",
+        "ca": "green",
+        "dco": "green",
+        "license_scanning": "red",
+        "ghe": "red",
+        "footer": "green",
+        "domain": "red",
+        "landscape": "red",
+        "days_open": 20,
+        "age": "green"
+      },
+      {
+        "name": "KubeRay",
+        "url": "https://github.com/cncf/sandbox/issues/531",
+        "progress": 65.8,
+        "status": "yellow",
+        "ca": "green",
+        "dco": "red",
+        "license_scanning": "red",
+        "ghe": "red",
+        "footer": "red",
+        "domain": "green",
+        "landscape": "red",
+        "days_open": 49,
+        "age": "yellow"
       },
       {
         "name": "K2s",
@@ -721,37 +755,7 @@
         "footer": "green",
         "domain": "green",
         "landscape": "red",
-        "days_open": 45,
-        "age": "yellow"
-      },
-      {
-        "name": "vm-api",
-        "url": "https://github.com/cncf/sandbox/issues/544",
-        "progress": 60.5,
-        "status": "yellow",
-        "ca": "green",
-        "dco": "green",
-        "license_scanning": "red",
-        "ghe": "red",
-        "footer": "green",
-        "domain": "red",
-        "landscape": "red",
-        "days_open": 19,
-        "age": "green"
-      },
-      {
-        "name": "KubeRay",
-        "url": "https://github.com/cncf/sandbox/issues/531",
-        "progress": 60.5,
-        "status": "yellow",
-        "ca": "green",
-        "dco": "red",
-        "license_scanning": "red",
-        "ghe": "red",
-        "footer": "red",
-        "domain": "green",
-        "landscape": "red",
-        "days_open": 48,
+        "days_open": 46,
         "age": "yellow"
       },
       {
@@ -766,7 +770,7 @@
         "footer": "red",
         "domain": "red",
         "landscape": "red",
-        "days_open": 27,
+        "days_open": 28,
         "age": "green"
       },
       {
@@ -781,13 +785,13 @@
         "footer": "red",
         "domain": "red",
         "landscape": "red",
-        "days_open": 19,
+        "days_open": 20,
         "age": "green"
       },
       {
         "name": "CAIPE",
         "url": "https://github.com/cncf/sandbox/issues/549",
-        "progress": 18.4,
+        "progress": 23.7,
         "status": "red",
         "ca": "green",
         "dco": "red",
@@ -796,13 +800,13 @@
         "footer": "red",
         "domain": "red",
         "landscape": "green",
-        "days_open": 7,
+        "days_open": 8,
         "age": "green"
       },
       {
         "name": "MatrixHub",
         "url": "https://github.com/cncf/sandbox/issues/548",
-        "progress": 15.8,
+        "progress": 23.7,
         "status": "red",
         "ca": "green",
         "dco": "red",
@@ -811,7 +815,7 @@
         "footer": "red",
         "domain": "red",
         "landscape": "green",
-        "days_open": 7,
+        "days_open": 8,
         "age": "green"
       }
     ]
