@@ -146,8 +146,10 @@ runs:
           sed "s/cncf-ubuntu-2-8/oci-ci-test-${GITHUB_RUN_ID}-${OS_VERSION}/g" "$MANIFEST_FILE" \
             | sed "/--subnet-id/a \\        - --running-environment=${RUNNING_ENVIRONMENT}" \
             | sed "/--subnet-id/a \\        - --os-version=${OS_VERSION}" \
-            | sed 's/E5.Flex/E4.Flex/g' \
             | sed '/nodeSelector/,+1d' \
+            | sed 's/\(fallback-region=\).*/\1/' \
+            | sed 's/\(fallback-availability-domain=\).*/\1/' \
+            | sed 's/\(fallback-subnet-id=\).*/\1/' \
             | sed '/runnerScaleSetLabels/,+2d' | kubectl apply -f -
 
           # new service account is needed.
