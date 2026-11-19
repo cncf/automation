@@ -75,6 +75,7 @@ RUN apt update -y \
             zip \
             xz-utils \
             file \
+            libatomic1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /usr/share/doc/* /usr/share/man/*
 
