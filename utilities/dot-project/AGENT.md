@@ -358,6 +358,8 @@ Additional types in domain-specific files:
 - `--landscape` - Path to landscape.yml for comparison (optional)
 - `--output` - Output format: text, json, yaml (default: `text`)
 - `--dry-run` - Show changes without applying (default: true)
+- `--logos-dir` - Landscape logos directory; when set, refreshes the matched item's logo from the project's `cncf/artwork` link
+- `--list-projects` - Print every project.yaml path under `--repo-root` and exit
 
 ## Docker
 

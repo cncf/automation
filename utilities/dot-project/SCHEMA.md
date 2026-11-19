@@ -135,7 +135,7 @@ warning, never an error, when the member lists differ.
 | `repositories` | (string \| RepositoryEntry)[] | Yes | Repository URLs with optional metadata. Each entry can be a plain URL string (backward-compatible) or an object with `url` and optional `tags` | At least one entry; each must have a valid HTTP(S) URL |
 | `website` | string | No | Project website | Valid HTTP(S) URL if present |
 | `adopters` | PathRef | No | Link to ADOPTERS.md or adopters list | Path must be non-empty if present |
-| `artwork` | string | No | Artwork/logo URL | Valid HTTP(S) URL if present |
+| `artwork` | string | No | Link to the project's directory in `cncf/artwork` (`https://github.com/cncf/artwork/tree/main/projects/<name>`) | Valid HTTP(S) URL if present. Only `cncf/artwork` links are synced to the landscape |
 | `social` | map[string]string | No | Social platform URLs | All values must be valid HTTP(S) URLs |
 | `mailing_lists` | string[] | No | Mailing list addresses | |
 | `audits` | Audit[] | No | Security/performance audits | |
@@ -204,6 +204,7 @@ slack_channels:
 | `date` | datetime | Yes | Audit date | ISO 8601 format |
 | `type` | string | Yes | Audit type | Non-empty (e.g., `"security"`, `"performance"`) |
 | `url` | string | Yes | Report URL | Valid HTTP(S) URL |
+| `vendor` | string | No | Who performed the audit | Required for the audit to be synced to the landscape, whose schema requires a vendor |
 
 ### SecurityConfig
 

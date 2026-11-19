@@ -69,7 +69,7 @@ fields and the full validation rules.
 | `slack_channels` | SlackChannel[] | One or more CNCF Slack channels; mark the main one with `primary: true` |
 | `website` | string | Project website URL |
 | `adopters` | PathRef | Link to ADOPTERS.md or adopters list |
-| `artwork` | string | Artwork/logo URL |
+| `artwork` | string | The project's directory in `cncf/artwork`, e.g. `https://github.com/cncf/artwork/tree/main/projects/<name>`. Links elsewhere are not synced to the landscape |
 | `social` | map | Platform-name to URL mapping |
 | `mailing_lists` | array | Email addresses |
 | `audits` | array | Security/performance audit entries |
@@ -206,6 +206,25 @@ The `landscape-updater` tool automates the process of updating the CNCF Landscap
 | `--landscape-repo` | `cncf/landscape` | Target repository for the PR |
 | `--create-pr` | `false` | Create a Pull Request with the changes |
 | `--dry-run` | `false` | Print diff and PR details without executing |
+| `--logos-dir` | | Directory holding the landscape logos (`hosted_logos`); when set, the matched item's logo file is refreshed from the project's `cncf/artwork` link |
+| `--list-projects` | `false` | Print the `project.yaml` path of every project under `--repo-root`, one per line, and exit |
+
+#### Synced fields
+
+| `project.yaml` | Landscape item | Notes |
+|----------------|----------------|-------|
+| `website` | `homepage_url` | |
+| `description` | `description` | |
+| `repositories[primary: true]` | `repo_url` | Only a repository explicitly marked `primary: true`; the first-entry fallback is not used, so an unordered list never re-points the item |
+| `social.twitter` | `twitter` | |
+| `artwork` | `extra.artwork_url` | Only a link into `cncf/artwork`; any other link (the project's own site, a landscape-hosted logo) is ignored so it cannot replace the curated one |
+| `social.slack`, `linkedin`, `youtube`, `stackoverflow`, `bluesky`, `discord`, `github_discussions` | `extra.slack_url`, `linkedin_url`, `youtube_url`, `stack_overflow_url`, `bluesky_url`, `discord_url`, `github_discussions_url` | |
+| `audits` | `extra.audits` | Append-only, keyed by `url`: existing landscape audits are never rewritten or removed. Audits without a `vendor` are skipped |
+| `artwork` | logo file | Only with `--logos-dir`, and only for a link into `cncf/artwork` (tree, blob or raw form). A link to an `.svg` is tried first; otherwise the project's directory is listed through the GitHub API (authenticated with `GH_TOKEN`/`GITHUB_TOKEN` when set) and the first colour SVG among the `stacked`, `horizontal` and `icon` layouts is used. The existing `logo:` file is overwritten when its bytes differ |
+
+Empty fields are never synced: removing a value from `project.yaml` does not
+remove it from the landscape. Maturity (`project:`) and category placement are
+not synced.
 
 A project whose `name` matches no landscape item produces a warning annotation
 rather than a silent no-op, and does not stop the remaining projects from being

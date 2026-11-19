@@ -389,7 +389,7 @@ var templateFuncs = template.FuncMap{
 		return fmt.Sprintf("https://github.com/%s/%s/security/advisories/new", org, repo)
 	},
 	"artworkURL": func(slug string) string {
-		return fmt.Sprintf("https://github.com/cncf/artwork/tree/master/projects/%s", slug)
+		return fmt.Sprintf("https://github.com/cncf/artwork/tree/main/projects/%s", slug)
 	},
 	"isAutoDetected": func(sources map[string]string, key string) bool {
 		if sources == nil {
