@@ -314,7 +314,7 @@ spec:
           value: unix:///var/run/docker.sock
         - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
           value: "120"
-        image: ghcr.io/cncf/external-gha-runner:resolute@sha256:c7570e7233286d5f7fd64d407f928c836a37024f6d0445a1ec494c0ff8dd94aa
+        image: ghcr.io/cncf/external-gha-runner:resolute@sha256:327cb1ce7416930b348bfba5579909621f9af82788282ebaf3085dbd1bb88cf4
         name: runner
         resources:
           limits:
@@ -419,7 +419,7 @@ spec:
         - /home/runner/tmpDir/
         command:
         - cp
-        image: ghcr.io/cncf/external-gha-runner:resolute@sha256:c7570e7233286d5f7fd64d407f928c836a37024f6d0445a1ec494c0ff8dd94aa
+        image: ghcr.io/cncf/external-gha-runner:resolute@sha256:327cb1ce7416930b348bfba5579909621f9af82788282ebaf3085dbd1bb88cf4
         name: init-dind-externals
         volumeMounts:
         - mountPath: /home/runner/tmpDir
