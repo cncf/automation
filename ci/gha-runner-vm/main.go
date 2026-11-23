@@ -645,7 +645,7 @@ func init() {
 	})
 
 	replacements[`build {
-  sources = ["source.azure-arm.image"]`] = fmt.Sprintf(`variable architecture {
+  sources = var.cloud_provider == "aws" ? ["source.amazon-ebs.image"] : ["source.azure-arm.image"]`] = fmt.Sprintf(`variable architecture {
   type        = string
   default     = "amd64"
   description = "Target architecture (amd64 or arm64)"
