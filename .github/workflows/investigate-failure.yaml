@@ -30,6 +30,7 @@ jobs:
         run: |
           ACTION_DIR=$(ls -1d /home/ubuntu/setup-docker-action/run-*)
           echo "ACTION_DIR: $ACTION_DIR"
+          sleep 30
           echo "--- Starting Docker daemon verification ---"
           sudo /opt/hostedtoolcache/docker-image/29/x64/dockerd \
             --host="unix:///$ACTION_DIR/docker.sock" \
