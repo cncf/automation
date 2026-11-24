@@ -4,7 +4,7 @@
 #   binary: landscape2-mcp-server
 #   image:  ghcr.io/cncf/landscape-mcp-server
 
-FROM golang:1.27.1-alpine AS builder
+FROM golang:1.27.4-alpine AS builder
 
 ARG VERSION
 
