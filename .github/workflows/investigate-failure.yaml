@@ -28,13 +28,15 @@ jobs:
       - name: Verify Docker setup
         if: always()
         run: |
+          ACTION_DIR=$(ls -ld /home/ubuntu/setup-docker-action/run-*)
+          echo "ACTION_DIR: $ACTION_DIR"
           echo "--- Starting Docker daemon verification ---"
           /opt/hostedtoolcache/docker-image/29/x64/dockerd \
-            --host="unix:///home/ubuntu/setup-docker-action/run-4ee5bf1e/docker.sock" \
-            --config-file="/home/ubuntu/setup-docker-action/run-4ee5bf1e/daemon.json" \
-            --exec-root="/home/ubuntu/setup-docker-action/run-4ee5bf1e/execroot" \
-            --data-root="/home/ubuntu/setup-docker-action/run-4ee5bf1e/data" \
-            --pidfile="/home/ubuntu/setup-docker-action/run-4ee5bf1e/docker.pid"
+            --host="unix:///$ACTION_DIR/docker.sock" \
+            --config-file="$ACTION_DIR/daemon.json" \
+            --exec-root="$ACTION_DIR/execroot" \
+            --data-root="$ACTION_DIR/data" \
+            --pidfile="$ACTION_DIR/docker.pid"
           echo "--- Docker daemon started successfully ---"
           docker version
           docker info
