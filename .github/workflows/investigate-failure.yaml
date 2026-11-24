@@ -28,7 +28,7 @@ jobs:
       - name: Verify Docker setup
         if: always()
         run: |
-          ACTION_DIR=$(ls -ld /home/ubuntu/setup-docker-action/run-*)
+          ACTION_DIR=$(ls -1d /home/ubuntu/setup-docker-action/run-*)
           echo "ACTION_DIR: $ACTION_DIR"
           echo "--- Starting Docker daemon verification ---"
           /opt/hostedtoolcache/docker-image/29/x64/dockerd \
