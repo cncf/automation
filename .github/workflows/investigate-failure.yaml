@@ -1,0 +1,37 @@
+name: Investigate Failure
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-runner:
+    runs-on: cncf-ubuntu-16-64-x86
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1 # v5.4.0
+        with:
+          version: type=image,tag=29
+          daemon-config: '{"features":{"containerd-snapshotter":true}}'
+          set-host: true
+
+      - name: Verify Docker setup
+        if: always()
+        run: |
+          echo "--- Starting Docker daemon verification ---"
+          /opt/hostedtoolcache/docker-image/29/x64/dockerd \
+            --host="unix:///home/ubuntu/setup-docker-action/run-4ee5bf1e/docker.sock" \
+            --config-file="/home/ubuntu/setup-docker-action/run-4ee5bf1e/daemon.json" \
+            --exec-root="/home/ubuntu/setup-docker-action/run-4ee5bf1e/execroot" \
+            --data-root="/home/ubuntu/setup-docker-action/run-4ee5bf1e/data" \
+            --pidfile="/home/ubuntu/setup-docker-action/run-4ee5bf1e/docker.pid"
+          echo "--- Docker daemon started successfully ---"
+          docker version
+          docker info
