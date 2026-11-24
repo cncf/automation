@@ -2,6 +2,9 @@ name: Investigate Failure
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - tmp-koray
 
 permissions:
   contents: read
