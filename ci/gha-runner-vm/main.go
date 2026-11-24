@@ -726,7 +726,7 @@ build {
 	if args.osVersion == "24.04" {
 		kernelPkg = "linux-oracle-6.17"
 	}
-	replacements[`["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]`] = fmt.Sprintf(`[
+	replacements[`["sleep 30", "if [ -x /usr/sbin/waagent ] && [ -f /etc/waagent.conf ]; then /usr/sbin/waagent -force -deprovision+user; fi && export HISTSIZE=0 && sync"]`] = fmt.Sprintf(`[
 				"sleep 30",
 				"export HISTSIZE=0 && sync",
 				"usermod -aG docker ubuntu",
