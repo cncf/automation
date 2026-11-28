@@ -251,6 +251,7 @@ func fetchFromLandscape(name string, client *http.Client, baseURL string) (*Land
 			acceptedDate, _ := getExtraString(iwc.item.Extra, "accepted")
 			annualReviewURL, _ := getExtraString(iwc.item.Extra, "annual_review_url")
 			packageManagerURL, _ := getExtraString(iwc.item.Extra, "package_manager_url")
+			artworkURL, _ := getExtraString(iwc.item.Extra, "artwork_url")
 
 			return &LandscapeData{
 				Name:              iwc.item.Name,
@@ -258,6 +259,7 @@ func fetchFromLandscape(name string, client *http.Client, baseURL string) (*Land
 				HomepageURL:       iwc.item.HomepageURL,
 				RepoURL:           iwc.item.RepoURL,
 				LogoURL:           logoURL,
+				ArtworkURL:        artworkURL,
 				Twitter:           iwc.item.Twitter,
 				Maturity:          iwc.item.Project,
 				Category:          iwc.category,
@@ -568,6 +570,7 @@ type LandscapeData struct {
 	HomepageURL string `json:"homepage_url"`
 	RepoURL     string `json:"repo_url"`
 	LogoURL     string `json:"logo_url"`
+	ArtworkURL  string `json:"artwork_url"`
 	Twitter     string `json:"twitter"`
 	Maturity    string `json:"maturity"`
 	Category    string `json:"category"`
@@ -1034,12 +1037,16 @@ func mergeBootstrapData(slug string, landscape *LandscapeData, clomonitor *CLOMo
 		result.Sources["landscape_category"] = "clomonitor"
 	}
 
-	// Artwork: landscape logo
-	if landscape != nil && landscape.LogoURL != "" {
-		result.Artwork = landscape.LogoURL
+	// Artwork: the project's directory in cncf/artwork, never a rendered logo.
+	// The landscape-hosted logo URL in particular must not be used: the
+	// landscape syncs from project.yaml, so it would become its own source.
+	// With no cncf/artwork link available the scaffold template falls back to
+	// the conventional directory for the slug.
+	if landscape != nil && CanonicalArtworkURL(landscape.ArtworkURL) != "" {
+		result.Artwork = CanonicalArtworkURL(landscape.ArtworkURL)
 		result.Sources["artwork"] = "landscape"
-	} else if clomonitor != nil && clomonitor.LogoURL != "" {
-		result.Artwork = clomonitor.LogoURL
+	} else if clomonitor != nil && CanonicalArtworkURL(clomonitor.LogoURL) != "" {
+		result.Artwork = CanonicalArtworkURL(clomonitor.LogoURL)
 		result.Sources["artwork"] = "clomonitor"
 	}
 
